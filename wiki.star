@@ -16,23 +16,175 @@ def database_create(db):
     db.exec("create index tags_tag on tags(tag)")
     db.exec("insert into settings (name, value) values ('home', 'home')")
 
-# Stub actions (to be implemented in later stages)
+# Helper: Get wiki setting
+def get_setting(name, default):
+    row = mochi.db.row("select value from settings where name = ?", name)
+    if row:
+        return row["value"]
+    return default
 
+# Helper: Get page by slug, following redirects
+def get_page(slug):
+    # Check for redirect first
+    redirect = mochi.db.row("select target from redirects where source = ?", slug)
+    if redirect:
+        slug = redirect["target"]
+
+    page = mochi.db.row("select * from pages where page = ? and deleted = 0", slug)
+    return page
+
+# Helper: Create a revision for a page
+def create_revision(page_id, title, content, author, version, comment):
+    revision_id = mochi.uid()
+    now = mochi.time.now()
+    mochi.db.query("insert into revisions (id, page, content, title, author, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?)",
+        revision_id, page_id, content, title, author, now, version, comment)
+    return revision_id
+
+# ACTIONS
+
+# View a page
 def action_page(a):
-    a.error(501, "Not implemented")
+    slug = a.param("page")
+    if not slug:
+        a.error(400, "Missing page parameter")
+        return
 
+    page = get_page(slug)
+    if not page:
+        a.json({"error": "not_found", "page": slug})
+        return
+
+    # Get tags for this page
+    tags = mochi.db.query("select tag from tags where page = ?", page["id"])
+    tag_list = [t["tag"] for t in tags]
+
+    a.json({
+        "page": {
+            "id": page["id"],
+            "slug": page["page"],
+            "title": page["title"],
+            "content": page["content"],
+            "author": page["author"],
+            "created": page["created"],
+            "updated": page["updated"],
+            "version": page["version"],
+            "tags": tag_list
+        }
+    })
+
+# Edit a page (create or update)
 def action_page_edit(a):
-    a.error(501, "Not implemented")
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
 
-def action_page_history(a):
-    a.error(501, "Not implemented")
+    slug = a.param("page")
+    if not slug:
+        a.error(400, "Missing page parameter")
+        return
 
+    title = a.input("title")
+    content = a.input("content")
+    comment = a.input("comment", "")
+
+    if not title:
+        a.error(400, "Title is required")
+        return
+
+    if content == None:
+        content = ""
+
+    now = mochi.time.now()
+    author = a.user.identity.id
+
+    # Check if page exists
+    existing = mochi.db.row("select * from pages where page = ?", slug)
+
+    if existing:
+        # Update existing page
+        if existing["deleted"]:
+            # Restore deleted page
+            new_version = existing["version"] + 1
+            mochi.db.query("update pages set title = ?, content = ?, author = ?, updated = ?, version = ?, deleted = 0 where id = ?",
+                title, content, author, now, new_version, existing["id"])
+            create_revision(existing["id"], title, content, author, new_version, comment)
+            a.json({"id": existing["id"], "slug": slug, "version": new_version, "created": False})
+        else:
+            # Update page
+            new_version = existing["version"] + 1
+            mochi.db.query("update pages set title = ?, content = ?, author = ?, updated = ?, version = ? where id = ?",
+                title, content, author, now, new_version, existing["id"])
+            create_revision(existing["id"], title, content, author, new_version, comment)
+            a.json({"id": existing["id"], "slug": slug, "version": new_version, "created": False})
+    else:
+        # Create new page
+        page_id = mochi.uid()
+        mochi.db.query("insert into pages (id, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, 1)",
+            page_id, slug, title, content, author, now, now)
+        create_revision(page_id, title, content, author, 1, comment)
+        a.json({"id": page_id, "slug": slug, "version": 1, "created": True})
+
+# Create a new page (returns page slug for redirect)
 def action_new(a):
-    a.error(501, "Not implemented")
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
 
+    slug = a.input("slug")
+    title = a.input("title")
+    content = a.input("content", "")
+
+    if not slug:
+        a.error(400, "Slug is required")
+        return
+
+    if not title:
+        a.error(400, "Title is required")
+        return
+
+    # Check if slug is reserved
+    if slug.startswith("-"):
+        a.error(400, "Page names starting with - are reserved")
+        return
+
+    # Check if page already exists
+    existing = mochi.db.row("select id from pages where page = ?", slug)
+    if existing:
+        a.error(409, "Page already exists")
+        return
+
+    # Create the page
+    now = mochi.time.now()
+    author = a.user.identity.id
+    page_id = mochi.uid()
+
+    mochi.db.query("insert into pages (id, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, 1)",
+        page_id, slug, title, content, author, now, now)
+    create_revision(page_id, title, content, author, 1, "Initial creation")
+
+    a.json({"id": page_id, "slug": slug})
+
+# Page history (stub - to be implemented in Stage 3)
+def action_page_history(a):
+    slug = a.param("page")
+    if not slug:
+        a.error(400, "Missing page parameter")
+        return
+
+    page = mochi.db.row("select * from pages where page = ?", slug)
+    if not page:
+        a.error(404, "Page not found")
+        return
+
+    revisions = mochi.db.query("select id, title, author, created, version, comment from revisions where page = ? order by version desc", page["id"])
+    a.json({"page": slug, "revisions": revisions})
+
+# Search (stub - to be implemented in Stage 6)
 def action_search(a):
     a.error(501, "Not implemented")
 
+# Settings (stub - to be implemented in Stage 5)
 def action_settings(a):
     a.error(501, "Not implemented")
 
