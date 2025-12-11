@@ -63,6 +63,8 @@ def action_root(a):
 
 # View a page
 def action_page(a):
+    a.access_require("wiki", "view")
+
     slug = a.input("page")
     if not slug:
         a.error(400, "Missing page parameter")
@@ -96,6 +98,7 @@ def action_page_edit(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
+    a.access_require("wiki", "edit")
 
     slug = a.input("page")
     if not slug:
@@ -178,6 +181,7 @@ def action_new(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
+    a.access_require("wiki", "edit")
 
     slug = a.input("slug")
     title = a.input("title")
@@ -224,8 +228,10 @@ def action_new(a):
 
     a.json({"id": page_id, "slug": slug})
 
-# Page history (stub - to be implemented in Stage 3)
+# Page history
 def action_page_history(a):
+    a.access_require("wiki", "view")
+
     slug = a.input("page")
     if not slug:
         a.error(400, "Missing page parameter")
@@ -241,6 +247,8 @@ def action_page_history(a):
 
 # View a specific revision
 def action_page_revision(a):
+    a.access_require("wiki", "view")
+
     slug = a.input("page")
     version = a.input("version")
 
@@ -281,6 +289,7 @@ def action_page_revert(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
+    a.access_require("wiki", "edit")
 
     slug = a.input("page")
     version = a.input("version")
@@ -334,6 +343,7 @@ def action_page_delete(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
+    a.access_require("wiki", "delete")
 
     slug = a.input("page")
     if not slug:
@@ -364,6 +374,7 @@ def action_tag_add(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
+    a.access_require("wiki", "edit")
 
     slug = a.input("page")
     tag = a.input("tag")
@@ -408,6 +419,7 @@ def action_tag_remove(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
+    a.access_require("wiki", "edit")
 
     slug = a.input("page")
     tag = a.input("tag")
@@ -439,11 +451,15 @@ def action_tag_remove(a):
 
 # List all tags in the wiki
 def action_tags(a):
+    a.access_require("wiki", "view")
+
     tags = mochi.db.query("select tag, count(*) as count from tags group by tag order by count desc, tag asc")
     a.json({"tags": tags})
 
 # List pages with a specific tag
 def action_tag_pages(a):
+    a.access_require("wiki", "view")
+
     tag = a.input("tag")
 
     if not tag:
@@ -467,6 +483,7 @@ def action_redirect_set(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
+    a.access_require("wiki", "admin")
 
     source = a.input("source")
     target = a.input("target")
@@ -521,6 +538,7 @@ def action_redirect_delete(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
+    a.access_require("wiki", "admin")
 
     source = a.input("source")
 
@@ -540,11 +558,14 @@ def action_redirect_delete(a):
 
 # List all redirects
 def action_redirects(a):
+    a.access_require("wiki", "admin")
+
     redirects = mochi.db.query("select source, target, created from redirects order by source")
     a.json({"redirects": redirects})
 
 # View wiki settings
 def action_settings(a):
+    a.access_require("wiki", "admin")
     rows = mochi.db.query("select name, value from settings")
     settings = {}
     for row in rows:
@@ -556,6 +577,7 @@ def action_settings_set(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
+    a.access_require("wiki", "admin")
 
     name = a.input("name")
     value = a.input("value")
@@ -586,6 +608,8 @@ def action_settings_set(a):
 
 # Search pages by title and content
 def action_search(a):
+    a.access_require("wiki", "view")
+
     query = a.input("q", "")
 
     if not query or len(query.strip()) == 0:
@@ -851,6 +875,7 @@ def action_sync(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
+    a.access_require("wiki", "admin")
 
     # Get target wiki entity to sync from
     target = a.input("target")
