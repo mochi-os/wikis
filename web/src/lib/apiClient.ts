@@ -13,21 +13,37 @@ const logDevError = (message: string, error: unknown) => {
 
 const getBasepath = () => {
   const pathname = window.location.pathname
-  // Extract basepath: /settings -> /settings/, /settings/ -> /settings/, /settings/user -> /settings/
-  const match = pathname.match(/^\/[^/]+/)
-  return match ? match[0] + '/' : '/'
+  // Class context: /wiki/ or /wiki -> /wiki/
+  // Entity context: /wiki/<wiki-id>/... -> /wiki/<wiki-id>/-/
+  const match = pathname.match(/^\/wiki\/([^/]+)/)
+  if (match) {
+    // Entity context: /wiki/<wiki-id>
+    return `/wiki/${match[1]}/-/`
+  }
+  // Class context: /wiki/
+  return '/wiki/'
 }
 
 export const apiClient = axios.create({
-  baseURL: getBasepath(),
   timeout: 30000,
   headers: {
+    'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
 })
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    // Dynamically set baseURL based on current page location
+    // This must happen on each request since the page may have changed
+    config.baseURL = getBasepath()
+
+    // Handle global auth endpoints - they should use absolute URLs from root
+    // URLs starting with /_/ are global auth endpoints that bypass app routing
+    if (config.url?.startsWith('/_/')) {
+      config.baseURL = '/'
+    }
+
     const storeToken = useAuthStore.getState().token
     const cookieToken = getCookie('token')
     const token = storeToken || cookieToken

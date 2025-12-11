@@ -5,6 +5,40 @@ const endpoints = {
     identity: '/_/identity',
     logout: '/_/logout',
   },
+  wiki: {
+    // Info
+    info: 'info',
+    create: 'create',
+    // Pages
+    page: (slug: string) => `${slug}`,
+    pageEdit: (slug: string) => `${slug}/edit`,
+    pageHistory: (slug: string) => `${slug}/history`,
+    pageRevision: (slug: string, version: number) => `${slug}/history/${version}`,
+    pageRevert: (slug: string) => `${slug}/revert`,
+    pageDelete: (slug: string) => `${slug}/delete`,
+    newPage: 'new',
+    search: 'search',
+    // Tags
+    tagAdd: (slug: string) => `${slug}/tag/add`,
+    tagRemove: (slug: string) => `${slug}/tag/remove`,
+    tags: 'tags',
+    tagPages: (tag: string) => `tag/${tag}`,
+    // Redirects
+    redirects: 'redirects',
+    redirectSet: 'redirect/set',
+    redirectDelete: 'redirect/delete',
+    // Settings
+    settings: 'settings',
+    settingsSet: 'settings/set',
+    // Sync
+    sync: 'sync',
+    subscribe: 'subscribe',
+    // Attachments
+    attachments: 'attachment/list',
+    attachmentUpload: 'attachment/upload',
+    attachmentDelete: 'attachment/delete',
+    attachment: (id: string) => `attachments/${id}`,
+  },
   user: {
     account: 'user/account/data',
     accountIdentity: 'user/account/identity',

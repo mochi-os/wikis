@@ -64,9 +64,12 @@ const queryClient = new QueryClient({
 
 const getBasepath = () => {
   const pathname = window.location.pathname
-  // Extract basepath: /settings -> /settings/, /settings/ -> /settings/, /settings/user -> /settings/
+  // Class context: /wiki -> /wiki/
+  // Entity context: /<wiki-id> -> /<wiki-id>/-/
   const match = pathname.match(/^\/[^/]+/)
-  return match ? match[0] + '/' : '/'
+  if (!match) return '/'
+  const isEntity = match[0] !== '/wiki'
+  return match[0] + (isEntity ? '/-/' : '/')
 }
 
 const router = createRouter({

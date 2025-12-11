@@ -1,25 +1,15 @@
 export const APP_ROUTES = {
-  // External apps
-  HOME: {
-    BASE: '/',
-    HOME: '/',
+  // Wiki app routes
+  WIKI: {
+    HOME: '/home',
+    SEARCH: '/search',
+    NEW: '/new',
+    TAGS: '/tags',
+    SETTINGS: '/settings',
+    REDIRECTS: '/redirects',
   },
-  CHAT: {
-    BASE: '/chat/',
-    HOME: '/chat/',
-  },
-  FRIENDS: {
-    BASE: '/friends/',
-    HOME: '/friends/',
-  },
-  NOTIFICATIONS: {
-    BASE: '/notifications/',
-    HOME: '/notifications/',
-  },
-  // Settings app (current)
+  // User account routes
   SETTINGS: {
-    BASE: '/',
-    HOME: '/',
     USER: {
       ACCOUNT: '/user/account',
       SESSIONS: '/user/sessions',
@@ -30,7 +20,6 @@ export const APP_ROUTES = {
       USERS: '/system/users',
       STATUS: '/system/status',
     },
-    DOMAINS: '/domains',
   },
 } as const
 
