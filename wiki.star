@@ -787,3 +787,97 @@ def event_setting_set(e):
         return
 
     mochi.db.query("replace into settings (name, value) values (?, ?)", name, value)
+
+# INITIAL SYNC
+
+# Handle sync request - send full wiki dump to requester
+def event_sync(e):
+    # Generate full dump of all wiki data
+    pages = mochi.db.query("select * from pages")
+    revisions = mochi.db.query("select * from revisions")
+    tags = mochi.db.query("select * from tags")
+    redirects = mochi.db.query("select * from redirects")
+    settings = mochi.db.query("select * from settings")
+
+    # Send dump as a single payload
+    e.write({
+        "status": "200",
+        "pages": pages,
+        "revisions": revisions,
+        "tags": tags,
+        "redirects": redirects,
+        "settings": settings
+    })
+
+# Helper: Import wiki dump from sync response
+def import_sync_dump(dump):
+    if not dump or dump.get("status") != "200":
+        return False
+
+    # Import pages
+    pages = dump.get("pages", [])
+    for p in pages:
+        existing = mochi.db.row("select version from pages where id = ?", p["id"])
+        if existing and existing["version"] >= p["version"]:
+            continue
+        mochi.db.query("replace into pages (id, page, title, content, author, created, updated, version, deleted) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            p["id"], p["page"], p["title"], p["content"], p["author"], p["created"], p["updated"], p["version"], p.get("deleted", 0))
+
+    # Import revisions
+    revisions = dump.get("revisions", [])
+    for r in revisions:
+        mochi.db.query("insert or ignore into revisions (id, page, content, title, author, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?)",
+            r["id"], r["page"], r["content"], r["title"], r["author"], r["created"], r["version"], r.get("comment", ""))
+
+    # Import tags
+    tags = dump.get("tags", [])
+    for t in tags:
+        mochi.db.query("insert or ignore into tags (page, tag) values (?, ?)", t["page"], t["tag"])
+
+    # Import redirects
+    redirects = dump.get("redirects", [])
+    for r in redirects:
+        mochi.db.query("replace into redirects (source, target, created) values (?, ?, ?)", r["source"], r["target"], r["created"])
+
+    # Import settings
+    settings = dump.get("settings", [])
+    for s in settings:
+        mochi.db.query("replace into settings (name, value) values (?, ?)", s["name"], s["value"])
+
+    return True
+
+# Request sync from another wiki participant
+def action_sync(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    # Get target wiki entity to sync from
+    target = a.input("target")
+    if not target:
+        a.error(400, "Target wiki entity is required")
+        return
+
+    # Get our wiki entity
+    wiki_entity = a.input("wiki")
+    if not wiki_entity:
+        a.error(400, "Wiki entity not found")
+        return
+
+    # Open stream to target and request sync
+    stream = mochi.stream(
+        {"from": wiki_entity, "to": target, "service": "wiki", "event": "sync"},
+        {}
+    )
+
+    # Read the response
+    dump = stream.read()
+    if not dump:
+        a.error(500, "Failed to receive sync data")
+        return
+
+    # Import the dump
+    if import_sync_dump(dump):
+        a.json({"ok": True, "message": "Sync completed successfully"})
+    else:
+        a.error(500, "Failed to import sync data")

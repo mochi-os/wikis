@@ -42,10 +42,12 @@
 		"-/tag/:tag": {"function": "action_tag_pages"},
 		"-/redirect/set": {"function": "action_redirect_set"},
 		"-/redirect/delete": {"function": "action_redirect_delete"},
-		"-/redirects": {"function": "action_redirects"}
+		"-/redirects": {"function": "action_redirects"},
+		"-/sync": {"function": "action_sync"}
 	},
 
 	"events": {
+		"sync": {"function": "event_sync"},
 		"page/create": {"function": "event_page_create"},
 		"page/update": {"function": "event_page_update"},
 		"page/delete": {"function": "event_page_delete"},
