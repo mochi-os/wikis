@@ -259,6 +259,95 @@ def action_page_revert(a):
 
     a.json({"slug": slug, "version": new_version, "reverted_from": int(version)})
 
+# Add a tag to a page
+def action_tag_add(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    slug = a.param("page")
+    tag = a.input("tag")
+
+    if not slug:
+        a.error(400, "Missing page parameter")
+        return
+
+    if not tag:
+        a.error(400, "Tag is required")
+        return
+
+    # Normalize tag (lowercase, trim)
+    tag = tag.lower().strip()
+    if not tag:
+        a.error(400, "Tag is required")
+        return
+
+    page = mochi.db.row("select id from pages where page = ? and deleted = 0", slug)
+    if not page:
+        a.error(404, "Page not found")
+        return
+
+    # Check if tag already exists
+    existing = mochi.db.row("select 1 from tags where page = ? and tag = ?", page["id"], tag)
+    if existing:
+        a.json({"ok": True, "added": False})
+        return
+
+    mochi.db.query("insert into tags (page, tag) values (?, ?)", page["id"], tag)
+    a.json({"ok": True, "added": True})
+
+# Remove a tag from a page
+def action_tag_remove(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    slug = a.param("page")
+    tag = a.input("tag")
+
+    if not slug:
+        a.error(400, "Missing page parameter")
+        return
+
+    if not tag:
+        a.error(400, "Tag is required")
+        return
+
+    tag = tag.lower().strip()
+
+    page = mochi.db.row("select id from pages where page = ? and deleted = 0", slug)
+    if not page:
+        a.error(404, "Page not found")
+        return
+
+    mochi.db.query("delete from tags where page = ? and tag = ?", page["id"], tag)
+    a.json({"ok": True})
+
+# List all tags in the wiki
+def action_tags(a):
+    tags = mochi.db.query("select tag, count(*) as count from tags group by tag order by count desc, tag asc")
+    a.json({"tags": tags})
+
+# List pages with a specific tag
+def action_tag_pages(a):
+    tag = a.param("tag")
+
+    if not tag:
+        a.error(400, "Missing tag parameter")
+        return
+
+    tag = tag.lower().strip()
+
+    pages = mochi.db.query("""
+        select p.page, p.title, p.updated
+        from pages p
+        join tags t on t.page = p.id
+        where t.tag = ? and p.deleted = 0
+        order by p.updated desc
+    """, tag)
+
+    a.json({"tag": tag, "pages": pages})
+
 # Search (stub - to be implemented in Stage 6)
 def action_search(a):
     a.error(501, "Not implemented")
