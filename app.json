@@ -1,0 +1,46 @@
+// Mochi Wiki app
+// Copyright Alistair Cunningham 2025
+
+{
+	"version": "1.0",
+	"label": "app_name",
+	"classes": ["wiki"],
+	"paths": ["wiki"],
+
+	"architecture": {"engine": "starlark", "version": 2},
+	"execute": ["wiki.star"],
+
+	"database": {
+		"schema": 1,
+		"file": "wiki.db",
+		"create": {"function": "database_create"},
+		"helpers": ["access"]
+	},
+
+	"icons": [
+		{"action": "", "label": "app_name", "file": "images/icon.svg"}
+	],
+
+	"actions": {
+		"": {"file": "web/dist/index.html"},
+		"assets": {"files": "web/dist/assets"},
+		"images": {"files": "web/dist/images"},
+		"-/new": {"function": "action_new"},
+		"-/search": {"function": "action_search"},
+		"-/settings": {"function": "action_settings"},
+		":page": {"function": "action_page"},
+		":page/edit": {"function": "action_page_edit"},
+		":page/history": {"function": "action_page_history"}
+	},
+
+	"events": {
+		"page/create": {"function": "event_page_create"},
+		"page/update": {"function": "event_page_update"},
+		"page/delete": {"function": "event_page_delete"},
+		"redirect/set": {"function": "event_redirect_set"},
+		"redirect/delete": {"function": "event_redirect_delete"},
+		"tag/add": {"function": "event_tag_add"},
+		"tag/remove": {"function": "event_tag_remove"},
+		"setting/set": {"function": "event_setting_set"}
+	}
+}
