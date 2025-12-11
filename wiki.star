@@ -456,9 +456,30 @@ def action_settings(a):
         mochi.db.query("replace into settings (name, value) values (?, ?)", name, value)
         a.json({"ok": True})
 
-# Search (stub - to be implemented in Stage 6)
+# Search pages by title and content
 def action_search(a):
-    a.error(501, "Not implemented")
+    query = a.input("q", "")
+
+    if not query or len(query.strip()) == 0:
+        a.json({"query": "", "results": []})
+        return
+
+    query = query.strip()
+
+    # Use LIKE for simple search (SQLite FTS could be added later for better performance)
+    search_pattern = "%" + query + "%"
+
+    results = mochi.db.query("""
+        select page, title, substr(content, 1, 200) as excerpt, updated
+        from pages
+        where deleted = 0 and (title like ? or content like ?)
+        order by
+            case when title like ? then 0 else 1 end,
+            updated desc
+        limit 50
+    """, search_pattern, search_pattern, search_pattern)
+
+    a.json({"query": query, "results": results})
 
 # Stub event handlers (to be implemented in later stages)
 
