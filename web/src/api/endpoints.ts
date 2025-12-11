@@ -30,6 +30,8 @@ const endpoints = {
     // Settings
     settings: 'settings',
     settingsSet: 'settings/set',
+    // Delete wiki
+    delete: 'delete',
     // Sync
     sync: 'sync',
     subscribe: 'subscribe',

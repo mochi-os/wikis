@@ -6,12 +6,6 @@ import {
   Tags,
   Settings as SettingsIcon,
   Link2,
-  User,
-  Monitor,
-  Palette,
-  Settings,
-  Users,
-  Activity,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -59,46 +53,6 @@ export const sidebarData: SidebarData = {
           title: 'Redirects',
           url: APP_ROUTES.WIKI.REDIRECTS,
           icon: Link2,
-        },
-      ],
-    },
-    {
-      title: 'Account',
-      items: [
-        {
-          title: 'Profile',
-          url: APP_ROUTES.SETTINGS.USER.ACCOUNT,
-          icon: User,
-        },
-        {
-          title: 'Sessions',
-          url: APP_ROUTES.SETTINGS.USER.SESSIONS,
-          icon: Monitor,
-        },
-        {
-          title: 'Preferences',
-          url: APP_ROUTES.SETTINGS.USER.PREFERENCES,
-          icon: Palette,
-        },
-      ],
-    },
-    {
-      title: 'System',
-      items: [
-        {
-          title: 'Settings',
-          url: APP_ROUTES.SETTINGS.SYSTEM.SETTINGS,
-          icon: Settings,
-        },
-        {
-          title: 'Users',
-          url: APP_ROUTES.SETTINGS.SYSTEM.USERS,
-          icon: Users,
-        },
-        {
-          title: 'Status',
-          url: APP_ROUTES.SETTINGS.SYSTEM.STATUS,
-          icon: Activity,
         },
       ],
     },

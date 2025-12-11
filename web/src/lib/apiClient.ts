@@ -2,6 +2,7 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
 import { getCookie, removeCookie } from '@/lib/cookies'
+import { getApiBasepath } from '@/lib/app-path'
 
 const devConsole = globalThis.console
 
@@ -9,19 +10,6 @@ const logDevError = (message: string, error: unknown) => {
   if (import.meta.env.DEV) {
     devConsole?.error?.(message, error)
   }
-}
-
-const getBasepath = () => {
-  const pathname = window.location.pathname
-  // Class context: /wiki/ or /wiki -> /wiki/
-  // Entity context: /wiki/<wiki-id>/... -> /wiki/<wiki-id>/-/
-  const match = pathname.match(/^\/wiki\/([^/]+)/)
-  if (match) {
-    // Entity context: /wiki/<wiki-id>
-    return `/wiki/${match[1]}/-/`
-  }
-  // Class context: /wiki/
-  return '/wiki/'
 }
 
 export const apiClient = axios.create({
@@ -35,8 +23,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Dynamically set baseURL based on current page location
-    // This must happen on each request since the page may have changed
-    config.baseURL = getBasepath()
+    config.baseURL = getApiBasepath()
 
     // Handle global auth endpoints - they should use absolute URLs from root
     // URLs starting with /_/ are global auth endpoints that bypass app routing
@@ -91,12 +78,6 @@ apiClient.interceptors.response.use(
           )
         }
       }
-    } else {
-      if (import.meta.env.DEV) {
-        devConsole?.log?.(
-          `[API] ${response.config.method?.toUpperCase()} ${response.config.url} → ${response.status}`
-        )
-      }
     }
 
     return response
@@ -145,6 +126,12 @@ apiClient.interceptors.response.use(
       case 500: {
         // Don't toast here - let the component's onError handler show the specific error
         logDevError('[API] Server error', error)
+        if (import.meta.env.DEV) {
+          devConsole?.error?.(
+            `[API] 500 Error for ${error.config?.method?.toUpperCase()} ${error.config?.baseURL}${error.config?.url}`
+          )
+          devConsole?.error?.('[API] Response data:', error.response?.data)
+        }
         break
       }
 

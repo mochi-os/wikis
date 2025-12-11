@@ -1,7 +1,7 @@
 export const APP_ROUTES = {
   // Wiki app routes
   WIKI: {
-    HOME: '/home',
+    HOME: '/',
     SEARCH: '/search',
     NEW: '/new',
     TAGS: '/tags',

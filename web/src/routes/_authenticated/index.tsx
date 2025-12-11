@@ -4,6 +4,15 @@ import endpoints from '@/api/endpoints'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, BookOpen } from 'lucide-react'
+import { usePage } from '@/hooks/use-wiki'
+import { Header } from '@/components/layout/header'
+import { Main } from '@/components/layout/main'
+import { getAppPath } from '@/lib/app-path'
+import {
+  PageView,
+  PageNotFound,
+  PageViewSkeleton,
+} from '@/features/wiki/page-view'
 
 interface InfoResponse {
   entity: boolean
@@ -16,20 +25,76 @@ export const Route = createFileRoute('/_authenticated/')({
     const info = await requestHelpers.get<InfoResponse>(endpoints.wiki.info)
     return info
   },
-  beforeLoad: async () => {
-    const info = await requestHelpers.get<InfoResponse>(endpoints.wiki.info)
-    if (info.entity && info.wiki) {
-      // Entity context - redirect to wiki home page
-      // Use absolute URL with wiki entity ID to avoid basepath issues
-      window.location.href = `/wiki/${info.wiki.id}/${info.wiki.home}`
-    }
-    // Class context - will render the wikis list component
-  },
-  component: WikisListPage,
+  component: IndexPage,
 })
 
-function WikisListPage() {
-  const { wikis } = Route.useLoaderData()
+function IndexPage() {
+  const data = Route.useLoaderData()
+
+  // If we're in entity context, show the wiki's home page directly
+  if (data.entity && data.wiki) {
+    return <WikiHomePage homeSlug={data.wiki.home} />
+  }
+
+  // Class context - show the wikis list
+  return <WikisListPage wikis={data.wikis} />
+}
+
+function WikiHomePage({ homeSlug }: { homeSlug: string }) {
+  const { data, isLoading, error } = usePage(homeSlug)
+
+  if (isLoading) {
+    return (
+      <>
+        <Header />
+        <Main>
+          <PageViewSkeleton />
+        </Main>
+      </>
+    )
+  }
+
+  if (error) {
+    return (
+      <>
+        <Header />
+        <Main>
+          <div className="text-destructive">
+            Error loading page: {error.message}
+          </div>
+        </Main>
+      </>
+    )
+  }
+
+  // Check if page was not found
+  if (data && 'error' in data && data.error === 'not_found') {
+    return (
+      <>
+        <Header />
+        <Main>
+          <PageNotFound slug={homeSlug} />
+        </Main>
+      </>
+    )
+  }
+
+  // Page found
+  if (data && 'page' in data && typeof data.page === 'object') {
+    return (
+      <>
+        <Header />
+        <Main>
+          <PageView page={data.page} />
+        </Main>
+      </>
+    )
+  }
+
+  return null
+}
+
+function WikisListPage({ wikis }: { wikis?: Array<{ id: string; name: string; home: string }> }) {
 
   return (
     <div className="container mx-auto p-6">
@@ -46,7 +111,7 @@ function WikisListPage() {
       {wikis && wikis.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {wikis.map((wiki) => (
-            <a key={wiki.id} href={`/wiki/${wiki.id}`} className="block">
+            <a key={wiki.id} href={`${getAppPath()}/${wiki.id}`} className="block">
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">

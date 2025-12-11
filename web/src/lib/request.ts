@@ -94,29 +94,44 @@ export async function request<TResponse>(
     const response: AxiosResponse<TResponse> =
       await apiClient.request<TResponse>(requestConfig)
 
-    // Check for application-level errors in successful HTTP responses
-    // Some backends return HTTP 200 with error details in the response body
+    // Unwrap the data envelope if present
+    // Backend returns {"data": {...}} format
     const responseData = response.data as unknown
+    let unwrappedData = responseData
+
     if (
       responseData &&
       typeof responseData === 'object' &&
-      'error' in responseData
+      'data' in responseData
     ) {
-      const errorData = responseData as { error?: string; status?: number }
-      // Throw if there's an error field (with optional status check)
-      if (errorData.error && (!errorData.status || errorData.status >= 400)) {
+      unwrappedData = (responseData as { data: unknown }).data
+    }
+
+    // Check for application-level errors in successful HTTP responses
+    // Some backends return HTTP 200 with error details in the response body
+    // Only throw if status >= 400; responses like {error: "not_found"} without
+    // a status are valid data responses, not errors
+    if (
+      unwrappedData &&
+      typeof unwrappedData === 'object' &&
+      'error' in unwrappedData &&
+      'status' in unwrappedData
+    ) {
+      const errorData = unwrappedData as { error?: string; status?: number }
+      // Throw if there's an error field with a status >= 400
+      if (errorData.error && errorData.status && errorData.status >= 400) {
         // Throw an error for application-level errors
         const apiError = new ApiError({
           message: errorData.error,
-          status: errorData.status ?? response.status,
-          data: responseData,
+          status: errorData.status,
+          data: unwrappedData,
         })
         logRequestError(apiError, requestConfig)
         throw apiError
       }
     }
 
-    return response.data
+    return unwrappedData as TResponse
   } catch (unknownError) {
     const apiError = buildApiError(
       unknownError,

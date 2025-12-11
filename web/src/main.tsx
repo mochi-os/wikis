@@ -9,6 +9,7 @@ import {
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth-store'
+import { getRouterBasepath } from '@/lib/app-path'
 // import { DirectionProvider } from './context/direction-provider' // Commented for future use (RTL support)
 // import { FontProvider } from './context/font-provider' // Commented for future use (Font switching)
 import { ThemeProvider } from './context/theme-provider'
@@ -62,20 +63,10 @@ const queryClient = new QueryClient({
   }),
 })
 
-const getBasepath = () => {
-  const pathname = window.location.pathname
-  // Class context: /wiki -> /wiki/
-  // Entity context: /<wiki-id> -> /<wiki-id>/-/
-  const match = pathname.match(/^\/[^/]+/)
-  if (!match) return '/'
-  const isEntity = match[0] !== '/wiki'
-  return match[0] + (isEntity ? '/-/' : '/')
-}
-
 const router = createRouter({
   routeTree,
   context: { queryClient },
-  basepath: getBasepath(),
+  basepath: getRouterBasepath(),
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
 })

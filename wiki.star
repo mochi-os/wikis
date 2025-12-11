@@ -97,7 +97,55 @@ def action_create(a):
     now = mochi.time.now()
     mochi.db.query("insert into wikis (id, name, created) values (?, ?, ?)", entity, name, now)
 
-    a.json({"id": entity, "name": name})
+    return {"data": {"id": entity, "name": name}}
+
+# Delete a wiki and all its data
+def action_delete(a):
+    if not a.user:
+        a.error(401, "Authentication required")
+        return
+
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    wiki_id = wiki["id"]
+
+    # Delete all dependent data in order (respecting foreign keys)
+    # 1. Delete tags (references pages)
+    mochi.db.query("""
+        delete from tags where page in (
+            select id from pages where wiki = ?
+        )
+    """, wiki_id)
+
+    # 2. Delete revisions (references pages)
+    mochi.db.query("""
+        delete from revisions where page in (
+            select id from pages where wiki = ?
+        )
+    """, wiki_id)
+
+    # 3. Delete pages
+    mochi.db.query("delete from pages where wiki = ?", wiki_id)
+
+    # 4. Delete redirects
+    mochi.db.query("delete from redirects where wiki = ?", wiki_id)
+
+    # 5. Delete subscribers
+    mochi.db.query("delete from subscribers where wiki = ?", wiki_id)
+
+    # 6. Delete wiki record
+    mochi.db.query("delete from wikis where id = ?", wiki_id)
+
+    # 7. Delete all attachments for this entity
+    mochi.attachment.clear(wiki_id)
+
+    # 8. Delete the entity from the entities table and directory
+    mochi.entity.delete(wiki_id)
+
+    return {"data": {"ok": True, "deleted": wiki_id}}
 
 # Root action - redirect to home page or list wikis
 def action_root(a):
@@ -120,7 +168,7 @@ def action_info_class(a):
 
     wikis = mochi.db.query("select id, name, home, created from wikis order by name")
     mochi.log.debug("[WIKI] action_info_class: found %s wikis", len(wikis))
-    a.json({"entity": False, "wikis": wikis})
+    return {"data": {"entity": False, "wikis": wikis}}
 
 # Info endpoint for entity context - returns wiki info
 def action_info_entity(a):
@@ -139,7 +187,7 @@ def action_info_entity(a):
         return
 
     mochi.log.debug("[WIKI] action_info_entity: returning wiki info")
-    a.json({"entity": True, "wiki": wiki})
+    return {"data": {"entity": True, "wiki": wiki}}
 
 # View a page
 def action_page(a):
@@ -155,14 +203,13 @@ def action_page(a):
 
     page = get_page(wiki["id"], slug)
     if not page:
-        a.json({"error": "not_found", "page": slug})
-        return
+        return {"data": {"error": "not_found", "page": slug}}
 
     # Get tags for this page
     tags = mochi.db.query("select tag from tags where page = ?", page["id"])
     taglist = [t["tag"] for t in tags]
 
-    a.json({
+    return {"data": {
         "page": {
             "id": page["id"],
             "slug": page["page"],
@@ -174,7 +221,7 @@ def action_page(a):
             "version": page["version"],
             "tags": taglist
         }
-    })
+    }}
 
 # Edit a page (create or update)
 def action_page_edit(a):
@@ -227,7 +274,7 @@ def action_page_edit(a):
                 "created": now,
                 "version": version
             })
-            a.json({"id": existing["id"], "slug": slug, "version": version, "created": False})
+            return {"data": {"id": existing["id"], "slug": slug, "version": version, "created": False}}
         else:
             # Update page
             version = existing["version"] + 1
@@ -244,7 +291,7 @@ def action_page_edit(a):
                 "updated": now,
                 "version": version
             })
-            a.json({"id": existing["id"], "slug": slug, "version": version, "created": False})
+            return {"data": {"id": existing["id"], "slug": slug, "version": version, "created": False}}
     else:
         # Create new page
         id = mochi.uid()
@@ -261,7 +308,7 @@ def action_page_edit(a):
             "created": now,
             "version": 1
         })
-        a.json({"id": id, "slug": slug, "version": 1, "created": True})
+        return {"data": {"id": id, "slug": slug, "version": 1, "created": True}}
 
 # Create a new page (returns page slug for redirect)
 def action_new(a):
@@ -317,7 +364,7 @@ def action_new(a):
         "version": 1
     })
 
-    a.json({"id": id, "slug": slug})
+    return {"data": {"id": id, "slug": slug}}
 
 # Page history
 def action_page_history(a):
@@ -337,7 +384,7 @@ def action_page_history(a):
         return
 
     revisions = mochi.db.query("select id, title, author, created, version, comment from revisions where page = ? order by version desc", page["id"])
-    a.json({"page": slug, "revisions": revisions})
+    return {"data": {"page": slug, "revisions": revisions}}
 
 # View a specific revision
 def action_page_revision(a):
@@ -367,7 +414,7 @@ def action_page_revision(a):
         a.error(404, "Revision not found")
         return
 
-    a.json({
+    return {"data": {
         "page": slug,
         "revision": {
             "id": revision["id"],
@@ -379,7 +426,7 @@ def action_page_revision(a):
             "comment": revision["comment"]
         },
         "current_version": page["version"]
-    })
+    }}
 
 # Revert to a previous revision
 def action_page_revert(a):
@@ -437,7 +484,7 @@ def action_page_revert(a):
         "version": newversion
     })
 
-    a.json({"slug": slug, "version": newversion, "reverted_from": int(version)})
+    return {"data": {"slug": slug, "version": newversion, "reverted_from": int(version)}}
 
 # Delete a page (soft delete)
 def action_page_delete(a):
@@ -472,7 +519,7 @@ def action_page_delete(a):
         "version": version
     })
 
-    a.json({"ok": True, "slug": slug})
+    return {"data": {"ok": True, "slug": slug}}
 
 # Add a tag to a page
 def action_tag_add(a):
@@ -510,8 +557,7 @@ def action_tag_add(a):
     # Check if tag already exists
     existing = mochi.db.row("select 1 from tags where page = ? and tag = ?", page["id"], tag)
     if existing:
-        a.json({"ok": True, "added": False})
-        return
+        return {"data": {"ok": True, "added": False}}
 
     mochi.db.query("insert into tags (page, tag) values (?, ?)", page["id"], tag)
 
@@ -521,7 +567,7 @@ def action_tag_add(a):
         "tag": tag
     })
 
-    a.json({"ok": True, "added": True})
+    return {"data": {"ok": True, "added": True}}
 
 # Remove a tag from a page
 def action_tag_remove(a):
@@ -560,7 +606,7 @@ def action_tag_remove(a):
         "tag": tag
     })
 
-    a.json({"ok": True})
+    return {"data": {"ok": True}}
 
 # List all tags in the wiki
 def action_tags(a):
@@ -577,7 +623,7 @@ def action_tags(a):
         group by t.tag
         order by count desc, t.tag asc
     """, wiki["id"])
-    a.json({"tags": tags})
+    return {"data": {"tags": tags}}
 
 # List pages with a specific tag
 def action_tag_pages(a):
@@ -602,7 +648,7 @@ def action_tag_pages(a):
         order by p.updated desc
     """, wiki["id"], tag)
 
-    a.json({"tag": tag, "pages": pages})
+    return {"data": {"tag": tag, "pages": pages}}
 
 # Create or update a redirect
 def action_redirect_set(a):
@@ -661,7 +707,7 @@ def action_redirect_set(a):
         "created": now
     })
 
-    a.json({"ok": True})
+    return {"data": {"ok": True}}
 
 # Delete a redirect
 def action_redirect_delete(a):
@@ -688,7 +734,7 @@ def action_redirect_delete(a):
         "source": source
     })
 
-    a.json({"ok": True})
+    return {"data": {"ok": True}}
 
 # List all redirects
 def action_redirects(a):
@@ -698,7 +744,7 @@ def action_redirects(a):
         return
 
     redirects = mochi.db.query("select source, target, created from redirects where wiki = ? order by source", wiki["id"])
-    a.json({"redirects": redirects})
+    return {"data": {"redirects": redirects}}
 
 # View wiki settings
 def action_settings(a):
@@ -707,7 +753,7 @@ def action_settings(a):
         a.error(404, "Wiki not found")
         return
 
-    a.json({"settings": {"home": wiki["home"]}})
+    return {"data": {"settings": {"home": wiki["home"]}}}
 
 # Update a wiki setting
 def action_settings_set(a):
@@ -744,7 +790,7 @@ def action_settings_set(a):
         "value": value
     })
 
-    a.json({"ok": True})
+    return {"data": {"ok": True}}
 
 # Search pages by title and content
 def action_search(a):
@@ -756,8 +802,7 @@ def action_search(a):
     query = a.input("q", "")
 
     if not query or len(query.strip()) == 0:
-        a.json({"query": "", "results": []})
-        return
+        return {"data": {"query": "", "results": []}}
 
     query = query.strip()
 
@@ -774,7 +819,7 @@ def action_search(a):
         limit 50
     """, wiki["id"], pattern, pattern, pattern)
 
-    a.json({"query": query, "results": results})
+    return {"data": {"query": query, "results": results}}
 
 # EVENT HANDLERS
 
@@ -1101,7 +1146,7 @@ def action_subscribe(a):
         {"name": a.user.identity.name or ""}
     )
 
-    a.json({"ok": True, "message": "Subscription request sent"})
+    return {"data": {"ok": True, "message": "Subscription request sent"}}
 
 # Request sync from another wiki participant
 def action_sync(a):
@@ -1134,7 +1179,7 @@ def action_sync(a):
 
     # Import the dump
     if import_sync_dump(wiki["id"], dump):
-        a.json({"ok": True, "message": "Sync completed successfully"})
+        return {"data": {"ok": True, "message": "Sync completed successfully"}}
     else:
         a.error(500, "Failed to import sync data")
 
@@ -1152,7 +1197,7 @@ def action_attachments(a):
         return
 
     attachments = mochi.attachment.list(wiki["id"])
-    a.json({"attachments": attachments or []})
+    return {"data": {"attachments": attachments or []}}
 
 # Upload an attachment
 def action_attachment_upload(a):
@@ -1175,7 +1220,7 @@ def action_attachment_upload(a):
         a.error(400, "No files uploaded")
         return
 
-    a.json({"attachments": attachments})
+    return {"data": {"attachments": attachments}}
 
 # Delete an attachment
 def action_attachment_delete(a):
@@ -1189,6 +1234,6 @@ def action_attachment_delete(a):
         return
 
     if mochi.attachment.delete(id):
-        a.json({"ok": True})
+        return {"data": {"ok": True}}
     else:
         a.error(404, "Attachment not found")

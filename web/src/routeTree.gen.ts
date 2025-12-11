@@ -16,12 +16,12 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
 import { Route as AuthenticatedRedirectsRouteImport } from './routes/_authenticated/redirects'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
-import { Route as AuthenticatedPageRouteImport } from './routes/_authenticated/$page'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
+import { Route as AuthenticatedPageIndexRouteImport } from './routes/_authenticated/$page/index'
 import { Route as AuthenticatedUserSessionsRouteImport } from './routes/_authenticated/user/sessions'
 import { Route as AuthenticatedUserPreferencesRouteImport } from './routes/_authenticated/user/preferences'
 import { Route as AuthenticatedUserAccountRouteImport } from './routes/_authenticated/user/account'
@@ -70,11 +70,6 @@ const AuthenticatedNewRoute = AuthenticatedNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedPageRoute = AuthenticatedPageRouteImport.update({
-  id: '/$page',
-  path: '/$page',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const errors503Route = errors503RouteImport.update({
   id: '/(errors)/503',
   path: '/503',
@@ -99,6 +94,11 @@ const errors401Route = errors401RouteImport.update({
   id: '/(errors)/401',
   path: '/401',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedPageIndexRoute = AuthenticatedPageIndexRouteImport.update({
+  id: '/$page/',
+  path: '/$page/',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedUserSessionsRoute =
   AuthenticatedUserSessionsRouteImport.update({
@@ -148,31 +148,31 @@ const AuthenticatedErrorsErrorRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPageRevertRoute = AuthenticatedPageRevertRouteImport.update({
-  id: '/revert',
-  path: '/revert',
-  getParentRoute: () => AuthenticatedPageRoute,
+  id: '/$page/revert',
+  path: '/$page/revert',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPageEditRoute = AuthenticatedPageEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => AuthenticatedPageRoute,
+  id: '/$page/edit',
+  path: '/$page/edit',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPageDeleteRoute = AuthenticatedPageDeleteRouteImport.update({
-  id: '/delete',
-  path: '/delete',
-  getParentRoute: () => AuthenticatedPageRoute,
+  id: '/$page/delete',
+  path: '/$page/delete',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPageHistoryIndexRoute =
   AuthenticatedPageHistoryIndexRouteImport.update({
-    id: '/history/',
-    path: '/history/',
-    getParentRoute: () => AuthenticatedPageRoute,
+    id: '/$page/history/',
+    path: '/$page/history/',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPageHistoryVersionRoute =
   AuthenticatedPageHistoryVersionRouteImport.update({
-    id: '/history/$version',
-    path: '/history/$version',
-    getParentRoute: () => AuthenticatedPageRoute,
+    id: '/$page/history/$version',
+    path: '/$page/history/$version',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -181,7 +181,6 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
-  '/$page': typeof AuthenticatedPageRouteWithChildren
   '/new': typeof AuthenticatedNewRoute
   '/redirects': typeof AuthenticatedRedirectsRoute
   '/search': typeof AuthenticatedSearchRoute
@@ -199,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/user/account': typeof AuthenticatedUserAccountRoute
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
   '/user/sessions': typeof AuthenticatedUserSessionsRoute
+  '/$page': typeof AuthenticatedPageIndexRoute
   '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
   '/$page/history': typeof AuthenticatedPageHistoryIndexRoute
 }
@@ -208,7 +208,6 @@ export interface FileRoutesByTo {
   '/404': typeof errors404Route
   '/500': typeof errors500Route
   '/503': typeof errors503Route
-  '/$page': typeof AuthenticatedPageRouteWithChildren
   '/new': typeof AuthenticatedNewRoute
   '/redirects': typeof AuthenticatedRedirectsRoute
   '/search': typeof AuthenticatedSearchRoute
@@ -226,6 +225,7 @@ export interface FileRoutesByTo {
   '/user/account': typeof AuthenticatedUserAccountRoute
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
   '/user/sessions': typeof AuthenticatedUserSessionsRoute
+  '/$page': typeof AuthenticatedPageIndexRoute
   '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
   '/$page/history': typeof AuthenticatedPageHistoryIndexRoute
 }
@@ -237,7 +237,6 @@ export interface FileRoutesById {
   '/(errors)/404': typeof errors404Route
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
-  '/_authenticated/$page': typeof AuthenticatedPageRouteWithChildren
   '/_authenticated/new': typeof AuthenticatedNewRoute
   '/_authenticated/redirects': typeof AuthenticatedRedirectsRoute
   '/_authenticated/search': typeof AuthenticatedSearchRoute
@@ -255,6 +254,7 @@ export interface FileRoutesById {
   '/_authenticated/user/account': typeof AuthenticatedUserAccountRoute
   '/_authenticated/user/preferences': typeof AuthenticatedUserPreferencesRoute
   '/_authenticated/user/sessions': typeof AuthenticatedUserSessionsRoute
+  '/_authenticated/$page/': typeof AuthenticatedPageIndexRoute
   '/_authenticated/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
   '/_authenticated/$page/history/': typeof AuthenticatedPageHistoryIndexRoute
 }
@@ -266,7 +266,6 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
-    | '/$page'
     | '/new'
     | '/redirects'
     | '/search'
@@ -284,6 +283,7 @@ export interface FileRouteTypes {
     | '/user/account'
     | '/user/preferences'
     | '/user/sessions'
+    | '/$page'
     | '/$page/history/$version'
     | '/$page/history'
   fileRoutesByTo: FileRoutesByTo
@@ -293,7 +293,6 @@ export interface FileRouteTypes {
     | '/404'
     | '/500'
     | '/503'
-    | '/$page'
     | '/new'
     | '/redirects'
     | '/search'
@@ -311,6 +310,7 @@ export interface FileRouteTypes {
     | '/user/account'
     | '/user/preferences'
     | '/user/sessions'
+    | '/$page'
     | '/$page/history/$version'
     | '/$page/history'
   id:
@@ -321,7 +321,6 @@ export interface FileRouteTypes {
     | '/(errors)/404'
     | '/(errors)/500'
     | '/(errors)/503'
-    | '/_authenticated/$page'
     | '/_authenticated/new'
     | '/_authenticated/redirects'
     | '/_authenticated/search'
@@ -339,6 +338,7 @@ export interface FileRouteTypes {
     | '/_authenticated/user/account'
     | '/_authenticated/user/preferences'
     | '/_authenticated/user/sessions'
+    | '/_authenticated/$page/'
     | '/_authenticated/$page/history/$version'
     | '/_authenticated/$page/history/'
   fileRoutesById: FileRoutesById
@@ -403,13 +403,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/$page': {
-      id: '/_authenticated/$page'
-      path: '/$page'
-      fullPath: '/$page'
-      preLoaderRoute: typeof AuthenticatedPageRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/(errors)/503': {
       id: '/(errors)/503'
       path: '/503'
@@ -444,6 +437,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/401'
       preLoaderRoute: typeof errors401RouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/$page/': {
+      id: '/_authenticated/$page/'
+      path: '/$page'
+      fullPath: '/$page'
+      preLoaderRoute: typeof AuthenticatedPageIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/user/sessions': {
       id: '/_authenticated/user/sessions'
@@ -503,69 +503,52 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/$page/revert': {
       id: '/_authenticated/$page/revert'
-      path: '/revert'
+      path: '/$page/revert'
       fullPath: '/$page/revert'
       preLoaderRoute: typeof AuthenticatedPageRevertRouteImport
-      parentRoute: typeof AuthenticatedPageRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/$page/edit': {
       id: '/_authenticated/$page/edit'
-      path: '/edit'
+      path: '/$page/edit'
       fullPath: '/$page/edit'
       preLoaderRoute: typeof AuthenticatedPageEditRouteImport
-      parentRoute: typeof AuthenticatedPageRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/$page/delete': {
       id: '/_authenticated/$page/delete'
-      path: '/delete'
+      path: '/$page/delete'
       fullPath: '/$page/delete'
       preLoaderRoute: typeof AuthenticatedPageDeleteRouteImport
-      parentRoute: typeof AuthenticatedPageRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/$page/history/': {
       id: '/_authenticated/$page/history/'
-      path: '/history'
+      path: '/$page/history'
       fullPath: '/$page/history'
       preLoaderRoute: typeof AuthenticatedPageHistoryIndexRouteImport
-      parentRoute: typeof AuthenticatedPageRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/$page/history/$version': {
       id: '/_authenticated/$page/history/$version'
-      path: '/history/$version'
+      path: '/$page/history/$version'
       fullPath: '/$page/history/$version'
       preLoaderRoute: typeof AuthenticatedPageHistoryVersionRouteImport
-      parentRoute: typeof AuthenticatedPageRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
-interface AuthenticatedPageRouteChildren {
-  AuthenticatedPageDeleteRoute: typeof AuthenticatedPageDeleteRoute
-  AuthenticatedPageEditRoute: typeof AuthenticatedPageEditRoute
-  AuthenticatedPageRevertRoute: typeof AuthenticatedPageRevertRoute
-  AuthenticatedPageHistoryVersionRoute: typeof AuthenticatedPageHistoryVersionRoute
-  AuthenticatedPageHistoryIndexRoute: typeof AuthenticatedPageHistoryIndexRoute
-}
-
-const AuthenticatedPageRouteChildren: AuthenticatedPageRouteChildren = {
-  AuthenticatedPageDeleteRoute: AuthenticatedPageDeleteRoute,
-  AuthenticatedPageEditRoute: AuthenticatedPageEditRoute,
-  AuthenticatedPageRevertRoute: AuthenticatedPageRevertRoute,
-  AuthenticatedPageHistoryVersionRoute: AuthenticatedPageHistoryVersionRoute,
-  AuthenticatedPageHistoryIndexRoute: AuthenticatedPageHistoryIndexRoute,
-}
-
-const AuthenticatedPageRouteWithChildren =
-  AuthenticatedPageRoute._addFileChildren(AuthenticatedPageRouteChildren)
-
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedPageRoute: typeof AuthenticatedPageRouteWithChildren
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
   AuthenticatedRedirectsRoute: typeof AuthenticatedRedirectsRoute
   AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTagsRoute: typeof AuthenticatedTagsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedPageDeleteRoute: typeof AuthenticatedPageDeleteRoute
+  AuthenticatedPageEditRoute: typeof AuthenticatedPageEditRoute
+  AuthenticatedPageRevertRoute: typeof AuthenticatedPageRevertRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
   AuthenticatedSystemSettingsRoute: typeof AuthenticatedSystemSettingsRoute
   AuthenticatedSystemStatusRoute: typeof AuthenticatedSystemStatusRoute
@@ -574,16 +557,21 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedUserAccountRoute: typeof AuthenticatedUserAccountRoute
   AuthenticatedUserPreferencesRoute: typeof AuthenticatedUserPreferencesRoute
   AuthenticatedUserSessionsRoute: typeof AuthenticatedUserSessionsRoute
+  AuthenticatedPageIndexRoute: typeof AuthenticatedPageIndexRoute
+  AuthenticatedPageHistoryVersionRoute: typeof AuthenticatedPageHistoryVersionRoute
+  AuthenticatedPageHistoryIndexRoute: typeof AuthenticatedPageHistoryIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedPageRoute: AuthenticatedPageRouteWithChildren,
   AuthenticatedNewRoute: AuthenticatedNewRoute,
   AuthenticatedRedirectsRoute: AuthenticatedRedirectsRoute,
   AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTagsRoute: AuthenticatedTagsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedPageDeleteRoute: AuthenticatedPageDeleteRoute,
+  AuthenticatedPageEditRoute: AuthenticatedPageEditRoute,
+  AuthenticatedPageRevertRoute: AuthenticatedPageRevertRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
   AuthenticatedSystemSettingsRoute: AuthenticatedSystemSettingsRoute,
   AuthenticatedSystemStatusRoute: AuthenticatedSystemStatusRoute,
@@ -592,6 +580,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedUserAccountRoute: AuthenticatedUserAccountRoute,
   AuthenticatedUserPreferencesRoute: AuthenticatedUserPreferencesRoute,
   AuthenticatedUserSessionsRoute: AuthenticatedUserSessionsRoute,
+  AuthenticatedPageIndexRoute: AuthenticatedPageIndexRoute,
+  AuthenticatedPageHistoryVersionRoute: AuthenticatedPageHistoryVersionRoute,
+  AuthenticatedPageHistoryIndexRoute: AuthenticatedPageHistoryIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
