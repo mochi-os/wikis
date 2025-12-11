@@ -609,28 +609,181 @@ def action_search(a):
 
     a.json({"query": query, "results": results})
 
-# Stub event handlers (to be implemented in later stages)
+# EVENT HANDLERS
 
+# Helper: Check if incoming page update should be applied (conflict resolution)
+# Returns True if incoming update wins, False if local version should be kept
+def should_apply_update(local, incoming_version, incoming_updated, incoming_author):
+    if not local:
+        return True
+    local_version = local["version"]
+    if incoming_version > local_version:
+        return True
+    if incoming_version < local_version:
+        return False
+    # Same version: higher timestamp wins
+    local_updated = local["updated"]
+    if incoming_updated > local_updated:
+        return True
+    if incoming_updated < local_updated:
+        return False
+    # Same version + same timestamp: lower author ID wins (older entity)
+    return incoming_author < local["author"]
+
+# Receive page/create event
 def event_page_create(e):
-    pass
+    id = e.content("id")
+    page = e.content("page")
+    title = e.content("title")
+    content = e.content("content")
+    author = e.content("author")
+    created = e.content("created")
+    version = e.content("version")
 
+    # Validate required fields
+    if not id or not page or not title or not author or not created or not version:
+        return
+
+    # Check if page already exists
+    existing = mochi.db.row("select * from pages where id = ?", id)
+
+    if existing:
+        # Apply conflict resolution
+        if not should_apply_update(existing, version, created, author):
+            return
+
+        # Update existing page (may be restoring a deleted page)
+        mochi.db.query("update pages set page = ?, title = ?, content = ?, author = ?, created = ?, updated = ?, version = ?, deleted = 0 where id = ?",
+            page, title, content, author, created, created, version, id)
+    else:
+        # Insert new page
+        mochi.db.query("insert into pages (id, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?)",
+            id, page, title, content, author, created, created, version)
+
+    # Create revision record
+    revision_id = mochi.uid()
+    mochi.db.query("insert or ignore into revisions (id, page, content, title, author, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, '')",
+        revision_id, id, content, title, author, created, version)
+
+# Receive page/update event
 def event_page_update(e):
-    pass
+    id = e.content("id")
+    page = e.content("page")
+    title = e.content("title")
+    content = e.content("content")
+    author = e.content("author")
+    updated = e.content("updated")
+    version = e.content("version")
 
+    # Validate required fields
+    if not id or not page or not title or not author or not updated or not version:
+        return
+
+    # Check if page exists
+    existing = mochi.db.row("select * from pages where id = ?", id)
+
+    if not existing:
+        # Page doesn't exist locally - create it
+        mochi.db.query("insert into pages (id, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?)",
+            id, page, title, content, author, updated, updated, version)
+    else:
+        # Apply conflict resolution
+        if not should_apply_update(existing, version, updated, author):
+            return
+
+        # Update page
+        mochi.db.query("update pages set page = ?, title = ?, content = ?, author = ?, updated = ?, version = ? where id = ?",
+            page, title, content, author, updated, version, id)
+
+    # Create revision record
+    revision_id = mochi.uid()
+    mochi.db.query("insert or ignore into revisions (id, page, content, title, author, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, '')",
+        revision_id, id, content, title, author, updated, version)
+
+# Receive page/delete event
 def event_page_delete(e):
-    pass
+    id = e.content("id")
+    deleted = e.content("deleted")
+    version = e.content("version")
 
+    # Validate required fields
+    if not id or not deleted or not version:
+        return
+
+    # Check if page exists
+    existing = mochi.db.row("select * from pages where id = ?", id)
+    if not existing:
+        return
+
+    # Only delete if incoming version is higher
+    if version <= existing["version"]:
+        return
+
+    # Soft delete
+    mochi.db.query("update pages set deleted = ?, version = ? where id = ?", deleted, version, id)
+
+# Receive redirect/set event
 def event_redirect_set(e):
-    pass
+    source = e.content("source")
+    target = e.content("target")
+    created = e.content("created")
 
+    # Validate required fields
+    if not source or not target or not created:
+        return
+
+    # Insert or update redirect
+    mochi.db.query("replace into redirects (source, target, created) values (?, ?, ?)", source, target, created)
+
+# Receive redirect/delete event
 def event_redirect_delete(e):
-    pass
+    source = e.content("source")
 
+    # Validate required fields
+    if not source:
+        return
+
+    mochi.db.query("delete from redirects where source = ?", source)
+
+# Receive tag/add event
 def event_tag_add(e):
-    pass
+    page = e.content("page")
+    tag = e.content("tag")
 
+    # Validate required fields
+    if not page or not tag:
+        return
+
+    # Check if page exists
+    if not mochi.db.exists("select 1 from pages where id = ?", page):
+        return
+
+    # Insert tag (ignore if already exists)
+    mochi.db.query("insert or ignore into tags (page, tag) values (?, ?)", page, tag)
+
+# Receive tag/remove event
 def event_tag_remove(e):
-    pass
+    page = e.content("page")
+    tag = e.content("tag")
 
+    # Validate required fields
+    if not page or not tag:
+        return
+
+    mochi.db.query("delete from tags where page = ? and tag = ?", page, tag)
+
+# Receive setting/set event
 def event_setting_set(e):
-    pass
+    name = e.content("name")
+    value = e.content("value")
+
+    # Validate required fields
+    if not name or value == None:
+        return
+
+    # Only allow known settings
+    known_settings = ["home"]
+    if name not in known_settings:
+        return
+
+    mochi.db.query("replace into settings (name, value) values (?, ?)", name, value)
