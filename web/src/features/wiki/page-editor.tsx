@@ -167,7 +167,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
                 placeholder="my-page-name"
               />
               <p className="text-muted-foreground text-sm">
-                This will be the URL path for the page. Use lowercase letters,
+                This will be the path for the page. Use lower case letters,
                 numbers, and hyphens.
               </p>
             </div>
@@ -186,7 +186,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
 
           {/* Content */}
           <div className="space-y-2">
-            <Label htmlFor="content">Content (Markdown)</Label>
+            <Label htmlFor="content">Content</Label>
             <Textarea
               ref={textareaRef}
               id="content"
