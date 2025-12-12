@@ -5,7 +5,6 @@ import {
   FilePlus,
   Tags,
   Settings as SettingsIcon,
-  Link2,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -35,7 +34,7 @@ export const sidebarData: SidebarData = {
       title: 'Create',
       items: [
         {
-          title: 'New Page',
+          title: 'New page',
           url: APP_ROUTES.WIKI.NEW,
           icon: FilePlus,
         },
@@ -45,14 +44,9 @@ export const sidebarData: SidebarData = {
       title: 'Admin',
       items: [
         {
-          title: 'Wiki Settings',
+          title: 'Settings',
           url: APP_ROUTES.WIKI.SETTINGS,
           icon: SettingsIcon,
-        },
-        {
-          title: 'Redirects',
-          url: APP_ROUTES.WIKI.REDIRECTS,
-          icon: Link2,
         },
       ],
     },

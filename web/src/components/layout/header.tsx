@@ -21,6 +21,11 @@ export function Header({ className, fixed, children, ...props }: HeaderProps) {
     return () => document.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Don't render empty header
+  if (!children) {
+    return null
+  }
+
   return (
     <header
       className={cn(

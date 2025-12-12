@@ -1,6 +1,19 @@
 import { useState, useEffect } from 'react'
+import { format } from 'date-fns'
 import { toast } from 'sonner'
-import { Settings, Save, Trash2, Plus, X, Shield, ShieldCheck, ShieldX } from 'lucide-react'
+import {
+  Settings,
+  Save,
+  Trash2,
+  Plus,
+  X,
+  Shield,
+  ShieldCheck,
+  ShieldX,
+  Link2,
+  ArrowRight,
+  Home,
+} from 'lucide-react'
 import { getAppPath } from '@/lib/app-path'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,6 +39,15 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -41,6 +63,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 import {
   useWikiSettings,
   useSetWikiSetting,
@@ -49,18 +72,76 @@ import {
   useGrantAccess,
   useDenyAccess,
   useRevokeAccess,
+  useRedirects,
+  useSetRedirect,
+  useDeleteRedirect,
 } from '@/hooks/use-wiki'
 import type { AccessRule } from '@/types/wiki'
 
+type TabId = 'general' | 'access' | 'redirects' | 'delete'
+
+interface Tab {
+  id: TabId
+  label: string
+  icon: React.ReactNode
+}
+
+const tabs: Tab[] = [
+  { id: 'general', label: 'General', icon: <Home className="h-4 w-4" /> },
+  { id: 'access', label: 'Access', icon: <Shield className="h-4 w-4" /> },
+  { id: 'redirects', label: 'Redirects', icon: <Link2 className="h-4 w-4" /> },
+  { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" /> },
+]
+
 export function WikiSettings() {
+  const [activeTab, setActiveTab] = useState<TabId>('general')
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <Settings className="h-6 w-6" />
+        <h1 className="text-2xl font-bold">Settings</h1>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 border-b">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
+              'border-b-2 -mb-px',
+              activeTab === tab.id
+                ? 'border-primary text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+            )}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      <div className="pt-2">
+        {activeTab === 'general' && <GeneralTab />}
+        {activeTab === 'access' && <AccessTab />}
+        {activeTab === 'redirects' && <RedirectsTab />}
+        {activeTab === 'delete' && <DeleteTab />}
+      </div>
+    </div>
+  )
+}
+
+function GeneralTab() {
   const { data, isLoading, error } = useWikiSettings()
   const setSetting = useSetWikiSetting()
-  const deleteWiki = useDeleteWiki()
 
   const [homePage, setHomePage] = useState('')
   const [hasChanges, setHasChanges] = useState(false)
 
-  // Initialize from loaded settings
   useEffect(() => {
     if (data?.settings) {
       setHomePage(data.settings.home || 'home')
@@ -88,20 +169,21 @@ export function WikiSettings() {
     )
   }
 
-  const handleDelete = () => {
-    deleteWiki.mutate(undefined, {
-      onSuccess: () => {
-        toast.success('Wiki deleted')
-        window.location.href = getAppPath() + '/'
-      },
-      onError: (error) => {
-        toast.error(error.message || 'Failed to delete wiki')
-      },
-    })
-  }
-
   if (isLoading) {
-    return <WikiSettingsSkeleton />
+    return (
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-96" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   if (error) {
@@ -113,118 +195,34 @@ export function WikiSettings() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Settings className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">Wiki Settings</h1>
+    <Card>
+      <CardHeader>
+        <CardTitle>Home page</CardTitle>
+        <CardDescription>
+          The page that users see when they first visit the wiki.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="home-page">Use as home</Label>
+          <Input
+            id="home-page"
+            value={homePage}
+            onChange={(e) => handleHomePageChange(e.target.value)}
+            placeholder="home"
+          />
+          <p className="text-muted-foreground text-sm">
+            Example: "home", "welcome", "index"
+          </p>
         </div>
-        <Button onClick={handleSave} disabled={!hasChanges || setSetting.isPending}>
-          <Save className="mr-2 h-4 w-4" />
-          {setSetting.isPending ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </div>
-
-      <Separator />
-
-      {/* Settings cards */}
-      <div className="grid gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Home Page</CardTitle>
-            <CardDescription>
-              The page that users see when they first visit the wiki. This should
-              be the slug of an existing page.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="home-page">Home page slug</Label>
-              <Input
-                id="home-page"
-                value={homePage}
-                onChange={(e) => handleHomePageChange(e.target.value)}
-                placeholder="home"
-              />
-              <p className="text-muted-foreground text-sm">
-                Example: "home", "welcome", "index"
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <AccessControlCard />
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Delete Wiki</CardTitle>
-            <CardDescription>
-              Permanently delete this wiki and all its pages, revisions, tags, and attachments.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-end">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" disabled={deleteWiki.isPending}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {deleteWiki.isPending ? 'Deleting...' : 'Delete Wiki'}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the wiki
-                      and all its contents including pages, revisions, tags, redirects,
-                      and attachments.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleDelete}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      Delete Wiki
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-}
-
-export function WikiSettingsSkeleton() {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-6 w-6" />
-          <Skeleton className="h-8 w-40" />
+        <div className="flex justify-end">
+          <Button onClick={handleSave} disabled={!hasChanges || setSetting.isPending}>
+            <Save className="mr-2 h-4 w-4" />
+            {setSetting.isPending ? 'Saving...' : 'Save changes'}
+          </Button>
         </div>
-        <Skeleton className="h-9 w-32" />
-      </div>
-      <Separator />
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-4 w-96" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-4 w-48" />
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -252,14 +250,13 @@ function formatSubject(subject: string): string {
   if (subject.startsWith('@')) {
     return `Group: ${subject.slice(1)}`
   }
-  // Truncate long entity IDs
   if (subject.length > 20) {
     return `${subject.slice(0, 8)}...${subject.slice(-8)}`
   }
   return subject
 }
 
-function AccessControlCard() {
+function AccessTab() {
   const { data, isLoading, error } = useAccessRules()
   const grantAccess = useGrantAccess()
   const denyAccess = useDenyAccess()
@@ -280,7 +277,7 @@ function AccessControlCard() {
       { subject: newSubject.trim(), operation: newOperation },
       {
         onSuccess: () => {
-          toast.success(`Access rule added`)
+          toast.success('Access rule added')
           setNewSubject('')
         },
         onError: (error) => {
@@ -291,7 +288,6 @@ function AccessControlCard() {
   }
 
   const handleRevoke = (rule: AccessRule) => {
-    // Extract operation from the rule
     revokeAccess.mutate(
       { subject: rule.subject, operation: rule.operation },
       {
@@ -308,10 +304,7 @@ function AccessControlCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5" />
-          Access Control
-        </CardTitle>
+        <CardTitle>Access Control</CardTitle>
         <CardDescription>
           Control who can view, edit, delete, and manage this wiki. Use special
           subjects: <code className="text-xs">*</code> (anyone),{' '}
@@ -431,5 +424,280 @@ function AccessControlCard() {
         )}
       </CardContent>
     </Card>
+  )
+}
+
+function RedirectsTab() {
+  const { data, isLoading, error } = useRedirects()
+  const deleteRedirect = useDeleteRedirect()
+
+  const handleDelete = (source: string) => {
+    deleteRedirect.mutate(source, {
+      onSuccess: () => {
+        toast.success(`Redirect "${source}" deleted`)
+      },
+      onError: (error) => {
+        toast.error(error.message || 'Failed to delete redirect')
+      },
+    })
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Redirects</CardTitle>
+            <CardDescription>
+              Manage URL redirects for your wiki. Redirects allow old or alternative
+              URLs to point to existing pages.
+            </CardDescription>
+          </div>
+          <AddRedirectDialog />
+        </div>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-2">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        ) : error ? (
+          <div className="text-destructive text-sm">
+            Error loading redirects: {error.message}
+          </div>
+        ) : !data?.redirects || data.redirects.length === 0 ? (
+          <p className="text-muted-foreground text-sm">
+            No redirects configured. Create a redirect to forward one URL to another.
+          </p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Source</TableHead>
+                <TableHead></TableHead>
+                <TableHead>Target</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead className="w-[50px]"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.redirects.map((redirect) => (
+                <TableRow key={redirect.source}>
+                  <TableCell className="font-mono">{redirect.source}</TableCell>
+                  <TableCell>
+                    <ArrowRight className="text-muted-foreground h-4 w-4" />
+                  </TableCell>
+                  <TableCell>
+                    <a href={redirect.target} className="font-mono hover:underline">
+                      {redirect.target}
+                    </a>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {format(new Date(redirect.created * 1000), 'PPP')}
+                  </TableCell>
+                  <TableCell>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete redirect?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will remove the redirect from "{redirect.source}" to "
+                            {redirect.target}".
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(redirect.source)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function AddRedirectDialog() {
+  const [open, setOpen] = useState(false)
+  const [source, setSource] = useState('')
+  const [target, setTarget] = useState('')
+  const setRedirect = useSetRedirect()
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!source.trim() || !target.trim()) {
+      toast.error('Both source and target are required')
+      return
+    }
+
+    setRedirect.mutate(
+      { source: source.trim(), target: target.trim() },
+      {
+        onSuccess: () => {
+          toast.success('Redirect created')
+          setSource('')
+          setTarget('')
+          setOpen(false)
+        },
+        onError: (error) => {
+          toast.error(error.message || 'Failed to create redirect')
+        },
+      }
+    )
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Add redirect
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Create redirect</DialogTitle>
+            <DialogDescription>
+              Create a redirect from one URL to another.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="source">Source URL</Label>
+              <Input
+                id="source"
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                placeholder="old-page-name"
+              />
+              <p className="text-muted-foreground text-sm">
+                The URL that will be redirected
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="target">Target URL</Label>
+              <Input
+                id="target"
+                value={target}
+                onChange={(e) => setTarget(e.target.value)}
+                placeholder="new-page-name"
+              />
+              <p className="text-muted-foreground text-sm">
+                The existing page to redirect to
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={setRedirect.isPending}>
+              {setRedirect.isPending ? 'Creating...' : 'Create'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function DeleteTab() {
+  const deleteWiki = useDeleteWiki()
+
+  const handleDelete = () => {
+    deleteWiki.mutate(undefined, {
+      onSuccess: () => {
+        toast.success('Wiki deleted')
+        window.location.href = getAppPath() + '/'
+      },
+      onError: (error) => {
+        toast.error(error.message || 'Failed to delete wiki')
+      },
+    })
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Delete wiki</CardTitle>
+        <CardDescription>
+          Permanently delete this wiki and all its pages, revisions, tags, redirects,
+          and attachments. This action cannot be undone.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="outline" disabled={deleteWiki.isPending}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              {deleteWiki.isPending ? 'Deleting...' : 'Delete wiki'}
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the wiki
+                and all its contents.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>
+                Delete wiki
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardContent>
+    </Card>
+  )
+}
+
+export function WikiSettingsSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-6 w-6" />
+        <Skeleton className="h-8 w-40" />
+      </div>
+      <div className="flex gap-1 border-b">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-10 w-24" />
+        ))}
+      </div>
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-96" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-10 w-full" />
+        </CardContent>
+      </Card>
+    </div>
   )
 }

@@ -44,11 +44,7 @@ export function PageHeader({ page }: PageHeaderProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link
-                    to="/$page/delete"
-                    params={{ page: page.slug }}
-                    className="text-destructive focus:text-destructive"
-                  >
+                  <Link to="/$page/delete" params={{ page: page.slug }}>
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete page
                   </Link>

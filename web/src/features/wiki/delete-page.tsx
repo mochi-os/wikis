@@ -36,9 +36,9 @@ export function DeletePage({ slug, title }: DeletePageProps) {
     <div className="flex items-center justify-center py-12">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-destructive flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2">
             <Trash2 className="h-5 w-5" />
-            Delete Page
+            Delete page
           </CardTitle>
           <CardDescription>
             You are about to delete the page <strong>"{title}"</strong> ({slug}).
@@ -60,12 +60,12 @@ export function DeletePage({ slug, title }: DeletePageProps) {
             </a>
           </Button>
           <Button
-            variant="destructive"
+            variant="outline"
             onClick={handleDelete}
             disabled={deletePage.isPending}
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            {deletePage.isPending ? 'Deleting...' : 'Delete Page'}
+            {deletePage.isPending ? 'Deleting...' : 'Delete page'}
           </Button>
         </CardFooter>
       </Card>

@@ -18,15 +18,12 @@ export function AppSidebar() {
       .map((group) => {
         // Filter items based on permissions
         const filteredItems = group.items.filter((item) => {
-          // Hide "New Page" if user can't edit
-          if (item.title === 'New Page' && !permissions.edit) {
+          // Hide "New page" if user can't edit
+          if (item.title === 'New page' && !permissions.edit) {
             return false
           }
           // Hide admin items if user can't manage
-          if (
-            (item.title === 'Wiki Settings' || item.title === 'Redirects') &&
-            !permissions.manage
-          ) {
+          if (item.title === 'Settings' && !permissions.manage) {
             return false
           }
           return true
