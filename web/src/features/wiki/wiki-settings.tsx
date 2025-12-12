@@ -228,7 +228,7 @@ function GeneralTab() {
 
 // Subject type labels for display
 const SUBJECT_LABELS: Record<string, string> = {
-  '*': 'Anyone (including anonymous)',
+  '*': 'Anyone, including anonymous',
   '+': 'Authenticated users',
   '#user': 'All users with a role',
   '#administrator': 'Administrators',
@@ -306,25 +306,25 @@ function AccessTab() {
       <CardHeader>
         <CardTitle>Access Control</CardTitle>
         <CardDescription>
-          Control who can view, edit, delete, and manage this wiki. Use special
-          subjects: <code className="text-xs">*</code> (anyone),{' '}
-          <code className="text-xs">+</code> (authenticated),{' '}
-          <code className="text-xs">@groupname</code> (group members), or a user ID.
+          Control who can view, edit, delete, and manage this wiki. Enter a user
+          identity, <code className="text-xs">@group</code> for the name of a group,{' '}
+          <code className="text-xs">+</code> for all authenticated users, or{' '}
+          <code className="text-xs">*</code> for anyone.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Add new rule */}
-        <div className="flex flex-wrap items-end gap-2">
-          <div className="flex-1 min-w-[200px]">
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex-1 min-w-[200px] space-y-1.5">
             <Label htmlFor="subject">Subject</Label>
             <Input
               id="subject"
               value={newSubject}
               onChange={(e) => setNewSubject(e.target.value)}
-              placeholder="*, +, @group, or user ID"
+              placeholder="User id, @group, +, or *"
             />
           </div>
-          <div className="w-32">
+          <div className="w-32 space-y-1.5">
             <Label htmlFor="operation">Operation</Label>
             <Select value={newOperation} onValueChange={setNewOperation}>
               <SelectTrigger id="operation">
@@ -335,11 +335,10 @@ function AccessTab() {
                 <SelectItem value="edit">Edit</SelectItem>
                 <SelectItem value="delete">Delete</SelectItem>
                 <SelectItem value="manage">Manage</SelectItem>
-                <SelectItem value="*">All</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div className="w-28">
+          <div className="w-28 space-y-1.5">
             <Label htmlFor="type">Type</Label>
             <Select value={newType} onValueChange={(v) => setNewType(v as 'allow' | 'deny')}>
               <SelectTrigger id="type">
@@ -384,7 +383,18 @@ function AccessTab() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.rules.map((rule) => (
+              {[...data.rules]
+                .sort((a, b) => {
+                  // Sort order: user IDs, @groups, +, *
+                  const priority = (s: string) => {
+                    if (s === '*') return 3
+                    if (s === '+') return 2
+                    if (s.startsWith('@') || s.startsWith('#')) return 1
+                    return 0
+                  }
+                  return priority(a.subject) - priority(b.subject)
+                })
+                .map((rule) => (
                 <TableRow key={rule.id}>
                   <TableCell className="font-mono text-sm">
                     {formatSubject(rule.subject)}

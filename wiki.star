@@ -41,6 +41,7 @@ def get_wiki(a):
     return row
 
 # Helper: Check if current user has access to perform an operation
+# Users with "manage" permission automatically have all other permissions
 def check_access(a, wiki_id, operation, page=None):
     resource = "wiki/" + wiki_id
     if page:
@@ -48,7 +49,12 @@ def check_access(a, wiki_id, operation, page=None):
     user = None
     if a.user and a.user.identity:
         user = a.user.identity.id
-    return mochi.access.check(user, resource, operation)
+    if mochi.access.check(user, resource, operation):
+        return True
+    # If checking a non-manage operation, also check if user has manage access
+    if operation != "manage":
+        return mochi.access.check(user, resource, "manage")
+    return False
 
 # Helper: Broadcast event to all subscribers of a wiki
 def broadcast_event(wiki, event, data):
@@ -206,13 +212,14 @@ def action_info_entity(a):
         a.error(403, "Access denied")
         return
 
-    # Build permissions object
+    # Build permissions object (manage grants all permissions)
     if a.user:
+        can_manage = check_access(a, wiki["id"], "manage")
         permissions = {
-            "view": check_access(a, wiki["id"], "view"),
-            "edit": check_access(a, wiki["id"], "edit"),
-            "delete": check_access(a, wiki["id"], "delete"),
-            "manage": check_access(a, wiki["id"], "manage"),
+            "view": can_manage or check_access(a, wiki["id"], "view"),
+            "edit": can_manage or check_access(a, wiki["id"], "edit"),
+            "delete": can_manage or check_access(a, wiki["id"], "delete"),
+            "manage": can_manage,
         }
     else:
         permissions = {"view": True, "edit": False, "delete": False, "manage": False}
