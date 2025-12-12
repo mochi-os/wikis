@@ -10,7 +10,7 @@ import {
   Shield,
   ShieldCheck,
   ShieldX,
-  Link2,
+  CornerDownRight,
   ArrowRight,
   Home,
 } from 'lucide-react'
@@ -76,6 +76,7 @@ import {
   useSetRedirect,
   useDeleteRedirect,
 } from '@/hooks/use-wiki'
+import { useWikiContext } from '@/context/wiki-context'
 import type { AccessRule } from '@/types/wiki'
 
 type TabId = 'general' | 'access' | 'redirects' | 'delete'
@@ -89,7 +90,7 @@ interface Tab {
 const tabs: Tab[] = [
   { id: 'general', label: 'General', icon: <Home className="h-4 w-4" /> },
   { id: 'access', label: 'Access', icon: <Shield className="h-4 w-4" /> },
-  { id: 'redirects', label: 'Redirects', icon: <Link2 className="h-4 w-4" /> },
+  { id: 'redirects', label: 'Redirects', icon: <CornerDownRight className="h-4 w-4" /> },
   { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" /> },
 ]
 
@@ -137,6 +138,7 @@ export function WikiSettings() {
 
 function GeneralTab() {
   const { data, isLoading, error } = useWikiSettings()
+  const { info } = useWikiContext()
   const setSetting = useSetWikiSetting()
 
   const [homePage, setHomePage] = useState('')
@@ -195,34 +197,61 @@ function GeneralTab() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Home page</CardTitle>
-        <CardDescription>
-          The page that users see when they first visit the wiki.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="home-page">Use as home</Label>
-          <Input
-            id="home-page"
-            value={homePage}
-            onChange={(e) => handleHomePageChange(e.target.value)}
-            placeholder="home"
-          />
-          <p className="text-muted-foreground text-sm">
-            Example: "home", "welcome", "index"
-          </p>
-        </div>
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={!hasChanges || setSetting.isPending}>
-            <Save className="mr-2 h-4 w-4" />
-            {setSetting.isPending ? 'Saving...' : 'Save changes'}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      {info?.wiki && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Identity</CardTitle>
+            <CardDescription>
+              Unique identifiers for this wiki.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <dl className="space-y-3">
+              <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
+                <dt className="text-muted-foreground w-28 shrink-0">Entity</dt>
+                <dd className="font-mono text-xs break-all">{info.wiki.id}</dd>
+              </div>
+              {info.fingerprint && (
+                <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
+                  <dt className="text-muted-foreground w-28 shrink-0">Fingerprint</dt>
+                  <dd className="font-mono text-xs">{info.fingerprint}</dd>
+                </div>
+              )}
+            </dl>
+          </CardContent>
+        </Card>
+      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Home page</CardTitle>
+          <CardDescription>
+            The page that users see when they first visit the wiki.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="home-page">Use as home</Label>
+            <Input
+              id="home-page"
+              value={homePage}
+              onChange={(e) => handleHomePageChange(e.target.value)}
+              placeholder="home"
+            />
+            <p className="text-muted-foreground text-sm">
+              Example: "home", "welcome", "index"
+            </p>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={handleSave} disabled={!hasChanges || setSetting.isPending}>
+              <Save className="mr-2 h-4 w-4" />
+              {setSetting.isPending ? 'Saving...' : 'Save changes'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

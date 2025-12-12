@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { requestHelpers } from '@/lib/request'
 import endpoints from '@/api/endpoints'
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, BookOpen, Link2 } from 'lucide-react'
 import { usePage } from '@/hooks/use-wiki'
@@ -131,9 +131,6 @@ function WikisListPage({ wikis }: { wikis?: Array<{ id: string; name: string; ho
                     <BookOpen className="h-5 w-5" />
                     {wiki.name}
                   </CardTitle>
-                  <CardDescription>
-                    {wiki.id.slice(0, 12)}...
-                  </CardDescription>
                 </CardHeader>
               </Card>
             </a>

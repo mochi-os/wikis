@@ -45,7 +45,7 @@ export interface Revision {
   id: string
   title: string
   author: string
-  author_name: string
+  name: string
   created: number
   version: number
   comment: string

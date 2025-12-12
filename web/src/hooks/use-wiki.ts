@@ -37,6 +37,7 @@ export interface WikiInfoResponse {
   wiki?: { id: string; name: string; home: string }
   wikis?: Array<{ id: string; name: string; home: string }>
   permissions?: WikiPermissions
+  fingerprint?: string
 }
 
 export function useWikiInfo() {

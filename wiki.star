@@ -15,7 +15,7 @@ def database_create():
     mochi.db.query("create index pages_author on pages(author)")
 
     # Revisions table
-    mochi.db.query("create table revisions (id text primary key, page text not null references pages(id), content text not null, title text not null, author text not null, created integer not null, version integer not null, comment text not null default '')")
+    mochi.db.query("create table revisions (id text primary key, page text not null references pages(id), content text not null, title text not null, author text not null, name text not null default '', created integer not null, version integer not null, comment text not null default '')")
     mochi.db.query("create index revisions_page on revisions(page)")
     mochi.db.query("create index revisions_created on revisions(created)")
 
@@ -31,9 +31,13 @@ def database_create():
 
 # Database upgrades
 
-def database_upgrade_2():
-    # Add source column for tracking upstream wiki
-    mochi.db.query("alter table wikis add column source text not null default ''")
+def database_upgrade(version):
+    if version == 2:
+        # Add source column for tracking upstream wiki
+        mochi.db.query("alter table wikis add column source text not null default ''")
+    elif version == 3:
+        # Add name column to store author display name in revisions
+        mochi.db.query("alter table revisions add column name text not null default ''")
 
 # Helper: Get wiki from request, validating it exists
 def get_wiki(a):
@@ -84,11 +88,11 @@ def get_page(wiki, slug):
     return page
 
 # Helper: Create a revision for a page
-def create_revision(page, title, content, author, version, comment):
+def create_revision(page, title, content, author, name, version, comment):
     id = mochi.uid()
     now = mochi.time.now()
-    mochi.db.query("insert into revisions (id, page, content, title, author, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?)",
-        id, page, content, title, author, now, version, comment)
+    mochi.db.query("insert into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        id, page, content, title, author, name, now, version, comment)
     return id
 
 # ACTIONS
@@ -184,6 +188,12 @@ def action_join(a):
     mochi.access.allow("*", resource, "view", creator)
     mochi.access.allow("+", resource, "edit", creator)
     mochi.access.allow(creator, resource, "*", creator)
+
+    # Subscribe to the source wiki to receive updates
+    mochi.message.send(
+        {"from": entity, "to": source, "service": "wiki", "event": "subscribe"},
+        {"name": name}
+    )
 
     return {"data": {"id": entity, "name": name, "source": source, "message": "Wiki joined successfully"}}
 
@@ -288,7 +298,9 @@ def action_info_entity(a):
     else:
         permissions = {"view": True, "edit": False, "delete": False, "manage": False}
 
-    return {"data": {"entity": True, "wiki": wiki, "permissions": permissions}}
+    # Get fingerprint with hyphens for display
+    fp = mochi.entity.fingerprint(wiki["id"], True)
+    return {"data": {"entity": True, "wiki": wiki, "permissions": permissions, "fingerprint": fp}}
 
 # View a page
 def action_page(a):
@@ -361,6 +373,7 @@ def action_page_edit(a):
 
     now = mochi.time.now()
     author = a.user.identity.id
+    name = a.user.identity.name
 
     # Check if page exists
     existing = mochi.db.row("select * from pages where wiki=? and page=?", wiki["id"], slug)
@@ -372,7 +385,7 @@ def action_page_edit(a):
             version = existing["version"] + 1
             mochi.db.query("update pages set title=?, content=?, author=?, updated=?, version=?, deleted=0 where id=?",
                 title, content, author, now, version, existing["id"])
-            create_revision(existing["id"], title, content, author, version, comment)
+            create_revision(existing["id"], title, content, author, name, version, comment)
             # Send page/create event (restored page)
             broadcast_event(wiki["id"], "page/create", {
                 "id": existing["id"],
@@ -380,6 +393,7 @@ def action_page_edit(a):
                 "title": title,
                 "content": content,
                 "author": author,
+                "name": name,
                 "created": now,
                 "version": version
             })
@@ -389,7 +403,7 @@ def action_page_edit(a):
             version = existing["version"] + 1
             mochi.db.query("update pages set title=?, content=?, author=?, updated=?, version=? where id=?",
                 title, content, author, now, version, existing["id"])
-            create_revision(existing["id"], title, content, author, version, comment)
+            create_revision(existing["id"], title, content, author, name, version, comment)
             # Send page/update event
             broadcast_event(wiki["id"], "page/update", {
                 "id": existing["id"],
@@ -397,6 +411,7 @@ def action_page_edit(a):
                 "title": title,
                 "content": content,
                 "author": author,
+                "name": name,
                 "updated": now,
                 "version": version
             })
@@ -406,7 +421,7 @@ def action_page_edit(a):
         id = mochi.uid()
         mochi.db.query("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
             id, wiki["id"], slug, title, content, author, now, now)
-        create_revision(id, title, content, author, 1, comment)
+        create_revision(id, title, content, author, name, 1, comment)
         # Send page/create event
         broadcast_event(wiki["id"], "page/create", {
             "id": id,
@@ -414,6 +429,7 @@ def action_page_edit(a):
             "title": title,
             "content": content,
             "author": author,
+            "name": name,
             "created": now,
             "version": 1
         })
@@ -460,11 +476,12 @@ def action_new(a):
     # Create the page
     now = mochi.time.now()
     author = a.user.identity.id
+    name = a.user.identity.name
     id = mochi.uid()
 
     mochi.db.query("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
         id, wiki["id"], slug, title, content, author, now, now)
-    create_revision(id, title, content, author, 1, "Initial creation")
+    create_revision(id, title, content, author, name, 1, "Initial creation")
 
     # Send page/create event
     broadcast_event(wiki["id"], "page/create", {
@@ -473,6 +490,7 @@ def action_new(a):
         "title": title,
         "content": content,
         "author": author,
+        "name": name,
         "created": now,
         "version": 1
     })
@@ -500,15 +518,16 @@ def action_page_history(a):
         a.error(404, "Page not found")
         return
 
-    revisions = mochi.db.query("select id, title, author, created, version, comment from revisions where page=? order by version desc", page["id"])
+    revisions = mochi.db.query("select id, title, author, name, created, version, comment from revisions where page=? order by version desc", page["id"])
 
-    # Resolve author names
+    # Resolve author names - use stored name if available, else try to resolve
     for rev in revisions:
-        name = mochi.entity.name(rev["author"])
-        if name:
-            rev["author_name"] = name
-        else:
-            rev["author_name"] = rev["author"][:12] + "..."
+        if not rev["name"]:
+            name = mochi.entity.name(rev["author"])
+            if name:
+                rev["name"] = name
+            else:
+                rev["name"] = rev["author"][:12] + "..."
 
     return {"data": {"page": slug, "revisions": revisions}}
 
@@ -603,6 +622,7 @@ def action_page_revert(a):
     # Create new version with content from old revision
     now = mochi.time.now()
     author = a.user.identity.id
+    name = a.user.identity.name
     newversion = page["version"] + 1
 
     if not comment:
@@ -610,7 +630,7 @@ def action_page_revert(a):
 
     mochi.db.query("update pages set title=?, content=?, author=?, updated=?, version=? where id=?",
         revision["title"], revision["content"], author, now, newversion, page["id"])
-    create_revision(page["id"], revision["title"], revision["content"], author, newversion, comment)
+    create_revision(page["id"], revision["title"], revision["content"], author, name, newversion, comment)
 
     # Send page/update event
     broadcast_event(wiki["id"], "page/update", {
@@ -619,6 +639,7 @@ def action_page_revert(a):
         "title": revision["title"],
         "content": revision["content"],
         "author": author,
+        "name": name,
         "updated": now,
         "version": newversion
     })
@@ -1190,10 +1211,11 @@ def event_page_create(e):
         mochi.db.query("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             id, wiki, page, title, content, author, created, created, version)
 
-    # Create revision record
+    # Create revision record with author name
     revid = mochi.uid()
-    mochi.db.query("insert or ignore into revisions (id, page, content, title, author, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, '')",
-        revid, id, content, title, author, created, version)
+    name = e.content("name") or ""
+    mochi.db.query("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, '')",
+        revid, id, content, title, author, name, created, version)
 
 # Receive page/update event
 def event_page_update(e):
@@ -1233,10 +1255,11 @@ def event_page_update(e):
         mochi.db.query("update pages set page=?, title=?, content=?, author=?, updated=?, version=? where id=?",
             page, title, content, author, updated, version, id)
 
-    # Create revision record
+    # Create revision record with author name
     revid = mochi.uid()
-    mochi.db.query("insert or ignore into revisions (id, page, content, title, author, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, '')",
-        revid, id, content, title, author, updated, version)
+    name = e.content("name") or ""
+    mochi.db.query("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, '')",
+        revid, id, content, title, author, name, updated, version)
 
 # Receive page/delete event
 def event_page_delete(e):
@@ -1416,8 +1439,8 @@ def import_sync_dump(wiki, dump):
     # Import revisions
     revisions = dump.get("revisions", [])
     for r in revisions:
-        mochi.db.query("insert or ignore into revisions (id, page, content, title, author, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?)",
-            r["id"], r["page"], r["content"], r["title"], r["author"], r["created"], r["version"], r.get("comment", ""))
+        mochi.db.query("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            r["id"], r["page"], r["content"], r["title"], r["author"], r.get("name", ""), r["created"], r["version"], r.get("comment", ""))
 
     # Import tags
     tags = dump.get("tags", [])
@@ -1496,10 +1519,17 @@ def action_sync(a):
         return
 
     # Import the dump
-    if import_sync_dump(wiki["id"], dump):
-        return {"data": {"ok": True, "message": "Sync completed successfully"}}
-    else:
+    if not import_sync_dump(wiki["id"], dump):
         a.error(500, "Failed to import sync data")
+        return
+
+    # Subscribe to the source wiki for future updates
+    mochi.message.send(
+        {"from": wiki["id"], "to": target, "service": "wiki", "event": "subscribe"},
+        {"name": wiki.get("name") or ""}
+    )
+
+    return {"data": {"ok": True, "message": "Sync completed successfully"}}
 
 # ATTACHMENTS
 
