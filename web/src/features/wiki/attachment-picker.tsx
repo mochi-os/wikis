@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { format } from 'date-fns'
-import { Upload, Trash2, Image, FileText, File, Copy, Check } from 'lucide-react'
+import { Upload, Trash2, Image, FileText, File, Copy, Check, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -22,6 +22,7 @@ import endpoints from '@/api/endpoints'
 
 interface AttachmentPickerProps {
   onSelect?: (attachment: Attachment, markdown: string) => void
+  onDelete?: (attachmentId: string) => void
   trigger?: React.ReactNode
 }
 
@@ -41,7 +42,7 @@ function isImage(type: string): boolean {
   return type.startsWith('image/')
 }
 
-export function AttachmentPicker({ onSelect, trigger }: AttachmentPickerProps) {
+export function AttachmentPicker({ onSelect, onDelete, trigger }: AttachmentPickerProps) {
   const [open, setOpen] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -63,8 +64,17 @@ export function AttachmentPicker({ onSelect, trigger }: AttachmentPickerProps) {
     }
   }
 
+  // Build relative URL for attachments in markdown (resolved at render time)
+  // Images default to thumbnail, non-images get direct URL
+  const getAttachmentUrl = (id: string, type: string) => {
+    if (type.startsWith('image/')) {
+      return `attachments/${id}/thumbnail`
+    }
+    return `attachments/${id}`
+  }
+
   const handleSelect = (attachment: Attachment) => {
-    const url = endpoints.wiki.attachment(attachment.id)
+    const url = getAttachmentUrl(attachment.id, attachment.type)
     const markdown = isImage(attachment.type)
       ? `![${attachment.name}](${url})`
       : `[${attachment.name}](${url})`
@@ -76,7 +86,8 @@ export function AttachmentPicker({ onSelect, trigger }: AttachmentPickerProps) {
   }
 
   const handleCopy = (attachment: Attachment) => {
-    const url = endpoints.wiki.attachment(attachment.id)
+    // Copy uses full URL (not thumbnail) for direct linking
+    const url = `attachments/${attachment.id}`
     const markdown = isImage(attachment.type)
       ? `![${attachment.name}](${url})`
       : `[${attachment.name}](${url})`
@@ -88,7 +99,13 @@ export function AttachmentPicker({ onSelect, trigger }: AttachmentPickerProps) {
 
   const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this attachment?')) {
-      deleteMutation.mutate(id)
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          if (onDelete) {
+            onDelete(id)
+          }
+        }
+      })
     }
   }
 
@@ -153,11 +170,11 @@ export function AttachmentPicker({ onSelect, trigger }: AttachmentPickerProps) {
                       className="hover:bg-muted/50 flex items-center gap-3 rounded-lg border p-3 transition-colors"
                     >
                       {/* Icon/Preview */}
-                      <div className="bg-muted flex h-12 w-12 shrink-0 items-center justify-center rounded">
+                      <div className="bg-muted flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded">
                         {isImage(attachment.type) ? (
                           <img
-                            src={endpoints.wiki.attachment(attachment.id)}
-                            alt={attachment.name}
+                            src={`${endpoints.wiki.attachment(attachment.id)}/thumbnail`}
+                            alt=""
                             className="h-12 w-12 rounded object-cover"
                           />
                         ) : (
@@ -203,11 +220,15 @@ export function AttachmentPicker({ onSelect, trigger }: AttachmentPickerProps) {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDelete(attachment.id)}
-                          disabled={deleteMutation.isPending}
+                          disabled={deleteMutation.isPending && deleteMutation.variables === attachment.id}
                           className="text-destructive hover:text-destructive"
                           title="Delete attachment"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          {deleteMutation.isPending && deleteMutation.variables === attachment.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
                         </Button>
                       </div>
                     </div>

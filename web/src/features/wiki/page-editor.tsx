@@ -33,8 +33,9 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
 
   const insertAtCursor = (text: string) => {
     const textarea = textareaRef.current
-    if (!textarea) {
-      setContent((prev) => prev + text)
+    // If textarea doesn't exist or doesn't have focus, append at end
+    if (!textarea || document.activeElement !== textarea) {
+      setContent((prev) => prev + (prev.endsWith('\n') || prev === '' ? '' : '\n') + text)
       return
     }
 
@@ -127,6 +128,11 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
           </Button>
           <AttachmentPicker
             onSelect={(_, markdown) => insertAtCursor(markdown)}
+            onDelete={(id) => {
+              // Remove references to deleted attachment from content
+              const pattern = new RegExp(`!?\\[[^\\]]*\\]\\(attachments/${id}[^)]*\\)`, 'g')
+              setContent((prev) => prev.replace(pattern, '').replace(/\n\n\n+/g, '\n\n').trim())
+            }}
             trigger={
               <Button variant="outline" size="sm">
                 <Image className="mr-2 h-4 w-4" />

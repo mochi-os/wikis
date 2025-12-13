@@ -25,6 +25,11 @@ apiClient.interceptors.request.use(
     // Dynamically set baseURL based on current page location
     config.baseURL = getApiBasepath()
 
+    // Remove Content-Type for FormData so axios can set the multipart boundary
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
+    }
+
     // Handle global auth endpoints - they should use absolute URLs from root
     // URLs starting with /_/ are global auth endpoints that bypass app routing
     if (config.url?.startsWith('/_/')) {

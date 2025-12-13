@@ -250,6 +250,25 @@ export function useSetWikiSetting() {
   })
 }
 
+// Sync (for subscriber wikis)
+
+interface SyncWikiResponse {
+  ok: boolean
+  message: string
+}
+
+export function useSyncWiki() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      requestHelpers.post<SyncWikiResponse>(endpoints.wiki.sync, {}),
+    onSuccess: () => {
+      // Invalidate all wiki data since sync updates everything
+      queryClient.invalidateQueries({ queryKey: ['wiki'] })
+    },
+  })
+}
+
 interface DeleteWikiResponse {
   ok: boolean
   deleted: string
@@ -331,7 +350,35 @@ export function useDeleteAttachment() {
         endpoints.wiki.attachmentDelete,
         { id }
       ),
-    onSuccess: () => {
+    onMutate: async (id: string) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['wiki', 'attachments'] })
+
+      // Snapshot the previous value
+      const previous = queryClient.getQueryData<AttachmentsResponse>([
+        'wiki',
+        'attachments',
+      ])
+
+      // Optimistically remove the attachment
+      if (previous) {
+        queryClient.setQueryData<AttachmentsResponse>(
+          ['wiki', 'attachments'],
+          {
+            attachments: previous.attachments.filter((a) => a.id !== id),
+          }
+        )
+      }
+
+      return { previous }
+    },
+    onError: (_err, _id, context) => {
+      // Roll back on error
+      if (context?.previous) {
+        queryClient.setQueryData(['wiki', 'attachments'], context.previous)
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'attachments'] })
     },
   })

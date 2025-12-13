@@ -77,6 +77,58 @@ def broadcast_event(wiki, event, data):
             data
         )
 
+# Helper: Remove attachment references from content
+def remove_attachment_refs(content, attachment_id):
+    ref = "attachments/" + attachment_id
+    if ref not in content:
+        return content
+
+    result = []
+    for line in content.split("\n"):
+        if ref not in line:
+            result.append(line)
+            continue
+
+        # Process line to remove attachment references
+        new_line = ""
+        i = 0
+        while i < len(line):
+            # Check for markdown image: ![alt](url)
+            if i < len(line) - 1 and line[i:i+2] == "![":
+                close_bracket = line.find("](", i)
+                if close_bracket != -1:
+                    close_paren = line.find(")", close_bracket)
+                    if close_paren != -1:
+                        url = line[close_bracket+2:close_paren]
+                        if ref in url:
+                            # Skip this image reference
+                            i = close_paren + 1
+                            continue
+                new_line += line[i]
+                i += 1
+            # Check for markdown link: [text](url)
+            elif line[i] == "[" and (i == 0 or line[i-1] != "!"):
+                close_bracket = line.find("](", i)
+                if close_bracket != -1:
+                    close_paren = line.find(")", close_bracket)
+                    if close_paren != -1:
+                        url = line[close_bracket+2:close_paren]
+                        if ref in url:
+                            # Skip this link reference
+                            i = close_paren + 1
+                            continue
+                new_line += line[i]
+                i += 1
+            else:
+                new_line += line[i]
+                i += 1
+
+        # Only keep line if it has content after removing references
+        if new_line.strip():
+            result.append(new_line)
+
+    return "\n".join(result)
+
 # Helper: Get page by slug, following redirects
 def get_page(wiki, slug):
     # Check for redirect first
@@ -982,7 +1034,7 @@ def action_settings(a):
         a.error(403, "Access denied")
         return
 
-    return {"data": {"settings": {"home": wiki["home"]}}}
+    return {"data": {"settings": {"home": wiki["home"], "source": wiki.get("source", "")}}}
 
 # Update a wiki setting
 def action_settings_set(a):
@@ -1443,16 +1495,19 @@ def event_sync(e):
 
     redirects = mochi.db.query("select * from redirects where wiki=?", wiki)
     wikirow = mochi.db.row("select name, home from wikis where id=?", wiki)
+    attachments = mochi.attachment.list(wiki) or []
 
     # Send dump as a single payload
     e.write({
         "status": "200",
+        "source": wiki,  # Source wiki entity ID for attachment fetching
         "name": wikirow["name"] if wikirow else "",
         "home": wikirow["home"] if wikirow else "home",
         "pages": pages,
         "revisions": revisions,
         "tags": tags,
         "redirects": redirects,
+        "attachments": attachments,
     })
 
 # Helper: Import wiki dump from sync response
@@ -1491,6 +1546,17 @@ def import_sync_dump(wiki, dump):
     if name or home:
         mochi.db.query("update wikis set name=?, home=? where id=?",
             name or "", home or "home", wiki)
+
+    # Import attachments (store with local wiki as object, remote as entity for fetching)
+    attachments = dump.get("attachments", [])
+    source = dump.get("source", "")  # Remote wiki entity ID for on-demand fetching
+    for att in attachments:
+        mochi.db.query("""replace into _attachments
+            (id, object, entity, name, size, content_type, creator, caption, description, rank, created)
+            values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            att.get("id"), wiki, source, att.get("name", ""),
+            att.get("size", 0), att.get("content_type") or att.get("type", ""), att.get("creator", ""),
+            att.get("caption", ""), att.get("description", ""), att.get("rank", 0), att.get("created", 0))
 
     return True
 
@@ -1551,7 +1617,7 @@ def action_sync(a):
         a.error(500, "Failed to receive sync data")
         return
 
-    # Import the dump
+    # Import the dump (includes attachments with remote entity reference)
     if not import_sync_dump(wiki["id"], dump):
         a.error(500, "Failed to import sync data")
         return
@@ -1627,7 +1693,33 @@ def action_attachment_delete(a):
         a.error(400, "Attachment ID is required")
         return
 
-    if mochi.attachment.delete(id):
+    # Get subscribers for notification
+    subscribers = mochi.db.query("select id from subscribers where wiki=? and id!=?", wiki["id"], wiki["id"])
+
+    if mochi.attachment.delete(id, subscribers):
+        # Remove references to this attachment from all pages
+        ref = "attachments/" + id
+        pages = mochi.db.query("select id, page, title, content, version from pages where wiki=? and content like ?", wiki["id"], "%" + ref + "%")
+        now = mochi.time.now()
+        author = a.user.identity.id
+        name = a.user.identity.name
+        for page in pages:
+            new_content = remove_attachment_refs(page["content"], id)
+            if new_content != page["content"]:
+                version = page["version"] + 1
+                mochi.db.query("update pages set content=?, author=?, updated=?, version=? where id=?",
+                    new_content, author, now, version, page["id"])
+                create_revision(page["id"], page["title"], new_content, author, name, version, "Removed deleted attachment")
+                broadcast_event(wiki["id"], "page/update", {
+                    "id": page["id"],
+                    "page": page["page"],
+                    "title": page["title"],
+                    "content": new_content,
+                    "author": author,
+                    "name": name,
+                    "updated": now,
+                    "version": version
+                })
         return {"data": {"ok": True}}
     else:
         a.error(404, "Attachment not found")

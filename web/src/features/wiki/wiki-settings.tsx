@@ -13,6 +13,7 @@ import {
   CornerDownRight,
   ArrowRight,
   Home,
+  RefreshCw,
 } from 'lucide-react'
 import { getAppPath } from '@/lib/app-path'
 import { Button } from '@/components/ui/button'
@@ -67,6 +68,7 @@ import { cn } from '@/lib/utils'
 import {
   useWikiSettings,
   useSetWikiSetting,
+  useSyncWiki,
   useDeleteWiki,
   useAccessRules,
   useGrantAccess,
@@ -140,6 +142,7 @@ function GeneralTab() {
   const { data, isLoading, error } = useWikiSettings()
   const { info } = useWikiContext()
   const setSetting = useSetWikiSetting()
+  const syncWiki = useSyncWiki()
 
   const [homePage, setHomePage] = useState('')
   const [hasChanges, setHasChanges] = useState(false)
@@ -169,6 +172,17 @@ function GeneralTab() {
         },
       }
     )
+  }
+
+  const handleSync = () => {
+    syncWiki.mutate(undefined, {
+      onSuccess: () => {
+        toast.success('Wiki synced successfully')
+      },
+      onError: (error) => {
+        toast.error(error.message || 'Failed to sync wiki')
+      },
+    })
   }
 
   if (isLoading) {
@@ -219,6 +233,27 @@ function GeneralTab() {
                 </div>
               )}
             </dl>
+          </CardContent>
+        </Card>
+      )}
+
+      {data?.settings?.source && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Subscription</CardTitle>
+            <CardDescription>
+              This wiki is subscribed to a source wiki and receives updates from it.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
+              <dt className="text-muted-foreground w-28 shrink-0">Source</dt>
+              <dd className="font-mono text-xs break-all">{data.settings.source}</dd>
+            </div>
+            <Button onClick={handleSync} disabled={syncWiki.isPending}>
+              <RefreshCw className={cn("mr-2 h-4 w-4", syncWiki.isPending && "animate-spin")} />
+              {syncWiki.isPending ? 'Syncing...' : 'Sync now'}
+            </Button>
           </CardContent>
         </Card>
       )}

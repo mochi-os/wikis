@@ -9,7 +9,7 @@ const endpoints = {
     // Info
     info: 'info',
     create: 'create',
-    join: 'join',
+    join: 'subscribe',
     // Pages
     page: (slug: string) => `${slug}`,
     pageEdit: (slug: string) => `${slug}/edit`,
@@ -17,7 +17,7 @@ const endpoints = {
     pageRevision: (slug: string, version: number) => `${slug}/history/${version}`,
     pageRevert: (slug: string) => `${slug}/revert`,
     pageDelete: (slug: string) => `${slug}/delete`,
-    newPage: 'new',
+    newPage: 'page/create',
     search: 'search',
     // Tags
     tagAdd: (slug: string) => `${slug}/tag/add`,
@@ -47,7 +47,7 @@ const endpoints = {
     attachments: 'attachment/list',
     attachmentUpload: 'attachment/upload',
     attachmentDelete: 'attachment/delete',
-    attachment: (id: string) => `attachments/${id}`,
+    attachment: (id: string) => `-/attachments/${id}`,
   },
   user: {
     account: 'user/account/data',

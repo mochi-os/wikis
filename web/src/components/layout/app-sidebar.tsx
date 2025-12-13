@@ -51,7 +51,7 @@ export function AppSidebar() {
         // Add "All wikis" link at the start of Browse group
         if (group.title === 'Browse') {
           filteredItems = [
-            { title: 'All wikis', url: getAppPath(), icon: Library, external: true },
+            { title: 'All wikis', url: getAppPath() || '/wiki', icon: Library, external: true },
             ...filteredItems,
           ]
         }
