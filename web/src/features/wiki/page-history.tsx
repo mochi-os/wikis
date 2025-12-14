@@ -1,9 +1,9 @@
 import { format } from 'date-fns'
 import { History, Eye, RotateCcw, ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { getRouterBasepath } from '@/lib/app-path'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@mochi/common'
+import { getRouterBasepath } from '@mochi/common'
+import { Separator } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 import {
   Table,
   TableBody,
@@ -11,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '@mochi/common'
 import type { Revision } from '@/types/wiki'
 
 interface PageHistoryProps {

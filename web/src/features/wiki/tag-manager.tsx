@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Plus, X, Tag as TagIcon } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { Button } from '@mochi/common'
+import { Input } from '@mochi/common'
+import { Badge } from '@mochi/common'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
+} from '@mochi/common'
 import { useAddTag, useRemoveTag } from '@/hooks/use-wiki'
 import { usePermissions } from '@/context/wiki-context'
 

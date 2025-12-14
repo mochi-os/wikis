@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { Search, FileText, ArrowRight } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Input } from '@mochi/common'
+import { Separator } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 import { useSearch } from '@/hooks/use-wiki'
 import type { SearchResult } from '@/types/wiki'
 

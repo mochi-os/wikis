@@ -1,9 +1,9 @@
 import { format } from 'date-fns'
 import { Activity } from 'lucide-react'
 import { useSystemSettingsData } from '@/hooks/use-system-settings'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+import { Skeleton } from '@mochi/common'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 function formatTimestamp(value: string): string {
   const timestamp = parseInt(value, 10)

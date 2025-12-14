@@ -8,11 +8,11 @@ import {
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
-import { useAuthStore } from '@/stores/auth-store'
-import { getRouterBasepath } from '@/lib/app-path'
+import { useAuthStore } from '@mochi/common'
+import { getRouterBasepath } from '@mochi/common'
 // import { DirectionProvider } from './context/direction-provider' // Commented for future use (RTL support)
 // import { FontProvider } from './context/font-provider' // Commented for future use (Font switching)
-import { ThemeProvider } from './context/theme-provider'
+import { ThemeProvider } from '@mochi/common'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 // Styles

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { UsersData, User, SessionsData } from '@/types/users'
 import endpoints from '@/api/endpoints'
-import { apiClient } from '@/lib/apiClient'
+import { apiClient } from '@mochi/common'
 
 export function useSystemUsersData(limit = 25, offset = 0, search = '') {
   return useQuery({

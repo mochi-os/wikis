@@ -17,14 +17,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Switch } from '@/components/ui/switch'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+} from '@mochi/common'
+import { Button } from '@mochi/common'
+import { Input } from '@mochi/common'
+import { Label } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
+import { Switch } from '@mochi/common'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 function formatSettingName(name: string): string {
   return name

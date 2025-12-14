@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { RotateCcw, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
+import { Button } from '@mochi/common'
+import { Input } from '@mochi/common'
+import { Label } from '@mochi/common'
+import { Separator } from '@mochi/common'
 import {
   Card,
   CardContent,
@@ -12,7 +12,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@mochi/common'
 import { useRevertPage } from '@/hooks/use-wiki'
 
 interface RevertPageProps {

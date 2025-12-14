@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useChanges } from '@/hooks/use-wiki'
 import { ChangesList, ChangesListSkeleton } from '@/features/wiki/changes-list'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 export const Route = createFileRoute('/_authenticated/changes')({
   component: ChangesRoute,

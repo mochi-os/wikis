@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { PreferencesData } from '@/types/preferences'
 import endpoints from '@/api/endpoints'
-import { apiClient } from '@/lib/apiClient'
+import { apiClient } from '@mochi/common'
 
 export function usePreferencesData() {
   return useQuery({

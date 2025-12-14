@@ -1,9 +1,9 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { usePage } from '@/hooks/use-wiki'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { useAuthStore } from '@/stores/auth-store'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
+import { useAuthStore } from '@mochi/common'
 
 export const Route = createFileRoute('/_authenticated/$page/edit')({
   beforeLoad: () => {

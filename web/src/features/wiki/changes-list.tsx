@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import { History } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Separator } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 import {
   Table,
   TableBody,
@@ -9,7 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '@mochi/common'
 import type { Change } from '@/types/wiki'
 
 interface ChangesListProps {

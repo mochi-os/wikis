@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
 import { ArrowRight, Plus, Trash2, Link2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@mochi/common'
+import { Input } from '@mochi/common'
+import { Label } from '@mochi/common'
+import { Separator } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '@mochi/common'
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@mochi/common'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,7 +34,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+} from '@mochi/common'
 import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wiki'
 import type { Redirect } from '@/types/wiki'
 

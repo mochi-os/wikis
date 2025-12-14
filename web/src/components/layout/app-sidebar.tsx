@@ -1,15 +1,15 @@
 import { useMemo } from 'react'
 import { Library } from 'lucide-react'
-import { useLayout } from '@/context/layout-provider'
+import { useLayout } from '@mochi/common'
 import { usePermissions, useWikiContext } from '@/context/wiki-context'
 import {
   Sidebar,
   SidebarContent,
   SidebarRail,
-} from '@/components/ui/sidebar'
+} from '@mochi/common'
 import { sidebarData } from './data/sidebar-data'
-import { NavGroup } from './nav-group'
-import { getAppPath } from '@/lib/app-path'
+import { NavGroup } from '@mochi/common'
+import { getAppPath } from '@mochi/common'
 
 export function AppSidebar() {
   const { collapsible, variant } = useLayout()

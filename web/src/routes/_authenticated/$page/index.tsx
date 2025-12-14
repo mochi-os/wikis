@@ -6,8 +6,8 @@ import {
   PageViewSkeleton,
 } from '@/features/wiki/page-view'
 import { PageHeader } from '@/features/wiki/page-header'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 export const Route = createFileRoute('/_authenticated/$page/')({
   component: WikiPageRoute,

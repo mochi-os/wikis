@@ -16,19 +16,19 @@ import {
   RefreshCw,
   Users,
 } from 'lucide-react'
-import { getAppPath } from '@/lib/app-path'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import { getAppPath } from '@mochi/common'
+import { Button } from '@mochi/common'
+import { Input } from '@mochi/common'
+import { Label } from '@mochi/common'
+import { Separator } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@mochi/common'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,7 +39,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+} from '@mochi/common'
 import {
   Dialog,
   DialogContent,
@@ -48,14 +48,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@mochi/common'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@mochi/common'
 import {
   Table,
   TableBody,
@@ -63,9 +63,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
+} from '@mochi/common'
+import { Badge } from '@mochi/common'
+import { cn } from '@mochi/common'
 import {
   useWikiSettings,
   useSetWikiSetting,

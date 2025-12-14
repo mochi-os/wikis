@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 import { SearchPage } from '@/features/wiki/search-page'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 const searchSchema = z.object({
   q: z.string().optional(),

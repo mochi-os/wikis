@@ -37,9 +37,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+} from '@mochi/common'
+import { Badge } from '@mochi/common'
+import { Button } from '@mochi/common'
 import {
   Dialog,
   DialogContent,
@@ -48,23 +48,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from '@mochi/common'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+} from '@mochi/common'
+import { Input } from '@mochi/common'
+import { Label } from '@mochi/common'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Skeleton } from '@/components/ui/skeleton'
+} from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 import {
   Table,
   TableBody,
@@ -72,9 +72,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+} from '@mochi/common'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value)

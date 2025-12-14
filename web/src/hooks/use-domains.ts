@@ -7,7 +7,7 @@ import type {
   Entity,
 } from '@/types/domains'
 import endpoints from '@/api/endpoints'
-import { apiClient } from '@/lib/apiClient'
+import { apiClient } from '@mochi/common'
 
 export function useDomainsData() {
   return useQuery({

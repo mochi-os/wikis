@@ -1,12 +1,12 @@
 import { Link } from '@tanstack/react-router'
 import { Edit, History, MoreHorizontal, Trash2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@mochi/common'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@mochi/common'
 import type { WikiPage } from '@/types/wiki'
 import { usePermissions } from '@/context/wiki-context'
 

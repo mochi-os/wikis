@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react'
 import { Check, ChevronsUpDown, Loader2, RotateCcw } from 'lucide-react'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
-import { useTheme } from '@/context/theme-provider'
+import { cn } from '@mochi/common'
+import { useTheme } from '@mochi/common'
 import {
   usePreferencesData,
   useSetPreference,
@@ -18,8 +18,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
+} from '@mochi/common'
+import { Button } from '@mochi/common'
 import {
   Command,
   CommandEmpty,
@@ -27,23 +27,23 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command'
-import { Label } from '@/components/ui/label'
+} from '@mochi/common'
+import { Label } from '@mochi/common'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
+} from '@mochi/common'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+} from '@mochi/common'
+import { Skeleton } from '@mochi/common'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 const themeLabels: Record<string, string> = {
   light: 'Light',

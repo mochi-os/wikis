@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useTags } from '@/hooks/use-wiki'
 import { TagsList, TagsListSkeleton } from '@/features/wiki/tags-list'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 export const Route = createFileRoute('/_authenticated/tags')({
   component: TagsRoute,

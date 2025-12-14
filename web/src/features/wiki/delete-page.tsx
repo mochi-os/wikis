@@ -1,7 +1,7 @@
 import { Trash2, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
+import { Button } from '@mochi/common'
+import { Separator } from '@mochi/common'
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@mochi/common'
 import { useDeletePage } from '@/hooks/use-wiki'
 
 interface DeletePageProps {

@@ -1,9 +1,9 @@
 import { format } from 'date-fns'
 import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@mochi/common'
+import { Badge } from '@mochi/common'
+import { Separator } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 import type { TagPage } from '@/types/wiki'
 
 interface TagPagesProps {

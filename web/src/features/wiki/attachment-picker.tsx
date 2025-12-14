@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { format } from 'date-fns'
 import { Upload, Trash2, Image, FileText, File, Copy, Check, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@mochi/common'
 import {
   Dialog,
   DialogContent,
@@ -9,9 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Skeleton } from '@/components/ui/skeleton'
+} from '@mochi/common'
+import { ScrollArea } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 import {
   useAttachments,
   useUploadAttachment,

@@ -1,7 +1,7 @@
 import { createContext, useContext, type ReactNode } from 'react'
 import { useWikiInfo, type WikiInfoResponse } from '@/hooks/use-wiki'
 import type { WikiPermissions } from '@/types/wiki'
-import { GeneralError } from '@/features/errors/general-error'
+import { GeneralError } from '@mochi/common'
 
 interface WikiContextValue {
   info: WikiInfoResponse | undefined

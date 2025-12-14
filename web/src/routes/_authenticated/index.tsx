@@ -1,25 +1,25 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { requestHelpers } from '@/lib/request'
+import { requestHelpers } from '@mochi/common'
 import endpoints from '@/api/endpoints'
-import { Card, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle } from '@mochi/common'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@mochi/common'
+import { Input } from '@mochi/common'
+import { Label } from '@mochi/common'
+import { Button } from '@mochi/common'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Plus, BookOpen, Link2, Bookmark, X } from 'lucide-react'
 import { usePage, useAddBookmark, useRemoveBookmark } from '@/hooks/use-wiki'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { getAppPath } from '@/lib/app-path'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
+import { getAppPath } from '@mochi/common'
 import {
   PageView,
   PageNotFound,
   PageViewSkeleton,
 } from '@/features/wiki/page-view'
 import { PageHeader } from '@/features/wiki/page-header'
-import { GeneralError } from '@/features/errors/general-error'
+import { GeneralError } from '@mochi/common'
 
 interface InfoResponse {
   entity: boolean

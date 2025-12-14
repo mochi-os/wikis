@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { WikiSettings } from '@/features/wiki/wiki-settings'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 export const Route = createFileRoute('/_authenticated/settings')({
   component: WikiSettingsRoute,

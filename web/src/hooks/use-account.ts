@@ -13,7 +13,7 @@ import type {
   RecoveryGenerateResponse,
 } from '@/types/account'
 import endpoints from '@/api/endpoints'
-import { requestHelpers } from '@/lib/request'
+import { requestHelpers } from '@mochi/common'
 
 export function useAccountData() {
   return useQuery({

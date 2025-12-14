@@ -13,9 +13,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+} from '@mochi/common'
+import { Button } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 import {
   Table,
   TableBody,
@@ -23,9 +23,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+} from '@mochi/common'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 function formatTimestamp(timestamp: number): string {
   if (timestamp === 0) return 'Never'

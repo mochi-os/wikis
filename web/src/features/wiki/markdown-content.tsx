@@ -1,8 +1,8 @@
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Link } from '@tanstack/react-router'
-import { cn } from '@/lib/utils'
-import { getApiBasepath } from '@/lib/app-path'
+import { cn } from '@mochi/common'
+import { getApiBasepath } from '@mochi/common'
 
 // Check if URL is an attachment URL
 function isAttachmentUrl(url: string): boolean {

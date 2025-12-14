@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { usePageHistory } from '@/hooks/use-wiki'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
 
 export const Route = createFileRoute('/_authenticated/$page/history/')({
   component: PageHistoryRoute,

@@ -29,7 +29,7 @@ import type {
   WikiPermissions,
 } from '@/types/wiki'
 import endpoints from '@/api/endpoints'
-import { requestHelpers } from '@/lib/request'
+import { requestHelpers } from '@mochi/common'
 
 // Wiki info
 

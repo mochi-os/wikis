@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { SystemSettingsData } from '@/types/settings'
 import endpoints from '@/api/endpoints'
-import { apiClient } from '@/lib/apiClient'
+import { apiClient } from '@mochi/common'
 
 export function useSystemSettingsData() {
   return useQuery({

@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { usePage } from '@/hooks/use-wiki'
 import { DeletePage } from '@/features/wiki/delete-page'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Header } from '@mochi/common'
+import { Main } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 
 export const Route = createFileRoute('/_authenticated/$page/delete')({
   component: DeletePageRoute,
