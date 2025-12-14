@@ -56,7 +56,9 @@ export function AttachmentPicker({ onSelect, onDelete, trigger }: AttachmentPick
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files.length > 0) {
-      uploadMutation.mutate(files)
+      // Convert to array before reset - FileList is a live reference that becomes
+      // empty when the input is cleared
+      uploadMutation.mutate(Array.from(files))
     }
     // Reset input so same file can be selected again
     if (fileInputRef.current) {

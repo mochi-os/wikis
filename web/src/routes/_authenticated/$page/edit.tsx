@@ -1,10 +1,20 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { usePage } from '@/hooks/use-wiki'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
+import { useAuthStore } from '@/stores/auth-store'
 
 export const Route = createFileRoute('/_authenticated/$page/edit')({
+  beforeLoad: () => {
+    const store = useAuthStore.getState()
+    if (!store.isInitialized) {
+      store.syncFromCookie()
+    }
+    if (!store.isAuthenticated) {
+      throw redirect({ to: '/401' })
+    }
+  },
   component: WikiPageEditRoute,
 })
 

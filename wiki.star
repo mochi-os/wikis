@@ -27,7 +27,11 @@ def database_create():
     mochi.db.query("create table redirects (wiki text not null references wikis(id), source text not null, target text not null, created integer not null, primary key (wiki, source))")
 
     # Subscribers table
-    mochi.db.query("create table subscribers (wiki text not null references wikis(id), id text not null, name text not null default '', subscribed integer not null, primary key (wiki, id))")
+    mochi.db.query("create table subscribers (wiki text not null references wikis(id), id text not null, name text not null default '', subscribed integer not null, seen integer not null default 0, primary key (wiki, id))")
+
+    # Bookmarks table - for following external wikis without making a local copy
+    mochi.db.query("create table bookmarks (id text primary key, name text not null, added integer not null)")
+    mochi.db.query("create index bookmarks_added on bookmarks(added)")
 
 # Database upgrades
 
@@ -38,6 +42,18 @@ def database_upgrade(version):
     elif version == 3:
         # Add name column to store author display name in revisions
         mochi.db.query("alter table revisions add column name text not null default ''")
+    elif version == 4:
+        # Add bookmarks table for following external wikis
+        mochi.db.query("create table bookmarks (id text primary key, name text not null, added integer not null)")
+        mochi.db.query("create index bookmarks_added on bookmarks(added)")
+    elif version == 5:
+        # Add seen column to track subscriber activity
+        mochi.db.query("alter table subscribers add column seen integer not null default 0")
+
+# Helper: Update subscriber's seen timestamp
+def update_subscriber_seen(wiki, subscriber_id):
+    now = mochi.time.now()
+    mochi.db.query("update subscribers set seen=? where wiki=? and id=?", now, wiki, subscriber_id)
 
 # Helper: Get wiki from request, validating it exists
 def get_wiki(a):
@@ -66,12 +82,26 @@ def check_access(a, wiki_id, operation, page=None):
         return mochi.access.check(user, resource, "manage")
     return False
 
+# Helper: Check if remote user (from event header) has access to perform an operation
+def check_event_access(user_id, wiki_id, operation, page=None):
+    resource = "wiki/" + wiki_id
+    if page:
+        resource = resource + "/page/" + page
+    if mochi.access.check(user_id, resource, operation):
+        return True
+    # If checking a non-manage operation, also check if user has manage access
+    if operation != "manage":
+        return mochi.access.check(user_id, resource, "manage")
+    return False
+
 # Helper: Broadcast event to all subscribers of a wiki
-def broadcast_event(wiki, event, data):
+def broadcast_event(wiki, event, data, exclude=None):
     if not wiki:
         return
     subscribers = mochi.db.query("select id from subscribers where wiki=?", wiki)
     for sub in subscribers:
+        if exclude and sub["id"] == exclude:
+            continue
         mochi.message.send(
             {"from": wiki, "to": sub["id"], "service": "wiki", "event": event},
             data
@@ -128,6 +158,171 @@ def remove_attachment_refs(content, attachment_id):
             result.append(new_line)
 
     return "\n".join(result)
+
+# Helper: Fetch wiki info from a remote wiki via P2P stream
+def fetch_remote_wiki_info(a, wiki_id):
+    # Use the user's identity as the "from" header for the stream request
+    from_entity = ""
+    if a.user and a.user.identity:
+        from_entity = a.user.identity.id
+
+    stream = mochi.stream(
+        {"from": from_entity, "to": wiki_id, "service": "wiki", "event": "sync"},
+        {}
+    )
+
+    if not stream:
+        return {"error": "offline"}
+
+    dump = stream.read()
+    if not dump:
+        return {"error": "offline"}
+
+    status = dump.get("status")
+    if status == "403":
+        return {"error": "access_denied"}
+    if status == "404":
+        return {"error": "not_found"}
+    if status != "200":
+        return {"error": dump.get("error", "unknown")}
+
+    return {
+        "name": dump.get("name"),
+        "home": dump.get("home"),
+    }
+
+# Helper: Fetch a page from a remote wiki via P2P stream
+def fetch_remote_page(a, wiki_id, slug):
+    # Use the user's identity as the "from" header for the stream request
+    from_entity = ""
+    if a.user and a.user.identity:
+        from_entity = a.user.identity.id
+
+    stream = mochi.stream(
+        {"from": from_entity, "to": wiki_id, "service": "wiki", "event": "sync"},
+        {}
+    )
+
+    if not stream:
+        return {"error": "offline"}
+
+    dump = stream.read()
+    if not dump:
+        return {"error": "offline"}
+
+    status = dump.get("status")
+    if status == "403":
+        return {"error": "access_denied"}
+    if status == "404":
+        return {"error": "not_found"}
+    if status != "200":
+        return {"error": dump.get("error", "unknown")}
+
+    # Look for the page in the dump
+    pages = dump.get("pages", [])
+
+    # First check for redirects
+    redirects = dump.get("redirects", [])
+    for r in redirects:
+        if r.get("source") == slug:
+            slug = r.get("target")
+            break
+
+    # Find the page
+    for p in pages:
+        if p.get("page") == slug and not p.get("deleted"):
+            # Get tags for this page from the dump
+            tags = []
+            page_id = p.get("id")
+            for t in dump.get("tags", []):
+                if t.get("page") == page_id:
+                    tags.append(t.get("tag"))
+
+            return {
+                "id": p.get("id"),
+                "slug": p.get("page"),
+                "title": p.get("title"),
+                "content": p.get("content"),
+                "author": p.get("author"),
+                "created": p.get("created"),
+                "updated": p.get("updated"),
+                "version": p.get("version"),
+                "tags": tags
+            }
+
+    return None
+
+# Helper: Fetch page history from a remote wiki via P2P stream
+def fetch_remote_page_history(a, wiki_id, slug):
+    from_entity = ""
+    if a.user and a.user.identity:
+        from_entity = a.user.identity.id
+
+    stream = mochi.stream(
+        {"from": from_entity, "to": wiki_id, "service": "wiki", "event": "sync"},
+        {}
+    )
+
+    if not stream:
+        return {"error": "offline"}
+
+    dump = stream.read()
+    if not dump:
+        return {"error": "offline"}
+
+    status = dump.get("status")
+    if status == "403":
+        return {"error": "access_denied"}
+    if status == "404":
+        return {"error": "not_found"}
+    if status != "200":
+        return {"error": dump.get("error", "unknown")}
+
+    # First check for redirects
+    redirects = dump.get("redirects", [])
+    for r in redirects:
+        if r.get("source") == slug:
+            slug = r.get("target")
+            break
+
+    # Find the page
+    pages = dump.get("pages", [])
+    page = None
+    for p in pages:
+        if p.get("page") == slug:
+            page = p
+            break
+
+    if not page:
+        return None
+
+    # Get revisions for this page
+    page_id = page.get("id")
+    revisions = []
+    for r in dump.get("revisions", []):
+        if r.get("page") == page_id:
+            rev = {
+                "id": r.get("id"),
+                "title": r.get("title"),
+                "author": r.get("author"),
+                "name": r.get("name", ""),
+                "created": r.get("created"),
+                "version": r.get("version"),
+                "comment": r.get("comment", "")
+            }
+            # Resolve author name if not stored
+            if not rev["name"]:
+                name = mochi.entity.name(rev["author"])
+                if name:
+                    rev["name"] = name
+                else:
+                    rev["name"] = rev["author"][:12] + "..."
+            revisions.append(rev)
+
+    # Sort by version descending
+    revisions = sorted(revisions, key=lambda x: x.get("version", 0), reverse=True)
+
+    return {"page": slug, "revisions": revisions}
 
 # Helper: Get page by slug, following redirects
 def get_page(wiki, slug):
@@ -249,6 +444,71 @@ def action_join(a):
 
     return {"data": {"id": entity, "name": name, "source": source, "message": "Wiki joined successfully"}}
 
+# Add a bookmark to follow an external wiki without making a local copy
+def action_bookmark_add(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    # Get the remote wiki entity ID
+    target = a.input("target")
+    if not target:
+        a.error(400, "Target wiki entity ID is required")
+        return
+
+    # Check if already bookmarked
+    existing = mochi.db.row("select * from bookmarks where id=?", target)
+    if existing:
+        a.error(400, "Already bookmarked")
+        return
+
+    # Check if we already have this as a local wiki
+    local = mochi.db.row("select * from wikis where id=? or source=?", target, target)
+    if local:
+        a.error(400, "This wiki is already in your list")
+        return
+
+    # Use the user's identity as the "from" header for the stream request
+    from_entity = a.user.identity.id if a.user.identity else ""
+
+    # Fetch the wiki name from the remote
+    stream = mochi.stream(
+        {"from": from_entity, "to": target, "service": "wiki", "event": "sync"},
+        {}
+    )
+
+    dump = stream.read()
+    if not dump or dump.get("status") != "200":
+        a.error(500, "Failed to fetch wiki info")
+        return
+
+    name = dump.get("name") or "Bookmarked Wiki"
+    now = mochi.time.now()
+
+    mochi.db.query("insert into bookmarks (id, name, added) values (?, ?, ?)", target, name, now)
+
+    return {"data": {"id": target, "name": name, "message": "Wiki bookmarked"}}
+
+# Remove a bookmark
+def action_bookmark_remove(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    target = a.input("target")
+    if not target:
+        a.error(400, "Target wiki entity ID is required")
+        return
+
+    existing = mochi.db.row("select * from bookmarks where id=?", target)
+    if not existing:
+        a.error(404, "Bookmark not found")
+        return
+
+    mochi.db.query("delete from bookmarks where id=?", target)
+
+    return {"data": {"ok": True, "message": "Bookmark removed"}}
+
 # Delete a wiki and all its data
 def action_delete(a):
     if not a.user:
@@ -323,14 +583,62 @@ def action_info_class(a):
         a.error(401, "Not logged in")
         return
 
-    wikis = mochi.db.query("select id, name, home, created from wikis order by name")
-    mochi.log.debug("[WIKI] action_info_class: found %s wikis", len(wikis))
-    return {"data": {"entity": False, "wikis": wikis}}
+    wikis = mochi.db.query("select id, name, home, source, created from wikis order by name")
+    bookmarks = mochi.db.query("select id, name, added from bookmarks order by name")
+    mochi.log.debug("[WIKI] action_info_class: found %s wikis, %s bookmarks", len(wikis), len(bookmarks))
+    return {"data": {"entity": False, "wikis": wikis, "bookmarks": bookmarks}}
 
 # Info endpoint for entity context - returns wiki info
 def action_info_entity(a):
     wiki = get_wiki(a)
     if not wiki:
+        # Check if this is a bookmark to a remote wiki
+        wiki_id = a.input("wiki")
+        bookmark = mochi.db.row("select * from bookmarks where id=?", wiki_id) if wiki_id else None
+        if bookmark:
+            # Fetch wiki info from remote
+            remote_info = fetch_remote_wiki_info(a, wiki_id)
+
+            # Check for errors
+            if remote_info.get("error"):
+                error = remote_info["error"]
+                if error == "access_denied":
+                    return a.error(403, "Access denied to this wiki")
+                if error == "not_found":
+                    return a.error(404, "Wiki not found")
+                if error == "offline":
+                    # Remote wiki unreachable, return cached bookmark info
+                    fp = mochi.entity.fingerprint(wiki_id, True)
+                    return {"data": {
+                        "entity": True,
+                        "bookmark": True,
+                        "offline": True,
+                        "wiki": {
+                            "id": wiki_id,
+                            "name": bookmark["name"],
+                            "home": "home",
+                            "created": bookmark["added"],
+                        },
+                        "permissions": {"view": True, "edit": False, "delete": False, "manage": False},
+                        "fingerprint": fp
+                    }}
+                # Unknown error
+                return a.error(500, "Error accessing wiki: " + error)
+
+            # Success - return bookmark info with remote data
+            fp = mochi.entity.fingerprint(wiki_id, True)
+            return {"data": {
+                "entity": True,
+                "bookmark": True,
+                "wiki": {
+                    "id": wiki_id,
+                    "name": remote_info.get("name") or bookmark["name"],
+                    "home": remote_info.get("home") or "home",
+                    "created": bookmark["added"],
+                },
+                "permissions": {"view": True, "edit": False, "delete": False, "manage": False},
+                "fingerprint": fp
+            }}
         a.error(404, "Wiki not found")
         return
 
@@ -358,6 +666,34 @@ def action_info_entity(a):
 def action_page(a):
     wiki = get_wiki(a)
     if not wiki:
+        # Check if this is a bookmark to a remote wiki
+        wiki_id = a.input("wiki")
+        bookmark = mochi.db.row("select * from bookmarks where id=?", wiki_id) if wiki_id else None
+        if bookmark:
+            slug = a.input("page")
+            if not slug:
+                a.error(400, "Missing page parameter")
+                return
+
+            # Fetch page from remote wiki
+            page = fetch_remote_page(a, wiki_id, slug)
+
+            # Check for errors
+            if page and page.get("error"):
+                error = page["error"]
+                if error == "access_denied":
+                    return a.error(403, "Access denied to this wiki")
+                if error == "not_found":
+                    return {"data": {"error": "not_found", "page": slug, "bookmark": True}}
+                if error == "offline":
+                    return a.error(503, "Wiki is offline")
+                return a.error(500, "Error accessing wiki: " + error)
+
+            if not page:
+                return {"data": {"error": "not_found", "page": slug, "bookmark": True}}
+
+            return {"data": {"page": page, "bookmark": True}}
+
         a.error(404, "Wiki not found")
         return
 
@@ -423,9 +759,11 @@ def action_page_edit(a):
     if content == None:
         content = ""
 
-    now = mochi.time.now()
     author = a.user.identity.id
     name = a.user.identity.name
+
+    now = mochi.time.now()
+    source = wiki.get("source")
 
     # Check if page exists
     existing = mochi.db.row("select * from pages where wiki=? and page=?", wiki["id"], slug)
@@ -438,8 +776,8 @@ def action_page_edit(a):
             mochi.db.query("update pages set title=?, content=?, author=?, updated=?, version=?, deleted=0 where id=?",
                 title, content, author, now, version, existing["id"])
             create_revision(existing["id"], title, content, author, name, version, comment)
-            # Send page/create event (restored page)
-            broadcast_event(wiki["id"], "page/create", {
+            # Notify: source broadcasts to subscribers, subscriber notifies source
+            event_data = {
                 "id": existing["id"],
                 "page": slug,
                 "title": title,
@@ -448,7 +786,14 @@ def action_page_edit(a):
                 "name": name,
                 "created": now,
                 "version": version
-            })
+            }
+            if source:
+                mochi.message.send(
+                    {"from": wiki["id"], "to": source, "service": "wiki", "event": "page/create"},
+                    event_data
+                )
+            else:
+                broadcast_event(wiki["id"], "page/create", event_data)
             return {"data": {"id": existing["id"], "slug": slug, "version": version, "created": False}}
         else:
             # Update page
@@ -456,8 +801,8 @@ def action_page_edit(a):
             mochi.db.query("update pages set title=?, content=?, author=?, updated=?, version=? where id=?",
                 title, content, author, now, version, existing["id"])
             create_revision(existing["id"], title, content, author, name, version, comment)
-            # Send page/update event
-            broadcast_event(wiki["id"], "page/update", {
+            # Notify: source broadcasts to subscribers, subscriber notifies source
+            event_data = {
                 "id": existing["id"],
                 "page": slug,
                 "title": title,
@@ -466,7 +811,14 @@ def action_page_edit(a):
                 "name": name,
                 "updated": now,
                 "version": version
-            })
+            }
+            if source:
+                mochi.message.send(
+                    {"from": wiki["id"], "to": source, "service": "wiki", "event": "page/update"},
+                    event_data
+                )
+            else:
+                broadcast_event(wiki["id"], "page/update", event_data)
             return {"data": {"id": existing["id"], "slug": slug, "version": version, "created": False}}
     else:
         # Create new page
@@ -474,8 +826,8 @@ def action_page_edit(a):
         mochi.db.query("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
             id, wiki["id"], slug, title, content, author, now, now)
         create_revision(id, title, content, author, name, 1, comment)
-        # Send page/create event
-        broadcast_event(wiki["id"], "page/create", {
+        # Notify: source broadcasts to subscribers, subscriber notifies source
+        event_data = {
             "id": id,
             "page": slug,
             "title": title,
@@ -484,7 +836,14 @@ def action_page_edit(a):
             "name": name,
             "created": now,
             "version": 1
-        })
+        }
+        if source:
+            mochi.message.send(
+                {"from": wiki["id"], "to": source, "service": "wiki", "event": "page/create"},
+                event_data
+            )
+        else:
+            broadcast_event(wiki["id"], "page/create", event_data)
         return {"data": {"id": id, "slug": slug, "version": 1, "created": True}}
 
 # Create a new page (returns page slug for redirect)
@@ -519,24 +878,26 @@ def action_new(a):
         a.error(400, "Page names starting with - are reserved")
         return
 
+    author = a.user.identity.id
+    name = a.user.identity.name
+    source = wiki.get("source")
+
     # Check if page already exists
     existing = mochi.db.row("select id from pages where wiki=? and page=?", wiki["id"], slug)
     if existing:
         a.error(409, "Page already exists")
         return
 
-    # Create the page
+    # Create the page locally
     now = mochi.time.now()
-    author = a.user.identity.id
-    name = a.user.identity.name
     id = mochi.uid()
 
     mochi.db.query("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
         id, wiki["id"], slug, title, content, author, now, now)
     create_revision(id, title, content, author, name, 1, "Initial creation")
 
-    # Send page/create event
-    broadcast_event(wiki["id"], "page/create", {
+    # Notify: source broadcasts to subscribers, subscriber notifies source
+    event_data = {
         "id": id,
         "page": slug,
         "title": title,
@@ -545,7 +906,14 @@ def action_new(a):
         "name": name,
         "created": now,
         "version": 1
-    })
+    }
+    if source:
+        mochi.message.send(
+            {"from": wiki["id"], "to": source, "service": "wiki", "event": "page/create"},
+            event_data
+        )
+    else:
+        broadcast_event(wiki["id"], "page/create", event_data)
 
     return {"data": {"id": id, "slug": slug}}
 
@@ -553,6 +921,35 @@ def action_new(a):
 def action_page_history(a):
     wiki = get_wiki(a)
     if not wiki:
+        # Check if this is a bookmark to a remote wiki
+        wiki_id = a.input("wiki")
+        bookmark = mochi.db.row("select * from bookmarks where id=?", wiki_id) if wiki_id else None
+        if bookmark:
+            slug = a.input("page")
+            if not slug:
+                a.error(400, "Missing page parameter")
+                return
+
+            # Fetch history from remote wiki
+            result = fetch_remote_page_history(a, wiki_id, slug)
+
+            # Check for errors
+            if result and result.get("error"):
+                error = result["error"]
+                if error == "access_denied":
+                    return a.error(403, "Access denied to this wiki")
+                if error == "not_found":
+                    return a.error(404, "Page not found")
+                if error == "offline":
+                    return a.error(503, "Wiki is offline")
+                return a.error(500, "Error accessing wiki: " + error)
+
+            if not result:
+                a.error(404, "Page not found")
+                return
+
+            return {"data": result}
+
         a.error(404, "Wiki not found")
         return
 
@@ -661,6 +1058,8 @@ def action_page_revert(a):
         a.error(400, "Version is required")
         return
 
+    source = wiki.get("source")
+
     page = mochi.db.row("select * from pages where wiki=? and page=?", wiki["id"], slug)
     if not page:
         a.error(404, "Page not found")
@@ -684,8 +1083,8 @@ def action_page_revert(a):
         revision["title"], revision["content"], author, now, newversion, page["id"])
     create_revision(page["id"], revision["title"], revision["content"], author, name, newversion, comment)
 
-    # Send page/update event
-    broadcast_event(wiki["id"], "page/update", {
+    # Notify: source broadcasts to subscribers, subscriber notifies source
+    event_data = {
         "id": page["id"],
         "page": slug,
         "title": revision["title"],
@@ -694,7 +1093,14 @@ def action_page_revert(a):
         "name": name,
         "updated": now,
         "version": newversion
-    })
+    }
+    if source:
+        mochi.message.send(
+            {"from": wiki["id"], "to": source, "service": "wiki", "event": "page/update"},
+            event_data
+        )
+    else:
+        broadcast_event(wiki["id"], "page/update", event_data)
 
     return {"data": {"slug": slug, "version": newversion, "reverted_from": int(version)}}
 
@@ -718,6 +1124,8 @@ def action_page_delete(a):
         a.error(400, "Missing page parameter")
         return
 
+    source = wiki.get("source")
+
     page = mochi.db.row("select * from pages where wiki=? and page=? and deleted=0", wiki["id"], slug)
     if not page:
         a.error(404, "Page not found")
@@ -728,12 +1136,19 @@ def action_page_delete(a):
 
     mochi.db.query("update pages set deleted=?, version=? where id=?", now, version, page["id"])
 
-    # Send page/delete event
-    broadcast_event(wiki["id"], "page/delete", {
+    # Notify: source broadcasts to subscribers, subscriber notifies source
+    event_data = {
         "id": page["id"],
         "deleted": now,
         "version": version
-    })
+    }
+    if source:
+        mochi.message.send(
+            {"from": wiki["id"], "to": source, "service": "wiki", "event": "page/delete"},
+            event_data
+        )
+    else:
+        broadcast_event(wiki["id"], "page/delete", event_data)
 
     return {"data": {"ok": True, "slug": slug}}
 
@@ -1077,6 +1492,49 @@ def action_settings_set(a):
 
     return {"data": {"ok": True}}
 
+# SUBSCRIBERS
+
+# List subscribers for a source wiki
+def action_subscribers(a):
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    if not check_access(a, wiki["id"], "manage"):
+        a.error(403, "Access denied")
+        return
+
+    # Only source wikis have subscribers
+    if wiki.get("source"):
+        return {"data": {"subscribers": []}}
+
+    subscribers = mochi.db.query("select id, name, subscribed, seen from subscribers where wiki=? order by name", wiki["id"])
+    return {"data": {"subscribers": subscribers}}
+
+# Remove a subscriber
+def action_subscriber_remove(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    if not check_access(a, wiki["id"], "manage"):
+        a.error(403, "Access denied")
+        return
+
+    subscriber_id = a.input("subscriber")
+    if not subscriber_id:
+        a.error(400, "Subscriber ID is required")
+        return
+
+    mochi.db.query("delete from subscribers where wiki=? and id=?", wiki["id"], subscriber_id)
+    return {"data": {"ok": True}}
+
 # ACCESS CONTROL
 
 # List access rules for the wiki
@@ -1265,8 +1723,23 @@ def event_page_create(e):
         return
 
     # Ensure wiki exists in database
-    if not mochi.db.exists("select 1 from wikis where id=?", wiki):
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
         return
+
+    sender = e.header("from")
+
+    # Validate sender is authorized to push updates
+    source = wikirow.get("source")
+    if source:
+        # Subscriber wiki: only accept from our source
+        if sender != source:
+            return
+    else:
+        # Source wiki: only accept from registered subscribers
+        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+            return
+        update_subscriber_seen(wiki, sender)
 
     id = e.content("id")
     page = e.content("page")
@@ -1275,6 +1748,7 @@ def event_page_create(e):
     author = e.content("author")
     created = e.content("created")
     version = e.content("version")
+    name = e.content("name") or ""
 
     # Validate required fields
     if not id or not page or not title or not author or not created or not version:
@@ -1298,9 +1772,21 @@ def event_page_create(e):
 
     # Create revision record with author name
     revid = mochi.uid()
-    name = e.content("name") or ""
     mochi.db.query("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, '')",
         revid, id, content, title, author, name, created, version)
+
+    # If this is a source wiki and event is from a subscriber, re-broadcast to other subscribers
+    if not wikirow.get("source") and sender:
+        broadcast_event(wiki, "page/create", {
+            "id": id,
+            "page": page,
+            "title": title,
+            "content": content,
+            "author": author,
+            "name": name,
+            "created": created,
+            "version": version
+        }, exclude=sender)
 
 # Receive page/update event
 def event_page_update(e):
@@ -1309,8 +1795,23 @@ def event_page_update(e):
         return
 
     # Ensure wiki exists in database
-    if not mochi.db.exists("select 1 from wikis where id=?", wiki):
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
         return
+
+    sender = e.header("from")
+
+    # Validate sender is authorized to push updates
+    source = wikirow.get("source")
+    if source:
+        # Subscriber wiki: only accept from our source
+        if sender != source:
+            return
+    else:
+        # Source wiki: only accept from registered subscribers
+        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+            return
+        update_subscriber_seen(wiki, sender)
 
     id = e.content("id")
     page = e.content("page")
@@ -1319,6 +1820,7 @@ def event_page_update(e):
     author = e.content("author")
     updated = e.content("updated")
     version = e.content("version")
+    name = e.content("name") or ""
 
     # Validate required fields
     if not id or not page or not title or not author or not updated or not version:
@@ -1342,12 +1844,47 @@ def event_page_update(e):
 
     # Create revision record with author name
     revid = mochi.uid()
-    name = e.content("name") or ""
     mochi.db.query("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, '')",
         revid, id, content, title, author, name, updated, version)
 
+    # If this is a source wiki and event is from a subscriber, re-broadcast to other subscribers
+    if not wikirow.get("source") and sender:
+        broadcast_event(wiki, "page/update", {
+            "id": id,
+            "page": page,
+            "title": title,
+            "content": content,
+            "author": author,
+            "name": name,
+            "updated": updated,
+            "version": version
+        }, exclude=sender)
+
 # Receive page/delete event
 def event_page_delete(e):
+    wiki = e.header("to")
+    if not wiki:
+        return
+
+    # Ensure wiki exists in database
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+
+    # Validate sender is authorized to push updates
+    source = wikirow.get("source")
+    if source:
+        # Subscriber wiki: only accept from our source
+        if sender != source:
+            return
+    else:
+        # Source wiki: only accept from registered subscribers
+        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+            return
+        update_subscriber_seen(wiki, sender)
+
     id = e.content("id")
     deleted = e.content("deleted")
     version = e.content("version")
@@ -1368,11 +1905,38 @@ def event_page_delete(e):
     # Soft delete
     mochi.db.query("update pages set deleted=?, version=? where id=?", deleted, version, id)
 
+    # If this is a source wiki and event is from a subscriber, re-broadcast to other subscribers
+    if not wikirow.get("source") and sender:
+        broadcast_event(wiki, "page/delete", {
+            "id": id,
+            "deleted": deleted,
+            "version": version
+        }, exclude=sender)
+
 # Receive redirect/set event
 def event_redirect_set(e):
     wiki = e.header("to")
     if not wiki:
         return
+
+    # Ensure wiki exists in database
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+
+    # Validate sender is authorized to push updates
+    wikisource = wikirow.get("source")
+    if wikisource:
+        # Subscriber wiki: only accept from our source
+        if sender != wikisource:
+            return
+    else:
+        # Source wiki: only accept from registered subscribers
+        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+            return
+        update_subscriber_seen(wiki, sender)
 
     source = e.content("source")
     target = e.content("target")
@@ -1391,6 +1955,25 @@ def event_redirect_delete(e):
     if not wiki:
         return
 
+    # Ensure wiki exists in database
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+
+    # Validate sender is authorized to push updates
+    wikisource = wikirow.get("source")
+    if wikisource:
+        # Subscriber wiki: only accept from our source
+        if sender != wikisource:
+            return
+    else:
+        # Source wiki: only accept from registered subscribers
+        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+            return
+        update_subscriber_seen(wiki, sender)
+
     source = e.content("source")
 
     # Validate required fields
@@ -1408,9 +1991,29 @@ def event_tag_add(e):
     if not page or not tag:
         return
 
-    # Check if page exists
-    if not mochi.db.exists("select 1 from pages where id=?", page):
+    # Check if page exists and get wiki
+    pagerow = mochi.db.row("select wiki from pages where id=?", page)
+    if not pagerow:
         return
+
+    wiki = pagerow["wiki"]
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+
+    # Validate sender is authorized to push updates
+    wikisource = wikirow.get("source")
+    if wikisource:
+        # Subscriber wiki: only accept from our source
+        if sender != wikisource:
+            return
+    else:
+        # Source wiki: only accept from registered subscribers
+        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+            return
+        update_subscriber_seen(wiki, sender)
 
     # Insert tag (ignore if already exists)
     mochi.db.query("insert or ignore into tags (page, tag) values (?, ?)", page, tag)
@@ -1424,6 +2027,30 @@ def event_tag_remove(e):
     if not page or not tag:
         return
 
+    # Check if page exists and get wiki
+    pagerow = mochi.db.row("select wiki from pages where id=?", page)
+    if not pagerow:
+        return
+
+    wiki = pagerow["wiki"]
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+
+    # Validate sender is authorized to push updates
+    wikisource = wikirow.get("source")
+    if wikisource:
+        # Subscriber wiki: only accept from our source
+        if sender != wikisource:
+            return
+    else:
+        # Source wiki: only accept from registered subscribers
+        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+            return
+        update_subscriber_seen(wiki, sender)
+
     mochi.db.query("delete from tags where page=? and tag=?", page, tag)
 
 # Receive setting/set event
@@ -1431,6 +2058,25 @@ def event_setting_set(e):
     wiki = e.header("to")
     if not wiki:
         return
+
+    # Ensure wiki exists in database
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+
+    # Validate sender is authorized to push updates
+    wikisource = wikirow.get("source")
+    if wikisource:
+        # Subscriber wiki: only accept from our source
+        if sender != wikisource:
+            return
+    else:
+        # Source wiki: only accept from registered subscribers
+        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+            return
+        update_subscriber_seen(wiki, sender)
 
     name = e.content("name")
     value = e.content("value")
@@ -1461,9 +2107,14 @@ def event_subscribe(e):
 
     now = mochi.time.now()
 
-    # Add or update subscriber
-    mochi.db.query("replace into subscribers (wiki, id, name, subscribed) values (?, ?, ?, ?)",
-        wiki, subscriber, name, now)
+    # Check if subscriber already exists
+    if mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, subscriber):
+        # Update name only (don't reset timestamps)
+        mochi.db.query("update subscribers set name=? where wiki=? and id=?", name, wiki, subscriber)
+    else:
+        # New subscriber - set subscribed to now, seen to 0 (never seen yet)
+        mochi.db.query("insert into subscribers (wiki, id, name, subscribed, seen) values (?, ?, ?, ?, 0)",
+            wiki, subscriber, name, now)
 
 # INITIAL SYNC
 
@@ -1477,6 +2128,12 @@ def event_sync(e):
     # Verify wiki exists
     if not mochi.db.exists("select 1 from wikis where id=?", wiki):
         e.write({"status": "404", "error": "Wiki not found"})
+        return
+
+    # Check if requester has view access
+    requester = e.header("from")
+    if not check_event_access(requester, wiki, "view"):
+        e.write({"status": "403", "error": "Access denied"})
         return
 
     # Generate full dump of all wiki data
@@ -1509,6 +2166,348 @@ def event_sync(e):
         "redirects": redirects,
         "attachments": attachments,
     })
+
+# Handle remote page edit request from a subscriber (stream-based)
+def event_page_edit_request(e):
+    wiki = e.header("to")
+    if not wiki:
+        e.write({"status": "400", "error": "Missing wiki ID"})
+        return
+
+    # Verify wiki exists and is a source wiki (not a subscriber)
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        e.write({"status": "404", "error": "Wiki not found"})
+        return
+
+    if wikirow.get("source"):
+        e.write({"status": "400", "error": "Cannot edit a subscriber wiki remotely"})
+        return
+
+    # Check access for the remote user
+    remote_user = e.header("from")
+    if not check_event_access(remote_user, wiki, "edit"):
+        e.write({"status": "403", "error": "Access denied"})
+        return
+
+    # Get the edit request data from initial content (sent as second arg to mochi.stream)
+    slug = e.content("page")
+    title = e.content("title")
+    content = e.content("content")
+    comment = e.content("comment") or ""
+    author = e.content("author") or remote_user
+    name = e.content("name") or ""
+
+    if not slug:
+        e.write({"status": "400", "error": "Missing page parameter"})
+        return
+
+    if not title:
+        e.write({"status": "400", "error": "Title is required"})
+        return
+
+    if content == None:
+        content = ""
+
+    now = mochi.time.now()
+
+    # Check if page exists
+    existing = mochi.db.row("select * from pages where wiki=? and page=?", wiki, slug)
+
+    if existing:
+        if existing["deleted"]:
+            # Restore deleted page
+            version = existing["version"] + 1
+            mochi.db.query("update pages set title=?, content=?, author=?, updated=?, version=?, deleted=0 where id=?",
+                title, content, author, now, version, existing["id"])
+            create_revision(existing["id"], title, content, author, name, version, comment)
+            broadcast_event(wiki, "page/create", {
+                "id": existing["id"],
+                "page": slug,
+                "title": title,
+                "content": content,
+                "author": author,
+                "name": name,
+                "created": now,
+                "version": version
+            })
+            e.write({"status": "200", "id": existing["id"], "slug": slug, "version": version, "created": False})
+        else:
+            # Update page
+            version = existing["version"] + 1
+            mochi.db.query("update pages set title=?, content=?, author=?, updated=?, version=? where id=?",
+                title, content, author, now, version, existing["id"])
+            create_revision(existing["id"], title, content, author, name, version, comment)
+            broadcast_event(wiki, "page/update", {
+                "id": existing["id"],
+                "page": slug,
+                "title": title,
+                "content": content,
+                "author": author,
+                "name": name,
+                "updated": now,
+                "version": version
+            })
+            e.write({"status": "200", "id": existing["id"], "slug": slug, "version": version, "created": False})
+    else:
+        # Create new page
+        id = mochi.uid()
+        mochi.db.query("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
+            id, wiki, slug, title, content, author, now, now)
+        create_revision(id, title, content, author, name, 1, comment)
+        broadcast_event(wiki, "page/create", {
+            "id": id,
+            "page": slug,
+            "title": title,
+            "content": content,
+            "author": author,
+            "name": name,
+            "created": now,
+            "version": 1
+        })
+        e.write({"status": "200", "id": id, "slug": slug, "version": 1, "created": True})
+
+# Handle remote page delete request from a subscriber (stream-based)
+def event_page_delete_request(e):
+    wiki = e.header("to")
+    if not wiki:
+        e.write({"status": "400", "error": "Missing wiki ID"})
+        return
+
+    # Verify wiki exists and is a source wiki (not a subscriber)
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        e.write({"status": "404", "error": "Wiki not found"})
+        return
+
+    if wikirow.get("source"):
+        e.write({"status": "400", "error": "Cannot delete from a subscriber wiki remotely"})
+        return
+
+    # Check access for the remote user
+    remote_user = e.header("from")
+    if not check_event_access(remote_user, wiki, "edit"):
+        e.write({"status": "403", "error": "Access denied"})
+        return
+
+    # Get the delete request data from initial content (sent as second arg to mochi.stream)
+    slug = e.content("page")
+    if not slug:
+        e.write({"status": "400", "error": "Missing page parameter"})
+        return
+
+    # Check if page exists
+    page = mochi.db.row("select * from pages where wiki=? and page=?", wiki, slug)
+    if not page:
+        e.write({"status": "404", "error": "Page not found"})
+        return
+
+    if page["deleted"]:
+        e.write({"status": "400", "error": "Page already deleted"})
+        return
+
+    # Mark page as deleted
+    now = mochi.time.now()
+    mochi.db.query("update pages set deleted=1, updated=? where id=?", now, page["id"])
+
+    # Broadcast delete event to subscribers
+    broadcast_event(wiki, "page/delete", {
+        "id": page["id"],
+        "page": slug,
+    })
+
+    e.write({"status": "200", "deleted": slug})
+
+# Handle remote attachment upload request from a subscriber (stream-based)
+def event_attachment_upload_request(e):
+    wiki = e.header("to")
+    if not wiki:
+        e.write({"status": "400", "error": "Missing wiki ID"})
+        return
+
+    # Verify wiki exists and is a source wiki (not a subscriber)
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        e.write({"status": "404", "error": "Wiki not found"})
+        return
+
+    if wikirow.get("source"):
+        e.write({"status": "400", "error": "Cannot upload to a subscriber wiki remotely"})
+        return
+
+    # Check access for the remote user
+    remote_user = e.header("from")
+    if not check_event_access(remote_user, wiki, "edit"):
+        e.write({"status": "403", "error": "Access denied"})
+        return
+
+    # Get upload metadata from message content
+    name = e.content("name")
+    content_type = e.content("content_type") or ""
+
+    if not name:
+        e.write({"status": "400", "error": "File name is required"})
+        return
+
+    # Save file data directly to temp location (avoids loading into memory)
+    temp_path = "temp/upload_" + mochi.uid()
+    e.stream.read_to_file(temp_path)
+
+    # Get subscribers for notification
+    subscribers = mochi.db.query("select id from subscribers where wiki=? and id!=?", wiki, wiki)
+    notify = [s["id"] for s in subscribers]
+
+    # Create the attachment from the temp file
+    attachment = mochi.attachment.create_from_file(wiki, name, temp_path, content_type, "", "", notify)
+
+    if not attachment:
+        e.write({"status": "500", "error": "Failed to create attachment"})
+        return
+
+    e.write({"status": "200", "attachment": attachment})
+
+# Handle attachment/create event - subscriber notifies source that they uploaded an attachment
+# Source fetches the file from subscriber via stream and saves locally
+def event_attachment_create(e):
+    wiki = e.header("to")
+    if not wiki:
+        return
+
+    # Verify wiki exists and is a source wiki (not a subscriber)
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    if wikirow.get("source"):
+        # This wiki is itself a subscriber, ignore
+        return
+
+    sender = e.header("from")
+
+    # Validate sender is a registered subscriber
+    if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+        return
+    update_subscriber_seen(wiki, sender)
+
+    # Get attachment metadata from event content
+    attachment_id = e.content("id")
+    name = e.content("name")
+    size = e.content("size")
+    content_type = e.content("content_type") or ""
+    created = e.content("created")
+    subscriber = e.content("subscriber")
+
+    if not attachment_id or not name or not subscriber:
+        return
+
+    # Check if we already have this attachment
+    if mochi.attachment.exists(attachment_id):
+        mochi.log.debug("Attachment %s already exists, skipping", attachment_id)
+        return
+
+    mochi.log.info("Fetching attachment %s from subscriber %s", attachment_id, subscriber)
+
+    # Open stream to subscriber to fetch the file data
+    stream = mochi.stream(
+        {"from": wiki, "to": subscriber, "service": "wiki", "event": "attachment/fetch"},
+        {"id": attachment_id}
+    )
+
+    if not stream:
+        mochi.log.error("Failed to open stream to subscriber %s", subscriber)
+        return
+
+    # Read response status first
+    response = stream.read()
+    mochi.log.debug("Fetch response: %s", response)
+    if not response or response.get("status") != "200":
+        mochi.log.error("Failed to fetch attachment %s from subscriber %s: %s",
+            attachment_id, subscriber, response.get("error") if response else "no response")
+        return
+
+    # Read file data to temp location
+    temp_path = "temp/fetch_" + mochi.uid()
+    mochi.log.debug("Reading file to temp path: %s", temp_path)
+    bytes_read = stream.read_to_file(temp_path)
+    mochi.log.debug("Read %s bytes to %s", bytes_read, temp_path)
+
+    # Get subscribers for notification (excluding the one who uploaded)
+    subscribers = mochi.db.query("select id from subscribers where wiki=? and id!=?", wiki, subscriber)
+    notify = [s["id"] for s in subscribers]
+
+    # Create the attachment from the temp file with the original ID
+    attachment = mochi.attachment.create_from_file(wiki, name, temp_path, content_type, "", "", notify, attachment_id)
+
+    if attachment:
+        mochi.log.debug("Created attachment %s from subscriber %s", attachment_id, subscriber)
+
+# Handle attachment/delete event - subscriber notifies source that they deleted an attachment
+# Source deletes locally and broadcasts to other subscribers
+def event_attachment_delete(e):
+    wiki = e.header("to")
+    if not wiki:
+        return
+
+    # Verify wiki exists and is a source wiki (not a subscriber)
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    if wikirow.get("source"):
+        # This wiki is itself a subscriber, ignore
+        return
+
+    sender = e.header("from")
+
+    # Validate sender is a registered subscriber
+    if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+        return
+    update_subscriber_seen(wiki, sender)
+
+    attachment_id = e.content("id")
+
+    if not attachment_id:
+        return
+
+    # Get subscribers for notification (excluding the one who deleted)
+    subscribers = mochi.db.query("select id from subscribers where wiki=? and id!=?", wiki, sender)
+    notify = [s["id"] for s in subscribers]
+
+    # Delete locally and notify other subscribers
+    mochi.attachment.delete(attachment_id, notify)
+    mochi.log.debug("Deleted attachment %s from subscriber %s, notified %d others", attachment_id, sender, len(notify))
+
+# Handle attachment/fetch event - serve attachment file data to requester via stream
+def event_attachment_fetch(e):
+    wiki = e.header("to")
+    if not wiki:
+        e.write({"status": "400", "error": "Missing wiki ID"})
+        return
+
+    # Check if requester has view access
+    requester = e.header("from")
+    if not check_event_access(requester, wiki, "view"):
+        e.write({"status": "403", "error": "Access denied"})
+        return
+
+    # Get attachment ID from event content (sent as second arg to mochi.stream)
+    attachment_id = e.content("id")
+    mochi.log.debug("attachment/fetch request for id=%s", attachment_id)
+    if not attachment_id:
+        e.write({"status": "400", "error": "Attachment ID is required"})
+        return
+
+    # Get the attachment file path
+    path = mochi.attachment.path(attachment_id)
+    mochi.log.debug("attachment/fetch path=%s", path)
+    if not path:
+        e.write({"status": "404", "error": "Attachment not found"})
+        return
+
+    # Send success status, then file data
+    e.write({"status": "200"})
+    bytes_written = e.stream.write_from_file(path)
+    mochi.log.debug("attachment/fetch sent %s bytes", bytes_written)
 
 # Helper: Import wiki dump from sync response
 def import_sync_dump(wiki, dump):
@@ -1661,6 +2660,32 @@ def action_attachment_upload(a):
         a.error(403, "Access denied")
         return
 
+    # If this is a subscriber wiki, save locally then notify source asynchronously
+    source = wiki.get("source")
+    if source:
+        # Save attachment locally first (immediately available)
+        attachments = mochi.attachment.save(wiki["id"], "files", [], [], [])
+        if not attachments:
+            a.error(400, "No files uploaded")
+            return
+
+        # Notify source wiki asynchronously for each attachment
+        # Source will fetch the file data from us via stream
+        for att in attachments:
+            mochi.message.send(
+                {"from": wiki["id"], "to": source, "service": "wiki", "event": "attachment/create"},
+                {
+                    "id": att["id"],
+                    "name": att["name"],
+                    "size": att["size"],
+                    "content_type": att.get("type") or att.get("content_type", ""),
+                    "created": att["created"],
+                    "subscriber": wiki["id"],  # So source knows where to fetch from
+                }
+            )
+
+        return {"data": {"attachments": attachments}}
+
     # Get subscribers for notification
     subscribers = mochi.db.query("select id from subscribers where wiki=? and id!=?", wiki["id"], wiki["id"])
 
@@ -1693,33 +2718,57 @@ def action_attachment_delete(a):
         a.error(400, "Attachment ID is required")
         return
 
-    # Get subscribers for notification
-    subscribers = mochi.db.query("select id from subscribers where wiki=? and id!=?", wiki["id"], wiki["id"])
+    source = wiki.get("source")
 
-    if mochi.attachment.delete(id, subscribers):
-        # Remove references to this attachment from all pages
-        ref = "attachments/" + id
-        pages = mochi.db.query("select id, page, title, content, version from pages where wiki=? and content like ?", wiki["id"], "%" + ref + "%")
-        now = mochi.time.now()
-        author = a.user.identity.id
-        name = a.user.identity.name
-        for page in pages:
-            new_content = remove_attachment_refs(page["content"], id)
-            if new_content != page["content"]:
-                version = page["version"] + 1
-                mochi.db.query("update pages set content=?, author=?, updated=?, version=? where id=?",
-                    new_content, author, now, version, page["id"])
-                create_revision(page["id"], page["title"], new_content, author, name, version, "Removed deleted attachment")
-                broadcast_event(wiki["id"], "page/update", {
-                    "id": page["id"],
-                    "page": page["page"],
-                    "title": page["title"],
-                    "content": new_content,
-                    "author": author,
-                    "name": name,
-                    "updated": now,
-                    "version": version
-                })
-        return {"data": {"ok": True}}
+    # Delete locally - subscriber doesn't notify others (source will broadcast)
+    if source:
+        notify = []
     else:
+        subscribers = mochi.db.query("select id from subscribers where wiki=? and id!=?", wiki["id"], wiki["id"])
+        notify = [s["id"] for s in subscribers]
+
+    if not mochi.attachment.delete(id, notify):
         a.error(404, "Attachment not found")
+        return
+
+    # Remove references to this attachment from all pages
+    ref = "attachments/" + id
+    pages = mochi.db.query("select id, page, title, content, version from pages where wiki=? and content like ?", wiki["id"], "%" + ref + "%")
+    now = mochi.time.now()
+    author = a.user.identity.id
+    name = a.user.identity.name
+
+    for page in pages:
+        new_content = remove_attachment_refs(page["content"], id)
+        if new_content != page["content"]:
+            version = page["version"] + 1
+            mochi.db.query("update pages set content=?, author=?, updated=?, version=? where id=?",
+                new_content, author, now, version, page["id"])
+            create_revision(page["id"], page["title"], new_content, author, name, version, "Removed deleted attachment")
+            # Notify: source broadcasts to subscribers, subscriber notifies source
+            event_data = {
+                "id": page["id"],
+                "page": page["page"],
+                "title": page["title"],
+                "content": new_content,
+                "author": author,
+                "name": name,
+                "updated": now,
+                "version": version
+            }
+            if source:
+                mochi.message.send(
+                    {"from": wiki["id"], "to": source, "service": "wiki", "event": "page/update"},
+                    event_data
+                )
+            else:
+                broadcast_event(wiki["id"], "page/update", event_data)
+
+    # Notify source of attachment deletion (if subscriber)
+    if source:
+        mochi.message.send(
+            {"from": wiki["id"], "to": source, "service": "wiki", "event": "attachment/delete"},
+            {"id": id}
+        )
+
+    return {"data": {"ok": True}}

@@ -427,6 +427,40 @@ export function useRevokeAccess() {
   })
 }
 
+// Subscribers
+
+export interface Subscriber {
+  id: string
+  name: string
+  subscribed: number
+  seen: number
+}
+
+interface SubscribersResponse {
+  subscribers: Subscriber[]
+}
+
+export function useSubscribers() {
+  return useQuery({
+    queryKey: ['wiki', 'subscribers'],
+    queryFn: () =>
+      requestHelpers.get<SubscribersResponse>(endpoints.wiki.subscribers),
+  })
+}
+
+export function useRemoveSubscriber() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (subscriberId: string) =>
+      requestHelpers.post<{ ok: boolean }>(endpoints.wiki.subscriberRemove, {
+        subscriber: subscriberId,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'subscribers'] })
+    },
+  })
+}
+
 // Join a remote wiki
 
 interface JoinWikiResponse {
@@ -440,6 +474,41 @@ export function useJoinWiki() {
   return useMutation({
     mutationFn: (target: string) =>
       requestHelpers.post<JoinWikiResponse>(endpoints.wiki.join, { target }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
+    },
+  })
+}
+
+// Bookmark a remote wiki (follow without making a local copy)
+
+interface BookmarkAddResponse {
+  id: string
+  name: string
+  message: string
+}
+
+export function useAddBookmark() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (target: string) =>
+      requestHelpers.post<BookmarkAddResponse>(endpoints.wiki.bookmarkAdd, { target }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
+    },
+  })
+}
+
+interface BookmarkRemoveResponse {
+  ok: boolean
+  message: string
+}
+
+export function useRemoveBookmark() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (target: string) =>
+      requestHelpers.post<BookmarkRemoveResponse>(endpoints.wiki.bookmarkRemove, { target }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },

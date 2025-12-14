@@ -14,6 +14,7 @@ import {
   ArrowRight,
   Home,
   RefreshCw,
+  Users,
 } from 'lucide-react'
 import { getAppPath } from '@/lib/app-path'
 import { Button } from '@/components/ui/button'
@@ -74,6 +75,8 @@ import {
   useGrantAccess,
   useDenyAccess,
   useRevokeAccess,
+  useSubscribers,
+  useRemoveSubscriber,
   useRedirects,
   useSetRedirect,
   useDeleteRedirect,
@@ -81,7 +84,7 @@ import {
 import { useWikiContext } from '@/context/wiki-context'
 import type { AccessRule } from '@/types/wiki'
 
-type TabId = 'general' | 'access' | 'redirects' | 'delete'
+type TabId = 'general' | 'access' | 'redirects' | 'subscribers' | 'delete'
 
 interface Tab {
   id: TabId
@@ -91,8 +94,9 @@ interface Tab {
 
 const tabs: Tab[] = [
   { id: 'general', label: 'General', icon: <Home className="h-4 w-4" /> },
-  { id: 'access', label: 'Access', icon: <Shield className="h-4 w-4" /> },
   { id: 'redirects', label: 'Redirects', icon: <CornerDownRight className="h-4 w-4" /> },
+  { id: 'access', label: 'Access', icon: <Shield className="h-4 w-4" /> },
+  { id: 'subscribers', label: 'Subscribers', icon: <Users className="h-4 w-4" /> },
   { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" /> },
 ]
 
@@ -132,6 +136,7 @@ export function WikiSettings() {
         {activeTab === 'general' && <GeneralTab />}
         {activeTab === 'access' && <AccessTab />}
         {activeTab === 'redirects' && <RedirectsTab />}
+        {activeTab === 'subscribers' && <SubscribersTab />}
         {activeTab === 'delete' && <DeleteTab />}
       </div>
     </div>
@@ -501,6 +506,149 @@ function AccessTab() {
   )
 }
 
+function SubscribersTab() {
+  const { data, isLoading, error } = useSubscribers()
+  const { info } = useWikiContext()
+  const removeSubscriber = useRemoveSubscriber()
+
+  // Don't show subscribers tab for subscriber wikis (only source wikis have subscribers)
+  if (info?.wiki && data?.subscribers.length === 0) {
+    // Check if this is a subscriber wiki
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Subscribers</CardTitle>
+          <CardDescription>
+            Other wikis that have subscribed to receive updates from this wiki.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-sm">
+            No subscribers yet. When other wikis subscribe to this wiki, they will appear here.
+          </p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const handleRemove = (subscriberId: string, name: string) => {
+    removeSubscriber.mutate(subscriberId, {
+      onSuccess: () => {
+        toast.success(`Subscriber "${name || subscriberId.slice(0, 12)}..." removed`)
+      },
+      onError: (err) => {
+        toast.error(err.message || 'Failed to remove subscriber')
+      },
+    })
+  }
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Subscribers</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Subscribers</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-destructive">Error loading subscribers: {error.message}</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const subscribers = data?.subscribers || []
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Subscribers</CardTitle>
+        <CardDescription>
+          Other wikis that have subscribed to receive updates from this wiki.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {subscribers.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Subscribed</TableHead>
+                <TableHead>Last seen</TableHead>
+                <TableHead className="w-20">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {subscribers.map((sub) => (
+                <TableRow key={sub.id}>
+                  <TableCell className="font-mono text-xs">
+                    {sub.id.slice(0, 20)}...
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {format(new Date(sub.subscribed * 1000), 'yyyy-MM-dd HH:mm:ss')}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {sub.seen > 0
+                      ? format(new Date(sub.seen * 1000), 'yyyy-MM-dd HH:mm:ss')
+                      : 'Never'}
+                  </TableCell>
+                  <TableCell>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          disabled={removeSubscriber.isPending}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Remove subscriber?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will stop sending updates to "{sub.name || sub.id.slice(0, 16)}...".
+                            They can subscribe again if they want.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleRemove(sub.id, sub.name)}
+                          >
+                            Remove
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            No subscribers yet. When other wikis subscribe to this wiki, they will appear here.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
 function RedirectsTab() {
   const { data, isLoading, error } = useRedirects()
   const deleteRedirect = useDeleteRedirect()
@@ -569,7 +717,7 @@ function RedirectsTab() {
                     </a>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {format(new Date(redirect.created * 1000), 'PPP')}
+                    {format(new Date(redirect.created * 1000), 'yyyy-MM-dd HH:mm:ss')}
                   </TableCell>
                   <TableCell>
                     <AlertDialog>

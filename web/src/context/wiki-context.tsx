@@ -1,6 +1,7 @@
 import { createContext, useContext, type ReactNode } from 'react'
 import { useWikiInfo, type WikiInfoResponse } from '@/hooks/use-wiki'
 import type { WikiPermissions } from '@/types/wiki'
+import { GeneralError } from '@/features/errors/general-error'
 
 interface WikiContextValue {
   info: WikiInfoResponse | undefined
@@ -18,7 +19,12 @@ const defaultPermissions: WikiPermissions = {
 const WikiContext = createContext<WikiContextValue | null>(null)
 
 export function WikiProvider({ children }: { children: ReactNode }) {
-  const { data, isLoading } = useWikiInfo()
+  const { data, isLoading, error } = useWikiInfo()
+
+  // Handle errors from wiki info request
+  if (error) {
+    return <GeneralError error={error} />
+  }
 
   const permissions = data?.permissions ?? defaultPermissions
 

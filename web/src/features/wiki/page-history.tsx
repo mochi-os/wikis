@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { History, Eye, RotateCcw, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { getRouterBasepath } from '@/lib/app-path'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -33,7 +34,7 @@ export function PageHistory({
           <h1 className="text-2xl font-bold">History</h1>
         </div>
         <Button variant="outline" asChild>
-          <a href={slug}>
+          <a href={`${getRouterBasepath()}${slug}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to page
           </a>
@@ -66,8 +67,22 @@ export function PageHistory({
           <TableBody>
             {revisions.map((revision) => (
               <TableRow key={revision.id}>
-                <TableCell className="font-mono">{revision.version}</TableCell>
-                <TableCell>{revision.title}</TableCell>
+                <TableCell className="font-mono">
+                  <a
+                    href={`${getRouterBasepath()}${slug}/history/${revision.version}`}
+                    className="text-primary hover:underline"
+                  >
+                    {revision.version}
+                  </a>
+                </TableCell>
+                <TableCell>
+                  <a
+                    href={`${getRouterBasepath()}${slug}/history/${revision.version}`}
+                    className="text-primary hover:underline"
+                  >
+                    {revision.title}
+                  </a>
+                </TableCell>
                 <TableCell className="text-muted-foreground">
                   {revision.name}
                 </TableCell>
@@ -80,7 +95,7 @@ export function PageHistory({
                 <TableCell>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="icon" asChild title="View">
-                      <a href={`${slug}/history/${revision.version}`}>
+                      <a href={`${getRouterBasepath()}${slug}/history/${revision.version}`}>
                         <Eye className="h-4 w-4" />
                       </a>
                     </Button>
@@ -91,9 +106,7 @@ export function PageHistory({
                         asChild
                         title="Revert to this version"
                       >
-                        <a
-                          href={`${slug}/revert?version=${revision.version}`}
-                        >
+                        <a href={`${getRouterBasepath()}${slug}/revert?version=${revision.version}`}>
                           <RotateCcw className="h-4 w-4" />
                         </a>
                       </Button>

@@ -1,26 +1,46 @@
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { ApiError } from '@/lib/request'
 
 type GeneralErrorProps = React.HTMLAttributes<HTMLDivElement> & {
   minimal?: boolean
+  error?: unknown
+  reset?: () => void
 }
 
 export function GeneralError({
   className,
   minimal = false,
+  error,
 }: GeneralErrorProps) {
   const navigate = useNavigate()
   const { history } = useRouter()
+
+  // Extract error details directly from the error object
+  let statusCode = 500
+  let message = 'Unknown error'
+
+  if (error instanceof ApiError) {
+    statusCode = error.status || 500
+    // Show the actual error message from the backend
+    const errorData = error.data as { error?: string } | undefined
+    message = errorData?.error || error.message || 'Unknown error'
+  } else if (error instanceof Error) {
+    message = error.message
+  } else if (typeof error === 'string') {
+    message = error
+  }
+
   return (
     <div className={cn('h-svh w-full', className)}>
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
         {!minimal && (
-          <h1 className='text-[7rem] leading-tight font-bold'>500</h1>
+          <h1 className='text-[7rem] leading-tight font-bold'>{statusCode}</h1>
         )}
-        <span className='font-medium'>Oops! Something went wrong {`:')`}</span>
+        <span className='font-medium'>Error</span>
         <p className='text-muted-foreground text-center'>
-          We apologize for the inconvenience. <br /> Please try again later.
+          {message}
         </p>
         {!minimal && (
           <div className='mt-6 flex gap-4'>

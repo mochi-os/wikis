@@ -6,12 +6,9 @@
       // Set base href to entity root for proper asset resolution in nested routes
       (function() {
         var path = window.location.pathname;
-        // Match /wiki/<entity>/ or /<entity>/ patterns
         var match = path.match(/^(\/wiki\/[^/]+\/|\/[^/]+\/)/);
         if (match) {
-          var base = document.createElement('base');
-          base.href = match[1];
-          document.head.appendChild(base);
+          document.write('<base href="' + match[1] + '">');
         }
       })();
     </script>

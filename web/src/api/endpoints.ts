@@ -33,6 +33,9 @@ const endpoints = {
     // Settings
     settings: 'settings',
     settingsSet: 'settings/set',
+    // Subscribers
+    subscribers: 'subscribers',
+    subscriberRemove: 'subscriber/remove',
     // Access control
     access: 'access',
     accessGrant: 'access/grant',
@@ -48,6 +51,9 @@ const endpoints = {
     attachmentUpload: 'attachment/upload',
     attachmentDelete: 'attachment/delete',
     attachment: (id: string) => `-/attachments/${id}`,
+    // Bookmarks
+    bookmarkAdd: 'bookmark/add',
+    bookmarkRemove: 'bookmark/remove',
   },
   user: {
     account: 'user/account/data',

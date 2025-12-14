@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 import { Clock, ArrowLeft, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { getRouterBasepath } from '@/lib/app-path'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -40,14 +41,14 @@ export function RevisionView({
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" asChild>
-              <a href={`${slug}/history`}>
+              <a href={`${getRouterBasepath()}${slug}/history`}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to history
               </a>
             </Button>
             {!isCurrentVersion && (
               <Button size="sm" asChild>
-                <a href={`${slug}/revert?version=${revision.version}`}>
+                <a href={`${getRouterBasepath()}${slug}/revert?version=${revision.version}`}>
                   <RotateCcw className="mr-2 h-4 w-4" />
                   Revert to this version
                 </a>
