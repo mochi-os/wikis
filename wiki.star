@@ -94,6 +94,19 @@ def check_event_access(user_id, wiki_id, operation, page=None):
         return mochi.access.check(user_id, resource, "manage")
     return False
 
+# Helper: Validate that event sender is authorized to push updates
+# Returns True if valid, False otherwise. Updates subscriber seen timestamp if valid.
+def validate_event_sender(wikirow, wiki, sender):
+    source = wikirow.get("source")
+    if source:
+        # Subscriber wiki: only accept from our source
+        return sender == source
+    # Source wiki: only accept from registered subscribers
+    if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+        return False
+    update_subscriber_seen(wiki, sender)
+    return True
+
 # Helper: Broadcast event to all subscribers of a wiki
 def broadcast_event(wiki, event, data, exclude=None):
     if not wiki:
@@ -354,6 +367,9 @@ def action_create(a):
     if not name or not mochi.valid(name, "name"):
         a.error(400, "Invalid name")
         return
+    if len(name) > 100:
+        a.error(400, "Name too long (max 100 characters)")
+        return
 
     privacy = a.input("privacy") or "public"
     if privacy not in ["public", "private"]:
@@ -576,16 +592,8 @@ def action_root(a):
 
 # Info endpoint for class context - returns list of wikis
 def action_info_class(a):
-    mochi.log.debug("[WIKI] action_info_class called")
-    mochi.log.debug("[WIKI] action_info_class: a.user=%s", a.user)
-    if not a.user:
-        mochi.log.debug("[WIKI] action_info_class: returning 401 - not logged in")
-        a.error(401, "Not logged in")
-        return
-
     wikis = mochi.db.query("select id, name, home, source, created from wikis order by name")
     bookmarks = mochi.db.query("select id, name, added from bookmarks order by name")
-    mochi.log.debug("[WIKI] action_info_class: found %s wikis, %s bookmarks", len(wikis), len(bookmarks))
     return {"data": {"entity": False, "wikis": wikis, "bookmarks": bookmarks}}
 
 # Info endpoint for entity context - returns wiki info
@@ -755,9 +763,19 @@ def action_page_edit(a):
     if not title:
         a.error(400, "Title is required")
         return
+    if len(title) > 255:
+        a.error(400, "Title too long (max 255 characters)")
+        return
 
     if content == None:
         content = ""
+    if len(content) > 1000000:
+        a.error(400, "Content too long (max 1MB)")
+        return
+
+    if len(comment) > 500:
+        a.error(400, "Comment too long (max 500 characters)")
+        return
 
     author = a.user.identity.id
     name = a.user.identity.name
@@ -868,9 +886,19 @@ def action_new(a):
     if not slug:
         a.error(400, "Slug is required")
         return
+    if len(slug) > 100:
+        a.error(400, "Page URL too long (max 100 characters)")
+        return
 
     if not title:
         a.error(400, "Title is required")
+        return
+    if len(title) > 255:
+        a.error(400, "Title too long (max 255 characters)")
+        return
+
+    if len(content) > 1000000:
+        a.error(400, "Content too long (max 1MB)")
         return
 
     # Check if slug is reserved
@@ -1183,6 +1211,14 @@ def action_tag_add(a):
     if not tag:
         a.error(400, "Tag is required")
         return
+    if len(tag) > 50:
+        a.error(400, "Tag too long (max 50 characters)")
+        return
+    # Only allow alphanumeric, hyphens, and underscores
+    for c in tag:
+        if not (c.isalnum() or c in "-_"):
+            a.error(400, "Tags can only contain letters, numbers, hyphens, and underscores")
+            return
 
     page = mochi.db.row("select id from pages where wiki=? and page=? and deleted=0", wiki["id"], slug)
     if not page:
@@ -1359,6 +1395,13 @@ def action_redirect_set(a):
     # Normalize slugs
     source = source.lower().strip()
     target = target.lower().strip()
+
+    if len(source) > 100:
+        a.error(400, "Source too long (max 100 characters)")
+        return
+    if len(target) > 100:
+        a.error(400, "Target too long (max 100 characters)")
+        return
 
     if source == target:
         a.error(400, "Source and target cannot be the same")
@@ -1728,18 +1771,8 @@ def event_page_create(e):
         return
 
     sender = e.header("from")
-
-    # Validate sender is authorized to push updates
-    source = wikirow.get("source")
-    if source:
-        # Subscriber wiki: only accept from our source
-        if sender != source:
-            return
-    else:
-        # Source wiki: only accept from registered subscribers
-        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
-            return
-        update_subscriber_seen(wiki, sender)
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
 
     id = e.content("id")
     page = e.content("page")
@@ -1800,18 +1833,8 @@ def event_page_update(e):
         return
 
     sender = e.header("from")
-
-    # Validate sender is authorized to push updates
-    source = wikirow.get("source")
-    if source:
-        # Subscriber wiki: only accept from our source
-        if sender != source:
-            return
-    else:
-        # Source wiki: only accept from registered subscribers
-        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
-            return
-        update_subscriber_seen(wiki, sender)
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
 
     id = e.content("id")
     page = e.content("page")
@@ -1872,18 +1895,8 @@ def event_page_delete(e):
         return
 
     sender = e.header("from")
-
-    # Validate sender is authorized to push updates
-    source = wikirow.get("source")
-    if source:
-        # Subscriber wiki: only accept from our source
-        if sender != source:
-            return
-    else:
-        # Source wiki: only accept from registered subscribers
-        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
-            return
-        update_subscriber_seen(wiki, sender)
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
 
     id = e.content("id")
     deleted = e.content("deleted")
@@ -1925,18 +1938,8 @@ def event_redirect_set(e):
         return
 
     sender = e.header("from")
-
-    # Validate sender is authorized to push updates
-    wikisource = wikirow.get("source")
-    if wikisource:
-        # Subscriber wiki: only accept from our source
-        if sender != wikisource:
-            return
-    else:
-        # Source wiki: only accept from registered subscribers
-        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
-            return
-        update_subscriber_seen(wiki, sender)
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
 
     source = e.content("source")
     target = e.content("target")
@@ -1961,18 +1964,8 @@ def event_redirect_delete(e):
         return
 
     sender = e.header("from")
-
-    # Validate sender is authorized to push updates
-    wikisource = wikirow.get("source")
-    if wikisource:
-        # Subscriber wiki: only accept from our source
-        if sender != wikisource:
-            return
-    else:
-        # Source wiki: only accept from registered subscribers
-        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
-            return
-        update_subscriber_seen(wiki, sender)
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
 
     source = e.content("source")
 
@@ -2002,18 +1995,8 @@ def event_tag_add(e):
         return
 
     sender = e.header("from")
-
-    # Validate sender is authorized to push updates
-    wikisource = wikirow.get("source")
-    if wikisource:
-        # Subscriber wiki: only accept from our source
-        if sender != wikisource:
-            return
-    else:
-        # Source wiki: only accept from registered subscribers
-        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
-            return
-        update_subscriber_seen(wiki, sender)
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
 
     # Insert tag (ignore if already exists)
     mochi.db.query("insert or ignore into tags (page, tag) values (?, ?)", page, tag)
@@ -2038,18 +2021,8 @@ def event_tag_remove(e):
         return
 
     sender = e.header("from")
-
-    # Validate sender is authorized to push updates
-    wikisource = wikirow.get("source")
-    if wikisource:
-        # Subscriber wiki: only accept from our source
-        if sender != wikisource:
-            return
-    else:
-        # Source wiki: only accept from registered subscribers
-        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
-            return
-        update_subscriber_seen(wiki, sender)
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
 
     mochi.db.query("delete from tags where page=? and tag=?", page, tag)
 
@@ -2065,18 +2038,8 @@ def event_setting_set(e):
         return
 
     sender = e.header("from")
-
-    # Validate sender is authorized to push updates
-    wikisource = wikirow.get("source")
-    if wikisource:
-        # Subscriber wiki: only accept from our source
-        if sender != wikisource:
-            return
-    else:
-        # Source wiki: only accept from registered subscribers
-        if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
-            return
-        update_subscriber_seen(wiki, sender)
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
 
     name = e.content("name")
     value = e.content("value")
@@ -2383,11 +2346,8 @@ def event_attachment_create(e):
         return
 
     sender = e.header("from")
-
-    # Validate sender is a registered subscriber
-    if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+    if not validate_event_sender(wikirow, wiki, sender):
         return
-    update_subscriber_seen(wiki, sender)
 
     # Get attachment metadata from event content
     attachment_id = e.content("id")
@@ -2458,11 +2418,8 @@ def event_attachment_delete(e):
         return
 
     sender = e.header("from")
-
-    # Validate sender is a registered subscriber
-    if not mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, sender):
+    if not validate_event_sender(wikirow, wiki, sender):
         return
-    update_subscriber_seen(wiki, sender)
 
     attachment_id = e.content("id")
 
