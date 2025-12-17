@@ -58,13 +58,9 @@ def update_subscriber_seen(wiki, subscriber_id):
 # Helper: Get wiki from request, validating it exists
 def get_wiki(a):
     wiki = a.input("wiki")
-    mochi.log.debug("[WIKI] get_wiki: input wiki=%s", wiki)
     if not wiki:
-        mochi.log.debug("[WIKI] get_wiki: wiki is empty/None")
         return None
-    row = mochi.db.row("select * from wikis where id=?", wiki)
-    mochi.log.debug("[WIKI] get_wiki: db lookup result=%s", row)
-    return row
+    return mochi.db.row("select * from wikis where id=?", wiki)
 
 # Helper: Check if current user has access to perform an operation
 # Users with "manage" permission automatically have all other permissions
@@ -889,6 +885,11 @@ def action_new(a):
     if len(slug) > 100:
         a.error(400, "Page URL too long (max 100 characters)")
         return
+    # Validate slug characters (alphanumeric, hyphens, underscores, slashes)
+    for c in slug:
+        if not (c.isalnum() or c in "-_/"):
+            a.error(400, "Page URL can only contain letters, numbers, hyphens, underscores, and slashes")
+            return
 
     if not title:
         a.error(400, "Title is required")
@@ -1617,6 +1618,9 @@ def action_access_grant(a):
     if not subject:
         a.error(400, "Subject is required")
         return
+    if len(subject) > 255:
+        a.error(400, "Subject too long")
+        return
 
     if not operation:
         a.error(400, "Operation is required")
@@ -1656,6 +1660,9 @@ def action_access_deny(a):
     if not subject:
         a.error(400, "Subject is required")
         return
+    if len(subject) > 255:
+        a.error(400, "Subject too long")
+        return
 
     if not operation:
         a.error(400, "Operation is required")
@@ -1694,6 +1701,9 @@ def action_access_revoke(a):
 
     if not subject:
         a.error(400, "Subject is required")
+        return
+    if len(subject) > 255:
+        a.error(400, "Subject too long")
         return
 
     if not operation:
@@ -2101,17 +2111,18 @@ def event_sync(e):
 
     # Generate full dump of all wiki data
     pages = mochi.db.query("select * from pages where wiki=?", wiki)
-    pageids = [p["id"] for p in pages]
 
-    revisions = []
-    tags = []
-    if pageids:
-        # Get revisions and tags for all pages in this wiki
-        for pageid in pageids:
-            pagerevisions = mochi.db.query("select * from revisions where page=?", pageid)
-            revisions.extend(pagerevisions)
-            pagetags = mochi.db.query("select * from tags where page=?", pageid)
-            tags.extend(pagetags)
+    # Get all revisions and tags for pages in this wiki using joins
+    revisions = mochi.db.query("""
+        select r.* from revisions r
+        join pages p on p.id = r.page
+        where p.wiki = ?
+    """, wiki)
+    tags = mochi.db.query("""
+        select t.* from tags t
+        join pages p on p.id = t.page
+        where p.wiki = ?
+    """, wiki)
 
     redirects = mochi.db.query("select * from redirects where wiki=?", wiki)
     wikirow = mochi.db.row("select name, home from wikis where id=?", wiki)
