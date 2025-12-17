@@ -1,10 +1,12 @@
 import { APP_ROUTES } from '@/config/routes'
+import { getAppPath } from '@mochi/common'
 import {
   Home,
   Search,
   FilePlus,
   Tags,
   History,
+  Library,
   Settings as SettingsIcon,
 } from 'lucide-react'
 import { type SidebarData } from '@mochi/common'
@@ -14,6 +16,12 @@ export const sidebarData: SidebarData = {
     {
       title: 'Browse',
       items: [
+        {
+          title: 'All wikis',
+          url: getAppPath() + '/',
+          icon: Library,
+          external: true,
+        },
         {
           title: 'Home',
           url: APP_ROUTES.WIKI.HOME,

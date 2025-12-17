@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { WikiSettings } from '@/features/wiki/wiki-settings'
+import { WikiProvider } from '@/context/wiki-context'
 import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 
@@ -12,7 +13,9 @@ function WikiSettingsRoute() {
     <>
       <Header />
       <Main>
-        <WikiSettings />
+        <WikiProvider>
+          <WikiSettings />
+        </WikiProvider>
       </Main>
     </>
   )
