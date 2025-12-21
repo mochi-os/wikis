@@ -1,9 +1,11 @@
+import { useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { usePageHistory } from '@/hooks/use-wiki'
+import { usePage, usePageHistory } from '@/hooks/use-wiki'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
 import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
+import { useSidebarContext } from '@/context/sidebar-context'
 
 export const Route = createFileRoute('/_authenticated/$page/history/')({
   component: PageHistoryRoute,
@@ -12,8 +14,17 @@ export const Route = createFileRoute('/_authenticated/$page/history/')({
 function PageHistoryRoute() {
   const params = Route.useParams()
   const slug = params.page
-  usePageTitle(`History: ${slug}`)
+  const { data: pageData } = usePage(slug)
+  const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
+  usePageTitle(`History: ${pageTitle}`)
   const { data, isLoading, error } = usePageHistory(slug)
+
+  // Register page with sidebar context for tree expansion
+  const { setPage } = useSidebarContext()
+  useEffect(() => {
+    setPage(slug, pageTitle)
+    return () => setPage(null)
+  }, [slug, pageTitle, setPage])
 
   if (isLoading) {
     return (
