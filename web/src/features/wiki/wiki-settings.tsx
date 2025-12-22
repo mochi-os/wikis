@@ -69,7 +69,7 @@ import {
 } from '@/hooks/use-wiki'
 import { useWikiContext } from '@/context/wiki-context'
 
-type TabId = 'general' | 'access' | 'redirects' | 'subscribers' | 'delete'
+type TabId = 'settings' | 'access' | 'redirects' | 'subscribers'
 
 interface Tab {
   id: TabId
@@ -78,15 +78,14 @@ interface Tab {
 }
 
 const tabs: Tab[] = [
-  { id: 'general', label: 'General', icon: <Home className="h-4 w-4" /> },
+  { id: 'settings', label: 'Settings', icon: <Home className="h-4 w-4" /> },
   { id: 'redirects', label: 'Redirects', icon: <CornerDownRight className="h-4 w-4" /> },
   { id: 'access', label: 'Access', icon: <Shield className="h-4 w-4" /> },
   { id: 'subscribers', label: 'Subscribers', icon: <Users className="h-4 w-4" /> },
-  { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" /> },
 ]
 
 export function WikiSettings() {
-  const [activeTab, setActiveTab] = useState<TabId>('general')
+  const [activeTab, setActiveTab] = useState<TabId>('settings')
 
   return (
     <div className="space-y-6">
@@ -118,21 +117,21 @@ export function WikiSettings() {
 
       {/* Tab content */}
       <div className="pt-2">
-        {activeTab === 'general' && <GeneralTab />}
+        {activeTab === 'settings' && <SettingsTab />}
         {activeTab === 'access' && <AccessTab />}
         {activeTab === 'redirects' && <RedirectsTab />}
         {activeTab === 'subscribers' && <SubscribersTab />}
-        {activeTab === 'delete' && <DeleteTab />}
       </div>
     </div>
   )
 }
 
-function GeneralTab() {
+function SettingsTab() {
   const { data, isLoading, error } = useWikiSettings()
   const { info } = useWikiContext()
   const setSetting = useSetWikiSetting()
   const syncWiki = useSyncWiki()
+  const deleteWiki = useDeleteWiki()
 
   const [homePage, setHomePage] = useState('')
   const [hasChanges, setHasChanges] = useState(false)
@@ -171,6 +170,18 @@ function GeneralTab() {
       },
       onError: (error) => {
         toast.error(error.message || 'Failed to sync wiki')
+      },
+    })
+  }
+
+  const handleDelete = () => {
+    deleteWiki.mutate(undefined, {
+      onSuccess: () => {
+        toast.success('Wiki deleted')
+        window.location.href = getAppPath() + '/'
+      },
+      onError: (error) => {
+        toast.error(error.message || 'Failed to delete wiki')
       },
     })
   }
@@ -273,6 +284,42 @@ function GeneralTab() {
               <Save className="mr-2 h-4 w-4" />
               {setSetting.isPending ? 'Saving...' : 'Save changes'}
             </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-destructive/50">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Delete wiki</p>
+              <p className="text-sm text-muted-foreground">
+                Permanently delete this wiki and all its contents. This cannot be undone.
+              </p>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" disabled={deleteWiki.isPending}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {deleteWiki.isPending ? 'Deleting...' : 'Delete wiki'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the wiki
+                    and all its contents.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete}>
+                    Delete wiki
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </CardContent>
       </Card>
@@ -728,59 +775,6 @@ function AddRedirectDialog() {
         </form>
       </DialogContent>
     </Dialog>
-  )
-}
-
-function DeleteTab() {
-  const deleteWiki = useDeleteWiki()
-
-  const handleDelete = () => {
-    deleteWiki.mutate(undefined, {
-      onSuccess: () => {
-        toast.success('Wiki deleted')
-        window.location.href = getAppPath() + '/'
-      },
-      onError: (error) => {
-        toast.error(error.message || 'Failed to delete wiki')
-      },
-    })
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Delete wiki</CardTitle>
-        <CardDescription>
-          Permanently delete this wiki and all its pages, revisions, tags, redirects,
-          and attachments. This action cannot be undone.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="outline" disabled={deleteWiki.isPending}>
-              <Trash2 className="mr-2 h-4 w-4" />
-              {deleteWiki.isPending ? 'Deleting...' : 'Delete wiki'}
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the wiki
-                and all its contents.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete}>
-                Delete wiki
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </CardContent>
-    </Card>
   )
 }
 

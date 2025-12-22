@@ -127,7 +127,7 @@ function WikiLayoutInner() {
         ? [{ title: 'New page', url: APP_ROUTES.WIKI.NEW, icon: FilePlus }]
         : []),
       ...(permissions.manage
-        ? [{ title: 'Wiki settings', url: APP_ROUTES.WIKI.SETTINGS, icon: Settings }]
+        ? [{ title: 'Settings', url: APP_ROUTES.WIKI.SETTINGS, icon: Settings }]
         : []),
     ]
 
