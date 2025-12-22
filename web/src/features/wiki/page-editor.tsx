@@ -77,7 +77,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
   const insertMarkdown = (attachment: Attachment) => {
     const url = `attachments/${attachment.id}`
     const markdown = isImage(attachment.type)
-      ? `![${attachment.name}](${url})`
+      ? `![${attachment.name}](${url}/thumbnail)`
       : `[${attachment.name}](${url})`
 
     const pos = cursorPositionRef.current

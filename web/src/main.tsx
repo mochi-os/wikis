@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { toast } from 'sonner'
-import { useAuthStore } from '@mochi/common'
+import { useAuthStore, ApiError } from '@mochi/common'
 import { getRouterBasepath } from '@mochi/common'
 // import { DirectionProvider } from './context/direction-provider' // Commented for future use (RTL support)
 // import { FontProvider } from './context/font-provider' // Commented for future use (Font switching)
@@ -27,10 +27,21 @@ const queryClient = new QueryClient({
         if (failureCount >= 0 && import.meta.env.DEV) return false
         if (failureCount > 3 && import.meta.env.PROD) return false
 
-        return !(
+        // Don't retry on 401/403 errors (unauthorized/forbidden)
+        if (
           error instanceof AxiosError &&
           [401, 403].includes(error.response?.status ?? 0)
-        )
+        ) {
+          return false
+        }
+        if (
+          error instanceof ApiError &&
+          [401, 403].includes(error.status ?? 0)
+        ) {
+          return false
+        }
+
+        return true
       },
       refetchOnWindowFocus: import.meta.env.PROD,
       staleTime: 10 * 1000, // 10s
@@ -49,14 +60,19 @@ const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: (error) => {
+      // Handle AxiosError
       if (error instanceof AxiosError) {
         // 401 is handled centrally in the API client interceptor
         if (error.response?.status === 500) {
           toast.error('Internal Server Error!')
           router.navigate({ to: '/500' })
         }
-        if (error.response?.status === 403) {
-          // router.navigate("/forbidden", { replace: true });
+      }
+      // Handle ApiError (from requestHelpers)
+      if (error instanceof ApiError) {
+        if (error.status === 500) {
+          toast.error('Internal Server Error!')
+          router.navigate({ to: '/500' })
         }
       }
     },

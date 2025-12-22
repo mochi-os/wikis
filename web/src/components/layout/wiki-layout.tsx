@@ -106,11 +106,11 @@ function WikiLayoutInner() {
       url: `/${pageSlug}` as const,
       icon: FilePlus,
       items: [
-        {
+        ...(permissions.edit ? [{
           title: 'Edit',
           url: `/${pageSlug}/edit` as const,
           icon: Pencil,
-        },
+        }] : []),
         {
           title: 'History',
           url: `/${pageSlug}/history` as const,
@@ -123,7 +123,9 @@ function WikiLayoutInner() {
     // Build wiki sub-items: current page, new page, then settings at bottom
     const buildWikiSubItems = () => [
       ...(pageSubItem ? [pageSubItem] : []),
-      { title: 'New page', url: APP_ROUTES.WIKI.NEW, icon: FilePlus },
+      ...(permissions.edit
+        ? [{ title: 'New page', url: APP_ROUTES.WIKI.NEW, icon: FilePlus }]
+        : []),
       ...(permissions.manage
         ? [{ title: 'Wiki settings', url: APP_ROUTES.WIKI.SETTINGS, icon: Settings }]
         : []),
@@ -200,7 +202,7 @@ function WikiLayoutInner() {
     ]
 
     return { navGroups: groups }
-  }, [pageSlug, pageTitle, permissions.manage, openBookmarkDialog, isInWiki, wikiName, info, isUtilityPage, pathname, urlEntityId])
+  }, [pageSlug, pageTitle, permissions.edit, permissions.manage, openBookmarkDialog, isInWiki, wikiName, info, isUtilityPage, pathname, urlEntityId])
 
   return (
     <>

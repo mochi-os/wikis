@@ -124,13 +124,16 @@ def check_access(a, wiki_id, operation, page=None):
 def check_event_access(user_id, wiki_id, operation, page=None):
     resource = "wiki/" + wiki_id
 
-    # Owner has full access - check if entity exists locally (we own it)
-    entity = mochi.entity.get(wiki_id)
-    if entity:
+    # Owner has full access - check if requester owns the wiki entity
+    entity = mochi.entity.info(wiki_id)
+    mochi.log.debug("check_event_access: user_id=%s wiki_id=%s entity=%s", user_id, wiki_id, entity)
+    if entity and entity.get("parent") == user_id:
+        mochi.log.debug("check_event_access: user is owner, granting access")
         return True
 
     # Manage or wildcard grants full access
     if mochi.access.check(user_id, resource, "manage") or mochi.access.check(user_id, resource, "*"):
+        mochi.log.debug("check_event_access: user has manage/* access")
         return True
 
     # Map "delete" to "edit" (edit includes delete capability)
@@ -141,9 +144,12 @@ def check_event_access(user_id, wiki_id, operation, page=None):
     if operation in ACCESS_LEVELS:
         op_index = ACCESS_LEVELS.index(operation)
         for level in ACCESS_LEVELS[op_index:]:
-            if mochi.access.check(user_id, resource, level):
+            result = mochi.access.check(user_id, resource, level)
+            mochi.log.debug("check_event_access: access.check(%s, %s, %s) = %s", user_id, resource, level, result)
+            if result:
                 return True
 
+    mochi.log.debug("check_event_access: access denied for user=%s resource=%s operation=%s", user_id, resource, operation)
     return False
 
 # Helper: Validate that event sender is authorized to push updates
@@ -255,9 +261,14 @@ def fetch_remote_wiki_info(a, wiki_id):
     if status != "200":
         return {"error": dump.get("error", "unknown")}
 
+    permissions = dump.get("permissions") or {}
     return {
         "name": dump.get("name"),
         "home": dump.get("home"),
+        "permissions": {
+            "view": permissions.get("view", True),
+            "edit": permissions.get("edit", False),
+        },
     }
 
 # Helper: Fetch a page from a remote wiki via P2P stream
@@ -400,6 +411,60 @@ def fetch_remote_page_history(a, wiki_id, slug):
     revisions = sorted(revisions, key=lambda x: x.get("version", 0), reverse=True)
 
     return {"page": slug, "revisions": revisions}
+
+# Helper: Send a page edit request to a remote wiki via P2P stream
+def send_remote_page_edit(a, wiki_id):
+    from_entity = ""
+    if a.user and a.user.identity:
+        from_entity = a.user.identity.id
+
+    slug = a.input("page")
+    title = a.input("title")
+    content = a.input("content")
+    comment = a.input("comment", "")
+
+    if not slug:
+        return {"error": "Missing page parameter"}
+    if not title:
+        return {"error": "Title is required"}
+
+    stream = mochi.stream(
+        {"from": from_entity, "to": wiki_id, "service": "wikis", "event": "page/edit/request"},
+        {
+            "page": slug,
+            "title": title,
+            "content": content or "",
+            "comment": comment,
+            "author": from_entity,
+            "name": a.user.identity.name if a.user and a.user.identity else "",
+        }
+    )
+
+    if not stream:
+        return {"error": "offline"}
+
+    result = stream.read()
+    if not result:
+        return {"error": "offline"}
+
+    status = result.get("status")
+    if not status:
+        return {"error": "offline"}
+    if status == "400":
+        return {"error": result.get("error", "bad_request")}
+    if status == "403":
+        return {"error": "access_denied"}
+    if status == "404":
+        return {"error": "not_found"}
+    if status != "200":
+        return {"error": result.get("error", "unknown")}
+
+    return {
+        "id": result.get("id"),
+        "slug": result.get("slug"),
+        "version": result.get("version"),
+        "created": result.get("created", False),
+    }
 
 # Helper: Get page by slug, following redirects
 def get_page(wiki, slug):
@@ -699,6 +764,7 @@ def action_info_entity(a):
 
             # Success - return bookmark info with remote data
             fp = mochi.entity.fingerprint(wiki_id, True)
+            remote_perms = remote_info.get("permissions") or {}
             return {"data": {
                 "entity": True,
                 "bookmark": True,
@@ -708,7 +774,12 @@ def action_info_entity(a):
                     "home": remote_info.get("home") or "home",
                     "created": bookmark["added"],
                 },
-                "permissions": {"view": True, "edit": False, "delete": False, "manage": False},
+                "permissions": {
+                    "view": remote_perms.get("view", True),
+                    "edit": remote_perms.get("edit", False),
+                    "delete": False,
+                    "manage": False,
+                },
                 "fingerprint": fp
             }}
         a.error(404, "Wiki not found")
@@ -813,6 +884,22 @@ def action_page_edit(a):
 
     wiki = get_wiki(a)
     if not wiki:
+        # Check if this is a bookmark to a remote wiki
+        wiki_id = a.input("wiki")
+        bookmark = mochi.db.row("select * from bookmarks where id=?", wiki_id) if wiki_id else None
+        if bookmark:
+            # Send edit request to remote wiki
+            result = send_remote_page_edit(a, wiki_id)
+            if result.get("error"):
+                error = result["error"]
+                if error == "access_denied":
+                    return a.error(403, "Access denied")
+                if error == "not_found":
+                    return a.error(404, "Wiki not found")
+                if error == "offline":
+                    return a.error(503, "Wiki is offline")
+                return a.error(400, error)
+            return {"data": result}
         a.error(404, "Wiki not found")
         return
 
@@ -2183,6 +2270,9 @@ def event_sync(e):
         e.write({"status": "403", "error": "Access denied"})
         return
 
+    # Determine requester's permissions
+    can_edit = check_event_access(requester, wiki, "edit")
+
     # Generate full dump of all wiki data
     pages = mochi.db.rows("select * from pages where wiki=?", wiki)
 
@@ -2208,6 +2298,7 @@ def event_sync(e):
         "source": wiki,  # Source wiki entity ID for attachment fetching
         "name": wikirow["name"] if wikirow else "",
         "home": wikirow["home"] if wikirow else "home",
+        "permissions": {"view": True, "edit": can_edit},
         "pages": pages,
         "revisions": revisions,
         "tags": tags,
