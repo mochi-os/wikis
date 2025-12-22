@@ -1,9 +1,9 @@
 const endpoints = {
   users: {
-    search: '/people/_/users/search',
+    search: '/people/api/users/search',
   },
   groups: {
-    list: '/people/_/groups',
+    list: '/people/api/groups',
   },
   auth: {
     code: '/_/code',
