@@ -1715,6 +1715,45 @@ def action_subscriber_remove(a):
 
     return {"data": {"ok": True}}
 
+# Unsubscribe from a wiki (subscriber action)
+def action_unsubscribe(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    wiki_id = a.input("wiki")
+    if not wiki_id:
+        a.error(400, "Wiki ID is required")
+        return
+
+    # Check wiki exists locally (we're subscribed to it)
+    wiki = mochi.db.row("select * from wikis where id=?", wiki_id)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    # Cannot unsubscribe from own wiki
+    if wiki["source"] == "":
+        a.error(400, "Cannot unsubscribe from your own wiki")
+        return
+
+    # Delete all local data for this wiki
+    mochi.db.execute("delete from tags where page in (select id from pages where wiki=?)", wiki_id)
+    mochi.db.execute("delete from revisions where page in (select id from pages where wiki=?)", wiki_id)
+    mochi.db.execute("delete from pages where wiki=?", wiki_id)
+    mochi.db.execute("delete from redirects where wiki=?", wiki_id)
+    mochi.db.execute("delete from subscribers where wiki=?", wiki_id)
+    mochi.db.execute("delete from wikis where id=?", wiki_id)
+
+    # Notify wiki owner
+    mochi.message.send(
+        {"from": a.user.identity.id, "to": wiki_id, "service": "wikis", "event": "unsubscribe"},
+        {},
+        []
+    )
+
+    return {"data": {"ok": True}}
+
 # ACCESS CONTROL
 
 # List access rules for the wiki
@@ -2233,6 +2272,25 @@ def event_subscribe(e):
     mochi.db.execute("""insert into subscribers (wiki, id, name, subscribed, seen) values (?, ?, ?, ?, 0)
         on conflict(wiki, id) do update set name=excluded.name""",
         wiki, subscriber, name, now)
+
+# Handle unsubscription notification - remove subscriber and revoke access
+def event_unsubscribe(e):
+    wiki = e.header("to")
+    if not wiki:
+        return
+
+    # Get the subscriber's entity ID from message header
+    subscriber = e.header("from")
+    if not subscriber:
+        return
+
+    # Remove from subscribers table
+    mochi.db.execute("delete from subscribers where wiki=? and id=?", wiki, subscriber)
+
+    # Revoke all access permissions
+    resource = "wiki/" + wiki
+    for op in ACCESS_LEVELS + ["*"]:
+        mochi.access.revoke(subscriber, resource, op)
 
 # INITIAL SYNC
 
