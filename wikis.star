@@ -1677,6 +1677,13 @@ def action_subscribers(a):
         return {"data": {"subscribers": []}}
 
     subscribers = mochi.db.rows("select id, name, subscribed, seen from subscribers where wiki=? order by name", wiki["id"])
+
+    # Look up current names from directory to avoid stale names
+    for sub in subscribers:
+        info = mochi.directory.get(sub["id"])
+        if info and info.get("name"):
+            sub["name"] = info["name"]
+
     return {"data": {"subscribers": subscribers}}
 
 # Remove a subscriber
@@ -1700,6 +1707,12 @@ def action_subscriber_remove(a):
         return
 
     mochi.db.execute("delete from subscribers where wiki=? and id=?", wiki["id"], subscriber_id)
+
+    # Revoke any access permissions for the removed subscriber
+    resource = "wiki/" + wiki["id"]
+    for op in ACCESS_LEVELS + ["*"]:
+        mochi.access.revoke(subscriber_id, resource, op)
+
     return {"data": {"ok": True}}
 
 # ACCESS CONTROL
@@ -2204,14 +2217,12 @@ def event_subscribe(e):
 
     now = mochi.time.now()
 
-    # Check if subscriber already exists
-    if mochi.db.exists("select 1 from subscribers where wiki=? and id=?", wiki, subscriber):
-        # Update name only (don't reset timestamps)
-        mochi.db.execute("update subscribers set name=? where wiki=? and id=?", name, wiki, subscriber)
-    else:
-        # New subscriber - set subscribed to now, seen to 0 (never seen yet)
-        mochi.db.execute("insert into subscribers (wiki, id, name, subscribed, seen) values (?, ?, ?, ?, 0)",
-            wiki, subscriber, name, now)
+    # Use UPSERT to handle concurrent subscribe requests atomically
+    # New subscriber: set subscribed to now, seen to 0
+    # Existing subscriber: update name only (don't reset timestamps)
+    mochi.db.execute("""insert into subscribers (wiki, id, name, subscribed, seen) values (?, ?, ?, ?, 0)
+        on conflict(wiki, id) do update set name=excluded.name""",
+        wiki, subscriber, name, now)
 
 # INITIAL SYNC
 
@@ -2307,9 +2318,19 @@ def event_page_edit_request(e):
     if not title:
         e.write({"status": "400", "error": "Title is required"})
         return
+    if len(title) > 255:
+        e.write({"status": "400", "error": "Title too long (max 255 characters)"})
+        return
 
     if content == None:
         content = ""
+    if len(content) > 1000000:
+        e.write({"status": "400", "error": "Content too long (max 1MB)"})
+        return
+
+    if len(comment) > 500:
+        e.write({"status": "400", "error": "Comment too long (max 500 characters)"})
+        return
 
     now = mochi.time.now()
 
@@ -2820,9 +2841,10 @@ def action_attachment_delete(a):
     for page in pages:
         new_content = remove_attachment_refs(page["content"], id)
         if new_content != page["content"]:
-            version = page["version"] + 1
-            mochi.db.execute("update pages set content=?, author=?, updated=?, version=? where id=?",
-                new_content, author, now, version, page["id"])
+            # Use atomic version increment to prevent race conditions
+            mochi.db.execute("update pages set content=?, author=?, updated=?, version=version+1 where id=?",
+                new_content, author, now, page["id"])
+            version = mochi.db.row("select version from pages where id=?", page["id"])["version"]
             create_revision(page["id"], page["title"], new_content, author, name, version, "Removed deleted attachment")
             # Notify: source broadcasts to subscribers, subscriber notifies source
             event_data = {
