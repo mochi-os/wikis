@@ -14,6 +14,7 @@ import {
   ArrowUpDown,
   ArrowLeft,
   X,
+  Image,
 } from 'lucide-react'
 import {
   Button,

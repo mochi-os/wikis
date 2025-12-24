@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
-import { Save, X, Eye, Edit2, Trash2, ImagePlus, Loader2 } from 'lucide-react'
+import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2 } from 'lucide-react'
 import {
   Button,
   getApiBasepath,

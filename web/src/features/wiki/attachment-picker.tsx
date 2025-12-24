@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { format } from 'date-fns'
-import { Upload, Trash2, Copy, Check, Loader2 } from 'lucide-react'
+import { Upload, Trash2, Copy, Check, Loader2, Image } from 'lucide-react'
 import {
   Button,
   Dialog,
