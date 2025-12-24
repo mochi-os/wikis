@@ -1934,6 +1934,11 @@ def event_page_create(e):
     if not id or not page or not title or not author or not created or not version:
         return
 
+    # Validate timestamp is within reasonable range (not more than 1 day in future or 1 year in past)
+    now = mochi.time.now()
+    if created > now + 86400 or created < now - 31536000:
+        return
+
     # Check if page already exists
     existing = mochi.db.row("select * from pages where id=?", id)
 
@@ -2094,6 +2099,11 @@ def event_redirect_set(e):
 
     # Validate required fields
     if not source or not target or not created:
+        return
+
+    # Validate timestamp is within reasonable range (not more than 1 day in future or 1 year in past)
+    now = mochi.time.now()
+    if created > now + 86400 or created < now - 31536000:
         return
 
     # Insert or update redirect
@@ -2517,6 +2527,12 @@ def event_attachment_create(e):
 
     if not attachment_id or not name or not subscriber:
         return
+
+    # Validate timestamp is within reasonable range (not more than 1 day in future or 1 year in past)
+    if created:
+        now = mochi.time.now()
+        if created > now + 86400 or created < now - 31536000:
+            return
 
     # Check if we already have this attachment
     if mochi.attachment.exists(attachment_id):
