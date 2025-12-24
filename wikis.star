@@ -135,7 +135,7 @@ def check_event_access(user_id, wiki_id, operation, page=None):
     # Owner has full access - check if requester owns the wiki entity
     entity = mochi.entity.info(wiki_id)
     mochi.log.debug("check_event_access: user_id=%s wiki_id=%s entity=%s", user_id, wiki_id, entity)
-    if entity and entity.get("parent") == user_id:
+    if entity and entity.get("creator") == user_id:
         mochi.log.debug("check_event_access: user is owner, granting access")
         return True
 
