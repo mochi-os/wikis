@@ -1336,11 +1336,16 @@ def action_tag_add(a):
 
     mochi.db.execute("insert into tags (page, tag) values (?, ?)", page["id"], tag)
 
-    # Send tag/add event
-    broadcast_event(wiki["id"], "tag/add", {
-        "page": page["id"],
-        "tag": tag
-    })
+    # Send tag/add event: subscriber notifies source, owner broadcasts to subscribers
+    event_data = {"page": page["id"], "tag": tag}
+    source = wiki.get("source")
+    if source:
+        mochi.message.send(
+            {"from": wiki["id"], "to": source, "service": "wikis", "event": "tag/add"},
+            event_data
+        )
+    else:
+        broadcast_event(wiki["id"], "tag/add", event_data)
 
     return {"data": {"ok": True, "added": True}}
 
@@ -1379,11 +1384,16 @@ def action_tag_remove(a):
 
     mochi.db.execute("delete from tags where page=? and tag=?", page["id"], tag)
 
-    # Send tag/remove event
-    broadcast_event(wiki["id"], "tag/remove", {
-        "page": page["id"],
-        "tag": tag
-    })
+    # Send tag/remove event: subscriber notifies source, owner broadcasts to subscribers
+    event_data = {"page": page["id"], "tag": tag}
+    source = wiki.get("source")
+    if source:
+        mochi.message.send(
+            {"from": wiki["id"], "to": source, "service": "wikis", "event": "tag/remove"},
+            event_data
+        )
+    else:
+        broadcast_event(wiki["id"], "tag/remove", event_data)
 
     return {"data": {"ok": True}}
 
