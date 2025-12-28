@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, Navigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { usePage } from '@/hooks/use-wiki'
 import {
@@ -31,6 +31,12 @@ export const Route = createFileRoute('/_authenticated/$/')({
 function WikiPageRoute() {
   const params = Route.useParams()
   const slug = params._splat ?? ''
+
+  // If splat is empty, redirect to wiki home
+  if (!slug) {
+    return <Navigate to="/" />
+  }
+
   const { data, isLoading, error } = usePage(slug)
   const { info } = useWikiContext()
   const permissions = usePermissions()
