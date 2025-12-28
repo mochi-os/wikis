@@ -994,10 +994,10 @@ def action_new(a):
     if len(slug) > 100:
         a.error(400, "Page URL too long (max 100 characters)")
         return
-    # Validate slug characters (alphanumeric, hyphens, underscores, slashes)
+    # Validate slug characters (alphanumeric, hyphens, underscores)
     for c in slug.elems():
-        if not (c.isalnum() or c in "-_/"):
-            a.error(400, "Page URL can only contain letters, numbers, hyphens, underscores, and slashes")
+        if not (c.isalnum() or c in "-_"):
+            a.error(400, "Page URL can only contain letters, numbers, hyphens, and underscores")
             return
 
     if not title:
@@ -1323,8 +1323,8 @@ def action_page_rename(a):
         a.error(400, "Page URL too long (max 100 characters)")
         return
     for c in new_slug.elems():
-        if not (c.isalnum() or c in "-_/"):
-            a.error(400, "Page URL can only contain letters, numbers, hyphens, underscores, and slashes")
+        if not (c.isalnum() or c in "-_"):
+            a.error(400, "Page URL can only contain letters, numbers, hyphens, and underscores")
             return
     if new_slug.startswith("-"):
         a.error(400, "Page names starting with - are reserved")
