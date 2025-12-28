@@ -1,32 +1,23 @@
 import { useEffect } from 'react'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { usePage } from '@/hooks/use-wiki'
 import { usePageTitle } from '@mochi/common'
-import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
+import { DeletePage } from '@/features/wiki/delete-page'
 import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
-import { useAuthStore } from '@mochi/common'
+import { Skeleton } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 
-export const Route = createFileRoute('/_authenticated/$page/edit')({
-  beforeLoad: () => {
-    const store = useAuthStore.getState()
-    if (!store.isInitialized) {
-      store.syncFromCookie()
-    }
-    if (!store.isAuthenticated) {
-      throw redirect({ to: '/401' })
-    }
-  },
-  component: WikiPageEditRoute,
+export const Route = createFileRoute('/_authenticated/$/delete')({
+  component: DeletePageRoute,
 })
 
-function WikiPageEditRoute() {
+function DeletePageRoute() {
   const params = Route.useParams()
-  const slug = params.page
+  const slug = params._splat ?? ''
   const { data, isLoading, error } = usePage(slug)
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
-  usePageTitle(`Edit: ${pageTitle}`)
+  usePageTitle(`Delete: ${pageTitle}`)
 
   // Register page with sidebar context for tree expansion
   const { setPage } = useSidebarContext()
@@ -40,7 +31,9 @@ function WikiPageEditRoute() {
       <>
         <Header />
         <Main>
-          <PageEditorSkeleton />
+          <div className="flex items-center justify-center py-12">
+            <Skeleton className="h-64 w-full max-w-md" />
+          </div>
         </Main>
       </>
     )
@@ -59,25 +52,27 @@ function WikiPageEditRoute() {
     )
   }
 
-  // Page not found - create new
+  // Page not found
   if (data && 'error' in data && data.error === 'not_found') {
     return (
       <>
         <Header />
         <Main>
-          <PageEditor slug={slug} isNew />
+          <div className="text-muted-foreground py-12 text-center">
+            Page "{slug}" does not exist.
+          </div>
         </Main>
       </>
     )
   }
 
-  // Page found - edit existing
+  // Page found
   if (data && 'page' in data && typeof data.page === 'object') {
     return (
       <>
         <Header />
         <Main>
-          <PageEditor page={data.page} slug={slug} />
+          <DeletePage slug={slug} title={data.page.title} />
         </Main>
       </>
     )

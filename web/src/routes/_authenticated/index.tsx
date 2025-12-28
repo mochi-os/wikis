@@ -145,7 +145,7 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
         <DropdownMenuContent align="end">
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/$page/edit" params={{ page: homeSlug }}>
+              <Link to="/$/edit" params={{ _splat: homeSlug }}>
                 <Pencil className="size-4" />
                 Edit page
               </Link>
@@ -164,7 +164,7 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
             />
           )}
           <DropdownMenuItem asChild>
-            <Link to="/$page/history" params={{ page: homeSlug }}>
+            <Link to="/$/history" params={{ _splat: homeSlug }}>
               <History className="size-4" />
               Page history
             </Link>

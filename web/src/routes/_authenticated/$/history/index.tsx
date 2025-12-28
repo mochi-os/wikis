@@ -7,13 +7,13 @@ import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 
-export const Route = createFileRoute('/_authenticated/$page/history/')({
+export const Route = createFileRoute('/_authenticated/$/history/')({
   component: PageHistoryRoute,
 })
 
 function PageHistoryRoute() {
   const params = Route.useParams()
-  const slug = params.page
+  const slug = params._splat ?? ''
   const { data: pageData } = usePage(slug)
   const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
   usePageTitle(`History: ${pageTitle}`)

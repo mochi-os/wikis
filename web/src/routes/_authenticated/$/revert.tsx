@@ -11,7 +11,7 @@ const searchSchema = z.object({
   version: z.coerce.number(),
 })
 
-export const Route = createFileRoute('/_authenticated/$page/revert')({
+export const Route = createFileRoute('/_authenticated/$/revert')({
   validateSearch: searchSchema,
   component: RevertPageRoute,
 })
@@ -19,7 +19,7 @@ export const Route = createFileRoute('/_authenticated/$page/revert')({
 function RevertPageRoute() {
   const params = Route.useParams()
   const { version } = Route.useSearch()
-  const slug = params.page
+  const slug = params._splat ?? ''
   usePageTitle(`Revert: ${slug}`)
 
   // Register page with sidebar context for tree expansion

@@ -117,7 +117,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
         {
           onSuccess: (data) => {
             toast.success('Page created')
-            navigate({ to: '/$page', params: { page: data.slug } })
+            navigate({ to: '/$', params: { _splat: data.slug } })
           },
           onError: (error) => {
             toast.error(error.message || 'Failed to create page')
@@ -130,7 +130,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
         {
           onSuccess: () => {
             toast.success('Page saved')
-            navigate({ to: '/$page', params: { page: slug } })
+            navigate({ to: '/$', params: { _splat: slug } })
           },
           onError: (error) => {
             toast.error(error.message || 'Failed to save page')
@@ -144,7 +144,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
     if (isNew) {
       navigate({ to: '/' })
     } else {
-      navigate({ to: '/$page', params: { page: slug } })
+      navigate({ to: '/$', params: { _splat: slug } })
     }
   }
 
@@ -182,7 +182,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
             Insert
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/$page/attachments" params={{ page: slug }}>
+            <Link to="/$/attachments" params={{ _splat: slug }}>
               <Image className="mr-2 h-4 w-4" />
               Attachments
             </Link>
@@ -193,7 +193,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
           </Button>
           {!isNew && permissions.delete && (
             <Button variant="outline" size="sm" asChild>
-              <Link to="/$page/delete" params={{ page: slug }}>
+              <Link to="/$/delete" params={{ _splat: slug }}>
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete page
               </Link>
