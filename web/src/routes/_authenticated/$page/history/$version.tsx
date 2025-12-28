@@ -7,13 +7,13 @@ import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 
-export const Route = createFileRoute('/_authenticated/$/history/$version')({
+export const Route = createFileRoute('/_authenticated/$page/history/$version')({
   component: RevisionViewRoute,
 })
 
 function RevisionViewRoute() {
   const params = Route.useParams()
-  const slug = params._splat ?? ''
+  const slug = params.page ?? ''
   const version = parseInt(params.version, 10)
   usePageTitle(`${slug} v${version}`)
 

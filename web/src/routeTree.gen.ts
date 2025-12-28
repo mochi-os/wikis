@@ -23,7 +23,7 @@ import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
-import { Route as AuthenticatedSplatIndexRouteImport } from './routes/_authenticated/$/index'
+import { Route as AuthenticatedPageIndexRouteImport } from './routes/_authenticated/$page/index'
 import { Route as AuthenticatedUserSessionsRouteImport } from './routes/_authenticated/user/sessions'
 import { Route as AuthenticatedUserPreferencesRouteImport } from './routes/_authenticated/user/preferences'
 import { Route as AuthenticatedUserAccountRouteImport } from './routes/_authenticated/user/account'
@@ -32,12 +32,12 @@ import { Route as AuthenticatedSystemUsersRouteImport } from './routes/_authenti
 import { Route as AuthenticatedSystemStatusRouteImport } from './routes/_authenticated/system/status'
 import { Route as AuthenticatedSystemSettingsRouteImport } from './routes/_authenticated/system/settings'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
-import { Route as AuthenticatedSplatRevertRouteImport } from './routes/_authenticated/$/revert'
-import { Route as AuthenticatedSplatEditRouteImport } from './routes/_authenticated/$/edit'
-import { Route as AuthenticatedSplatDeleteRouteImport } from './routes/_authenticated/$/delete'
-import { Route as AuthenticatedSplatAttachmentsRouteImport } from './routes/_authenticated/$/attachments'
-import { Route as AuthenticatedSplatHistoryIndexRouteImport } from './routes/_authenticated/$/history/index'
-import { Route as AuthenticatedSplatHistoryVersionRouteImport } from './routes/_authenticated/$/history/$version'
+import { Route as AuthenticatedPageRevertRouteImport } from './routes/_authenticated/$page/revert'
+import { Route as AuthenticatedPageEditRouteImport } from './routes/_authenticated/$page/edit'
+import { Route as AuthenticatedPageDeleteRouteImport } from './routes/_authenticated/$page/delete'
+import { Route as AuthenticatedPageAttachmentsRouteImport } from './routes/_authenticated/$page/attachments'
+import { Route as AuthenticatedPageHistoryIndexRouteImport } from './routes/_authenticated/$page/history/index'
+import { Route as AuthenticatedPageHistoryVersionRouteImport } from './routes/_authenticated/$page/history/$version'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -108,9 +108,9 @@ const errors401Route = errors401RouteImport.update({
   path: '/401',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSplatIndexRoute = AuthenticatedSplatIndexRouteImport.update({
-  id: '/$/',
-  path: '/$/',
+const AuthenticatedPageIndexRoute = AuthenticatedPageIndexRouteImport.update({
+  id: '/$page/',
+  path: '/$page/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedUserSessionsRoute =
@@ -160,39 +160,37 @@ const AuthenticatedErrorsErrorRoute =
     path: '/errors/$error',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedSplatRevertRoute =
-  AuthenticatedSplatRevertRouteImport.update({
-    id: '/$/revert',
-    path: '/$/revert',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSplatEditRoute = AuthenticatedSplatEditRouteImport.update({
-  id: '/$/edit',
-  path: '/$/edit',
+const AuthenticatedPageRevertRoute = AuthenticatedPageRevertRouteImport.update({
+  id: '/$page/revert',
+  path: '/$page/revert',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedSplatDeleteRoute =
-  AuthenticatedSplatDeleteRouteImport.update({
-    id: '/$/delete',
-    path: '/$/delete',
+const AuthenticatedPageEditRoute = AuthenticatedPageEditRouteImport.update({
+  id: '/$page/edit',
+  path: '/$page/edit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPageDeleteRoute = AuthenticatedPageDeleteRouteImport.update({
+  id: '/$page/delete',
+  path: '/$page/delete',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPageAttachmentsRoute =
+  AuthenticatedPageAttachmentsRouteImport.update({
+    id: '/$page/attachments',
+    path: '/$page/attachments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedSplatAttachmentsRoute =
-  AuthenticatedSplatAttachmentsRouteImport.update({
-    id: '/$/attachments',
-    path: '/$/attachments',
+const AuthenticatedPageHistoryIndexRoute =
+  AuthenticatedPageHistoryIndexRouteImport.update({
+    id: '/$page/history/',
+    path: '/$page/history/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedSplatHistoryIndexRoute =
-  AuthenticatedSplatHistoryIndexRouteImport.update({
-    id: '/$/history/',
-    path: '/$/history/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSplatHistoryVersionRoute =
-  AuthenticatedSplatHistoryVersionRouteImport.update({
-    id: '/$/history/$version',
-    path: '/$/history/$version',
+const AuthenticatedPageHistoryVersionRoute =
+  AuthenticatedPageHistoryVersionRouteImport.update({
+    id: '/$page/history/$version',
+    path: '/$page/history/$version',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -210,10 +208,10 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/tags': typeof AuthenticatedTagsRoute
   '/': typeof AuthenticatedIndexRoute
-  '/$/attachments': typeof AuthenticatedSplatAttachmentsRoute
-  '/$/delete': typeof AuthenticatedSplatDeleteRoute
-  '/$/edit': typeof AuthenticatedSplatEditRoute
-  '/$/revert': typeof AuthenticatedSplatRevertRoute
+  '/$page/attachments': typeof AuthenticatedPageAttachmentsRoute
+  '/$page/delete': typeof AuthenticatedPageDeleteRoute
+  '/$page/edit': typeof AuthenticatedPageEditRoute
+  '/$page/revert': typeof AuthenticatedPageRevertRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/system/settings': typeof AuthenticatedSystemSettingsRoute
   '/system/status': typeof AuthenticatedSystemStatusRoute
@@ -222,9 +220,9 @@ export interface FileRoutesByFullPath {
   '/user/account': typeof AuthenticatedUserAccountRoute
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
   '/user/sessions': typeof AuthenticatedUserSessionsRoute
-  '/$': typeof AuthenticatedSplatIndexRoute
-  '/$/history/$version': typeof AuthenticatedSplatHistoryVersionRoute
-  '/$/history': typeof AuthenticatedSplatHistoryIndexRoute
+  '/$page': typeof AuthenticatedPageIndexRoute
+  '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
+  '/$page/history': typeof AuthenticatedPageHistoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/401': typeof errors401Route
@@ -240,10 +238,10 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/tags': typeof AuthenticatedTagsRoute
   '/': typeof AuthenticatedIndexRoute
-  '/$/attachments': typeof AuthenticatedSplatAttachmentsRoute
-  '/$/delete': typeof AuthenticatedSplatDeleteRoute
-  '/$/edit': typeof AuthenticatedSplatEditRoute
-  '/$/revert': typeof AuthenticatedSplatRevertRoute
+  '/$page/attachments': typeof AuthenticatedPageAttachmentsRoute
+  '/$page/delete': typeof AuthenticatedPageDeleteRoute
+  '/$page/edit': typeof AuthenticatedPageEditRoute
+  '/$page/revert': typeof AuthenticatedPageRevertRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/system/settings': typeof AuthenticatedSystemSettingsRoute
   '/system/status': typeof AuthenticatedSystemStatusRoute
@@ -252,9 +250,9 @@ export interface FileRoutesByTo {
   '/user/account': typeof AuthenticatedUserAccountRoute
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
   '/user/sessions': typeof AuthenticatedUserSessionsRoute
-  '/$': typeof AuthenticatedSplatIndexRoute
-  '/$/history/$version': typeof AuthenticatedSplatHistoryVersionRoute
-  '/$/history': typeof AuthenticatedSplatHistoryIndexRoute
+  '/$page': typeof AuthenticatedPageIndexRoute
+  '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
+  '/$page/history': typeof AuthenticatedPageHistoryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -272,10 +270,10 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tags': typeof AuthenticatedTagsRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/$/attachments': typeof AuthenticatedSplatAttachmentsRoute
-  '/_authenticated/$/delete': typeof AuthenticatedSplatDeleteRoute
-  '/_authenticated/$/edit': typeof AuthenticatedSplatEditRoute
-  '/_authenticated/$/revert': typeof AuthenticatedSplatRevertRoute
+  '/_authenticated/$page/attachments': typeof AuthenticatedPageAttachmentsRoute
+  '/_authenticated/$page/delete': typeof AuthenticatedPageDeleteRoute
+  '/_authenticated/$page/edit': typeof AuthenticatedPageEditRoute
+  '/_authenticated/$page/revert': typeof AuthenticatedPageRevertRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/system/settings': typeof AuthenticatedSystemSettingsRoute
   '/_authenticated/system/status': typeof AuthenticatedSystemStatusRoute
@@ -284,9 +282,9 @@ export interface FileRoutesById {
   '/_authenticated/user/account': typeof AuthenticatedUserAccountRoute
   '/_authenticated/user/preferences': typeof AuthenticatedUserPreferencesRoute
   '/_authenticated/user/sessions': typeof AuthenticatedUserSessionsRoute
-  '/_authenticated/$/': typeof AuthenticatedSplatIndexRoute
-  '/_authenticated/$/history/$version': typeof AuthenticatedSplatHistoryVersionRoute
-  '/_authenticated/$/history/': typeof AuthenticatedSplatHistoryIndexRoute
+  '/_authenticated/$page/': typeof AuthenticatedPageIndexRoute
+  '/_authenticated/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
+  '/_authenticated/$page/history/': typeof AuthenticatedPageHistoryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -304,10 +302,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tags'
     | '/'
-    | '/$/attachments'
-    | '/$/delete'
-    | '/$/edit'
-    | '/$/revert'
+    | '/$page/attachments'
+    | '/$page/delete'
+    | '/$page/edit'
+    | '/$page/revert'
     | '/errors/$error'
     | '/system/settings'
     | '/system/status'
@@ -316,9 +314,9 @@ export interface FileRouteTypes {
     | '/user/account'
     | '/user/preferences'
     | '/user/sessions'
-    | '/$'
-    | '/$/history/$version'
-    | '/$/history'
+    | '/$page'
+    | '/$page/history/$version'
+    | '/$page/history'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/401'
@@ -334,10 +332,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tags'
     | '/'
-    | '/$/attachments'
-    | '/$/delete'
-    | '/$/edit'
-    | '/$/revert'
+    | '/$page/attachments'
+    | '/$page/delete'
+    | '/$page/edit'
+    | '/$page/revert'
     | '/errors/$error'
     | '/system/settings'
     | '/system/status'
@@ -346,9 +344,9 @@ export interface FileRouteTypes {
     | '/user/account'
     | '/user/preferences'
     | '/user/sessions'
-    | '/$'
-    | '/$/history/$version'
-    | '/$/history'
+    | '/$page'
+    | '/$page/history/$version'
+    | '/$page/history'
   id:
     | '__root__'
     | '/_authenticated'
@@ -365,10 +363,10 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/tags'
     | '/_authenticated/'
-    | '/_authenticated/$/attachments'
-    | '/_authenticated/$/delete'
-    | '/_authenticated/$/edit'
-    | '/_authenticated/$/revert'
+    | '/_authenticated/$page/attachments'
+    | '/_authenticated/$page/delete'
+    | '/_authenticated/$page/edit'
+    | '/_authenticated/$page/revert'
     | '/_authenticated/errors/$error'
     | '/_authenticated/system/settings'
     | '/_authenticated/system/status'
@@ -377,9 +375,9 @@ export interface FileRouteTypes {
     | '/_authenticated/user/account'
     | '/_authenticated/user/preferences'
     | '/_authenticated/user/sessions'
-    | '/_authenticated/$/'
-    | '/_authenticated/$/history/$version'
-    | '/_authenticated/$/history/'
+    | '/_authenticated/$page/'
+    | '/_authenticated/$page/history/$version'
+    | '/_authenticated/$page/history/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -491,11 +489,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof errors401RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/$/': {
-      id: '/_authenticated/$/'
-      path: '/$'
-      fullPath: '/$'
-      preLoaderRoute: typeof AuthenticatedSplatIndexRouteImport
+    '/_authenticated/$page/': {
+      id: '/_authenticated/$page/'
+      path: '/$page'
+      fullPath: '/$page'
+      preLoaderRoute: typeof AuthenticatedPageIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/user/sessions': {
@@ -554,46 +552,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/$/revert': {
-      id: '/_authenticated/$/revert'
-      path: '/$/revert'
-      fullPath: '/$/revert'
-      preLoaderRoute: typeof AuthenticatedSplatRevertRouteImport
+    '/_authenticated/$page/revert': {
+      id: '/_authenticated/$page/revert'
+      path: '/$page/revert'
+      fullPath: '/$page/revert'
+      preLoaderRoute: typeof AuthenticatedPageRevertRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/$/edit': {
-      id: '/_authenticated/$/edit'
-      path: '/$/edit'
-      fullPath: '/$/edit'
-      preLoaderRoute: typeof AuthenticatedSplatEditRouteImport
+    '/_authenticated/$page/edit': {
+      id: '/_authenticated/$page/edit'
+      path: '/$page/edit'
+      fullPath: '/$page/edit'
+      preLoaderRoute: typeof AuthenticatedPageEditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/$/delete': {
-      id: '/_authenticated/$/delete'
-      path: '/$/delete'
-      fullPath: '/$/delete'
-      preLoaderRoute: typeof AuthenticatedSplatDeleteRouteImport
+    '/_authenticated/$page/delete': {
+      id: '/_authenticated/$page/delete'
+      path: '/$page/delete'
+      fullPath: '/$page/delete'
+      preLoaderRoute: typeof AuthenticatedPageDeleteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/$/attachments': {
-      id: '/_authenticated/$/attachments'
-      path: '/$/attachments'
-      fullPath: '/$/attachments'
-      preLoaderRoute: typeof AuthenticatedSplatAttachmentsRouteImport
+    '/_authenticated/$page/attachments': {
+      id: '/_authenticated/$page/attachments'
+      path: '/$page/attachments'
+      fullPath: '/$page/attachments'
+      preLoaderRoute: typeof AuthenticatedPageAttachmentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/$/history/': {
-      id: '/_authenticated/$/history/'
-      path: '/$/history'
-      fullPath: '/$/history'
-      preLoaderRoute: typeof AuthenticatedSplatHistoryIndexRouteImport
+    '/_authenticated/$page/history/': {
+      id: '/_authenticated/$page/history/'
+      path: '/$page/history'
+      fullPath: '/$page/history'
+      preLoaderRoute: typeof AuthenticatedPageHistoryIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/$/history/$version': {
-      id: '/_authenticated/$/history/$version'
-      path: '/$/history/$version'
-      fullPath: '/$/history/$version'
-      preLoaderRoute: typeof AuthenticatedSplatHistoryVersionRouteImport
+    '/_authenticated/$page/history/$version': {
+      id: '/_authenticated/$page/history/$version'
+      path: '/$page/history/$version'
+      fullPath: '/$page/history/$version'
+      preLoaderRoute: typeof AuthenticatedPageHistoryVersionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
   }
@@ -608,10 +606,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTagsRoute: typeof AuthenticatedTagsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedSplatAttachmentsRoute: typeof AuthenticatedSplatAttachmentsRoute
-  AuthenticatedSplatDeleteRoute: typeof AuthenticatedSplatDeleteRoute
-  AuthenticatedSplatEditRoute: typeof AuthenticatedSplatEditRoute
-  AuthenticatedSplatRevertRoute: typeof AuthenticatedSplatRevertRoute
+  AuthenticatedPageAttachmentsRoute: typeof AuthenticatedPageAttachmentsRoute
+  AuthenticatedPageDeleteRoute: typeof AuthenticatedPageDeleteRoute
+  AuthenticatedPageEditRoute: typeof AuthenticatedPageEditRoute
+  AuthenticatedPageRevertRoute: typeof AuthenticatedPageRevertRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
   AuthenticatedSystemSettingsRoute: typeof AuthenticatedSystemSettingsRoute
   AuthenticatedSystemStatusRoute: typeof AuthenticatedSystemStatusRoute
@@ -620,9 +618,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedUserAccountRoute: typeof AuthenticatedUserAccountRoute
   AuthenticatedUserPreferencesRoute: typeof AuthenticatedUserPreferencesRoute
   AuthenticatedUserSessionsRoute: typeof AuthenticatedUserSessionsRoute
-  AuthenticatedSplatIndexRoute: typeof AuthenticatedSplatIndexRoute
-  AuthenticatedSplatHistoryVersionRoute: typeof AuthenticatedSplatHistoryVersionRoute
-  AuthenticatedSplatHistoryIndexRoute: typeof AuthenticatedSplatHistoryIndexRoute
+  AuthenticatedPageIndexRoute: typeof AuthenticatedPageIndexRoute
+  AuthenticatedPageHistoryVersionRoute: typeof AuthenticatedPageHistoryVersionRoute
+  AuthenticatedPageHistoryIndexRoute: typeof AuthenticatedPageHistoryIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -634,10 +632,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTagsRoute: AuthenticatedTagsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedSplatAttachmentsRoute: AuthenticatedSplatAttachmentsRoute,
-  AuthenticatedSplatDeleteRoute: AuthenticatedSplatDeleteRoute,
-  AuthenticatedSplatEditRoute: AuthenticatedSplatEditRoute,
-  AuthenticatedSplatRevertRoute: AuthenticatedSplatRevertRoute,
+  AuthenticatedPageAttachmentsRoute: AuthenticatedPageAttachmentsRoute,
+  AuthenticatedPageDeleteRoute: AuthenticatedPageDeleteRoute,
+  AuthenticatedPageEditRoute: AuthenticatedPageEditRoute,
+  AuthenticatedPageRevertRoute: AuthenticatedPageRevertRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
   AuthenticatedSystemSettingsRoute: AuthenticatedSystemSettingsRoute,
   AuthenticatedSystemStatusRoute: AuthenticatedSystemStatusRoute,
@@ -646,9 +644,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedUserAccountRoute: AuthenticatedUserAccountRoute,
   AuthenticatedUserPreferencesRoute: AuthenticatedUserPreferencesRoute,
   AuthenticatedUserSessionsRoute: AuthenticatedUserSessionsRoute,
-  AuthenticatedSplatIndexRoute: AuthenticatedSplatIndexRoute,
-  AuthenticatedSplatHistoryVersionRoute: AuthenticatedSplatHistoryVersionRoute,
-  AuthenticatedSplatHistoryIndexRoute: AuthenticatedSplatHistoryIndexRoute,
+  AuthenticatedPageIndexRoute: AuthenticatedPageIndexRoute,
+  AuthenticatedPageHistoryVersionRoute: AuthenticatedPageHistoryVersionRoute,
+  AuthenticatedPageHistoryIndexRoute: AuthenticatedPageHistoryIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

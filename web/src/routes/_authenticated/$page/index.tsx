@@ -24,15 +24,15 @@ import { useWikiContext, usePermissions } from '@/context/wiki-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
 import { Ellipsis, FileEdit, FilePlus, History, Pencil, Settings } from 'lucide-react'
 
-export const Route = createFileRoute('/_authenticated/$/')({
+export const Route = createFileRoute('/_authenticated/$page/')({
   component: WikiPageRoute,
 })
 
 function WikiPageRoute() {
   const params = Route.useParams()
-  const slug = params._splat ?? ''
+  const slug = params.page ?? ''
 
-  // If splat is empty, redirect to wiki home
+  // If page param is empty, redirect to wiki home
   if (!slug) {
     return <Navigate to="/" />
   }
@@ -107,7 +107,7 @@ function WikiPageRoute() {
         <DropdownMenuContent align="end">
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/$/edit" params={{ _splat: slug }}>
+              <Link to="/$page/edit" params={{ page: slug }}>
                 <Pencil className="size-4" />
                 Edit page
               </Link>
@@ -126,7 +126,7 @@ function WikiPageRoute() {
             />
           )}
           <DropdownMenuItem asChild>
-            <Link to="/$/history" params={{ _splat: slug }}>
+            <Link to="/$page/history" params={{ page: slug }}>
               <History className="size-4" />
               Page history
             </Link>

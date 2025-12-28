@@ -145,7 +145,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
     if (isNew) {
       navigate({ to: '/' })
     } else {
-      navigate({ to: '/$', params: { _splat: slug } })
+      navigate({ to: '/$page', params: { page: slug } })
     }
   }
 
@@ -183,7 +183,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
             Insert
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/$/attachments" params={{ _splat: slug }}>
+            <Link to="/$page/attachments" params={{ page: slug }}>
               <Image className="mr-2 h-4 w-4" />
               Attachments
             </Link>
@@ -194,7 +194,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
           </Button>
           {!isNew && permissions.delete && (
             <Button variant="outline" size="sm" asChild>
-              <Link to="/$/delete" params={{ _splat: slug }}>
+              <Link to="/$page/delete" params={{ page: slug }}>
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete page
               </Link>
