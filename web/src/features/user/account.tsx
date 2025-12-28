@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { usePageTitle } from '@mochi/common'
+import { usePageTitle, getErrorMessage } from '@mochi/common'
 import type { Passkey, TotpSetupResponse } from '@/types/account'
 import { startRegistration } from '@simplewebauthn/browser'
 import {
@@ -151,9 +151,7 @@ function LoginRequirementsSection() {
         toast.success('Login requirements updated')
       },
       onError: (error) => {
-        toast.error('Failed to update login requirements', {
-          description: error instanceof Error ? error.message : undefined,
-        })
+        toast.error(getErrorMessage(error, 'Failed to update login requirements'))
       },
     })
   }
@@ -357,9 +355,7 @@ function PasskeysSection() {
       if (error instanceof Error && error.name === 'NotAllowedError') {
         toast.error('Registration cancelled')
       } else {
-        toast.error('Failed to register passkey', {
-          description: error instanceof Error ? error.message : undefined,
-        })
+        toast.error(getErrorMessage(error, 'Failed to register passkey'))
       }
     } finally {
       setIsRegistering(false)
@@ -371,7 +367,7 @@ function PasskeysSection() {
       { id, name },
       {
         onSuccess: () => toast.success('Passkey renamed'),
-        onError: () => toast.error('Failed to rename passkey'),
+        onError: (error) => toast.error(getErrorMessage(error, 'Failed to rename passkey')),
       }
     )
   }
@@ -379,10 +375,7 @@ function PasskeysSection() {
   const handleDelete = (id: string) => {
     deletePasskey.mutate(id, {
       onSuccess: () => toast.success('Passkey deleted'),
-      onError: (error) =>
-        toast.error('Failed to delete passkey', {
-          description: error instanceof Error ? error.message : undefined,
-        }),
+      onError: (error) => toast.error(getErrorMessage(error, 'Failed to delete passkey')),
     })
   }
 
@@ -486,8 +479,8 @@ function AuthenticatorSection() {
     try {
       const result = await setupTotp.mutateAsync()
       setSetupData(result)
-    } catch {
-      toast.error('Failed to set up authenticator')
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to set up authenticator'))
     }
   }
 
@@ -505,8 +498,8 @@ function AuthenticatorSection() {
           description: 'Please check the code and try again.',
         })
       }
-    } catch {
-      toast.error('Failed to verify code')
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to verify code'))
     } finally {
       setIsVerifying(false)
     }
@@ -515,10 +508,7 @@ function AuthenticatorSection() {
   const handleDisable = () => {
     disableTotp.mutate(undefined, {
       onSuccess: () => toast.success('Authenticator app disabled'),
-      onError: (error) =>
-        toast.error('Failed to disable authenticator', {
-          description: error instanceof Error ? error.message : undefined,
-        }),
+      onError: (error) => toast.error(getErrorMessage(error, 'Failed to disable authenticator')),
     })
   }
 
@@ -658,8 +648,8 @@ function RecoveryCodesSection() {
     try {
       const result = await generateCodes.mutateAsync()
       setShowCodes(result.codes)
-    } catch {
-      toast.error('Failed to generate recovery codes')
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to generate recovery codes'))
     }
   }
 

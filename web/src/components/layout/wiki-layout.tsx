@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { AuthenticatedLayout, getAppPath } from '@mochi/common'
+import { AuthenticatedLayout, getAppPath, getErrorMessage } from '@mochi/common'
 import type { SidebarData } from '@mochi/common'
 import {
   Dialog,
@@ -70,8 +70,8 @@ function WikiLayoutInner() {
         setBookmarkTarget('')
         closeBookmarkDialog()
       },
-      onError: (error: Error) => {
-        toast.error(error.message || 'Failed to bookmark wiki')
+      onError: (error) => {
+        toast.error(getErrorMessage(error, 'Failed to bookmark wiki'))
       },
     })
   }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { SystemSetting } from '@/types/settings'
 import { Loader2, Lock, RotateCcw } from 'lucide-react'
-import { usePageTitle } from '@mochi/common'
+import { usePageTitle, getErrorMessage } from '@mochi/common'
 import { toast } from 'sonner'
 import { usePreferencesData } from '@/hooks/use-preferences'
 import {
@@ -213,8 +213,8 @@ export function SystemSettings() {
           toast.success('Setting updated')
           setSavingName(null)
         },
-        onError: () => {
-          toast.error('Failed to update setting')
+        onError: (error) => {
+          toast.error(getErrorMessage(error, 'Failed to update setting'))
           setSavingName(null)
         },
       }

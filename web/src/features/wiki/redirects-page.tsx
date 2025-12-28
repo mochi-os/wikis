@@ -2,20 +2,18 @@ import { useState } from 'react'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
 import { ArrowRight, Plus, Trash2, Link2 } from 'lucide-react'
-import { Button } from '@mochi/common'
-import { Input } from '@mochi/common'
-import { Label } from '@mochi/common'
-import { Separator } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
 import {
+  Button,
+  Input,
+  Label,
+  Separator,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-} from '@mochi/common'
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -23,8 +21,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@mochi/common'
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -34,6 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  getErrorMessage,
 } from '@mochi/common'
 import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wiki'
 import type { Redirect } from '@/types/wiki'
@@ -107,7 +104,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
         toast.success(`Redirect "${redirect.source}" deleted`)
       },
       onError: (error) => {
-        toast.error(error.message || 'Failed to delete redirect')
+        toast.error(getErrorMessage(error, 'Failed to delete redirect'))
       },
     })
   }
@@ -186,7 +183,7 @@ function AddRedirectDialog() {
           setOpen(false)
         },
         onError: (error) => {
-          toast.error(error.message || 'Failed to create redirect')
+          toast.error(getErrorMessage(error, 'Failed to create redirect'))
         },
       }
     )

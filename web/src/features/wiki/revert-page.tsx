@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { RotateCcw, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
-import { Button } from '@mochi/common'
-import { Input } from '@mochi/common'
-import { Label } from '@mochi/common'
-import { Separator } from '@mochi/common'
 import {
+  Button,
+  Input,
+  Label,
+  Separator,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
+  getErrorMessage,
 } from '@mochi/common'
 import { useRevertPage } from '@/hooks/use-wiki'
 
@@ -33,7 +34,7 @@ export function RevertPage({ slug, version }: RevertPageProps) {
           window.location.href = slug
         },
         onError: (error) => {
-          toast.error(error.message || 'Failed to revert page')
+          toast.error(getErrorMessage(error, 'Failed to revert page'))
         },
       }
     )

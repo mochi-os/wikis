@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect } from 'react'
-import { requestHelpers, getAppPath } from '@mochi/common'
+import { requestHelpers, getAppPath, getErrorMessage } from '@mochi/common'
 import endpoints from '@/api/endpoints'
 import {
   Button,
@@ -145,7 +145,7 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
         <DropdownMenuContent align="end">
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/$/edit" params={{ _splat: homeSlug }}>
+              <Link to="/$page/edit" params={{ page: homeSlug }}>
                 <Pencil className="size-4" />
                 Edit page
               </Link>
@@ -164,7 +164,7 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
             />
           )}
           <DropdownMenuItem asChild>
-            <Link to="/$/history" params={{ _splat: homeSlug }}>
+            <Link to="/$page/history" params={{ page: homeSlug }}>
               <History className="size-4" />
               Page history
             </Link>
@@ -219,8 +219,8 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
       onSuccess: () => {
         toast.success('Bookmark removed')
       },
-      onError: (error: Error) => {
-        toast.error(error.message || 'Failed to remove bookmark')
+      onError: (error) => {
+        toast.error(getErrorMessage(error, 'Failed to remove bookmark'))
       },
     })
   }

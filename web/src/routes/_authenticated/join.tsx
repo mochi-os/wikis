@@ -2,13 +2,20 @@ import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { Link2, BookOpen } from 'lucide-react'
-import { Button } from '@mochi/common'
-import { Input } from '@mochi/common'
-import { Label } from '@mochi/common'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@mochi/common'
-import { usePageTitle } from '@mochi/common'
-import { Header } from '@mochi/common'
-import { Main } from '@mochi/common'
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  usePageTitle,
+  Header,
+  Main,
+  getErrorMessage,
+} from '@mochi/common'
 import { useJoinWiki } from '@/hooks/use-wiki'
 
 export const Route = createFileRoute('/_authenticated/join')({
@@ -32,8 +39,8 @@ function JoinWikiPage() {
         toast.success('Joined wiki')
         navigate({ to: '/' })
       },
-      onError: (error: Error) => {
-        toast.error(error.message || 'Failed to join wiki')
+      onError: (error) => {
+        toast.error(getErrorMessage(error, 'Failed to join wiki'))
       },
     })
   }

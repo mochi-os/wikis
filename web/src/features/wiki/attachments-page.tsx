@@ -30,6 +30,7 @@ import {
   formatFileSize,
   getFileIcon,
   isImage,
+  getErrorMessage,
 } from '@mochi/common'
 import {
   useAttachments,
@@ -107,7 +108,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
           toast.success(`${files.length} file(s) uploaded`)
         },
         onError: (error) => {
-          toast.error(error.message || 'Failed to upload files')
+          toast.error(getErrorMessage(error, 'Failed to upload files'))
         },
       })
     }
@@ -161,7 +162,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
           toast.success('Attachment deleted')
         },
         onError: (error) => {
-          toast.error(error.message || 'Failed to delete attachment')
+          toast.error(getErrorMessage(error, 'Failed to delete attachment'))
         },
       })
     }
@@ -176,7 +177,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild>
-            <Link to="/$/edit" params={{ _splat: slug }}>
+            <Link to="/$page/edit" params={{ page: slug }}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>

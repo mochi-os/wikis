@@ -17,6 +17,7 @@ import {
   DialogTitle,
   isImage,
   getFileIcon,
+  getErrorMessage,
 } from '@mochi/common'
 import { useEditPage, useCreatePage, useAttachments, useUploadAttachment } from '@/hooks/use-wiki'
 import { usePermissions } from '@/context/wiki-context'
@@ -94,7 +95,7 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
           toast.success(`${files.length} file(s) uploaded`)
         },
         onError: (error) => {
-          toast.error(error.message || 'Failed to upload files')
+          toast.error(getErrorMessage(error, 'Failed to upload files'))
         },
       })
     }
@@ -117,10 +118,10 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
         {
           onSuccess: (data) => {
             toast.success('Page created')
-            navigate({ to: '/$', params: { _splat: data.slug } })
+            navigate({ to: '/$page', params: { page: data.slug } })
           },
           onError: (error) => {
-            toast.error(error.message || 'Failed to create page')
+            toast.error(getErrorMessage(error, 'Failed to create page'))
           },
         }
       )
@@ -130,10 +131,10 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
         {
           onSuccess: () => {
             toast.success('Page saved')
-            navigate({ to: '/$', params: { _splat: slug } })
+            navigate({ to: '/$page', params: { page: slug } })
           },
           onError: (error) => {
-            toast.error(error.message || 'Failed to save page')
+            toast.error(getErrorMessage(error, 'Failed to save page'))
           },
         }
       )

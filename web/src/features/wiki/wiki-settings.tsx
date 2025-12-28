@@ -51,6 +51,7 @@ import {
   AccessList,
   type AccessLevel,
   requestHelpers,
+  getErrorMessage,
 } from '@mochi/common'
 import endpoints from '@/api/endpoints'
 import {
@@ -150,7 +151,7 @@ function SettingsTab() {
           setHasChanges(false)
         },
         onError: (error) => {
-          toast.error(error.message || 'Failed to save settings')
+          toast.error(getErrorMessage(error, 'Failed to save settings'))
         },
       }
     )
@@ -162,7 +163,7 @@ function SettingsTab() {
         toast.success('Wiki synced')
       },
       onError: (error) => {
-        toast.error(error.message || 'Failed to sync wiki')
+        toast.error(getErrorMessage(error, 'Failed to sync wiki'))
       },
     })
   }
@@ -174,7 +175,7 @@ function SettingsTab() {
         window.location.href = getAppPath() + '/'
       },
       onError: (error) => {
-        toast.error(error.message || 'Failed to delete wiki')
+        toast.error(getErrorMessage(error, 'Failed to delete wiki'))
       },
     })
   }
@@ -365,7 +366,7 @@ function AccessTab() {
       void loadRules()
     } catch (err) {
       console.error('[AccessTab] Failed to set access level', err)
-      toast.error('Failed to set access level')
+      toast.error(getErrorMessage(err, 'Failed to set access level'))
       throw err
     }
   }
@@ -377,7 +378,7 @@ function AccessTab() {
       void loadRules()
     } catch (err) {
       console.error('[AccessTab] Failed to update access level', err)
-      toast.error('Failed to update access level')
+      toast.error(getErrorMessage(err, 'Failed to update access level'))
     }
   }
 
@@ -388,7 +389,7 @@ function AccessTab() {
       void loadRules()
     } catch (err) {
       console.error('[AccessTab] Failed to revoke access', err)
-      toast.error('Failed to remove access')
+      toast.error(getErrorMessage(err, 'Failed to remove access'))
     }
   }
 
@@ -459,7 +460,7 @@ function SubscribersTab() {
         toast.success(`Subscriber "${name || subscriberId.slice(0, 12)}..." removed`)
       },
       onError: (err) => {
-        toast.error(err.message || 'Failed to remove subscriber')
+        toast.error(getErrorMessage(err, 'Failed to remove subscriber'))
       },
     })
   }
@@ -581,7 +582,7 @@ function RedirectsTab() {
         toast.success(`Redirect "${source}" deleted`)
       },
       onError: (error) => {
-        toast.error(error.message || 'Failed to delete redirect')
+        toast.error(getErrorMessage(error, 'Failed to delete redirect'))
       },
     })
   }
@@ -706,7 +707,7 @@ function AddRedirectDialog() {
           setOpen(false)
         },
         onError: (error) => {
-          toast.error(error.message || 'Failed to create redirect')
+          toast.error(getErrorMessage(error, 'Failed to create redirect'))
         },
       }
     )

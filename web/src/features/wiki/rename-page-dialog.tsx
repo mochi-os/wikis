@@ -13,6 +13,7 @@ import {
   Input,
   Label,
   Checkbox,
+  getErrorMessage,
 } from '@mochi/common'
 import { useRenamePage } from '@/hooks/use-wiki'
 
@@ -61,7 +62,7 @@ export function RenamePageDialog({ slug, title, trigger }: RenamePageDialogProps
           window.location.href = newSlug.trim()
         },
         onError: (error) => {
-          toast.error(error.message || 'Failed to rename page')
+          toast.error(getErrorMessage(error, 'Failed to rename page'))
         },
       }
     )

@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import type { Session } from '@/types/account'
 import { Loader2, LogOut } from 'lucide-react'
-import { usePageTitle } from '@mochi/common'
+import { usePageTitle, getErrorMessage } from '@mochi/common'
 import { toast } from 'sonner'
 import { useAccountData, useRevokeSession } from '@/hooks/use-account'
 import {
@@ -47,8 +47,8 @@ function SessionRow({
       onSuccess: () => {
         toast.success('Session revoked')
       },
-      onError: () => {
-        toast.error('Failed to revoke session')
+      onError: (error) => {
+        toast.error(getErrorMessage(error, 'Failed to revoke session'))
       },
     })
   }

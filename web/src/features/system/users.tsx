@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
-import { usePageTitle } from '@mochi/common'
+import { usePageTitle, getErrorMessage } from '@mochi/common'
 import type { User, Session } from '@/types/users'
 import {
   Ban,
@@ -104,8 +104,8 @@ function CreateUserDialog({ onSuccess }: { onSuccess: () => void }) {
           setRole('user')
           onSuccess()
         },
-        onError: (error: Error) => {
-          toast.error(error.message || 'Failed to create user')
+        onError: (error) => {
+          toast.error(getErrorMessage(error, 'Failed to create user'))
         },
       }
     )
@@ -193,8 +193,8 @@ function EditUserDialog({
           setOpen(false)
           onSuccess()
         },
-        onError: (error: Error) => {
-          toast.error(error.message || 'Failed to update user')
+        onError: (error) => {
+          toast.error(getErrorMessage(error, 'Failed to update user'))
         },
       }
     )
@@ -276,8 +276,8 @@ function SessionsDialog({ user }: { user: User }) {
           )
           refetch()
         },
-        onError: (error: Error) => {
-          toast.error(error.message || 'Failed to revoke session')
+        onError: (error) => {
+          toast.error(getErrorMessage(error, 'Failed to revoke session'))
         },
       }
     )
@@ -396,8 +396,8 @@ function UserRow({ user, onUpdate, isSelf }: { user: User; onUpdate: () => void;
         setDeleteOpen(false)
         onUpdate()
       },
-      onError: (error: Error) => {
-        toast.error(error.message || 'Failed to delete user')
+      onError: (error) => {
+        toast.error(getErrorMessage(error, 'Failed to delete user'))
       },
     })
   }
@@ -409,8 +409,8 @@ function UserRow({ user, onUpdate, isSelf }: { user: User; onUpdate: () => void;
         toast.success(isSuspended ? 'Suspension removed' : 'User suspended')
         onUpdate()
       },
-      onError: (error: Error) => {
-        toast.error(error.message || 'Failed to update user status')
+      onError: (error) => {
+        toast.error(getErrorMessage(error, 'Failed to update user status'))
       },
     })
   }

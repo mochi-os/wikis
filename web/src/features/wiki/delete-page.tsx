@@ -1,14 +1,15 @@
 import { Trash2, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
-import { Button } from '@mochi/common'
-import { Separator } from '@mochi/common'
 import {
+  Button,
+  Separator,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
+  getErrorMessage,
 } from '@mochi/common'
 import { useDeletePage } from '@/hooks/use-wiki'
 
@@ -27,7 +28,7 @@ export function DeletePage({ slug, title }: DeletePageProps) {
         window.location.href = 'home'
       },
       onError: (error) => {
-        toast.error(error.message || 'Failed to delete page')
+        toast.error(getErrorMessage(error, 'Failed to delete page'))
       },
     })
   }

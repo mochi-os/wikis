@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Check, ChevronsUpDown, Loader2, RotateCcw } from 'lucide-react'
-import { usePageTitle } from '@mochi/common'
+import { usePageTitle, getErrorMessage } from '@mochi/common'
 import { toast } from 'sonner'
 import { cn } from '@mochi/common'
 import { useTheme } from '@mochi/common'
@@ -194,8 +194,8 @@ export function UserPreferences() {
         onSuccess: () => {
           toast.success('Preference updated')
         },
-        onError: () => {
-          toast.error('Failed to update preference')
+        onError: (error) => {
+          toast.error(getErrorMessage(error, 'Failed to update preference'))
         },
       }
     )
@@ -206,8 +206,8 @@ export function UserPreferences() {
       onSuccess: () => {
         toast.success('Preferences reset to defaults')
       },
-      onError: () => {
-        toast.error('Failed to reset preferences')
+      onError: (error) => {
+        toast.error(getErrorMessage(error, 'Failed to reset preferences'))
       },
     })
   }

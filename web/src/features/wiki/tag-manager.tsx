@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Plus, X, Tag as TagIcon } from 'lucide-react'
-import { Button } from '@mochi/common'
-import { Input } from '@mochi/common'
-import { Badge } from '@mochi/common'
 import {
+  Button,
+  Input,
+  Badge,
   Popover,
   PopoverContent,
   PopoverTrigger,
+  getErrorMessage,
 } from '@mochi/common'
 import { useAddTag, useRemoveTag } from '@/hooks/use-wiki'
 import { usePermissions } from '@/context/wiki-context'
@@ -42,7 +43,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
           setIsOpen(false)
         },
         onError: (error) => {
-          toast.error(error.message || 'Failed to add tag')
+          toast.error(getErrorMessage(error, 'Failed to add tag'))
         },
       }
     )
@@ -56,7 +57,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
           toast.success(`Tag "${tag}" removed`)
         },
         onError: (error) => {
-          toast.error(error.message || 'Failed to remove tag')
+          toast.error(getErrorMessage(error, 'Failed to remove tag'))
         },
       }
     )

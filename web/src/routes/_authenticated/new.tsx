@@ -4,15 +4,22 @@ import { useMutation } from '@tanstack/react-query'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { Plus, BookOpen } from 'lucide-react'
-import { Button } from '@mochi/common'
-import { Input } from '@mochi/common'
-import { Label } from '@mochi/common'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@mochi/common'
-import { usePageTitle } from '@mochi/common'
+import {
+  Button,
+  Input,
+  Label,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  usePageTitle,
+  Header,
+  Main,
+  requestHelpers,
+  getErrorMessage,
+} from '@mochi/common'
 import { PageEditor } from '@/features/wiki/page-editor'
-import { Header } from '@mochi/common'
-import { Main } from '@mochi/common'
-import { requestHelpers } from '@mochi/common'
 import endpoints from '@/api/endpoints'
 
 interface InfoResponse {
@@ -76,8 +83,8 @@ function NewWikiView() {
       toast.success('Wiki created')
       navigate({ to: '/' })
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to create wiki')
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to create wiki'))
     },
   })
 
