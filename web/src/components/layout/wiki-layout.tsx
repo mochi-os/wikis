@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react'
-import { useLocation } from '@tanstack/react-router'
 import { AuthenticatedLayout, getAppPath } from '@mochi/common'
 import type { SidebarData } from '@mochi/common'
 import {
@@ -16,22 +15,17 @@ import {
   BookOpen,
   Bookmark,
   Copy,
-  FilePlus,
   History,
   Library,
   Plus,
   Search,
-  Settings,
   Tags,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { APP_ROUTES } from '@/config/routes'
 import { SidebarProvider, useSidebarContext } from '@/context/sidebar-context'
-import { WikiProvider, useWikiContext, usePermissions } from '@/context/wiki-context'
+import { WikiProvider, useWikiContext } from '@/context/wiki-context'
 import { useAddBookmark } from '@/hooks/use-wiki'
-
-// Non-page routes that shouldn't show page menu
-const NON_PAGE_ROUTES = new Set(['search', 'tags', 'tag', 'changes', 'new', 'settings', 'join', 'redirects', 'user', 'system'])
 
 // Class-level routes that aren't entity IDs (same as in lib/common app-path.ts)
 const CLASS_ROUTES = new Set([
@@ -53,28 +47,16 @@ function getEntityIdFromUrl(): string | null {
 }
 
 function WikiLayoutInner() {
-  const { pageTitle, bookmarkDialogOpen, openBookmarkDialog, closeBookmarkDialog } = useSidebarContext()
+  const { bookmarkDialogOpen, openBookmarkDialog, closeBookmarkDialog } = useSidebarContext()
   const { info } = useWikiContext()
-  const permissions = usePermissions()
   const [bookmarkTarget, setBookmarkTarget] = useState('')
   const addBookmark = useAddBookmark()
-  const pathname = useLocation({ select: (location) => location.pathname })
-
-  // Derive page slug from pathname - more reliable than useEffect timing
-  // Pathname format: /{page}, /{page}/edit, /{page}/history, etc.
-  // When at root ("/"), use the wiki's configured home page
-  const firstSegment = pathname.split('/')[1] || ''
-  const pageSlugFromPath = NON_PAGE_ROUTES.has(firstSegment) ? null : firstSegment || null
-  const pageSlug = pageSlugFromPath || (pathname === '/' ? info?.wiki?.home : null) || null
 
   // Whether we're inside a specific wiki (entity context)
   // Use URL-based detection as fallback when wiki context is temporarily unavailable
   const urlEntityId = getEntityIdFromUrl()
   const isInWiki = (info?.entity && info?.wiki) || urlEntityId !== null
   const wikiName = info?.wiki?.name
-
-  // Detect utility pages (search, tags, recent changes) where no wiki should be expanded
-  const isUtilityPage = pathname === '/search' || pathname === '/tags' || pathname === '/changes'
 
   const handleAddBookmark = (e: React.FormEvent) => {
     e.preventDefault()
@@ -99,38 +81,15 @@ function WikiLayoutInner() {
     // Use URL-based entity ID as fallback when wiki context is temporarily unavailable
     const currentWikiId = info?.wiki?.id || urlEntityId
 
-    // Build page sub-item (just a link to the current page)
-    const pageSubItem = pageSlug ? {
-      title: pageTitle || pageSlug,
-      url: `/${pageSlug}` as const,
-      icon: FilePlus,
-    } : null
-
-    // Build wiki sub-items: current page, new page, then settings at bottom
-    const buildWikiSubItems = () => [
-      ...(pageSubItem ? [pageSubItem] : []),
-      ...(permissions.edit
-        ? [{ title: 'New page', url: APP_ROUTES.WIKI.NEW, icon: FilePlus }]
-        : []),
-      ...(permissions.manage
-        ? [{ title: 'Settings', url: APP_ROUTES.WIKI.SETTINGS, icon: Settings }]
-        : []),
-    ]
-
     // Build wiki items from the list (when in class context)
-    // Only expand current wiki when not on a utility page
     // Use fingerprint for shorter URLs when available
     const wikiItems = (info?.wikis || []).map((wiki) => {
-      const isCurrentWiki = currentWikiId === wiki.id || currentWikiId === wiki.fingerprint
-      const shouldExpand = isCurrentWiki && !isUtilityPage
       const wikiUrl = wiki.fingerprint ?? wiki.id
       return {
         title: wiki.name,
         url: `${getAppPath()}/${wikiUrl}` as const,
         icon: BookOpen,
         external: true,
-        items: isCurrentWiki ? buildWikiSubItems() : [],
-        open: shouldExpand, // Only expand current wiki when viewing wiki pages
       }
     }).sort((a, b) => a.title.localeCompare(b.title))
 
@@ -149,8 +108,6 @@ function WikiLayoutInner() {
       title: wikiName || 'Wiki',
       url: APP_ROUTES.WIKI.HOME,
       icon: BookOpen,
-      items: buildWikiSubItems(),
-      open: !isUtilityPage, // Only expand when not on utility pages
     } : null
 
     // Build "All wikis" item with submenu for wiki management actions
@@ -190,7 +147,7 @@ function WikiLayoutInner() {
     ]
 
     return { navGroups: groups }
-  }, [pageSlug, pageTitle, permissions.edit, permissions.manage, openBookmarkDialog, isInWiki, wikiName, info, isUtilityPage, pathname, urlEntityId])
+  }, [openBookmarkDialog, isInWiki, wikiName, info, urlEntityId])
 
   return (
     <>

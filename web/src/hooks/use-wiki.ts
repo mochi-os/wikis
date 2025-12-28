@@ -148,6 +148,34 @@ export function useDeletePage() {
   })
 }
 
+export interface PageRenameResponse {
+  renamed: Array<{ old: string; new: string }>
+  updated_links: number
+}
+
+export function useRenamePage() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: {
+      slug: string
+      newSlug: string
+      children?: boolean
+      redirects?: boolean
+    }) =>
+      requestHelpers.post<PageRenameResponse>(
+        endpoints.wiki.pageRename(data.slug),
+        {
+          slug: data.newSlug,
+          children: data.children !== false ? 'true' : 'false',
+          redirects: data.redirects ? 'true' : 'false',
+        }
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki'] })
+    },
+  })
+}
+
 // Tags
 
 export function useTags() {

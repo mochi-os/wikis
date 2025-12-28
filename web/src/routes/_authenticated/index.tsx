@@ -1,10 +1,20 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { requestHelpers, getAppPath } from '@mochi/common'
 import endpoints from '@/api/endpoints'
-import { Card, CardHeader, CardTitle, Button } from '@mochi/common'
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@mochi/common'
 import { toast } from 'sonner'
-import { BookOpen, Link2, Bookmark, X } from 'lucide-react'
+import { BookOpen, Bookmark, Ellipsis, FileEdit, FilePlus, History, Link2, Pencil, Settings, X } from 'lucide-react'
 import { usePageTitle } from '@mochi/common'
 import { usePage, useRemoveBookmark } from '@/hooks/use-wiki'
 import { Header } from '@mochi/common'
@@ -17,7 +27,9 @@ import {
 import { PageHeader } from '@/features/wiki/page-header'
 import { GeneralError } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { usePermissions } from '@/context/wiki-context'
 import { cacheWikisList, setLastLocation } from '@/hooks/use-wiki-storage'
+import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 
 interface InfoResponse {
   entity: boolean
@@ -67,6 +79,7 @@ function IndexPage() {
 
 function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }) {
   const { data, isLoading, error } = usePage(homeSlug)
+  const permissions = usePermissions()
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : 'Home'
   usePageTitle(pageTitle)
 
@@ -122,12 +135,67 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
 
   // Page found
   if (data && 'page' in data && typeof data.page === 'object') {
+    const actionsMenu = (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <Ellipsis className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {permissions.edit && (
+            <DropdownMenuItem asChild>
+              <Link to="/$page/edit" params={{ page: homeSlug }}>
+                <Pencil className="size-4" />
+                Edit page
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {permissions.edit && (
+            <RenamePageDialog
+              slug={homeSlug}
+              title={data.page.title}
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <FileEdit className="size-4" />
+                  Rename page
+                </DropdownMenuItem>
+              }
+            />
+          )}
+          <DropdownMenuItem asChild>
+            <Link to="/$page/history" params={{ page: homeSlug }}>
+              <History className="size-4" />
+              Page history
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {permissions.edit && (
+            <DropdownMenuItem asChild>
+              <Link to="/new">
+                <FilePlus className="size-4" />
+                New page
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {permissions.manage && (
+            <DropdownMenuItem asChild>
+              <Link to="/settings">
+                <Settings className="size-4" />
+                Wiki settings
+              </Link>
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+
     return (
       <>
         <Header>
-          <PageHeader page={data.page} />
+          <PageHeader page={data.page} actions={actionsMenu} />
         </Header>
-        <Main>
+        <Main className="pt-2">
           <PageView page={data.page} />
         </Main>
       </>

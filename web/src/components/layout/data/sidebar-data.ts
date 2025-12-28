@@ -1,10 +1,8 @@
 import {
-  FilePlus,
   History,
   Home,
   Library,
   Search,
-  Settings,
   Tags,
 } from 'lucide-react'
 import { getAppPath } from '@mochi/common'
@@ -33,8 +31,6 @@ export const sidebarData: SidebarData = {
         { title: 'Search', url: APP_ROUTES.WIKI.SEARCH, icon: Search },
         { title: 'Tags', url: APP_ROUTES.WIKI.TAGS, icon: Tags },
         { title: 'Recent changes', url: APP_ROUTES.WIKI.CHANGES, icon: History },
-        { title: 'New page', url: APP_ROUTES.WIKI.NEW, icon: FilePlus },
-        { title: 'Settings', url: APP_ROUTES.WIKI.SETTINGS, icon: Settings },
       ],
     },
   ],

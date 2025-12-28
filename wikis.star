@@ -1290,6 +1290,167 @@ def action_page_delete(a):
 
     return {"data": {"ok": True, "slug": slug}}
 
+# Rename a page (and optionally child pages)
+def action_page_rename(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    if not check_access(a, wiki["id"], "edit"):
+        a.error(403, "Access denied")
+        return
+
+    old_slug = a.input("page")
+    new_slug = a.input("slug")
+    rename_children = a.input("children", "true") == "true"
+    create_redirects = a.input("redirects", "false") == "true"
+
+    if not old_slug:
+        a.error(400, "Missing page parameter")
+        return
+
+    if not new_slug:
+        a.error(400, "New slug is required")
+        return
+
+    # Validate new slug
+    if len(new_slug) > 100:
+        a.error(400, "Page URL too long (max 100 characters)")
+        return
+    for c in new_slug.elems():
+        if not (c.isalnum() or c in "-_/"):
+            a.error(400, "Page URL can only contain letters, numbers, hyphens, underscores, and slashes")
+            return
+    if new_slug.startswith("-"):
+        a.error(400, "Page names starting with - are reserved")
+        return
+
+    # Can't rename to itself
+    if old_slug == new_slug:
+        a.error(400, "New slug is the same as the old slug")
+        return
+
+    source = wiki.get("source")
+    author = a.user.identity.id
+    name = a.user.identity.name
+    now = mochi.time.now()
+
+    # Get the page to rename
+    page = mochi.db.row("select * from pages where wiki=? and page=? and deleted=0", wiki["id"], old_slug)
+    if not page:
+        a.error(404, "Page not found")
+        return
+
+    # Check new slug doesn't already exist
+    existing = mochi.db.row("select 1 from pages where wiki=? and page=? and deleted=0", wiki["id"], new_slug)
+    if existing:
+        a.error(400, "A page with this slug already exists")
+        return
+
+    # Build list of pages to rename (main page + children if requested)
+    pages_to_rename = [{"page": page, "old_slug": old_slug, "new_slug": new_slug}]
+
+    if rename_children:
+        children = mochi.db.rows("select * from pages where wiki=? and page like ? and deleted=0", wiki["id"], old_slug + "/%")
+        for child in children:
+            child_new_slug = new_slug + child["page"][len(old_slug):]
+            # Check child's new slug doesn't exist
+            child_existing = mochi.db.row("select 1 from pages where wiki=? and page=? and deleted=0", wiki["id"], child_new_slug)
+            if child_existing:
+                a.error(400, "A page with slug '" + child_new_slug + "' already exists")
+                return
+            pages_to_rename.append({"page": child, "old_slug": child["page"], "new_slug": child_new_slug})
+
+    # Rename all pages
+    renamed = []
+    for item in pages_to_rename:
+        p = item["page"]
+        o = item["old_slug"]
+        n = item["new_slug"]
+        new_version = p["version"] + 1
+
+        mochi.db.execute("update pages set page=?, version=?, updated=? where id=?", n, new_version, now, p["id"])
+        create_revision(p["id"], p["title"], p["content"], author, name, new_version, "Renamed from " + o)
+        renamed.append({"old": o, "new": n})
+
+        # Create redirect if requested
+        if create_redirects:
+            mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki["id"], o, n, now)
+            broadcast_event(wiki["id"], "redirect/set", {"source": o, "target": n, "created": now})
+
+        # Broadcast page update
+        event_data = {
+            "id": p["id"],
+            "page": n,
+            "title": p["title"],
+            "content": p["content"],
+            "author": author,
+            "name": name,
+            "updated": now,
+            "version": new_version
+        }
+        if source:
+            mochi.message.send(
+                {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/update"},
+                event_data
+            )
+        else:
+            broadcast_event(wiki["id"], "page/update", event_data)
+
+    # Update links in other pages
+    # Build a map of old -> new slugs for replacement
+    slug_map = {}
+    renamed_ids = []
+    for item in pages_to_rename:
+        slug_map[item["old_slug"]] = item["new_slug"]
+        renamed_ids.append(item["page"]["id"])
+
+    updated_links = 0
+    for old, new in slug_map.items():
+        # Find pages containing links to this old slug
+        pattern = "](" + old + ")"
+        pages_with_links = mochi.db.rows("select * from pages where wiki=? and deleted=0 and content like ?", wiki["id"], "%" + pattern + "%")
+
+        for p in pages_with_links:
+            # Skip pages we already renamed (they might link to themselves)
+            if p["id"] in renamed_ids:
+                continue
+
+            # Replace links in content
+            new_content = p["content"].replace(pattern, "](" + new + ")")
+            if new_content != p["content"]:
+                new_version = p["version"] + 1
+                mochi.db.execute("update pages set content=?, version=?, updated=?, author=? where id=?",
+                    new_content, new_version, now, author, p["id"])
+                create_revision(p["id"], p["title"], new_content, author, name, new_version, "Updated links: " + old + " → " + new)
+                updated_links += 1
+
+                # Broadcast update
+                event_data = {
+                    "id": p["id"],
+                    "page": p["page"],
+                    "title": p["title"],
+                    "content": new_content,
+                    "author": author,
+                    "name": name,
+                    "updated": now,
+                    "version": new_version
+                }
+                if source:
+                    mochi.message.send(
+                        {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/update"},
+                        event_data
+                    )
+                else:
+                    broadcast_event(wiki["id"], "page/update", event_data)
+
+    return {"data": {"renamed": renamed, "updated_links": updated_links}}
+
 # Add a tag to a page
 def action_tag_add(a):
     if not a.user:

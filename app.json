@@ -2,7 +2,7 @@
 // Copyright Alistair Cunningham 2025
 
 {
-	"version": "1.6",
+	"version": "1.7",
 	"label": "app_name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -71,6 +71,7 @@
 		":wiki/-/:page/history/:version": {"function": "action_page_revision", "public": true},
 		":wiki/-/:page/revert": {"function": "action_page_revert"},
 		":wiki/-/:page/delete": {"function": "action_page_delete"},
+		":wiki/-/:page/rename": {"function": "action_page_rename"},
 		":wiki/-/:page/tag/add": {"function": "action_tag_add"},
 		":wiki/-/:page/tag/remove": {"function": "action_tag_remove"},
 		":wiki/:page": {"file": "web/dist/index.html", "public": true},

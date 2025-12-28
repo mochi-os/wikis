@@ -24,6 +24,7 @@ const endpoints = {
     pageRevision: (slug: string, version: number) => `${slug}/history/${version}`,
     pageRevert: (slug: string) => `${slug}/revert`,
     pageDelete: (slug: string) => `${slug}/delete`,
+    pageRename: (slug: string) => `${slug}/rename`,
     newPage: 'page/create',
     search: 'search',
     // Tags

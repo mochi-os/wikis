@@ -1,19 +1,28 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { usePage } from '@/hooks/use-wiki'
-import { Button, usePageTitle } from '@mochi/common'
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  usePageTitle,
+} from '@mochi/common'
 import {
   PageView,
   PageNotFound,
   PageViewSkeleton,
 } from '@/features/wiki/page-view'
 import { PageHeader } from '@/features/wiki/page-header'
+import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiContext, usePermissions } from '@/context/wiki-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
-import { History, Pencil } from 'lucide-react'
+import { Ellipsis, FileEdit, FilePlus, History, Pencil, Settings } from 'lucide-react'
 
 export const Route = createFileRoute('/_authenticated/$page/')({
   component: WikiPageRoute,
@@ -82,29 +91,67 @@ function WikiPageRoute() {
 
   // Page found
   if (data && 'page' in data && typeof data.page === 'object') {
+    const actionsMenu = (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <Ellipsis className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {permissions.edit && (
+            <DropdownMenuItem asChild>
+              <Link to="/$page/edit" params={{ page: slug }}>
+                <Pencil className="size-4" />
+                Edit page
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {permissions.edit && (
+            <RenamePageDialog
+              slug={slug}
+              title={data.page.title}
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <FileEdit className="size-4" />
+                  Rename page
+                </DropdownMenuItem>
+              }
+            />
+          )}
+          <DropdownMenuItem asChild>
+            <Link to="/$page/history" params={{ page: slug }}>
+              <History className="size-4" />
+              Page history
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {permissions.edit && (
+            <DropdownMenuItem asChild>
+              <Link to="/new">
+                <FilePlus className="size-4" />
+                New page
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {permissions.manage && (
+            <DropdownMenuItem asChild>
+              <Link to="/settings">
+                <Settings className="size-4" />
+                Wiki settings
+              </Link>
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+
     return (
       <>
         <Header>
-          <PageHeader page={data.page} />
+          <PageHeader page={data.page} actions={actionsMenu} />
         </Header>
-        <Main>
-          {/* Action buttons */}
-          <div className="-mt-1 flex justify-end gap-2 mb-4">
-            {permissions.edit && (
-              <Button asChild>
-                <Link to="/$page/edit" params={{ page: slug }}>
-                  <Pencil className="size-4" />
-                  Edit
-                </Link>
-              </Button>
-            )}
-            <Button variant="outline" asChild>
-              <Link to="/$page/history" params={{ page: slug }}>
-                <History className="size-4" />
-                History
-              </Link>
-            </Button>
-          </div>
+        <Main className="pt-2">
           <PageView page={data.page} />
         </Main>
       </>

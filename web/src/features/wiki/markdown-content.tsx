@@ -74,8 +74,8 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
           'prose prose-neutral dark:prose-invert max-w-none',
           // Headings
           'prose-headings:scroll-mt-20',
-          // Links
-          'prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
+          // Links - use foreground color with underline for visibility
+          'prose-a:text-foreground prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-muted-foreground',
           // Code
           'prose-code:before:content-none prose-code:after:content-none',
           'prose-code:bg-muted prose-code:rounded prose-code:px-1.5 prose-code:py-0.5',
