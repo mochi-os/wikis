@@ -80,7 +80,7 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
           'prose-code:before:content-none prose-code:after:content-none',
           'prose-code:bg-muted prose-code:rounded prose-code:px-1.5 prose-code:py-0.5',
           // Pre (code blocks)
-          'prose-pre:bg-muted prose-pre:border',
+          'prose-pre:bg-muted prose-pre:text-foreground prose-pre:border',
           // Tables
           'prose-table:border prose-th:border prose-td:border',
           'prose-th:px-3 prose-th:py-2 prose-td:px-3 prose-td:py-2',

@@ -131,7 +131,7 @@ function WikiPageRoute() {
               Page history
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          {(permissions.edit || permissions.manage) && <DropdownMenuSeparator />}
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link to="/new">
