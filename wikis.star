@@ -33,49 +33,6 @@ def database_create():
     mochi.db.execute("create table if not exists bookmarks (id text primary key, name text not null, added integer not null)")
     mochi.db.execute("create index if not exists bookmarks_added on bookmarks(added)")
 
-# Database upgrades
-
-def database_upgrade(version):
-    if version == 2:
-        # Add source column for tracking upstream wiki
-        mochi.db.execute("alter table wikis add column source text not null default ''")
-    elif version == 3:
-        # Add name column to store author display name in revisions
-        mochi.db.execute("alter table revisions add column name text not null default ''")
-    elif version == 4:
-        # Add bookmarks table for following external wikis
-        mochi.db.execute("create table if not exists bookmarks (id text primary key, name text not null, added integer not null)")
-        mochi.db.execute("create index if not exists bookmarks_added on bookmarks(added)")
-    elif version == 5:
-        # Add seen column to track subscriber activity
-        mochi.db.execute("alter table subscribers add column seen integer not null default 0")
-    elif version == 6:
-        # Clean up legacy #administrator rules
-        wikis = mochi.db.rows("select id from wikis")
-        for wiki in wikis:
-            resource = "wiki/" + wiki["id"]
-            rules = mochi.access.list.resource(resource)
-            for rule in rules:
-                subject = rule.get("subject", "")
-                operation = rule.get("operation", "")
-                # Remove #administrator rules (legacy placeholder)
-                if subject == "#administrator" and operation:
-                    mochi.access.revoke(subject, resource, operation)
-    elif version == 7:
-        # Previously ran but mochi.entity.info() didn't include creator
-        # Re-run in version 8
-        pass
-    elif version == 8:
-        # Add explicit owner access rules for existing wikis
-        wikis = mochi.db.rows("select id from wikis")
-        for wiki in wikis:
-            wiki_id = wiki["id"]
-            resource = "wiki/" + wiki_id
-            entity = mochi.entity.info(wiki_id)
-            owner_id = entity.get("creator") if entity else None
-            if owner_id:
-                mochi.access.allow(owner_id, resource, "*", owner_id)
-
 # Helper: Update subscriber's seen timestamp
 def update_subscriber_seen(wiki, subscriber_id):
     now = mochi.time.now()
