@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { toast } from 'sonner'
 import { ArrowRight, Plus, Trash2, Link2 } from 'lucide-react'
+import { toast } from '@mochi/common'
 import {
   Button,
   Input,
@@ -241,7 +241,7 @@ function AddRedirectDialog() {
               Cancel
             </Button>
             <Button type="submit" disabled={setRedirect.isPending}>
-              {setRedirect.isPending ? 'Creating...' : 'Create Redirect'}
+              {setRedirect.isPending ? 'Creating...' : 'Create redirect'}
             </Button>
           </DialogFooter>
         </form>

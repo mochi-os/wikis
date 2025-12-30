@@ -17,7 +17,7 @@ import {
   Trash2,
   UserCheck,
 } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@mochi/common'
 import {
   useSystemUsersData,
   useCreateUser,
@@ -322,7 +322,7 @@ function SessionsDialog({ user }: { user: User }) {
                 <TableRow>
                   <TableHead>Device</TableHead>
                   <TableHead>IP Address</TableHead>
-                  <TableHead>Last Accessed</TableHead>
+                  <TableHead>Last accessed</TableHead>
                   <TableHead className='w-[80px]' />
                 </TableRow>
               </TableHeader>

@@ -14,7 +14,7 @@ export function TagsList({ tags }: TagsListProps) {
       {/* Header */}
       <div className="flex items-center gap-3">
         <Tags className="h-6 w-6" />
-        <h1 className="text-2xl font-bold">All Tags</h1>
+        <h1 className="text-2xl font-bold">All tags</h1>
       </div>
 
       <p className="text-muted-foreground">

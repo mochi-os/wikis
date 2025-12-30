@@ -1,8 +1,7 @@
 import { format } from 'date-fns'
 import type { Session } from '@/types/account'
 import { Loader2, LogOut } from 'lucide-react'
-import { usePageTitle, getErrorMessage } from '@mochi/common'
-import { toast } from 'sonner'
+import { usePageTitle, getErrorMessage, toast } from '@mochi/common'
 import { useAccountData, useRevokeSession } from '@/hooks/use-account'
 import {
   AlertDialog,
@@ -151,7 +150,7 @@ export function UserSessions() {
               <TableRow>
                 <TableHead>Session</TableHead>
                 <TableHead>Created</TableHead>
-                <TableHead>Last Active</TableHead>
+                <TableHead>Last active</TableHead>
                 <TableHead className='w-12'></TableHead>
               </TableRow>
             </TableHeader>

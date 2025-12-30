@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_authenticated/settings')({
 })
 
 function WikiSettingsRoute() {
-  usePageTitle('Wiki Settings')
+  usePageTitle('Wiki settings')
   return (
     <>
       <Header />

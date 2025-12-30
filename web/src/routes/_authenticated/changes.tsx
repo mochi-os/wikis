@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_authenticated/changes')({
 })
 
 function ChangesRoute() {
-  usePageTitle('Recent Changes')
+  usePageTitle('Recent changes')
   const { data, isLoading, error } = useChanges()
 
   if (isLoading) {

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { toast } from 'sonner'
 import { Link2, BookOpen } from 'lucide-react'
 import {
   Button,
@@ -15,6 +14,7 @@ import {
   Header,
   Main,
   getErrorMessage,
+  toast,
 } from '@mochi/common'
 import { useJoinWiki } from '@/hooks/use-wiki'
 
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/_authenticated/join')({
 })
 
 function JoinWikiPage() {
-  usePageTitle('Join Wiki')
+  usePageTitle('Join wiki')
   const navigate = useNavigate()
   const [target, setTarget] = useState('')
   const joinWiki = useJoinWiki()

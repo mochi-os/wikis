@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_authenticated/tags')({
 })
 
 function TagsRoute() {
-  usePageTitle('All Tags')
+  usePageTitle('All tags')
   const { data, isLoading, error } = useTags()
 
   if (isLoading) {

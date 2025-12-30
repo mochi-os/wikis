@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
 import { z } from 'zod'
-import { toast } from 'sonner'
 import { Plus, BookOpen } from 'lucide-react'
 import {
   Button,
@@ -18,6 +17,7 @@ import {
   Main,
   requestHelpers,
   getErrorMessage,
+  toast,
 } from '@mochi/common'
 import { PageEditor } from '@/features/wiki/page-editor'
 import endpoints from '@/api/endpoints'
@@ -58,7 +58,7 @@ function NewRoute() {
 }
 
 function NewPageView() {
-  usePageTitle('New Page')
+  usePageTitle('New page')
   const { slug } = Route.useSearch()
 
   return (
@@ -72,7 +72,7 @@ function NewPageView() {
 }
 
 function NewWikiView() {
-  usePageTitle('Create Wiki')
+  usePageTitle('New wiki')
   const navigate = useNavigate()
   const [name, setName] = useState('')
 
@@ -139,7 +139,7 @@ function NewWikiView() {
                   </Button>
                   <Button type="submit" disabled={createWiki.isPending}>
                     <Plus className="mr-2 h-4 w-4" />
-                    {createWiki.isPending ? 'Creating...' : 'Create Wiki'}
+                    {createWiki.isPending ? 'Creating...' : 'Create wiki'}
                   </Button>
                 </div>
               </form>

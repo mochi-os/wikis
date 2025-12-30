@@ -133,7 +133,7 @@ export function AttachmentPicker({ onSelect, onDelete, trigger }: AttachmentPick
               disabled={uploadMutation.isPending}
             >
               <Upload className="mr-2 h-4 w-4" />
-              {uploadMutation.isPending ? 'Uploading...' : 'Upload Files'}
+              {uploadMutation.isPending ? 'Uploading...' : 'Upload files'}
             </Button>
           </div>
 

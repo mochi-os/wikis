@@ -22,7 +22,7 @@ export function ChangesList({ changes }: ChangesListProps) {
       {/* Header */}
       <div className="flex items-center gap-3">
         <History className="h-6 w-6" />
-        <h1 className="text-2xl font-bold">Recent Changes</h1>
+        <h1 className="text-2xl font-bold">Recent changes</h1>
       </div>
 
       <p className="text-muted-foreground">
