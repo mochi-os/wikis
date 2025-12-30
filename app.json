@@ -2,7 +2,7 @@
 // Copyright Alistair Cunningham 2025
 
 {
-	"version": "1.15",
+	"version": "1.16",
 	"label": "app_name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -32,7 +32,7 @@
 		"bookmark/remove": {"function": "action_bookmark_remove"},
 		"assets": {"files": "web/dist/assets", "public": true},
 		"images": {"files": "web/dist/images", "public": true},
-		":wiki": {"file": "web/dist/index.html", "public": true},
+		":wiki": {"file": "web/dist/index.html", "public": true, "opengraph": "opengraph_wiki"},
 		":wiki/new": {"file": "web/dist/index.html"},
 		":wiki/-/info": {"function": "action_info_entity", "public": true},
 		":wiki/-/new": {"file": "web/dist/index.html"},
@@ -73,7 +73,7 @@
 		":wiki/-/:page/rename": {"function": "action_page_rename"},
 		":wiki/-/:page/tag/add": {"function": "action_tag_add"},
 		":wiki/-/:page/tag/remove": {"function": "action_tag_remove"},
-		":wiki/:page": {"file": "web/dist/index.html", "public": true},
+		":wiki/:page": {"file": "web/dist/index.html", "public": true, "opengraph": "opengraph_wiki"},
 		"-/users/search": {"function": "action_users_search"},
 		"-/groups": {"function": "action_groups"}
 	},

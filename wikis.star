@@ -3090,3 +3090,68 @@ def action_groups(a):
         return
     groups = mochi.service.call("people", "groups/list")
     return {"data": {"groups": groups}}
+
+# Generate Open Graph meta tags for wiki pages
+def opengraph_wiki(params):
+    wiki_id = params.get("entity", "") or params.get("wiki", "")
+    page_slug = params.get("page", "")
+
+    # Default values
+    og = {
+        "title": "Wiki",
+        "description": "A wiki on Mochi",
+        "type": "website"
+    }
+
+    # Look up wiki
+    if not wiki_id:
+        return og
+
+    wiki = mochi.db.row("select * from wikis where id=?", wiki_id)
+    if not wiki:
+        return og
+
+    og["title"] = wiki["name"]
+    og["description"] = wiki["name"] + " - Wiki"
+
+    # If specific page requested, use page content
+    if page_slug:
+        page = mochi.db.row("select * from pages where wiki=? and page=? and deleted=0", wiki["id"], page_slug)
+        if page:
+            og["type"] = "article"
+            og["title"] = page["title"] + " - " + wiki["name"]
+
+            # Use first 200 chars of content as description, stripping markdown
+            content = page.get("content", "")
+            if content:
+                # Simple markdown stripping: remove common markdown syntax
+                desc = content
+                # Remove headers
+                lines = []
+                for line in desc.split("\n"):
+                    if not line.startswith("#"):
+                        lines.append(line)
+                desc = " ".join(lines)
+                # Remove links [text](url) -> text
+                while "[" in desc and "](" in desc:
+                    start = desc.find("[")
+                    mid = desc.find("](", start)
+                    end = desc.find(")", mid)
+                    if start >= 0 and mid > start and end > mid:
+                        link_text = desc[start+1:mid]
+                        desc = desc[:start] + link_text + desc[end+1:]
+                    else:
+                        break
+                # Remove bold/italic markers
+                desc = desc.replace("**", "").replace("__", "").replace("*", "").replace("_", "")
+                # Remove code blocks
+                desc = desc.replace("`", "")
+                # Collapse whitespace
+                desc = " ".join(desc.split())
+                # Truncate
+                if len(desc) > 200:
+                    desc = desc[:197] + "..."
+                if desc:
+                    og["description"] = desc
+
+    return og
