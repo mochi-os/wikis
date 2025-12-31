@@ -1,5 +1,4 @@
 import { Trash2, ArrowLeft } from 'lucide-react'
-import { toast } from 'sonner'
 import {
   Button,
   Separator,
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
   getErrorMessage,
+  toast,
 } from '@mochi/common'
 import { useDeletePage } from '@/hooks/use-wiki'
 

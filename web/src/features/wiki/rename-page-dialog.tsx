@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { toast } from 'sonner'
 import { FileEdit } from 'lucide-react'
 import {
   Button,
@@ -14,6 +13,7 @@ import {
   Label,
   Checkbox,
   getErrorMessage,
+  toast,
 } from '@mochi/common'
 import { useRenamePage } from '@/hooks/use-wiki'
 

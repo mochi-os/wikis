@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { toast } from 'sonner'
 import { Plus, X, Tag as TagIcon } from 'lucide-react'
 import {
   Button,
@@ -9,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   getErrorMessage,
+  toast,
 } from '@mochi/common'
 import { useAddTag, useRemoveTag } from '@/hooks/use-wiki'
 import { usePermissions } from '@/context/wiki-context'

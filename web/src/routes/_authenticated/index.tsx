@@ -12,8 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  toast,
 } from '@mochi/common'
-import { toast } from 'sonner'
 import { BookOpen, Bookmark, Ellipsis, FileEdit, FilePlus, History, Link2, Pencil, Settings, X } from 'lucide-react'
 import { usePageTitle } from '@mochi/common'
 import { usePage, useRemoveBookmark } from '@/hooks/use-wiki'

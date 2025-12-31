@@ -21,7 +21,7 @@ import {
   Search,
   Tags,
 } from 'lucide-react'
-import { toast } from 'sonner'
+import { toast } from '@mochi/common'
 import { APP_ROUTES } from '@/config/routes'
 import { SidebarProvider, useSidebarContext } from '@/context/sidebar-context'
 import { WikiProvider, useWikiContext } from '@/context/wiki-context'

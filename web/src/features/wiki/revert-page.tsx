@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { RotateCcw, ArrowLeft } from 'lucide-react'
-import { toast } from 'sonner'
 import {
   Button,
   Input,
@@ -13,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
   getErrorMessage,
+  toast,
 } from '@mochi/common'
 import { useRevertPage } from '@/hooks/use-wiki'
 

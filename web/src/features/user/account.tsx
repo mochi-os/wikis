@@ -17,7 +17,7 @@ import {
   User,
 } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
-import { toast } from 'sonner'
+import { toast } from '@mochi/common'
 import {
   useAccountData,
   useMethods,
