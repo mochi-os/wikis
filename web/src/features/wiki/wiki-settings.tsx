@@ -69,10 +69,10 @@ import {
 } from '@/hooks/use-wiki'
 import { useWikiContext } from '@/context/wiki-context'
 
-type TabId = 'settings' | 'access' | 'redirects' | 'subscribers'
+export type WikiSettingsTabId = 'settings' | 'access' | 'redirects' | 'subscribers'
 
 interface Tab {
-  id: TabId
+  id: WikiSettingsTabId
   label: string
   icon: React.ReactNode
 }
@@ -84,8 +84,12 @@ const tabs: Tab[] = [
   { id: 'subscribers', label: 'Subscribers', icon: <Users className="h-4 w-4" /> },
 ]
 
-export function WikiSettings() {
-  const [activeTab, setActiveTab] = useState<TabId>('settings')
+interface WikiSettingsProps {
+  activeTab: WikiSettingsTabId
+  onTabChange: (tab: WikiSettingsTabId) => void
+}
+
+export function WikiSettings({ activeTab, onTabChange }: WikiSettingsProps) {
 
   return (
     <div className="space-y-6">
@@ -94,7 +98,7 @@ export function WikiSettings() {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => onTabChange(tab.id)}
             className={cn(
               'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
               'border-b-2 -mb-px',
