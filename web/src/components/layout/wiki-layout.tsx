@@ -85,29 +85,37 @@ function WikiLayoutInner() {
     // Use fingerprint for shorter URLs when available
     const wikiItems = (info?.wikis || []).map((wiki) => {
       const wikiUrl = wiki.fingerprint ?? wiki.id
+      const isCurrentWiki = wiki.id === currentWikiId || wiki.fingerprint === currentWikiId
       return {
         title: wiki.name,
         url: `${getAppPath()}/${wikiUrl}` as const,
         icon: BookOpen,
         external: true,
+        isActive: isCurrentWiki,
       }
     }).sort((a, b) => a.title.localeCompare(b.title))
 
     // Build bookmarked wiki items - use fingerprint for shorter URLs
-    const bookmarkItems = (info?.bookmarks || []).map((bookmark) => ({
-      title: bookmark.name,
-      url: `${getAppPath()}/${bookmark.fingerprint ?? bookmark.id}` as const,
-      icon: Bookmark,
-      external: true,
-    })).sort((a, b) => a.title.localeCompare(b.title))
+    const bookmarkItems = (info?.bookmarks || []).map((bookmark) => {
+      const isCurrentWiki = bookmark.id === currentWikiId || bookmark.fingerprint === currentWikiId
+      return {
+        title: bookmark.name,
+        url: `${getAppPath()}/${bookmark.fingerprint ?? bookmark.id}` as const,
+        icon: Bookmark,
+        external: true,
+        isActive: isCurrentWiki,
+      }
+    }).sort((a, b) => a.title.localeCompare(b.title))
 
     // Build current wiki item when in entity context but not in the wikis list
     // (This handles when we're viewing a wiki that might not be in our class list)
     const currentWikiInList = info?.wikis?.some(w => w.id === currentWikiId || w.fingerprint === currentWikiId)
-    const standaloneWikiItem = isInWiki && !currentWikiInList ? {
+    const currentWikiInBookmarks = info?.bookmarks?.some(b => b.id === currentWikiId || b.fingerprint === currentWikiId)
+    const standaloneWikiItem = isInWiki && !currentWikiInList && !currentWikiInBookmarks ? {
       title: wikiName || 'Wiki',
       url: APP_ROUTES.WIKI.HOME,
       icon: BookOpen,
+      isActive: true,
     } : null
 
     // Build "All wikis" item with submenu for wiki management actions
