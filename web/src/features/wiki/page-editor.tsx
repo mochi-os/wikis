@@ -21,6 +21,7 @@ import {
 } from '@mochi/common'
 import { useEditPage, useCreatePage, useAttachments, useUploadAttachment } from '@/hooks/use-wiki'
 import { usePermissions } from '@/context/wiki-context'
+import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import type { WikiPage, Attachment } from '@/types/wiki'
 import { MarkdownContent } from './markdown-content'
 
@@ -40,6 +41,8 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
   const editPage = useEditPage()
   const createPage = useCreatePage()
   const permissions = usePermissions()
+  const wikiContext = useWikiBaseURLOptional()
+  const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
 
   const [title, setTitle] = useState(page?.title ?? '')
   const [content, setContent] = useState(page?.content ?? '')
@@ -118,7 +121,11 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
         {
           onSuccess: (data) => {
             toast.success('Page created')
-            navigate({ to: '/$page', params: { page: data.slug } })
+            if (wikiId) {
+              navigate({ to: '/$wikiId/$page', params: { wikiId, page: data.slug } })
+            } else {
+              navigate({ to: '/$page', params: { page: data.slug } })
+            }
           },
           onError: (error) => {
             toast.error(getErrorMessage(error, 'Failed to create page'))
@@ -131,7 +138,11 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
         {
           onSuccess: () => {
             toast.success('Page saved')
-            navigate({ to: '/$page', params: { page: slug } })
+            if (wikiId) {
+              navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
+            } else {
+              navigate({ to: '/$page', params: { page: slug } })
+            }
           },
           onError: (error) => {
             toast.error(getErrorMessage(error, 'Failed to save page'))
@@ -144,6 +155,8 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
   const handleCancel = () => {
     if (isNew) {
       navigate({ to: '/' })
+    } else if (wikiId) {
+      navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
     } else {
       navigate({ to: '/$page', params: { page: slug } })
     }
@@ -183,10 +196,17 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
             Insert
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/$page/attachments" params={{ page: slug }}>
-              <Image className="mr-2 h-4 w-4" />
-              Attachments
-            </Link>
+            {wikiId ? (
+              <Link to="/$wikiId/$page/attachments" params={{ wikiId, page: slug }}>
+                <Image className="mr-2 h-4 w-4" />
+                Attachments
+              </Link>
+            ) : (
+              <Link to="/$page/attachments" params={{ page: slug }}>
+                <Image className="mr-2 h-4 w-4" />
+                Attachments
+              </Link>
+            )}
           </Button>
           <Button variant="outline" size="sm" onClick={handleCancel}>
             <X className="mr-2 h-4 w-4" />
@@ -194,10 +214,17 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
           </Button>
           {!isNew && permissions.delete && (
             <Button variant="outline" size="sm" asChild>
-              <Link to="/$page/delete" params={{ page: slug }}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete page
-              </Link>
+              {wikiId ? (
+                <Link to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete page
+                </Link>
+              ) : (
+                <Link to="/$page/delete" params={{ page: slug }}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete page
+                </Link>
+              )}
             </Button>
           )}
           <Button size="sm" onClick={handleSave} disabled={isPending}>

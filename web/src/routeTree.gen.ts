@@ -23,6 +23,8 @@ import { Route as errors500RouteImport } from './routes/(errors)/500'
 import { Route as errors404RouteImport } from './routes/(errors)/404'
 import { Route as errors403RouteImport } from './routes/(errors)/403'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
+import { Route as AuthenticatedWikiIdRouteRouteImport } from './routes/_authenticated/$wikiId/route'
+import { Route as AuthenticatedWikiIdIndexRouteImport } from './routes/_authenticated/$wikiId/index'
 import { Route as AuthenticatedPageIndexRouteImport } from './routes/_authenticated/$page/index'
 import { Route as AuthenticatedUserSessionsRouteImport } from './routes/_authenticated/user/sessions'
 import { Route as AuthenticatedUserPreferencesRouteImport } from './routes/_authenticated/user/preferences'
@@ -32,12 +34,21 @@ import { Route as AuthenticatedSystemUsersRouteImport } from './routes/_authenti
 import { Route as AuthenticatedSystemStatusRouteImport } from './routes/_authenticated/system/status'
 import { Route as AuthenticatedSystemSettingsRouteImport } from './routes/_authenticated/system/settings'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
+import { Route as AuthenticatedWikiIdSettingsRouteImport } from './routes/_authenticated/$wikiId/settings'
+import { Route as AuthenticatedWikiIdNewRouteImport } from './routes/_authenticated/$wikiId/new'
 import { Route as AuthenticatedPageRevertRouteImport } from './routes/_authenticated/$page/revert'
 import { Route as AuthenticatedPageEditRouteImport } from './routes/_authenticated/$page/edit'
 import { Route as AuthenticatedPageDeleteRouteImport } from './routes/_authenticated/$page/delete'
 import { Route as AuthenticatedPageAttachmentsRouteImport } from './routes/_authenticated/$page/attachments'
+import { Route as AuthenticatedWikiIdPageIndexRouteImport } from './routes/_authenticated/$wikiId/$page/index'
 import { Route as AuthenticatedPageHistoryIndexRouteImport } from './routes/_authenticated/$page/history/index'
+import { Route as AuthenticatedWikiIdPageRevertRouteImport } from './routes/_authenticated/$wikiId/$page/revert'
+import { Route as AuthenticatedWikiIdPageEditRouteImport } from './routes/_authenticated/$wikiId/$page/edit'
+import { Route as AuthenticatedWikiIdPageDeleteRouteImport } from './routes/_authenticated/$wikiId/$page/delete'
+import { Route as AuthenticatedWikiIdPageAttachmentsRouteImport } from './routes/_authenticated/$wikiId/$page/attachments'
 import { Route as AuthenticatedPageHistoryVersionRouteImport } from './routes/_authenticated/$page/history/$version'
+import { Route as AuthenticatedWikiIdPageHistoryIndexRouteImport } from './routes/_authenticated/$wikiId/$page/history/index'
+import { Route as AuthenticatedWikiIdPageHistoryVersionRouteImport } from './routes/_authenticated/$wikiId/$page/history/$version'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -108,6 +119,18 @@ const errors401Route = errors401RouteImport.update({
   path: '/401',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedWikiIdRouteRoute =
+  AuthenticatedWikiIdRouteRouteImport.update({
+    id: '/$wikiId',
+    path: '/$wikiId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedWikiIdIndexRoute =
+  AuthenticatedWikiIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
 const AuthenticatedPageIndexRoute = AuthenticatedPageIndexRouteImport.update({
   id: '/$page/',
   path: '/$page/',
@@ -160,6 +183,17 @@ const AuthenticatedErrorsErrorRoute =
     path: '/errors/$error',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedWikiIdSettingsRoute =
+  AuthenticatedWikiIdSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
+const AuthenticatedWikiIdNewRoute = AuthenticatedWikiIdNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+} as any)
 const AuthenticatedPageRevertRoute = AuthenticatedPageRevertRouteImport.update({
   id: '/$page/revert',
   path: '/$page/revert',
@@ -181,11 +215,41 @@ const AuthenticatedPageAttachmentsRoute =
     path: '/$page/attachments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedWikiIdPageIndexRoute =
+  AuthenticatedWikiIdPageIndexRouteImport.update({
+    id: '/$page/',
+    path: '/$page/',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
 const AuthenticatedPageHistoryIndexRoute =
   AuthenticatedPageHistoryIndexRouteImport.update({
     id: '/$page/history/',
     path: '/$page/history/',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedWikiIdPageRevertRoute =
+  AuthenticatedWikiIdPageRevertRouteImport.update({
+    id: '/$page/revert',
+    path: '/$page/revert',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
+const AuthenticatedWikiIdPageEditRoute =
+  AuthenticatedWikiIdPageEditRouteImport.update({
+    id: '/$page/edit',
+    path: '/$page/edit',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
+const AuthenticatedWikiIdPageDeleteRoute =
+  AuthenticatedWikiIdPageDeleteRouteImport.update({
+    id: '/$page/delete',
+    path: '/$page/delete',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
+const AuthenticatedWikiIdPageAttachmentsRoute =
+  AuthenticatedWikiIdPageAttachmentsRouteImport.update({
+    id: '/$page/attachments',
+    path: '/$page/attachments',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
   } as any)
 const AuthenticatedPageHistoryVersionRoute =
   AuthenticatedPageHistoryVersionRouteImport.update({
@@ -193,8 +257,21 @@ const AuthenticatedPageHistoryVersionRoute =
     path: '/$page/history/$version',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedWikiIdPageHistoryIndexRoute =
+  AuthenticatedWikiIdPageHistoryIndexRouteImport.update({
+    id: '/$page/history/',
+    path: '/$page/history/',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
+const AuthenticatedWikiIdPageHistoryVersionRoute =
+  AuthenticatedWikiIdPageHistoryVersionRouteImport.update({
+    id: '/$page/history/$version',
+    path: '/$page/history/$version',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
+  '/$wikiId': typeof AuthenticatedWikiIdRouteRouteWithChildren
   '/401': typeof errors401Route
   '/403': typeof errors403Route
   '/404': typeof errors404Route
@@ -212,6 +289,8 @@ export interface FileRoutesByFullPath {
   '/$page/delete': typeof AuthenticatedPageDeleteRoute
   '/$page/edit': typeof AuthenticatedPageEditRoute
   '/$page/revert': typeof AuthenticatedPageRevertRoute
+  '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
+  '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/system/settings': typeof AuthenticatedSystemSettingsRoute
   '/system/status': typeof AuthenticatedSystemStatusRoute
@@ -221,8 +300,16 @@ export interface FileRoutesByFullPath {
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
   '/user/sessions': typeof AuthenticatedUserSessionsRoute
   '/$page': typeof AuthenticatedPageIndexRoute
+  '/$wikiId/': typeof AuthenticatedWikiIdIndexRoute
   '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
+  '/$wikiId/$page/attachments': typeof AuthenticatedWikiIdPageAttachmentsRoute
+  '/$wikiId/$page/delete': typeof AuthenticatedWikiIdPageDeleteRoute
+  '/$wikiId/$page/edit': typeof AuthenticatedWikiIdPageEditRoute
+  '/$wikiId/$page/revert': typeof AuthenticatedWikiIdPageRevertRoute
   '/$page/history': typeof AuthenticatedPageHistoryIndexRoute
+  '/$wikiId/$page': typeof AuthenticatedWikiIdPageIndexRoute
+  '/$wikiId/$page/history/$version': typeof AuthenticatedWikiIdPageHistoryVersionRoute
+  '/$wikiId/$page/history': typeof AuthenticatedWikiIdPageHistoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/401': typeof errors401Route
@@ -242,6 +329,8 @@ export interface FileRoutesByTo {
   '/$page/delete': typeof AuthenticatedPageDeleteRoute
   '/$page/edit': typeof AuthenticatedPageEditRoute
   '/$page/revert': typeof AuthenticatedPageRevertRoute
+  '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
+  '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/system/settings': typeof AuthenticatedSystemSettingsRoute
   '/system/status': typeof AuthenticatedSystemStatusRoute
@@ -251,12 +340,21 @@ export interface FileRoutesByTo {
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
   '/user/sessions': typeof AuthenticatedUserSessionsRoute
   '/$page': typeof AuthenticatedPageIndexRoute
+  '/$wikiId': typeof AuthenticatedWikiIdIndexRoute
   '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
+  '/$wikiId/$page/attachments': typeof AuthenticatedWikiIdPageAttachmentsRoute
+  '/$wikiId/$page/delete': typeof AuthenticatedWikiIdPageDeleteRoute
+  '/$wikiId/$page/edit': typeof AuthenticatedWikiIdPageEditRoute
+  '/$wikiId/$page/revert': typeof AuthenticatedWikiIdPageRevertRoute
   '/$page/history': typeof AuthenticatedPageHistoryIndexRoute
+  '/$wikiId/$page': typeof AuthenticatedWikiIdPageIndexRoute
+  '/$wikiId/$page/history/$version': typeof AuthenticatedWikiIdPageHistoryVersionRoute
+  '/$wikiId/$page/history': typeof AuthenticatedWikiIdPageHistoryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/$wikiId': typeof AuthenticatedWikiIdRouteRouteWithChildren
   '/(errors)/401': typeof errors401Route
   '/(errors)/403': typeof errors403Route
   '/(errors)/404': typeof errors404Route
@@ -274,6 +372,8 @@ export interface FileRoutesById {
   '/_authenticated/$page/delete': typeof AuthenticatedPageDeleteRoute
   '/_authenticated/$page/edit': typeof AuthenticatedPageEditRoute
   '/_authenticated/$page/revert': typeof AuthenticatedPageRevertRoute
+  '/_authenticated/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
+  '/_authenticated/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/system/settings': typeof AuthenticatedSystemSettingsRoute
   '/_authenticated/system/status': typeof AuthenticatedSystemStatusRoute
@@ -283,12 +383,21 @@ export interface FileRoutesById {
   '/_authenticated/user/preferences': typeof AuthenticatedUserPreferencesRoute
   '/_authenticated/user/sessions': typeof AuthenticatedUserSessionsRoute
   '/_authenticated/$page/': typeof AuthenticatedPageIndexRoute
+  '/_authenticated/$wikiId/': typeof AuthenticatedWikiIdIndexRoute
   '/_authenticated/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
+  '/_authenticated/$wikiId/$page/attachments': typeof AuthenticatedWikiIdPageAttachmentsRoute
+  '/_authenticated/$wikiId/$page/delete': typeof AuthenticatedWikiIdPageDeleteRoute
+  '/_authenticated/$wikiId/$page/edit': typeof AuthenticatedWikiIdPageEditRoute
+  '/_authenticated/$wikiId/$page/revert': typeof AuthenticatedWikiIdPageRevertRoute
   '/_authenticated/$page/history/': typeof AuthenticatedPageHistoryIndexRoute
+  '/_authenticated/$wikiId/$page/': typeof AuthenticatedWikiIdPageIndexRoute
+  '/_authenticated/$wikiId/$page/history/$version': typeof AuthenticatedWikiIdPageHistoryVersionRoute
+  '/_authenticated/$wikiId/$page/history/': typeof AuthenticatedWikiIdPageHistoryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/$wikiId'
     | '/401'
     | '/403'
     | '/404'
@@ -306,6 +415,8 @@ export interface FileRouteTypes {
     | '/$page/delete'
     | '/$page/edit'
     | '/$page/revert'
+    | '/$wikiId/new'
+    | '/$wikiId/settings'
     | '/errors/$error'
     | '/system/settings'
     | '/system/status'
@@ -315,8 +426,16 @@ export interface FileRouteTypes {
     | '/user/preferences'
     | '/user/sessions'
     | '/$page'
+    | '/$wikiId/'
     | '/$page/history/$version'
+    | '/$wikiId/$page/attachments'
+    | '/$wikiId/$page/delete'
+    | '/$wikiId/$page/edit'
+    | '/$wikiId/$page/revert'
     | '/$page/history'
+    | '/$wikiId/$page'
+    | '/$wikiId/$page/history/$version'
+    | '/$wikiId/$page/history'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/401'
@@ -336,6 +455,8 @@ export interface FileRouteTypes {
     | '/$page/delete'
     | '/$page/edit'
     | '/$page/revert'
+    | '/$wikiId/new'
+    | '/$wikiId/settings'
     | '/errors/$error'
     | '/system/settings'
     | '/system/status'
@@ -345,11 +466,20 @@ export interface FileRouteTypes {
     | '/user/preferences'
     | '/user/sessions'
     | '/$page'
+    | '/$wikiId'
     | '/$page/history/$version'
+    | '/$wikiId/$page/attachments'
+    | '/$wikiId/$page/delete'
+    | '/$wikiId/$page/edit'
+    | '/$wikiId/$page/revert'
     | '/$page/history'
+    | '/$wikiId/$page'
+    | '/$wikiId/$page/history/$version'
+    | '/$wikiId/$page/history'
   id:
     | '__root__'
     | '/_authenticated'
+    | '/_authenticated/$wikiId'
     | '/(errors)/401'
     | '/(errors)/403'
     | '/(errors)/404'
@@ -367,6 +497,8 @@ export interface FileRouteTypes {
     | '/_authenticated/$page/delete'
     | '/_authenticated/$page/edit'
     | '/_authenticated/$page/revert'
+    | '/_authenticated/$wikiId/new'
+    | '/_authenticated/$wikiId/settings'
     | '/_authenticated/errors/$error'
     | '/_authenticated/system/settings'
     | '/_authenticated/system/status'
@@ -376,8 +508,16 @@ export interface FileRouteTypes {
     | '/_authenticated/user/preferences'
     | '/_authenticated/user/sessions'
     | '/_authenticated/$page/'
+    | '/_authenticated/$wikiId/'
     | '/_authenticated/$page/history/$version'
+    | '/_authenticated/$wikiId/$page/attachments'
+    | '/_authenticated/$wikiId/$page/delete'
+    | '/_authenticated/$wikiId/$page/edit'
+    | '/_authenticated/$wikiId/$page/revert'
     | '/_authenticated/$page/history/'
+    | '/_authenticated/$wikiId/$page/'
+    | '/_authenticated/$wikiId/$page/history/$version'
+    | '/_authenticated/$wikiId/$page/history/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -489,6 +629,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof errors401RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/$wikiId': {
+      id: '/_authenticated/$wikiId'
+      path: '/$wikiId'
+      fullPath: '/$wikiId'
+      preLoaderRoute: typeof AuthenticatedWikiIdRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/$wikiId/': {
+      id: '/_authenticated/$wikiId/'
+      path: '/'
+      fullPath: '/$wikiId/'
+      preLoaderRoute: typeof AuthenticatedWikiIdIndexRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
     '/_authenticated/$page/': {
       id: '/_authenticated/$page/'
       path: '/$page'
@@ -552,6 +706,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/$wikiId/settings': {
+      id: '/_authenticated/$wikiId/settings'
+      path: '/settings'
+      fullPath: '/$wikiId/settings'
+      preLoaderRoute: typeof AuthenticatedWikiIdSettingsRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
+    '/_authenticated/$wikiId/new': {
+      id: '/_authenticated/$wikiId/new'
+      path: '/new'
+      fullPath: '/$wikiId/new'
+      preLoaderRoute: typeof AuthenticatedWikiIdNewRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
     '/_authenticated/$page/revert': {
       id: '/_authenticated/$page/revert'
       path: '/$page/revert'
@@ -580,12 +748,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPageAttachmentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/$wikiId/$page/': {
+      id: '/_authenticated/$wikiId/$page/'
+      path: '/$page'
+      fullPath: '/$wikiId/$page'
+      preLoaderRoute: typeof AuthenticatedWikiIdPageIndexRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
     '/_authenticated/$page/history/': {
       id: '/_authenticated/$page/history/'
       path: '/$page/history'
       fullPath: '/$page/history'
       preLoaderRoute: typeof AuthenticatedPageHistoryIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/$wikiId/$page/revert': {
+      id: '/_authenticated/$wikiId/$page/revert'
+      path: '/$page/revert'
+      fullPath: '/$wikiId/$page/revert'
+      preLoaderRoute: typeof AuthenticatedWikiIdPageRevertRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
+    '/_authenticated/$wikiId/$page/edit': {
+      id: '/_authenticated/$wikiId/$page/edit'
+      path: '/$page/edit'
+      fullPath: '/$wikiId/$page/edit'
+      preLoaderRoute: typeof AuthenticatedWikiIdPageEditRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
+    '/_authenticated/$wikiId/$page/delete': {
+      id: '/_authenticated/$wikiId/$page/delete'
+      path: '/$page/delete'
+      fullPath: '/$wikiId/$page/delete'
+      preLoaderRoute: typeof AuthenticatedWikiIdPageDeleteRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
+    '/_authenticated/$wikiId/$page/attachments': {
+      id: '/_authenticated/$wikiId/$page/attachments'
+      path: '/$page/attachments'
+      fullPath: '/$wikiId/$page/attachments'
+      preLoaderRoute: typeof AuthenticatedWikiIdPageAttachmentsRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
     }
     '/_authenticated/$page/history/$version': {
       id: '/_authenticated/$page/history/$version'
@@ -594,10 +797,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPageHistoryVersionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/$wikiId/$page/history/': {
+      id: '/_authenticated/$wikiId/$page/history/'
+      path: '/$page/history'
+      fullPath: '/$wikiId/$page/history'
+      preLoaderRoute: typeof AuthenticatedWikiIdPageHistoryIndexRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
+    '/_authenticated/$wikiId/$page/history/$version': {
+      id: '/_authenticated/$wikiId/$page/history/$version'
+      path: '/$page/history/$version'
+      fullPath: '/$wikiId/$page/history/$version'
+      preLoaderRoute: typeof AuthenticatedWikiIdPageHistoryVersionRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
   }
 }
 
+interface AuthenticatedWikiIdRouteRouteChildren {
+  AuthenticatedWikiIdNewRoute: typeof AuthenticatedWikiIdNewRoute
+  AuthenticatedWikiIdSettingsRoute: typeof AuthenticatedWikiIdSettingsRoute
+  AuthenticatedWikiIdIndexRoute: typeof AuthenticatedWikiIdIndexRoute
+  AuthenticatedWikiIdPageAttachmentsRoute: typeof AuthenticatedWikiIdPageAttachmentsRoute
+  AuthenticatedWikiIdPageDeleteRoute: typeof AuthenticatedWikiIdPageDeleteRoute
+  AuthenticatedWikiIdPageEditRoute: typeof AuthenticatedWikiIdPageEditRoute
+  AuthenticatedWikiIdPageRevertRoute: typeof AuthenticatedWikiIdPageRevertRoute
+  AuthenticatedWikiIdPageIndexRoute: typeof AuthenticatedWikiIdPageIndexRoute
+  AuthenticatedWikiIdPageHistoryVersionRoute: typeof AuthenticatedWikiIdPageHistoryVersionRoute
+  AuthenticatedWikiIdPageHistoryIndexRoute: typeof AuthenticatedWikiIdPageHistoryIndexRoute
+}
+
+const AuthenticatedWikiIdRouteRouteChildren: AuthenticatedWikiIdRouteRouteChildren =
+  {
+    AuthenticatedWikiIdNewRoute: AuthenticatedWikiIdNewRoute,
+    AuthenticatedWikiIdSettingsRoute: AuthenticatedWikiIdSettingsRoute,
+    AuthenticatedWikiIdIndexRoute: AuthenticatedWikiIdIndexRoute,
+    AuthenticatedWikiIdPageAttachmentsRoute:
+      AuthenticatedWikiIdPageAttachmentsRoute,
+    AuthenticatedWikiIdPageDeleteRoute: AuthenticatedWikiIdPageDeleteRoute,
+    AuthenticatedWikiIdPageEditRoute: AuthenticatedWikiIdPageEditRoute,
+    AuthenticatedWikiIdPageRevertRoute: AuthenticatedWikiIdPageRevertRoute,
+    AuthenticatedWikiIdPageIndexRoute: AuthenticatedWikiIdPageIndexRoute,
+    AuthenticatedWikiIdPageHistoryVersionRoute:
+      AuthenticatedWikiIdPageHistoryVersionRoute,
+    AuthenticatedWikiIdPageHistoryIndexRoute:
+      AuthenticatedWikiIdPageHistoryIndexRoute,
+  }
+
+const AuthenticatedWikiIdRouteRouteWithChildren =
+  AuthenticatedWikiIdRouteRoute._addFileChildren(
+    AuthenticatedWikiIdRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedWikiIdRouteRoute: typeof AuthenticatedWikiIdRouteRouteWithChildren
   AuthenticatedChangesRoute: typeof AuthenticatedChangesRoute
   AuthenticatedJoinRoute: typeof AuthenticatedJoinRoute
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
@@ -624,6 +877,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedWikiIdRouteRoute: AuthenticatedWikiIdRouteRouteWithChildren,
   AuthenticatedChangesRoute: AuthenticatedChangesRoute,
   AuthenticatedJoinRoute: AuthenticatedJoinRoute,
   AuthenticatedNewRoute: AuthenticatedNewRoute,

@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { useEffect } from 'react'
-import { requestHelpers, getAppPath, getErrorMessage } from '@mochi/common'
+import { requestHelpers, getErrorMessage } from '@mochi/common'
 import endpoints from '@/api/endpoints'
 import {
   Button,
@@ -28,7 +28,7 @@ import { PageHeader } from '@/features/wiki/page-header'
 import { GeneralError } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { usePermissions } from '@/context/wiki-context'
-import { cacheWikisList, setLastLocation } from '@/hooks/use-wiki-storage'
+import { cacheWikisList, setLastLocation, getLastLocation, clearLastLocation } from '@/hooks/use-wiki-storage'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 
 interface InfoResponse {
@@ -47,6 +47,9 @@ interface WikiItem {
   fingerprint?: string
 }
 
+// Module-level flag to track if we've already done initial redirect check (resets on page refresh)
+let hasCheckedRedirect = false
+
 export const Route = createFileRoute('/_authenticated/')({
   loader: async () => {
     const info = await requestHelpers.get<InfoResponse>(endpoints.wiki.info)
@@ -57,6 +60,34 @@ export const Route = createFileRoute('/_authenticated/')({
         info.wikis?.map(w => ({ id: w.id, name: w.name, source: w.source })) || [],
         info.bookmarks?.map(b => ({ id: b.id, name: b.name })) || []
       )
+    }
+
+    // Only redirect on first load, not on subsequent navigations
+    if (hasCheckedRedirect) {
+      return info
+    }
+    hasCheckedRedirect = true
+
+    // In class context, check for last visited wiki and redirect if it still exists
+    if (!info.entity) {
+      const lastLocation = getLastLocation()
+      if (lastLocation) {
+        const allWikis = [
+          ...(info.wikis || []),
+          ...(info.bookmarks || []),
+        ]
+        const wiki = allWikis.find(w => w.id === lastLocation.wikiId || w.fingerprint === lastLocation.wikiId)
+        if (wiki) {
+          // Use fingerprint for shorter URLs when available
+          const wikiId = wiki.fingerprint || wiki.id
+          // Get home page slug - wikis have it, bookmarks need to use 'home' as default
+          const wikiHome = 'home' in wiki ? wiki.home : 'home'
+          const page = lastLocation.pageSlug || wikiHome
+          throw redirect({ to: '/$wikiId/$page', params: { wikiId, page } })
+        } else {
+          clearLastLocation()
+        }
+      }
     }
 
     return info
@@ -70,7 +101,7 @@ function IndexPage() {
 
   // If we're in entity context, show the wiki's home page directly
   if (data.entity && data.wiki) {
-    return <WikiHomePage wikiId={data.wiki.id} homeSlug={data.wiki.home} />
+    return <WikiHomePage wikiId={data.wiki.fingerprint ?? data.wiki.id} homeSlug={data.wiki.home} />
   }
 
   // Class context with no wikis - show empty state
@@ -214,6 +245,11 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
   usePageTitle('Wikis')
   const removeBookmark = useRemoveBookmark()
 
+  // Clear last location when viewing "All wikis"
+  useEffect(() => {
+    clearLastLocation()
+  }, [])
+
   const handleRemoveBookmark = (id: string) => {
     removeBookmark.mutate(id, {
       onSuccess: () => {
@@ -270,14 +306,14 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {allWikis.map((wiki) => (
             <Card key={wiki.id} className="transition-colors hover:bg-highlight relative">
-              <a href={`${getAppPath()}/${wiki.fingerprint ?? wiki.id}`} className="block">
+              <Link to="/$wikiId" params={{ wikiId: wiki.fingerprint ?? wiki.id }} className="block">
                 <CardHeader className="flex items-center justify-center py-8">
                   <CardTitle className="flex items-center gap-2 text-xl">
                     {getIcon(wiki.type)}
                     {wiki.name}
                   </CardTitle>
                 </CardHeader>
-              </a>
+              </Link>
               {wiki.type === 'bookmarked' && (
                 <Button
                   variant="ghost"

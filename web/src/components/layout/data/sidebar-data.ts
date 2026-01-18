@@ -5,7 +5,6 @@ import {
   Search,
   Tags,
 } from 'lucide-react'
-import { getAppPath } from '@mochi/common'
 import type { SidebarData } from '@mochi/common'
 import { APP_ROUTES } from '@/config/routes'
 
@@ -18,9 +17,8 @@ export const sidebarData: SidebarData = {
       items: [
         {
           title: 'All wikis',
-          url: getAppPath() + '/',
+          url: '/',
           icon: Library,
-          external: true,
         },
       ],
     },

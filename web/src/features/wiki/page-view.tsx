@@ -8,6 +8,7 @@ import type { WikiPage } from '@/types/wiki'
 import { MarkdownContent } from './markdown-content'
 import { TagManager } from './tag-manager'
 import { usePermissions } from '@/context/wiki-context'
+import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 
 interface PageViewProps {
   page: WikiPage
@@ -34,7 +35,11 @@ interface PageNotFoundProps {
 }
 
 export function PageNotFound({ slug }: PageNotFoundProps) {
-  const permissions = usePermissions()
+  // Get permissions from WikiContext (entity context) or WikiBaseURLContext ($wikiId context)
+  const wikiContextPermissions = usePermissions()
+  const wikiBaseURLContext = useWikiBaseURLOptional()
+  const permissions = wikiBaseURLContext?.permissions ?? wikiContextPermissions
+  const wikiId = wikiBaseURLContext?.wiki?.fingerprint ?? wikiBaseURLContext?.wiki?.id
 
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -45,10 +50,17 @@ export function PageNotFound({ slug }: PageNotFoundProps) {
       </p>
       {permissions.edit && (
         <Button asChild>
-          <Link to="/new" search={{ slug }}>
-            <Edit className="mr-2 h-4 w-4" />
-            Create this page
-          </Link>
+          {wikiId ? (
+            <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
+              <Edit className="mr-2 h-4 w-4" />
+              Create this page
+            </Link>
+          ) : (
+            <Link to="/$page/edit" params={{ page: slug }}>
+              <Edit className="mr-2 h-4 w-4" />
+              Create this page
+            </Link>
+          )}
         </Button>
       )}
     </div>

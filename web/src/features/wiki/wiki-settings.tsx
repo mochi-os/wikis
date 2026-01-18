@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { format } from 'date-fns'
 import { toast } from '@mochi/common'
 import {
@@ -14,7 +15,6 @@ import {
   Users,
 } from 'lucide-react'
 import {
-  getAppPath,
   Button,
   Input,
   Label,
@@ -125,6 +125,7 @@ export function WikiSettings({ activeTab, onTabChange }: WikiSettingsProps) {
 }
 
 function SettingsTab() {
+  const navigate = useNavigate()
   const { data, isLoading, error } = useWikiSettings()
   const { info } = useWikiContext()
   const setSetting = useSetWikiSetting()
@@ -176,7 +177,7 @@ function SettingsTab() {
     deleteWiki.mutate(undefined, {
       onSuccess: () => {
         toast.success('Wiki deleted')
-        window.location.href = getAppPath() + '/'
+        void navigate({ to: '/' })
       },
       onError: (error) => {
         toast.error(getErrorMessage(error, 'Failed to delete wiki'))

@@ -1,15 +1,19 @@
-import { createFileRoute, Link, Navigate } from '@tanstack/react-router'
+import { createFileRoute, Navigate, Link } from '@tanstack/react-router'
 import { useEffect } from 'react'
-import { usePage } from '@/hooks/use-wiki'
+import { useQuery } from '@tanstack/react-query'
 import {
+  usePageTitle,
+  requestHelpers,
+  Header,
+  Main,
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  usePageTitle,
 } from '@mochi/common'
+import { Ellipsis, FileEdit, FilePlus, History, Pencil, Settings } from 'lucide-react'
 import {
   PageView,
   PageNotFound,
@@ -17,30 +21,35 @@ import {
 } from '@/features/wiki/page-view'
 import { PageHeader } from '@/features/wiki/page-header'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
-import { Header } from '@mochi/common'
-import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
-import { useWikiContext, usePermissions } from '@/context/wiki-context'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
-import { Ellipsis, FileEdit, FilePlus, History, Pencil, Settings } from 'lucide-react'
+import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 
-export const Route = createFileRoute('/_authenticated/$page/')({
+export const Route = createFileRoute('/_authenticated/$wikiId/$page/')({
   component: WikiPageRoute,
 })
 
 function WikiPageRoute() {
-  const params = Route.useParams()
-  const slug = params.page ?? ''
+  const { wikiId, page: slug } = Route.useParams()
+  const { baseURL, wiki, permissions } = useWikiBaseURL()
 
   // If page param is empty, redirect to wiki home
   if (!slug) {
-    return <Navigate to="/" />
+    return <Navigate to="/$wikiId" params={{ wikiId }} />
   }
 
-  const { data, isLoading, error } = usePage(slug)
-  const { info } = useWikiContext()
-  const permissions = usePermissions()
-  const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
+  // Fetch page data using the wiki's base URL (absolute path since apiClient overwrites baseURL)
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['wiki', wikiId, 'page', slug],
+    queryFn: () =>
+      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
+    enabled: !!slug,
+  })
+
+  // Handle case where API returns non-JSON (e.g., HTML error page)
+  const isValidResponse = data && typeof data === 'object'
+  const pageTitle = isValidResponse && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(pageTitle)
 
   // Register page with sidebar context for tree expansion
@@ -52,11 +61,8 @@ function WikiPageRoute() {
 
   // Store last visited location (prefer fingerprint for shorter URLs)
   useEffect(() => {
-    const wikiId = info?.wiki?.fingerprint ?? info?.wiki?.id
-    if (wikiId) {
-      setLastLocation(wikiId, slug)
-    }
-  }, [info?.wiki?.fingerprint, info?.wiki?.id, slug])
+    setLastLocation(wiki.fingerprint ?? wiki.id, slug)
+  }, [wiki.fingerprint, wiki.id, slug])
 
   if (isLoading) {
     return (
@@ -82,8 +88,27 @@ function WikiPageRoute() {
     )
   }
 
+  // Handle invalid response (e.g., server returned HTML instead of JSON)
+  if (data && !isValidResponse) {
+    const rawData = data as unknown
+    console.error('[WikiPage] Invalid API response:', { baseURL, slug, data: typeof rawData === 'string' ? rawData.slice(0, 100) : rawData })
+    return (
+      <>
+        <Header />
+        <Main>
+          <div className="text-destructive">
+            <p>Error: Received invalid response from server.</p>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Request URL: {baseURL}{slug}
+            </p>
+          </div>
+        </Main>
+      </>
+    )
+  }
+
   // Check if page was not found
-  if (data && 'error' in data && data.error === 'not_found') {
+  if (isValidResponse && 'error' in data && data.error === 'not_found') {
     return (
       <>
         <Header>
@@ -97,7 +122,7 @@ function WikiPageRoute() {
   }
 
   // Page found
-  if (data && 'page' in data && typeof data.page === 'object') {
+  if (isValidResponse && 'page' in data && typeof data.page === 'object') {
     const actionsMenu = (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -108,7 +133,7 @@ function WikiPageRoute() {
         <DropdownMenuContent align="end">
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/$page/edit" params={{ page: slug }}>
+              <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
                 <Pencil className="size-4" />
                 Edit page
               </Link>
@@ -127,15 +152,15 @@ function WikiPageRoute() {
             />
           )}
           <DropdownMenuItem asChild>
-            <Link to="/$page/history" params={{ page: slug }}>
+            <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
               <History className="size-4" />
               Page history
             </Link>
           </DropdownMenuItem>
-          {(permissions.edit || permissions.manage) && <DropdownMenuSeparator />}
+          <DropdownMenuSeparator />
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/new">
+              <Link to="/$wikiId/new" params={{ wikiId }}>
                 <FilePlus className="size-4" />
                 New page
               </Link>
@@ -143,7 +168,7 @@ function WikiPageRoute() {
           )}
           {permissions.manage && (
             <DropdownMenuItem asChild>
-              <Link to="/settings">
+              <Link to="/$wikiId/settings" params={{ wikiId }}>
                 <Settings className="size-4" />
                 Wiki settings
               </Link>

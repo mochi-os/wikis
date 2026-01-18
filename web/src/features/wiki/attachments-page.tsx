@@ -37,6 +37,7 @@ import {
   useUploadAttachment,
   useDeleteAttachment,
 } from '@/hooks/use-wiki'
+import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import type { Attachment } from '@/types/wiki'
 
 interface AttachmentsPageProps {
@@ -64,6 +65,8 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
   const { data, isLoading } = useAttachments()
   const uploadMutation = useUploadAttachment()
   const deleteMutation = useDeleteAttachment()
+  const wikiContext = useWikiBaseURLOptional()
+  const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
 
   const attachments = data?.attachments || []
 
@@ -177,9 +180,15 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild>
-            <Link to="/$page/edit" params={{ page: slug }}>
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
+            {wikiId ? (
+              <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
+            ) : (
+              <Link to="/$page/edit" params={{ page: slug }}>
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
+            )}
           </Button>
           <div>
             <h1 className="text-2xl font-bold">Attachments</h1>

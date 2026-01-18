@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { AuthenticatedLayout, getAppPath, getErrorMessage } from '@mochi/common'
+import { AuthenticatedLayout, getErrorMessage } from '@mochi/common'
 import type { SidebarData } from '@mochi/common'
 import {
   Dialog,
@@ -88,9 +88,8 @@ function WikiLayoutInner() {
       const isCurrentWiki = wiki.id === currentWikiId || wiki.fingerprint === currentWikiId
       return {
         title: wiki.name,
-        url: `${getAppPath()}/${wikiUrl}` as const,
+        url: `/${wikiUrl}` as const,
         icon: BookOpen,
-        external: true,
         isActive: isCurrentWiki,
       }
     }).sort((a, b) => a.title.localeCompare(b.title))
@@ -100,9 +99,8 @@ function WikiLayoutInner() {
       const isCurrentWiki = bookmark.id === currentWikiId || bookmark.fingerprint === currentWikiId
       return {
         title: bookmark.name,
-        url: `${getAppPath()}/${bookmark.fingerprint ?? bookmark.id}` as const,
+        url: `/${bookmark.fingerprint ?? bookmark.id}` as const,
         icon: Bookmark,
-        external: true,
         isActive: isCurrentWiki,
       }
     }).sort((a, b) => a.title.localeCompare(b.title))
@@ -122,9 +120,8 @@ function WikiLayoutInner() {
     // Collapse when inside a specific wiki
     const allWikisItem = {
       title: 'All wikis',
-      url: getAppPath() + '/',
+      url: '/',
       icon: Library,
-      external: true,
       items: [
         { title: 'Bookmark wiki', icon: Bookmark, onClick: openBookmarkDialog },
         { title: 'Replicate wiki', url: APP_ROUTES.WIKI.JOIN, icon: Copy },
