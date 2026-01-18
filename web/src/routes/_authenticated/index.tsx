@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useEffect } from 'react'
-import { requestHelpers, getErrorMessage } from '@mochi/common'
+import { requestHelpers, getAppPath, getErrorMessage } from '@mochi/common'
 import endpoints from '@/api/endpoints'
 import {
   Button,
@@ -28,7 +28,7 @@ import { PageHeader } from '@/features/wiki/page-header'
 import { GeneralError } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { usePermissions } from '@/context/wiki-context'
-import { cacheWikisList, setLastLocation, getLastLocation, clearLastLocation } from '@/hooks/use-wiki-storage'
+import { cacheWikisList, setLastLocation } from '@/hooks/use-wiki-storage'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 
 interface InfoResponse {
@@ -57,32 +57,6 @@ export const Route = createFileRoute('/_authenticated/')({
         info.wikis?.map(w => ({ id: w.id, name: w.name, source: w.source })) || [],
         info.bookmarks?.map(b => ({ id: b.id, name: b.name })) || []
       )
-    }
-
-    // In class context, check for last visited wiki and redirect to its entity URL
-    if (!info.entity) {
-      const lastLocation = getLastLocation()
-      if (lastLocation) {
-        // Check if the wiki still exists in user's list
-        const allWikis = [
-          ...(info.wikis || []),
-          ...(info.bookmarks || []),
-        ]
-        const wiki = allWikis.find(w => w.id === lastLocation.wikiId || w.fingerprint === lastLocation.wikiId)
-        if (wiki) {
-          // Redirect to the wiki's entity URL (at server root)
-          // Use fingerprint for shorter URLs when available
-          const wikiPath = wiki.fingerprint || wiki.id
-          const pagePath = lastLocation.pageSlug || ''
-          const entityUrl = pagePath ? `/${wikiPath}/${pagePath}` : `/${wikiPath}/`
-          window.location.href = entityUrl
-          // Return a promise that never resolves to prevent rendering while redirecting
-          return new Promise<InfoResponse>(() => {})
-        } else {
-          // Wiki no longer exists, clear the stored location
-          clearLastLocation()
-        }
-      }
     }
 
     return info
@@ -240,11 +214,6 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
   usePageTitle('Wikis')
   const removeBookmark = useRemoveBookmark()
 
-  // Clear last location when viewing "All wikis"
-  useEffect(() => {
-    clearLastLocation()
-  }, [])
-
   const handleRemoveBookmark = (id: string) => {
     removeBookmark.mutate(id, {
       onSuccess: () => {
@@ -301,7 +270,7 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {allWikis.map((wiki) => (
             <Card key={wiki.id} className="transition-colors hover:bg-highlight relative">
-              <a href={`/${wiki.fingerprint ?? wiki.id}/`} className="block">
+              <a href={`${getAppPath()}/${wiki.fingerprint ?? wiki.id}`} className="block">
                 <CardHeader className="flex items-center justify-center py-8">
                   <CardTitle className="flex items-center gap-2 text-xl">
                     {getIcon(wiki.type)}
