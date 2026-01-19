@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useLocation } from '@tanstack/react-router'
 import { AuthenticatedLayout, getErrorMessage } from '@mochi/common'
 import type { SidebarData } from '@mochi/common'
 import {
@@ -27,21 +28,17 @@ import { SidebarProvider, useSidebarContext } from '@/context/sidebar-context'
 import { WikiProvider, useWikiContext } from '@/context/wiki-context'
 import { useAddBookmark } from '@/hooks/use-wiki'
 
-// Class-level routes that aren't entity IDs (same as in lib/common app-path.ts)
-const CLASS_ROUTES = new Set([
-  'new', 'create', 'list', 'info', 'assets', 'images', 'search',
-  'user', 'system', 'domains', 'errors',
-  'invitations',
-  'join', 'tags', 'changes', 'redirects', 'settings',
-])
+// Check if a string looks like an entity ID (9-char fingerprint or 50-51 char full ID)
+const ENTITY_ID_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
 
-// Extract entity ID from the browser URL as a fallback
-// URL pattern: /<app>/<entity>/<page> (e.g., /wikis/abc123/home)
-function getEntityIdFromUrl(): string | null {
-  const fullPath = window.location.pathname
-  const match = fullPath.match(/^\/[^/]+\/([^/]+)/)
-  if (match && match[1] && !CLASS_ROUTES.has(match[1])) {
-    return match[1]
+// Extract entity ID from pathname
+// URL pattern: /<app>/<entity>/<page> or /<entity>/<page> in entity context
+function getEntityIdFromPath(pathname: string): string | null {
+  const segments = pathname.split('/').filter(Boolean)
+  for (const segment of segments.slice(0, 2)) {
+    if (ENTITY_ID_PATTERN.test(segment)) {
+      return segment
+    }
   }
   return null
 }
@@ -52,10 +49,12 @@ function WikiLayoutInner() {
   const [bookmarkTarget, setBookmarkTarget] = useState('')
   const addBookmark = useAddBookmark()
 
-  // Whether we're inside a specific wiki (entity context)
-  // Use URL-based detection as fallback when wiki context is temporarily unavailable
-  const urlEntityId = getEntityIdFromUrl()
-  const isInWiki = (info?.entity && info?.wiki) || urlEntityId !== null
+  // Use router location for reactive URL changes
+  const location = useLocation()
+  const urlEntityId = getEntityIdFromPath(location.pathname)
+
+  // Whether we're inside a specific wiki - use URL as source of truth
+  const isInWiki = urlEntityId !== null
   const wikiName = info?.wiki?.name
 
   const handleAddBookmark = (e: React.FormEvent) => {
@@ -77,29 +76,31 @@ function WikiLayoutInner() {
   }
 
   const sidebarData: SidebarData = useMemo(() => {
-    // Get current wiki ID for highlighting
-    // Use URL-based entity ID as fallback when wiki context is temporarily unavailable
-    const currentWikiId = info?.wiki?.id || urlEntityId
+    // Get current wiki ID for highlighting - use URL as source of truth
+    // If urlEntityId is null, we're not in a wiki (e.g., at "All wikis")
+    const currentWikiId = urlEntityId
 
     // Build wiki items from the list (when in class context)
     // Use fingerprint for shorter URLs when available
+    // Include home page in URL to avoid route ambiguity with $page vs $wikiId
     const wikiItems = (info?.wikis || []).map((wiki) => {
       const wikiUrl = wiki.fingerprint ?? wiki.id
       const isCurrentWiki = wiki.id === currentWikiId || wiki.fingerprint === currentWikiId
       return {
         title: wiki.name,
-        url: `/${wikiUrl}` as const,
+        url: `/${wikiUrl}/${wiki.home}` as const,
         icon: BookOpen,
         isActive: isCurrentWiki,
       }
     }).sort((a, b) => a.title.localeCompare(b.title))
 
     // Build bookmarked wiki items - use fingerprint for shorter URLs
+    // Include home page in URL to avoid route ambiguity
     const bookmarkItems = (info?.bookmarks || []).map((bookmark) => {
       const isCurrentWiki = bookmark.id === currentWikiId || bookmark.fingerprint === currentWikiId
       return {
         title: bookmark.name,
-        url: `/${bookmark.fingerprint ?? bookmark.id}` as const,
+        url: `/${bookmark.fingerprint ?? bookmark.id}/home` as const,
         icon: Bookmark,
         isActive: isCurrentWiki,
       }
@@ -109,9 +110,11 @@ function WikiLayoutInner() {
     // (This handles when we're viewing a wiki that might not be in our class list)
     const currentWikiInList = info?.wikis?.some(w => w.id === currentWikiId || w.fingerprint === currentWikiId)
     const currentWikiInBookmarks = info?.bookmarks?.some(b => b.id === currentWikiId || b.fingerprint === currentWikiId)
-    const standaloneWikiItem = isInWiki && !currentWikiInList && !currentWikiInBookmarks ? {
+    const standaloneWikiUrl = info?.wiki?.fingerprint ?? info?.wiki?.id ?? urlEntityId
+    const standaloneWikiHome = info?.wiki?.home || 'home'
+    const standaloneWikiItem = isInWiki && !currentWikiInList && !currentWikiInBookmarks && standaloneWikiUrl ? {
       title: wikiName || 'Wiki',
-      url: APP_ROUTES.WIKI.HOME,
+      url: `/${standaloneWikiUrl}/${standaloneWikiHome}` as const,
       icon: BookOpen,
       isActive: true,
     } : null

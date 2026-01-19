@@ -109,10 +109,52 @@ function WikiPageRoute() {
 
   // Check if page was not found
   if (isValidResponse && 'error' in data && data.error === 'not_found') {
+    const notFoundMenu = (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <Ellipsis className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {permissions.edit && (
+            <DropdownMenuItem asChild>
+              <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
+                <FilePlus className="size-4" />
+                Create this page
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {permissions.edit && (
+            <DropdownMenuItem asChild>
+              <Link to="/$wikiId/new" params={{ wikiId }}>
+                <FilePlus className="size-4" />
+                New page
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {permissions.manage && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/$wikiId/settings" params={{ wikiId }}>
+                  <Settings className="size-4" />
+                  Wiki settings
+                </Link>
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+
     return (
       <>
         <Header>
-          <h1 className="text-lg font-semibold">Page not found</h1>
+          <div className="flex flex-1 items-center justify-between gap-4">
+            <h1 className="text-lg font-semibold">Page not found</h1>
+            {notFoundMenu}
+          </div>
         </Header>
         <Main>
           <PageNotFound slug={slug} />

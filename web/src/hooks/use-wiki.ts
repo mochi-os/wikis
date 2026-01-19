@@ -272,6 +272,8 @@ export function useSetWikiSetting() {
       requestHelpers.post<SettingsSetResponse>(endpoints.wiki.settingsSet, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'settings'] })
+      // Also invalidate info since home page setting affects sidebar URLs
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },
   })
 }

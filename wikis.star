@@ -1783,6 +1783,41 @@ def action_settings_set(a):
 
     return {"data": {"ok": True}}
 
+# Rename a wiki
+def action_rename(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    if not check_access(a, wiki["id"], "manage"):
+        a.error(403, "Access denied")
+        return
+
+    name = a.input("name")
+    if not name or not mochi.valid(name, "name"):
+        a.error(400, "Invalid name")
+        return
+
+    if len(name) > 100:
+        a.error(400, "Name is too long (max 100 characters)")
+        return
+
+    # Update entity (handles directory, network publishing)
+    mochi.entity.update(wiki["id"], name=name)
+
+    # Update local database
+    mochi.db.execute("update wikis set name=? where id=?", name, wiki["id"])
+
+    # Broadcast to subscribers
+    broadcast_event(wiki["id"], "rename", {"name": name})
+
+    return {"data": {"success": True}}
+
 # SUBSCRIBERS
 
 # List subscribers for a source wiki

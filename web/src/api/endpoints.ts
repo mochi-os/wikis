@@ -41,6 +41,7 @@ const endpoints = {
     // Settings
     settings: 'settings',
     settingsSet: 'settings/set',
+    rename: 'rename',
     // Subscribers
     subscribers: 'subscribers',
     subscriberRemove: 'subscriber/remove',

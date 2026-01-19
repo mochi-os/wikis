@@ -45,6 +45,7 @@ interface WikiItem {
   name: string
   type: WikiType
   fingerprint?: string
+  home: string
 }
 
 // Module-level flag to track if we've already done initial redirect check (resets on page refresh)
@@ -96,15 +97,25 @@ export const Route = createFileRoute('/_authenticated/')({
   errorComponent: ({ error }) => <GeneralError error={error} />,
 })
 
+// Check if we're in entity context based on browser URL
+// Entity context: first URL segment is an entity ID (9-char fingerprint or 50-51 char full ID)
+function isEntityContext(): boolean {
+  const pathname = window.location.pathname
+  const firstSegment = pathname.match(/^\/([^/]+)/)?.[1] || ''
+  return /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(firstSegment) ||
+    /^[1-9A-HJ-NP-Za-km-z]{50,51}$/.test(firstSegment)
+}
+
 function IndexPage() {
   const data = Route.useLoaderData()
 
-  // If we're in entity context, show the wiki's home page directly
-  if (data.entity && data.wiki) {
+  // If we're in entity context (URL starts with entity ID), show the wiki's home page directly
+  // Use URL-based detection since API data.entity may be stale
+  if (isEntityContext() && data.wiki) {
     return <WikiHomePage wikiId={data.wiki.fingerprint ?? data.wiki.id} homeSlug={data.wiki.home} />
   }
 
-  // Class context with no wikis - show empty state
+  // Class context - show wikis list
   return <WikisListPage wikis={data.wikis} bookmarks={data.bookmarks} />
 }
 
@@ -268,12 +279,14 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
       name: w.name,
       type: (w.source ? 'subscribed' : 'owned') as WikiType,
       fingerprint: w.fingerprint,
+      home: w.home,
     })),
     ...(bookmarks || []).map((b) => ({
       id: b.id,
       name: b.name,
       type: 'bookmarked' as WikiType,
       fingerprint: b.fingerprint,
+      home: 'home', // Bookmarks don't have home page info, use default
     })),
   ].sort((a, b) => a.name.localeCompare(b.name))
 
@@ -306,7 +319,7 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {allWikis.map((wiki) => (
             <Card key={wiki.id} className="transition-colors hover:bg-highlight relative">
-              <Link to="/$wikiId" params={{ wikiId: wiki.fingerprint ?? wiki.id }} className="block">
+              <Link to="/$wikiId/$page" params={{ wikiId: wiki.fingerprint ?? wiki.id, page: wiki.home }} className="block">
                 <CardHeader className="flex items-center justify-center py-8">
                   <CardTitle className="flex items-center gap-2 text-xl">
                     {getIcon(wiki.type)}
