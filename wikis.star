@@ -663,23 +663,23 @@ def action_directory_search(a):
                     results.append(entry)
                 break
 
-    # Check if search term is a URL (e.g., https://example.com/wikis/ENTITY_ID)
+    # Check if search term is a URL (e.g., https://example.com/wikis/ENTITY_ID or /wikis/FINGERPRINT)
     if search.startswith("http://") or search.startswith("https://"):
         url = search
         if "/wikis/" in url:
             parts = url.split("/wikis/", 1)
             wiki_path = parts[1]
-            # Path format: /wikis/ENTITY_ID or /wikis/ENTITY_ID/...
+            # Path format: /wikis/ENTITY_ID or /wikis/FINGERPRINT/page
             wiki_id = wiki_path.split("/")[0] if "/" in wiki_path else wiki_path
             if "?" in wiki_id:
                 wiki_id = wiki_id.split("?")[0]
             if "#" in wiki_id:
                 wiki_id = wiki_id.split("#")[0]
 
+            # Try as entity ID first
             if mochi.valid(wiki_id, "entity"):
                 entry = mochi.directory.get(wiki_id)
                 if entry and entry.get("class") == "wiki":
-                    # Avoid duplicates
                     found = False
                     for r in results:
                         if r.get("id") == entry.get("id"):
@@ -687,6 +687,20 @@ def action_directory_search(a):
                             break
                     if not found:
                         results.append(entry)
+            # Try as fingerprint
+            elif mochi.valid(wiki_id, "fingerprint"):
+                all_wikis = mochi.directory.search("wiki", "", False)
+                for entry in all_wikis:
+                    entry_fp = entry.get("fingerprint", "").replace("-", "")
+                    if entry_fp == wiki_id.replace("-", ""):
+                        found = False
+                        for r in results:
+                            if r.get("id") == entry.get("id"):
+                                found = True
+                                break
+                        if not found:
+                            results.append(entry)
+                        break
 
     # Search by name
     name_results = mochi.directory.search("wiki", search, False)
