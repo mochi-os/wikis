@@ -65,11 +65,6 @@ import {
   useDeleteWiki,
   useUserSearch,
   useGroups,
-  useSubscribers,
-  useRemoveSubscriber,
-  useRedirects,
-  useSetRedirect,
-  useDeleteRedirect,
 } from '@/hooks/use-wiki'
 import { useWikiContext } from '@/context/wiki-context'
 import type { WikiPermissions } from '@/types/wiki'
@@ -684,39 +679,54 @@ function AccessTab() {
 }
 
 function SubscribersTab() {
-  const { data, isLoading, error } = useSubscribers()
-  const { info } = useWikiContext()
-  const removeSubscriber = useRemoveSubscriber()
+  const settingsContext = useSettingsContext()
+  const wikiContextResult = useWikiContext()
+  const wikiInfo = settingsContext.wiki ?? wikiContextResult?.info?.wiki
 
-  // Don't show subscribers tab for subscriber wikis (only source wikis have subscribers)
-  if (info?.wiki && data?.subscribers.length === 0) {
-    // Check if this is a subscriber wiki
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Subscribers</CardTitle>
-          <CardDescription>
-            Other wikis that have subscribed to receive updates from this wiki.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No subscribers yet. When other wikis subscribe to this wiki, they will appear here.
-          </p>
-        </CardContent>
-      </Card>
-    )
-  }
+  // Local state for wiki-specific API calls
+  const [subscribers, setSubscribers] = useState<import('@/hooks/use-wiki').Subscriber[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+  const [isRemoving, setIsRemoving] = useState(false)
 
-  const handleRemove = (subscriberId: string, name: string) => {
-    removeSubscriber.mutate(subscriberId, {
-      onSuccess: () => {
-        toast.success(`Subscriber "${name || subscriberId.slice(0, 12)}..." removed`)
-      },
-      onError: (err) => {
-        toast.error(getErrorMessage(err, 'Failed to remove subscriber'))
-      },
-    })
+  // Helper to build API URL with optional baseURL
+  const apiUrl = (endpoint: string) =>
+    settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint
+
+  const loadSubscribers = useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await requestHelpers.get<{ subscribers: import('@/hooks/use-wiki').Subscriber[] }>(
+        apiUrl(endpoints.wiki.subscribers)
+      )
+      setSubscribers(response?.subscribers ?? [])
+    } catch (err) {
+      console.error('[SubscribersTab] Failed to load subscribers', err)
+      setError(err instanceof Error ? err : new Error('Failed to load subscribers'))
+    } finally {
+      setIsLoading(false)
+    }
+  }, [settingsContext.baseURL])
+
+  useEffect(() => {
+    void loadSubscribers()
+  }, [loadSubscribers])
+
+  const handleRemove = async (subscriberId: string, name: string) => {
+    setIsRemoving(true)
+    try {
+      await requestHelpers.post(apiUrl(endpoints.wiki.subscriberRemove), {
+        subscriber: subscriberId,
+      })
+      toast.success(`Subscriber "${name || subscriberId.slice(0, 12)}..." removed`)
+      void loadSubscribers()
+    } catch (err) {
+      console.error('[SubscribersTab] Failed to remove subscriber', err)
+      toast.error(getErrorMessage(err, 'Failed to remove subscriber'))
+    } finally {
+      setIsRemoving(false)
+    }
   }
 
   if (isLoading) {
@@ -746,7 +756,24 @@ function SubscribersTab() {
     )
   }
 
-  const subscribers = data?.subscribers || []
+  // Show empty state for wikis with no subscribers
+  if (wikiInfo && subscribers.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Subscribers</CardTitle>
+          <CardDescription>
+            Other wikis that have subscribed to receive updates from this wiki.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-sm">
+            No subscribers yet. When other wikis subscribe to this wiki, they will appear here.
+          </p>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card>
@@ -788,7 +815,7 @@ function SubscribersTab() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
-                          disabled={removeSubscriber.isPending}
+                          disabled={isRemoving}
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -804,7 +831,7 @@ function SubscribersTab() {
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => handleRemove(sub.id, sub.name)}
+                            onClick={() => void handleRemove(sub.id, sub.name)}
                           >
                             Remove
                           </AlertDialogAction>
@@ -827,18 +854,50 @@ function SubscribersTab() {
 }
 
 function RedirectsTab() {
-  const { data, isLoading, error } = useRedirects()
-  const deleteRedirect = useDeleteRedirect()
+  const settingsContext = useSettingsContext()
 
-  const handleDelete = (source: string) => {
-    deleteRedirect.mutate(source, {
-      onSuccess: () => {
-        toast.success(`Redirect "${source}" deleted`)
-      },
-      onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to delete redirect'))
-      },
-    })
+  // Local state for wiki-specific API calls
+  const [redirects, setRedirects] = useState<import('@/types/wiki').Redirect[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  // Helper to build API URL with optional baseURL
+  const apiUrl = (endpoint: string) =>
+    settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint
+
+  const loadRedirects = useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await requestHelpers.get<import('@/types/wiki').RedirectsResponse>(
+        apiUrl(endpoints.wiki.redirects)
+      )
+      setRedirects(response?.redirects ?? [])
+    } catch (err) {
+      console.error('[RedirectsTab] Failed to load redirects', err)
+      setError(err instanceof Error ? err : new Error('Failed to load redirects'))
+    } finally {
+      setIsLoading(false)
+    }
+  }, [settingsContext.baseURL])
+
+  useEffect(() => {
+    void loadRedirects()
+  }, [loadRedirects])
+
+  const handleDelete = async (source: string) => {
+    setIsDeleting(true)
+    try {
+      await requestHelpers.post(apiUrl(endpoints.wiki.redirectDelete), { source })
+      toast.success(`Redirect "${source}" deleted`)
+      void loadRedirects()
+    } catch (err) {
+      console.error('[RedirectsTab] Failed to delete redirect', err)
+      toast.error(getErrorMessage(err, 'Failed to delete redirect'))
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   return (
@@ -852,7 +911,7 @@ function RedirectsTab() {
               URLs to point to existing pages.
             </CardDescription>
           </div>
-          <AddRedirectDialog />
+          <AddRedirectDialog baseURL={settingsContext.baseURL} onSuccess={loadRedirects} />
         </div>
       </CardHeader>
       <CardContent>
@@ -866,7 +925,7 @@ function RedirectsTab() {
           <div className="text-destructive text-sm">
             Error loading redirects: {error.message}
           </div>
-        ) : !data?.redirects || data.redirects.length === 0 ? (
+        ) : redirects.length === 0 ? (
           <p className="text-muted-foreground text-sm">
             No redirects configured. Create a redirect to forward one URL to another.
           </p>
@@ -882,7 +941,7 @@ function RedirectsTab() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.redirects.map((redirect) => (
+              {redirects.map((redirect) => (
                 <TableRow key={redirect.source}>
                   <TableCell className="font-mono">{redirect.source}</TableCell>
                   <TableCell>
@@ -903,6 +962,7 @@ function RedirectsTab() {
                           variant="ghost"
                           size="icon"
                           className="text-destructive hover:text-destructive"
+                          disabled={isDeleting}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -918,7 +978,7 @@ function RedirectsTab() {
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => handleDelete(redirect.source)}
+                            onClick={() => void handleDelete(redirect.source)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
                             Delete
@@ -937,13 +997,22 @@ function RedirectsTab() {
   )
 }
 
-function AddRedirectDialog() {
+interface AddRedirectDialogProps {
+  baseURL: string | null
+  onSuccess: () => void
+}
+
+function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
   const [open, setOpen] = useState(false)
   const [source, setSource] = useState('')
   const [target, setTarget] = useState('')
-  const setRedirect = useSetRedirect()
+  const [isCreating, setIsCreating] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Helper to build API URL with optional baseURL
+  const apiUrl = (endpoint: string) =>
+    baseURL ? `${baseURL}${endpoint}` : endpoint
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!source.trim() || !target.trim()) {
@@ -951,20 +1020,23 @@ function AddRedirectDialog() {
       return
     }
 
-    setRedirect.mutate(
-      { source: source.trim(), target: target.trim() },
-      {
-        onSuccess: () => {
-          toast.success('Redirect created')
-          setSource('')
-          setTarget('')
-          setOpen(false)
-        },
-        onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to create redirect'))
-        },
-      }
-    )
+    setIsCreating(true)
+    try {
+      await requestHelpers.post(apiUrl(endpoints.wiki.redirectSet), {
+        source: source.trim(),
+        target: target.trim(),
+      })
+      toast.success('Redirect created')
+      setSource('')
+      setTarget('')
+      setOpen(false)
+      onSuccess()
+    } catch (err) {
+      console.error('[AddRedirectDialog] Failed to create redirect', err)
+      toast.error(getErrorMessage(err, 'Failed to create redirect'))
+    } finally {
+      setIsCreating(false)
+    }
   }
 
   return (
@@ -976,7 +1048,7 @@ function AddRedirectDialog() {
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={(e) => void handleSubmit(e)}>
           <DialogHeader>
             <DialogTitle>Create redirect</DialogTitle>
             <DialogDescription>
@@ -1013,8 +1085,8 @@ function AddRedirectDialog() {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={setRedirect.isPending}>
-              {setRedirect.isPending ? 'Creating...' : 'Create'}
+            <Button type="submit" disabled={isCreating}>
+              {isCreating ? 'Creating...' : 'Create'}
             </Button>
           </DialogFooter>
         </form>
