@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Link2, BookOpen } from 'lucide-react'
+import { Link2, BookOpen, Search } from 'lucide-react'
 import {
   Button,
   Input,
@@ -17,16 +17,18 @@ import {
   toast,
 } from '@mochi/common'
 import { useJoinWiki } from '@/hooks/use-wiki'
+import { useSidebarContext } from '@/context/sidebar-context'
 
 export const Route = createFileRoute('/_authenticated/join')({
   component: JoinWikiPage,
 })
 
 function JoinWikiPage() {
-  usePageTitle('Join wiki')
+  usePageTitle('Replicate wiki')
   const navigate = useNavigate()
   const [target, setTarget] = useState('')
   const joinWiki = useJoinWiki()
+  const { openSearchDialog } = useSidebarContext()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,13 +60,35 @@ function JoinWikiPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
-                Join wiki
+                Replicate wiki
               </CardTitle>
               <CardDescription>
-                Join an existing wiki from another server by entering its entity ID.
+                Search for public wikis or enter an entity ID directly.
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
+              <div>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={openSearchDialog}
+                >
+                  <Search className="h-4 w-4" />
+                  Search for wikis...
+                </Button>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">
+                    Or enter ID directly
+                  </span>
+                </div>
+              </div>
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="target">Wiki entity ID</Label>
@@ -73,11 +97,9 @@ function JoinWikiPage() {
                     placeholder="abc123..."
                     value={target}
                     onChange={(e) => setTarget(e.target.value)}
-                    autoFocus
                   />
                   <p className="text-muted-foreground text-sm">
-                    The entity ID of the wiki you want to join. You can get this
-                    from the wiki owner.
+                    The entity ID of the wiki you want to replicate.
                   </p>
                 </div>
                 <div className="flex gap-2 justify-end">
@@ -89,9 +111,9 @@ function JoinWikiPage() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={joinWiki.isPending}>
+                  <Button type="submit" disabled={joinWiki.isPending || !target.trim()}>
                     <Link2 className="mr-2 h-4 w-4" />
-                    {joinWiki.isPending ? 'Joining...' : 'Join wiki'}
+                    {joinWiki.isPending ? 'Replicating...' : 'Replicate wiki'}
                   </Button>
                 </div>
               </form>

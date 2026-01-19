@@ -628,6 +628,80 @@ def action_info_class(a):
     bookmarks = [dict(b, fingerprint=mochi.entity.fingerprint(b["id"], False)) for b in bookmarks_raw]
     return {"data": {"entity": False, "wikis": wikis, "bookmarks": bookmarks}}
 
+# Search directory for remote wikis
+def action_directory_search(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    search = a.input("search", "").strip()
+    if not search:
+        return {"data": {"results": []}}
+
+    results = []
+
+    # Check if search term is an entity ID
+    if mochi.valid(search, "entity"):
+        entry = mochi.directory.get(search)
+        if entry and entry.get("class") == "wiki":
+            results.append(entry)
+
+    # Check if search term is a fingerprint (with or without hyphens)
+    fingerprint = search.replace("-", "")
+    if mochi.valid(fingerprint, "fingerprint"):
+        all_wikis = mochi.directory.search("wiki", "", False)
+        for entry in all_wikis:
+            entry_fp = entry.get("fingerprint", "").replace("-", "")
+            if entry_fp == fingerprint:
+                # Avoid duplicates
+                found = False
+                for r in results:
+                    if r.get("id") == entry.get("id"):
+                        found = True
+                        break
+                if not found:
+                    results.append(entry)
+                break
+
+    # Check if search term is a URL (e.g., https://example.com/wikis/ENTITY_ID)
+    if search.startswith("http://") or search.startswith("https://"):
+        url = search
+        if "/wikis/" in url:
+            parts = url.split("/wikis/", 1)
+            wiki_path = parts[1]
+            # Path format: /wikis/ENTITY_ID or /wikis/ENTITY_ID/...
+            wiki_id = wiki_path.split("/")[0] if "/" in wiki_path else wiki_path
+            if "?" in wiki_id:
+                wiki_id = wiki_id.split("?")[0]
+            if "#" in wiki_id:
+                wiki_id = wiki_id.split("#")[0]
+
+            if mochi.valid(wiki_id, "entity"):
+                entry = mochi.directory.get(wiki_id)
+                if entry and entry.get("class") == "wiki":
+                    # Avoid duplicates
+                    found = False
+                    for r in results:
+                        if r.get("id") == entry.get("id"):
+                            found = True
+                            break
+                    if not found:
+                        results.append(entry)
+
+    # Search by name
+    name_results = mochi.directory.search("wiki", search, False)
+    for entry in name_results:
+        # Avoid duplicates
+        found = False
+        for r in results:
+            if r.get("id") == entry.get("id"):
+                found = True
+                break
+        if not found:
+            results.append(entry)
+
+    return {"data": {"results": results}}
+
 # Info endpoint for entity context - returns wiki info
 def action_info_entity(a):
     wiki = get_wiki(a)
@@ -2406,6 +2480,18 @@ def event_setting_set(e):
     # Only allow known settings
     if name == "home":
         mochi.db.execute("update wikis set home=? where id=?", value, wiki)
+
+# Handle rename event from source wiki
+def event_rename(e):
+    wiki_id = e.header("from")
+    name = e.content("name")
+    if not name:
+        return
+
+    # Update subscribed wiki (source = sender)
+    wiki = mochi.db.row("select id from wikis where source=?", wiki_id)
+    if wiki:
+        mochi.db.execute("update wikis set name=? where id=?", name, wiki["id"])
 
 # SUBSCRIPTION
 

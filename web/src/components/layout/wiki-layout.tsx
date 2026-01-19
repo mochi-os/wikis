@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
-import { useLocation } from '@tanstack/react-router'
-import { AuthenticatedLayout, getErrorMessage } from '@mochi/common'
-import type { SidebarData } from '@mochi/common'
+import { useLocation, useNavigate } from '@tanstack/react-router'
 import {
+  AuthenticatedLayout,
+  getErrorMessage,
+  type SidebarData,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -11,6 +12,8 @@ import {
   Input,
   Label,
   Button,
+  toast,
+  SearchEntityDialog,
 } from '@mochi/common'
 import {
   BookOpen,
@@ -22,11 +25,10 @@ import {
   Search,
   Tags,
 } from 'lucide-react'
-import { toast } from '@mochi/common'
 import { APP_ROUTES } from '@/config/routes'
 import { SidebarProvider, useSidebarContext } from '@/context/sidebar-context'
 import { WikiProvider, useWikiContext } from '@/context/wiki-context'
-import { useAddBookmark } from '@/hooks/use-wiki'
+import { useAddBookmark, useJoinWiki } from '@/hooks/use-wiki'
 
 // Check if a string looks like an entity ID (9-char fingerprint or 50-51 char full ID)
 const ENTITY_ID_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
@@ -44,10 +46,34 @@ function getEntityIdFromPath(pathname: string): string | null {
 }
 
 function WikiLayoutInner() {
-  const { bookmarkDialogOpen, openBookmarkDialog, closeBookmarkDialog } = useSidebarContext()
+  const {
+    bookmarkDialogOpen,
+    openBookmarkDialog,
+    closeBookmarkDialog,
+    searchDialogOpen,
+    openSearchDialog,
+    closeSearchDialog,
+  } = useSidebarContext()
   const { info } = useWikiContext()
+  const navigate = useNavigate()
   const [bookmarkTarget, setBookmarkTarget] = useState('')
   const addBookmark = useAddBookmark()
+  const joinWiki = useJoinWiki()
+
+  const handleSearchSubscribe = async (wikiId: string) => {
+    return new Promise<void>((resolve, reject) => {
+      joinWiki.mutate(wikiId, {
+        onSuccess: () => {
+          closeSearchDialog()
+          navigate({ to: '/' })
+          resolve()
+        },
+        onError: (error) => {
+          reject(error)
+        },
+      })
+    })
+  }
 
   // Use router location for reactive URL changes
   const location = useLocation()
@@ -126,6 +152,7 @@ function WikiLayoutInner() {
       url: '/',
       icon: Library,
       items: [
+        { title: 'Search wikis', icon: Search, onClick: openSearchDialog },
         { title: 'Bookmark wiki', icon: Bookmark, onClick: openBookmarkDialog },
         { title: 'Replicate wiki', url: APP_ROUTES.WIKI.JOIN, icon: Copy },
         { title: 'New wiki', url: APP_ROUTES.WIKI.NEW, icon: Plus },
@@ -155,7 +182,7 @@ function WikiLayoutInner() {
     ]
 
     return { navGroups: groups }
-  }, [openBookmarkDialog, isInWiki, wikiName, info, urlEntityId])
+  }, [openBookmarkDialog, openSearchDialog, isInWiki, wikiName, info, urlEntityId])
 
   return (
     <>
@@ -197,6 +224,23 @@ function WikiLayoutInner() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Search wiki dialog */}
+      <SearchEntityDialog
+        open={searchDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closeSearchDialog()
+        }}
+        onSubscribe={handleSearchSubscribe}
+        entityClass="wiki"
+        searchEndpoint="/wikis/directory/search"
+        icon={BookOpen}
+        iconClassName="bg-emerald-500/10 text-emerald-600"
+        title="Search wikis"
+        description="Search for public wikis to subscribe to"
+        placeholder="Search by name, ID, fingerprint, or URL..."
+        emptyMessage="No wikis found"
+      />
     </>
   )
 }

@@ -17,6 +17,7 @@ const endpoints = {
     info: 'info',
     create: 'create',
     join: 'subscribe',
+    directorySearch: 'directory/search',
     // Pages
     page: (slug: string) => `${slug}`,
     pageEdit: (slug: string) => `${slug}/edit`,
