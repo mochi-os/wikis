@@ -1,5 +1,5 @@
 import { createFileRoute, Navigate, Link } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   usePageTitle,
@@ -10,10 +10,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@mochi/common'
-import { Ellipsis, FileEdit, FilePlus, History, Pencil, Settings } from 'lucide-react'
+import { Ellipsis, FileEdit, FilePlus, History, Pencil, Search, Settings, Tags } from 'lucide-react'
 import {
   PageView,
   PageNotFound,
@@ -63,6 +64,9 @@ function WikiPageRoute() {
   useEffect(() => {
     setLastLocation(wiki.fingerprint ?? wiki.id, slug)
   }, [wiki.fingerprint, wiki.id, slug])
+
+  // Rename dialog state (controlled mode so menu closes when dialog opens)
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false)
 
   if (isLoading) {
     return (
@@ -173,33 +177,47 @@ function WikiPageRoute() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Page</DropdownMenuLabel>
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
                 <Pencil className="size-4" />
-                Edit page
+                Edit
               </Link>
             </DropdownMenuItem>
           )}
           {permissions.edit && (
-            <RenamePageDialog
-              slug={slug}
-              title={data.page.title}
-              trigger={
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  <FileEdit className="size-4" />
-                  Rename page
-                </DropdownMenuItem>
-              }
-            />
+            <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
+              <FileEdit className="size-4" />
+              Rename
+            </DropdownMenuItem>
           )}
           <DropdownMenuItem asChild>
             <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
               <History className="size-4" />
-              Page history
+              History
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuLabel>Wiki</DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link to="/search">
+              <Search className="size-4" />
+              Search
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/tags">
+              <Tags className="size-4" />
+              Tags
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/changes">
+              <History className="size-4" />
+              Recent changes
+            </Link>
+          </DropdownMenuItem>
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link to="/$wikiId/new" params={{ wikiId }}>
@@ -212,7 +230,7 @@ function WikiPageRoute() {
             <DropdownMenuItem asChild>
               <Link to="/$wikiId/settings" params={{ wikiId }}>
                 <Settings className="size-4" />
-                Wiki settings
+                Settings
               </Link>
             </DropdownMenuItem>
           )}
@@ -228,6 +246,12 @@ function WikiPageRoute() {
         <Main className="pt-2">
           <PageView page={data.page} />
         </Main>
+        <RenamePageDialog
+          slug={slug}
+          title={data.page.title}
+          open={renameDialogOpen}
+          onOpenChange={setRenameDialogOpen}
+        />
       </>
     )
   }

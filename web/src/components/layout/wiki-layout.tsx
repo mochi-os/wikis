@@ -18,12 +18,8 @@ import {
 import {
   BookOpen,
   Bookmark,
-  Copy,
-  History,
   Library,
   Plus,
-  Search,
-  Tags,
 } from 'lucide-react'
 import { APP_ROUTES } from '@/config/routes'
 import { SidebarProvider, useSidebarContext } from '@/context/sidebar-context'
@@ -48,10 +44,8 @@ function getEntityIdFromPath(pathname: string): string | null {
 function WikiLayoutInner() {
   const {
     bookmarkDialogOpen,
-    openBookmarkDialog,
     closeBookmarkDialog,
     searchDialogOpen,
-    openSearchDialog,
     closeSearchDialog,
   } = useSidebarContext()
   const { info } = useWikiContext()
@@ -106,31 +100,22 @@ function WikiLayoutInner() {
     // If urlEntityId is null, we're not in a wiki (e.g., at "All wikis")
     const currentWikiId = urlEntityId
 
-    // Build wiki items from the list (when in class context)
-    // Use fingerprint for shorter URLs when available
-    // Include home page in URL to avoid route ambiguity with $page vs $wikiId
-    const wikiItems = (info?.wikis || []).map((wiki) => {
-      const wikiUrl = wiki.fingerprint ?? wiki.id
-      const isCurrentWiki = wiki.id === currentWikiId || wiki.fingerprint === currentWikiId
-      return {
+    // Merge owned wikis and bookmarks into a single flat list
+    // All wikis use the same icon (BookOpen), sorted alphabetically
+    const allWikiItems = [
+      ...(info?.wikis || []).map((wiki) => ({
         title: wiki.name,
-        url: `/${wikiUrl}/${wiki.home}` as const,
+        url: `/${wiki.fingerprint ?? wiki.id}/${wiki.home}` as const,
         icon: BookOpen,
-        isActive: isCurrentWiki,
-      }
-    }).sort((a, b) => a.title.localeCompare(b.title))
-
-    // Build bookmarked wiki items - use fingerprint for shorter URLs
-    // Include home page in URL to avoid route ambiguity
-    const bookmarkItems = (info?.bookmarks || []).map((bookmark) => {
-      const isCurrentWiki = bookmark.id === currentWikiId || bookmark.fingerprint === currentWikiId
-      return {
+        isActive: wiki.id === currentWikiId || wiki.fingerprint === currentWikiId,
+      })),
+      ...(info?.bookmarks || []).map((bookmark) => ({
         title: bookmark.name,
         url: `/${bookmark.fingerprint ?? bookmark.id}/home` as const,
-        icon: Bookmark,
-        isActive: isCurrentWiki,
-      }
-    }).sort((a, b) => a.title.localeCompare(b.title))
+        icon: BookOpen,
+        isActive: bookmark.id === currentWikiId || bookmark.fingerprint === currentWikiId,
+      })),
+    ].sort((a, b) => a.title.localeCompare(b.title))
 
     // Build current wiki item when in entity context but not in the wikis list
     // (This handles when we're viewing a wiki that might not be in our class list)
@@ -145,19 +130,11 @@ function WikiLayoutInner() {
       isActive: true,
     } : null
 
-    // Build "All wikis" item with submenu for wiki management actions
-    // Collapse when inside a specific wiki
+    // "All wikis" is now a simple link without submenu
     const allWikisItem = {
       title: 'All wikis',
       url: '/',
       icon: Library,
-      items: [
-        { title: 'Search wikis', icon: Search, onClick: openSearchDialog },
-        { title: 'Bookmark wiki', icon: Bookmark, onClick: openBookmarkDialog },
-        { title: 'Replicate wiki', url: APP_ROUTES.WIKI.JOIN, icon: Copy },
-        { title: 'New wiki', url: APP_ROUTES.WIKI.NEW, icon: Plus },
-      ],
-      open: !isInWiki,
     }
 
     const groups: SidebarData['navGroups'] = [
@@ -165,8 +142,7 @@ function WikiLayoutInner() {
         title: '',
         items: [
           allWikisItem,
-          ...wikiItems,
-          ...bookmarkItems,
+          ...allWikiItems,
           ...(standaloneWikiItem ? [standaloneWikiItem] : []),
         ],
       },
@@ -174,15 +150,13 @@ function WikiLayoutInner() {
         title: '',
         separator: true,
         items: [
-          { title: 'Search', url: APP_ROUTES.WIKI.SEARCH, icon: Search },
-          { title: 'Tags', url: APP_ROUTES.WIKI.TAGS, icon: Tags },
-          { title: 'Recent changes', url: APP_ROUTES.WIKI.CHANGES, icon: History },
+          { title: 'New wiki', url: APP_ROUTES.WIKI.NEW, icon: Plus },
         ],
       },
     ]
 
     return { navGroups: groups }
-  }, [openBookmarkDialog, openSearchDialog, isInWiki, wikiName, info, urlEntityId])
+  }, [isInWiki, wikiName, info, urlEntityId])
 
   return (
     <>

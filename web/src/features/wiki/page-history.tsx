@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { History, Eye, RotateCcw, ArrowLeft } from 'lucide-react'
+import { History, Eye, RotateCcw } from 'lucide-react'
 import { Button } from '@mochi/common'
 import { getRouterBasepath } from '@mochi/common'
 import { Separator } from '@mochi/common'
@@ -28,17 +28,9 @@ export function PageHistory({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <History className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">History</h1>
-        </div>
-        <Button variant="outline" asChild>
-          <a href={`${getRouterBasepath()}${slug}`}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to page
-          </a>
-        </Button>
+      <div className="flex items-center gap-3">
+        <History className="h-6 w-6" />
+        <h1 className="text-2xl font-bold">History</h1>
       </div>
 
       <p className="text-muted-foreground">
@@ -125,12 +117,9 @@ export function PageHistory({
 export function PageHistorySkeleton() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-6 w-6" />
-          <Skeleton className="h-8 w-40" />
-        </div>
-        <Skeleton className="h-9 w-32" />
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-6 w-6" />
+        <Skeleton className="h-8 w-40" />
       </div>
       <Skeleton className="h-5 w-64" />
       <Separator />

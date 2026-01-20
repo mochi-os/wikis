@@ -21,10 +21,14 @@ interface RenamePageDialogProps {
   slug: string
   title: string
   trigger?: React.ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function RenamePageDialog({ slug, title, trigger }: RenamePageDialogProps) {
-  const [open, setOpen] = useState(false)
+export function RenamePageDialog({ slug, title, trigger, open: controlledOpen, onOpenChange }: RenamePageDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen ?? internalOpen
+  const setOpen = onOpenChange ?? setInternalOpen
   const [newSlug, setNewSlug] = useState(slug)
   const [renameChildren, setRenameChildren] = useState(true)
   const [createRedirects, setCreateRedirects] = useState(false)
@@ -68,6 +72,75 @@ export function RenamePageDialog({ slug, title, trigger }: RenamePageDialogProps
     )
   }
 
+  const dialogContent = (
+    <DialogContent>
+      <form onSubmit={handleSubmit}>
+        <DialogHeader>
+          <DialogTitle>Rename page</DialogTitle>
+          <DialogDescription>
+            Change the URL for "{title}". Links to this page will be updated automatically.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="newSlug">New URL</Label>
+            <Input
+              id="newSlug"
+              value={newSlug}
+              onChange={(e) => setNewSlug(e.target.value)}
+              placeholder="new-page-url"
+            />
+            <p className="text-sm text-muted-foreground">
+              Use lowercase letters, numbers, hyphens, and slashes
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="renameChildren"
+              checked={renameChildren}
+              onCheckedChange={(checked) => setRenameChildren(checked === true)}
+            />
+            <Label htmlFor="renameChildren" className="font-normal">
+              Rename child pages
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="createRedirects"
+              checked={createRedirects}
+              onCheckedChange={(checked) => setCreateRedirects(checked === true)}
+            />
+            <Label htmlFor="createRedirects" className="font-normal">
+              Create redirect from old links
+            </Label>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={renamePage.isPending}>
+            {renamePage.isPending ? 'Renaming...' : 'Rename'}
+          </Button>
+        </DialogFooter>
+      </form>
+    </DialogContent>
+  )
+
+  // Controlled mode - no trigger, dialog controlled externally
+  if (controlledOpen !== undefined) {
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        {dialogContent}
+      </Dialog>
+    )
+  }
+
+  // Uncontrolled mode - with trigger
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -78,62 +151,7 @@ export function RenamePageDialog({ slug, title, trigger }: RenamePageDialogProps
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent>
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Rename page</DialogTitle>
-            <DialogDescription>
-              Change the URL for "{title}". Links to this page will be updated automatically.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="newSlug">New URL</Label>
-              <Input
-                id="newSlug"
-                value={newSlug}
-                onChange={(e) => setNewSlug(e.target.value)}
-                placeholder="new-page-url"
-              />
-              <p className="text-sm text-muted-foreground">
-                Use lowercase letters, numbers, hyphens, and slashes
-              </p>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="renameChildren"
-                checked={renameChildren}
-                onCheckedChange={(checked) => setRenameChildren(checked === true)}
-              />
-              <Label htmlFor="renameChildren" className="font-normal">
-                Rename child pages
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="createRedirects"
-                checked={createRedirects}
-                onCheckedChange={(checked) => setCreateRedirects(checked === true)}
-              />
-              <Label htmlFor="createRedirects" className="font-normal">
-                Create redirect from old links
-              </Label>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={renamePage.isPending}>
-              {renamePage.isPending ? 'Renaming...' : 'Rename'}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
+      {dialogContent}
     </Dialog>
   )
 }

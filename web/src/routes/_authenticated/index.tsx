@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { requestHelpers, getErrorMessage } from '@mochi/common'
 import endpoints from '@/api/endpoints'
 import {
@@ -10,11 +10,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   toast,
 } from '@mochi/common'
-import { BookOpen, Bookmark, Ellipsis, FileEdit, FilePlus, History, Link2, Pencil, Settings, X } from 'lucide-react'
+import { BookOpen, Bookmark, Copy, Ellipsis, FileEdit, FilePlus, History, Link2, Pencil, Search, Settings, Tags, X } from 'lucide-react'
 import { usePageTitle } from '@mochi/common'
 import { usePage, useRemoveBookmark } from '@/hooks/use-wiki'
 import { Header } from '@mochi/common'
@@ -137,6 +138,9 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
     setLastLocation(wikiId, homeSlug)
   }, [wikiId, homeSlug])
 
+  // Rename dialog state (controlled mode so menu closes when dialog opens)
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+
   if (isLoading) {
     return (
       <>
@@ -185,33 +189,47 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Page</DropdownMenuLabel>
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link to="/$page/edit" params={{ page: homeSlug }}>
                 <Pencil className="size-4" />
-                Edit page
+                Edit
               </Link>
             </DropdownMenuItem>
           )}
           {permissions.edit && (
-            <RenamePageDialog
-              slug={homeSlug}
-              title={data.page.title}
-              trigger={
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  <FileEdit className="size-4" />
-                  Rename page
-                </DropdownMenuItem>
-              }
-            />
+            <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
+              <FileEdit className="size-4" />
+              Rename
+            </DropdownMenuItem>
           )}
           <DropdownMenuItem asChild>
             <Link to="/$page/history" params={{ page: homeSlug }}>
               <History className="size-4" />
-              Page history
+              History
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuLabel>Wiki</DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link to="/search">
+              <Search className="size-4" />
+              Search
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/tags">
+              <Tags className="size-4" />
+              Tags
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/changes">
+              <History className="size-4" />
+              Recent changes
+            </Link>
+          </DropdownMenuItem>
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link to="/new">
@@ -224,7 +242,7 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
             <DropdownMenuItem asChild>
               <Link to="/settings">
                 <Settings className="size-4" />
-                Wiki settings
+                Settings
               </Link>
             </DropdownMenuItem>
           )}
@@ -240,6 +258,12 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
         <Main className="pt-2">
           <PageView page={data.page} />
         </Main>
+        <RenamePageDialog
+          slug={homeSlug}
+          title={data.page.title}
+          open={renameDialogOpen}
+          onOpenChange={setRenameDialogOpen}
+        />
       </>
     )
   }
@@ -255,6 +279,7 @@ interface WikisListPageProps {
 function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
   usePageTitle('Wikis')
   const removeBookmark = useRemoveBookmark()
+  const { openSearchDialog, openBookmarkDialog } = useSidebarContext()
 
   // Clear last location when viewing "All wikis"
   useEffect(() => {
@@ -305,7 +330,25 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Wikis</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Wikis</h1>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={openSearchDialog}>
+            <Search className="size-4 mr-2" />
+            Find wikis
+          </Button>
+          <Button variant="outline" onClick={openBookmarkDialog}>
+            <Bookmark className="size-4 mr-2" />
+            Bookmark wiki
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/join">
+              <Copy className="size-4 mr-2" />
+              Join wiki
+            </Link>
+          </Button>
+        </div>
+      </div>
 
       {!hasWikis ? (
         <Card className="p-8 text-center">

@@ -1,13 +1,8 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 
-type PageInfo = {
-  slug: string
-  title: string
-} | null
-
 type SidebarContextValue = {
-  pageSlug: string | null
-  pageTitle: string | null
+  // setPage is kept for backwards compatibility but is now a no-op
+  // (was used for tree expansion, no longer needed with flat sidebar)
   setPage: (slug: string | null, title?: string) => void
   bookmarkDialogOpen: boolean
   openBookmarkDialog: () => void
@@ -20,17 +15,11 @@ type SidebarContextValue = {
 const SidebarContext = createContext<SidebarContextValue | null>(null)
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
-  const [page, setPageState] = useState<PageInfo>(null)
   const [bookmarkDialogOpen, setBookmarkDialogOpen] = useState(false)
   const [searchDialogOpen, setSearchDialogOpen] = useState(false)
 
-  const setPage = useCallback((slug: string | null, title?: string) => {
-    if (slug) {
-      setPageState({ slug, title: title || slug })
-    } else {
-      setPageState(null)
-    }
-  }, [])
+  // No-op function for backwards compatibility
+  const setPage = useCallback((_slug: string | null, _title?: string) => {}, [])
 
   const openBookmarkDialog = useCallback(() => {
     setBookmarkDialogOpen(true)
@@ -50,8 +39,6 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
 
   return (
     <SidebarContext.Provider value={{
-      pageSlug: page?.slug ?? null,
-      pageTitle: page?.title ?? null,
       setPage,
       bookmarkDialogOpen,
       openBookmarkDialog,
