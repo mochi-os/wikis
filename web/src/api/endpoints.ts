@@ -18,6 +18,7 @@ const endpoints = {
     create: 'create',
     join: 'subscribe',
     directorySearch: 'directory/search',
+    recommendations: 'recommendations',
     // Pages
     page: (slug: string) => `${slug}`,
     pageEdit: (slug: string) => `${slug}/edit`,

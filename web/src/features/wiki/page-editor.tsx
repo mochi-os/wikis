@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { toast } from '@mochi/common'
-import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2 } from 'lucide-react'
+import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus } from 'lucide-react'
 import {
   Button,
   getApiBasepath,
@@ -228,8 +228,17 @@ export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
             </Button>
           )}
           <Button size="sm" onClick={handleSave} disabled={isPending}>
-            <Save className="mr-2 h-4 w-4" />
-            {isPending ? 'Saving...' : 'Save'}
+            {isNew ? (
+              <>
+                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+                {isPending ? 'Creating...' : 'Create page'}
+              </>
+            ) : (
+              <>
+                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                {isPending ? 'Saving...' : 'Save'}
+              </>
+            )}
           </Button>
         </div>
       </div>

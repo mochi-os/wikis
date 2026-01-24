@@ -716,6 +716,45 @@ def action_directory_search(a):
 
     return {"data": {"results": results}}
 
+# Action: Get wiki recommendations
+def action_recommendations(a):
+    # Gather IDs of wikis the user already has (owned + subscribed + bookmarked)
+    existing_ids = set()
+    wikis = mochi.db.rows("select id from wikis")
+    if wikis:
+        for w in wikis:
+            existing_ids.add(w["id"])
+    bookmarks = mochi.db.rows("select id from bookmarks")
+    if bookmarks:
+        for b in bookmarks:
+            existing_ids.add(b["id"])
+
+    # Request recommendations from the recommendations service
+    s = mochi.remote.stream("1JYmMpQU7fxvTrwHpNpiwKCgUg3odWqX7s9t1cLswSMAro5M2P", "recommendations", "list", {"type": "wiki", "language": "en"})
+    if not s:
+        return {"data": {"wikis": []}}
+
+    r = s.read()
+    if not r or r.get("status") != "200":
+        return {"data": {"wikis": []}}
+
+    recommendations = []
+    items = s.read()
+    if type(items) not in ["list", "tuple"]:
+        return {"data": {"wikis": []}}
+
+    for item in items:
+        entity_id = item.get("entity", "")
+        if entity_id and entity_id not in existing_ids:
+            recommendations.append({
+                "id": entity_id,
+                "name": item.get("name", ""),
+                "blurb": item.get("blurb", ""),
+                "fingerprint": item.get("fingerprint", ""),
+            })
+    s.close()
+    return {"data": {"wikis": recommendations}}
+
 # Info endpoint for entity context - returns wiki info
 def action_info_entity(a):
     wiki = get_wiki(a)

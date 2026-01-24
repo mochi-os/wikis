@@ -241,7 +241,7 @@ function AddRedirectDialog() {
               Cancel
             </Button>
             <Button type="submit" disabled={setRedirect.isPending}>
-              {setRedirect.isPending ? 'Creating...' : 'Create redirect'}
+              {setRedirect.isPending ? 'Creating...' : <><Plus className="h-4 w-4 mr-2" />Create redirect</>}
             </Button>
           </DialogFooter>
         </form>

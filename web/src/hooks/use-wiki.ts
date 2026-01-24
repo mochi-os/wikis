@@ -522,6 +522,26 @@ export function useRemoveSubscriber() {
   })
 }
 
+// Create a new wiki
+
+interface CreateWikiResponse {
+  id: string
+  name: string
+  home: string
+  fingerprint?: string
+}
+
+export function useCreateWiki() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: { name: string; privacy?: string }) =>
+      requestHelpers.post<CreateWikiResponse>(endpoints.wiki.create, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
+    },
+  })
+}
+
 // Join a remote wiki
 
 interface JoinWikiResponse {

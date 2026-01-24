@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId/$page/edit')({
   beforeLoad: () => {
     const store = useAuthStore.getState()
     if (!store.isInitialized) {
-      store.syncFromCookie()
+      store.initialize()
     }
     if (!store.isAuthenticated) {
       throw redirect({ to: '/401' })

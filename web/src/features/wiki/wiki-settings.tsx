@@ -1086,7 +1086,7 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
               Cancel
             </Button>
             <Button type="submit" disabled={isCreating}>
-              {isCreating ? 'Creating...' : 'Create'}
+              {isCreating ? 'Creating...' : <><Plus className="h-4 w-4 mr-2" />Create redirect</>}
             </Button>
           </DialogFooter>
         </form>

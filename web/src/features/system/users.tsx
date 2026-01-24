@@ -123,7 +123,7 @@ function CreateUserDialog({ onSuccess }: { onSuccess: () => void }) {
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Create user</DialogTitle>
-            <DialogDescription>Add a new user to the system.</DialogDescription>
+            <DialogDescription className="sr-only">Create user</DialogDescription>
           </DialogHeader>
           <div className='grid gap-4 py-4'>
             <div className='grid gap-2'>
@@ -212,7 +212,7 @@ function EditUserDialog({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Edit user</DialogTitle>
-            <DialogDescription>Update user details.</DialogDescription>
+            <DialogDescription className="sr-only">Edit user</DialogDescription>
           </DialogHeader>
           <div className='grid gap-4 py-4'>
             <div className='grid gap-2'>

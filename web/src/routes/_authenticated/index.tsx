@@ -1,7 +1,8 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { requestHelpers, getErrorMessage } from '@mochi/common'
+import { getErrorMessage } from '@mochi/common'
 import endpoints from '@/api/endpoints'
+import { wikisRequest } from '@/api/request'
 import {
   Button,
   Card,
@@ -54,7 +55,7 @@ let hasCheckedRedirect = false
 
 export const Route = createFileRoute('/_authenticated/')({
   loader: async () => {
-    const info = await requestHelpers.get<InfoResponse>(endpoints.wiki.info)
+    const info = await wikisRequest.get<InfoResponse>(endpoints.wiki.info)
 
     // Cache wikis list for sidebar
     if (info.wikis || info.bookmarks) {
