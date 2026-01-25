@@ -9,7 +9,7 @@ type SettingsSearch = {
   tab?: WikiSettingsTabId
 }
 
-const validTabs: WikiSettingsTabId[] = ['settings', 'access', 'redirects', 'subscribers']
+const validTabs: WikiSettingsTabId[] = ['settings', 'access', 'redirects', 'replicas']
 
 export const Route = createFileRoute('/_authenticated/settings')({
   validateSearch: (search: Record<string, unknown>): SettingsSearch => ({

@@ -44,9 +44,9 @@ const endpoints = {
     settings: 'settings',
     settingsSet: 'settings/set',
     rename: 'rename',
-    // Subscribers
-    subscribers: 'subscribers',
-    subscriberRemove: 'subscriber/remove',
+    // Replicas
+    replicas: 'replicas',
+    replicaRemove: 'replica/remove',
     // Access control
     access: 'access',
     accessSet: 'access/set',
@@ -59,6 +59,7 @@ const endpoints = {
     // Sync
     sync: 'sync',
     subscribe: 'subscribe',
+    unsubscribe: 'unsubscribe',
     // Attachments
     attachments: 'attachment/list',
     attachmentUpload: 'attachment/upload',

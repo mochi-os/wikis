@@ -12,9 +12,10 @@
 	"execute": ["wikis.star"],
 
 	"database": {
-		"schema": 8,
+		"schema": 10,
 		"file": "wikis.db",
-		"create": {"function": "database_create"}
+		"create": {"function": "database_create"},
+		"upgrade": {"function": "database_upgrade"}
 	},
 
 	"icons": [
@@ -42,8 +43,8 @@
 		":wiki/-/settings": {"function": "action_settings"},
 		":wiki/-/settings/set": {"function": "action_settings_set"},
 		":wiki/-/rename": {"function": "action_rename"},
-		":wiki/-/subscribers": {"function": "action_subscribers"},
-		":wiki/-/subscriber/remove": {"function": "action_subscriber_remove"},
+		":wiki/-/replicas": {"function": "action_replicas"},
+		":wiki/-/replica/remove": {"function": "action_replica_remove"},
 		":wiki/-/access": {"function": "action_access_list"},
 		":wiki/-/access/set": {"function": "action_access_set"},
 		":wiki/-/access/revoke": {"function": "action_access_revoke"},
@@ -81,8 +82,8 @@
 	},
 
 	"events": {
-		"subscribe": {"function": "event_subscribe"},
-		"unsubscribe": {"function": "event_unsubscribe"},
+		"replicate": {"function": "event_replicate"},
+		"unreplicate": {"function": "event_unreplicate"},
 		"rename": {"function": "event_rename"},
 		"sync": {"function": "event_sync"},
 		"page/create": {"function": "event_page_create"},

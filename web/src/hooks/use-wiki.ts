@@ -488,36 +488,37 @@ export function useGroups() {
   })
 }
 
-// Subscribers
+// Replicas
 
-export interface Subscriber {
+export interface Replica {
   id: string
   name: string
   subscribed: number
   seen: number
+  synced: number
 }
 
-interface SubscribersResponse {
-  subscribers: Subscriber[]
+interface ReplicasResponse {
+  replicas: Replica[]
 }
 
-export function useSubscribers() {
+export function useReplicas() {
   return useQuery({
-    queryKey: ['wiki', 'subscribers'],
+    queryKey: ['wiki', 'replicas'],
     queryFn: () =>
-      requestHelpers.get<SubscribersResponse>(endpoints.wiki.subscribers),
+      requestHelpers.get<ReplicasResponse>(endpoints.wiki.replicas),
   })
 }
 
-export function useRemoveSubscriber() {
+export function useRemoveReplica() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (subscriberId: string) =>
-      requestHelpers.post<{ ok: boolean }>(endpoints.wiki.subscriberRemove, {
-        subscriber: subscriberId,
+    mutationFn: (replicaId: string) =>
+      requestHelpers.post<{ ok: boolean }>(endpoints.wiki.replicaRemove, {
+        replica: replicaId,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'subscribers'] })
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'replicas'] })
     },
   })
 }
@@ -553,8 +554,26 @@ interface JoinWikiResponse {
 export function useJoinWiki() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (target: string) =>
-      requestHelpers.post<JoinWikiResponse>(endpoints.wiki.join, { target }),
+    mutationFn: ({ target, server }: { target: string; server?: string }) =>
+      requestHelpers.post<JoinWikiResponse>(endpoints.wiki.join, { target, server }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
+    },
+  })
+}
+
+// Unsubscribe from a wiki (removes local copy)
+
+interface UnsubscribeWikiResponse {
+  ok: boolean
+  message: string
+}
+
+export function useUnsubscribeWiki() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () =>
+      requestHelpers.post<UnsubscribeWikiResponse>(endpoints.wiki.unsubscribe, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },
@@ -572,8 +591,8 @@ interface BookmarkAddResponse {
 export function useAddBookmark() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (target: string) =>
-      requestHelpers.post<BookmarkAddResponse>(endpoints.wiki.bookmarkAdd, { target }),
+    mutationFn: ({ target, server }: { target: string; server?: string }) =>
+      requestHelpers.post<BookmarkAddResponse>(endpoints.wiki.bookmarkAdd, { target, server }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },

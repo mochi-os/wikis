@@ -70,7 +70,7 @@ import { useWikiContext } from '@/context/wiki-context'
 import type { WikiPermissions } from '@/types/wiki'
 import { createContext, useContext } from 'react'
 
-export type WikiSettingsTabId = 'settings' | 'access' | 'redirects' | 'subscribers'
+export type WikiSettingsTabId = 'settings' | 'access' | 'redirects' | 'replicas'
 
 interface Tab {
   id: WikiSettingsTabId
@@ -82,7 +82,7 @@ const tabs: Tab[] = [
   { id: 'settings', label: 'Settings', icon: <Settings className="h-4 w-4" /> },
   { id: 'redirects', label: 'Redirects', icon: <CornerDownRight className="h-4 w-4" /> },
   { id: 'access', label: 'Access', icon: <Shield className="h-4 w-4" /> },
-  { id: 'subscribers', label: 'Subscribers', icon: <Users className="h-4 w-4" /> },
+  { id: 'replicas', label: 'Replicas', icon: <Users className="h-4 w-4" /> },
 ]
 
 // Context for wiki-specific settings when accessed via /$wikiId/settings route
@@ -146,7 +146,7 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
         {activeTab === 'settings' && <SettingsTab />}
         {activeTab === 'access' && <AccessTab />}
         {activeTab === 'redirects' && <RedirectsTab />}
-        {activeTab === 'subscribers' && <SubscribersTab />}
+        {activeTab === 'replicas' && <ReplicasTab />}
       </div>
     </div>
     </WikiSettingsContext.Provider>
@@ -489,7 +489,7 @@ function SettingsTab() {
               <dt className="text-muted-foreground w-28 shrink-0">Source</dt>
               <dd className="font-mono text-xs break-all">{data.settings.source}</dd>
             </div>
-            <Button onClick={() => void handleSync()} disabled={syncPending}>
+            <Button variant="outline" onClick={() => void handleSync()} disabled={syncPending}>
               <RefreshCw className={cn("mr-2 h-4 w-4", syncPending && "animate-spin")} />
               {syncPending ? 'Syncing...' : 'Sync now'}
             </Button>
@@ -526,41 +526,44 @@ function SettingsTab() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Delete wiki</p>
-              <p className="text-sm text-muted-foreground">
-                Permanently delete this wiki and all its contents. This cannot be undone.
-              </p>
+      {/* Only show delete option for owned wikis (not subscribed) */}
+      {!data?.settings?.source && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Delete wiki</p>
+                <p className="text-sm text-muted-foreground">
+                  Permanently delete this wiki and all its contents. This cannot be undone.
+                </p>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" disabled={deletePending}>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {deletePending ? 'Deleting...' : 'Delete wiki'}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete the wiki
+                      and all its contents.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => void handleDelete()}>
+                      Delete wiki
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline" disabled={deletePending}>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  {deletePending ? 'Deleting...' : 'Delete wiki'}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the wiki
-                    and all its contents.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => void handleDelete()}>
-                    Delete wiki
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
@@ -678,13 +681,13 @@ function AccessTab() {
   )
 }
 
-function SubscribersTab() {
+function ReplicasTab() {
   const settingsContext = useSettingsContext()
   const wikiContextResult = useWikiContext()
   const wikiInfo = settingsContext.wiki ?? wikiContextResult?.info?.wiki
 
   // Local state for wiki-specific API calls
-  const [subscribers, setSubscribers] = useState<import('@/hooks/use-wiki').Subscriber[]>([])
+  const [replicas, setReplicas] = useState<import('@/hooks/use-wiki').Replica[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [isRemoving, setIsRemoving] = useState(false)
@@ -693,37 +696,37 @@ function SubscribersTab() {
   const apiUrl = (endpoint: string) =>
     settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint
 
-  const loadSubscribers = useCallback(async () => {
+  const loadReplicas = useCallback(async () => {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await requestHelpers.get<{ subscribers: import('@/hooks/use-wiki').Subscriber[] }>(
-        apiUrl(endpoints.wiki.subscribers)
+      const response = await requestHelpers.get<{ replicas: import('@/hooks/use-wiki').Replica[] }>(
+        apiUrl(endpoints.wiki.replicas)
       )
-      setSubscribers(response?.subscribers ?? [])
+      setReplicas(response?.replicas ?? [])
     } catch (err) {
-      console.error('[SubscribersTab] Failed to load subscribers', err)
-      setError(err instanceof Error ? err : new Error('Failed to load subscribers'))
+      console.error('[ReplicasTab] Failed to load replicas', err)
+      setError(err instanceof Error ? err : new Error('Failed to load replicas'))
     } finally {
       setIsLoading(false)
     }
   }, [settingsContext.baseURL])
 
   useEffect(() => {
-    void loadSubscribers()
-  }, [loadSubscribers])
+    void loadReplicas()
+  }, [loadReplicas])
 
-  const handleRemove = async (subscriberId: string, name: string) => {
+  const handleRemove = async (replicaId: string, name: string) => {
     setIsRemoving(true)
     try {
-      await requestHelpers.post(apiUrl(endpoints.wiki.subscriberRemove), {
-        subscriber: subscriberId,
+      await requestHelpers.post(apiUrl(endpoints.wiki.replicaRemove), {
+        replica: replicaId,
       })
-      toast.success(`Subscriber "${name || subscriberId.slice(0, 12)}..." removed`)
-      void loadSubscribers()
+      toast.success(`Replica "${name || replicaId.slice(0, 12)}..." removed`)
+      void loadReplicas()
     } catch (err) {
-      console.error('[SubscribersTab] Failed to remove subscriber', err)
-      toast.error(getErrorMessage(err, 'Failed to remove subscriber'))
+      console.error('[ReplicasTab] Failed to remove replica', err)
+      toast.error(getErrorMessage(err, 'Failed to remove replica'))
     } finally {
       setIsRemoving(false)
     }
@@ -733,7 +736,7 @@ function SubscribersTab() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Subscribers</CardTitle>
+          <CardTitle>Replicas</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <Skeleton className="h-10 w-full" />
@@ -747,28 +750,28 @@ function SubscribersTab() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Subscribers</CardTitle>
+          <CardTitle>Replicas</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-destructive">Error loading subscribers: {error.message}</p>
+          <p className="text-destructive">Error loading replicas: {error.message}</p>
         </CardContent>
       </Card>
     )
   }
 
-  // Show empty state for wikis with no subscribers
-  if (wikiInfo && subscribers.length === 0) {
+  // Show empty state for wikis with no replicas
+  if (wikiInfo && replicas.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Subscribers</CardTitle>
+          <CardTitle>Replicas</CardTitle>
           <CardDescription>
-            Other wikis that have subscribed to receive updates from this wiki.
+            Other wikis that replicate content from this wiki.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-sm">
-            No subscribers yet. When other wikis subscribe to this wiki, they will appear here.
+            No replicas yet. When other wikis replicate this wiki, they will appear here.
           </p>
         </CardContent>
       </Card>
@@ -778,34 +781,34 @@ function SubscribersTab() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Subscribers</CardTitle>
+        <CardTitle>Replicas</CardTitle>
         <CardDescription>
-          Other wikis that have subscribed to receive updates from this wiki.
+          Other wikis that replicate content from this wiki.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {subscribers.length > 0 ? (
+        {replicas.length > 0 ? (
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
                 <TableHead>Subscribed</TableHead>
-                <TableHead>Last seen</TableHead>
+                <TableHead>Last synced</TableHead>
                 <TableHead className="w-20">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subscribers.map((sub) => (
-                <TableRow key={sub.id}>
+              {replicas.map((replica) => (
+                <TableRow key={replica.id}>
                   <TableCell className="font-mono text-xs">
-                    {sub.id.slice(0, 20)}...
+                    {replica.id.slice(0, 20)}...
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {format(new Date(sub.subscribed * 1000), 'yyyy-MM-dd HH:mm:ss')}
+                    {format(new Date(replica.subscribed * 1000), 'yyyy-MM-dd HH:mm')}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {sub.seen > 0
-                      ? format(new Date(sub.seen * 1000), 'yyyy-MM-dd HH:mm:ss')
+                    {replica.synced > 0
+                      ? format(new Date(replica.synced * 1000), 'yyyy-MM-dd HH:mm')
                       : 'Never'}
                   </TableCell>
                   <TableCell>
@@ -822,16 +825,16 @@ function SubscribersTab() {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Remove subscriber?</AlertDialogTitle>
+                          <AlertDialogTitle>Remove replica?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            This will stop sending updates to "{sub.name || sub.id.slice(0, 16)}...".
-                            They can subscribe again if they want.
+                            This will stop sending updates to "{replica.name || replica.id.slice(0, 16)}...".
+                            They can replicate again if they want.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => void handleRemove(sub.id, sub.name)}
+                            onClick={() => void handleRemove(replica.id, replica.name)}
                           >
                             Remove
                           </AlertDialogAction>
@@ -845,7 +848,7 @@ function SubscribersTab() {
           </Table>
         ) : (
           <p className="text-muted-foreground text-sm">
-            No subscribers yet. When other wikis subscribe to this wiki, they will appear here.
+            No replicas yet. When other wikis replicate this wiki, they will appear here.
           </p>
         )}
       </CardContent>
