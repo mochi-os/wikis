@@ -47,7 +47,7 @@ export function RevisionView({
               </a>
             </Button>
             {!isCurrentVersion && (
-              <Button size="sm" asChild>
+              <Button variant="outline" size="sm" asChild>
                 <a href={`${getRouterBasepath()}${slug}/revert?version=${revision.version}`}>
                   <RotateCcw className="mr-2 h-4 w-4" />
                   Revert to this version
