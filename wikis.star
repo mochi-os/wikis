@@ -27,7 +27,7 @@ def database_create():
     mochi.db.execute("create table if not exists redirects (wiki text not null references wikis(id), source text not null, target text not null, created integer not null, primary key (wiki, source))")
 
     # Replicas table - downstream wikis that replicate from this wiki
-    mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
+    mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', peer text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
 
     # Bookmarks table - for following external wikis without making a local copy
     mochi.db.execute("create table if not exists bookmarks (id text primary key, name text not null, server text not null default '', added integer not null)")
@@ -43,6 +43,9 @@ def database_upgrade(to_version):
         # Rename subscribers table to replicas and add synced column
         mochi.db.execute("alter table subscribers rename to replicas")
         mochi.db.execute("alter table replicas add column synced integer not null default 0")
+    if to_version == 11:
+        # Add peer column to replicas table for direct P2P messaging
+        mochi.db.execute("alter table replicas add column peer text not null default ''")
 
 # Helper: Update replica's seen and synced timestamps
 def update_replica_seen(wiki, replica_id):
@@ -145,14 +148,21 @@ def validate_event_sender(wikirow, wiki, sender):
 def broadcast_event(wiki, event, data, exclude=None):
     if not wiki:
         return
-    replicas = mochi.db.rows("select id from replicas where wiki=?", wiki)
+    replicas = mochi.db.rows("select id, peer from replicas where wiki=?", wiki)
     for r in replicas:
         if exclude and r["id"] == exclude:
             continue
-        mochi.message.send(
-            {"from": wiki, "to": r["id"], "service": "wikis", "event": event},
-            data
-        )
+        if r["peer"]:
+            mochi.message.send.peer(
+                r["peer"],
+                {"from": wiki, "to": r["id"], "service": "wikis", "event": event},
+                data
+            )
+        else:
+            mochi.message.send(
+                {"from": wiki, "to": r["id"], "service": "wikis", "event": event},
+                data
+            )
 
 # Helper: Remove attachment references from content
 def remove_attachment_refs(content, attachment_id):
@@ -403,6 +413,57 @@ def get_page(wiki, slug):
     page = mochi.db.row("select * from pages where wiki=? and page=? and deleted=0", wiki, slug)
     return page
 
+# Helper: Extract internal wiki links from markdown content
+def extract_wiki_links(content):
+    links = []
+    i = 0
+    while i < len(content):
+        # Look for markdown link pattern: [text](url)
+        if content[i] == '[':
+            # Find closing bracket
+            j = i + 1
+            depth = 1
+            while j < len(content) and depth > 0:
+                if content[j] == '[':
+                    depth += 1
+                elif content[j] == ']':
+                    depth -= 1
+                j += 1
+            # Check if followed by (url)
+            if j < len(content) and content[j] == '(':
+                k = j + 1
+                while k < len(content) and content[k] != ')':
+                    k += 1
+                if k < len(content):
+                    url = content[j+1:k]
+                    # Skip external links and attachments
+                    if not url.startswith("http://") and not url.startswith("https://") and not url.startswith("//"):
+                        if not url.startswith("attachments/") and not url.startswith("-/attachments/") and "/-/attachments/" not in url:
+                            # Clean up the URL (remove anchors, query strings)
+                            if "#" in url:
+                                url = url.split("#")[0]
+                            if "?" in url:
+                                url = url.split("?")[0]
+                            if url and url not in links:
+                                links.append(url)
+                    i = k
+        i += 1
+    return links
+
+# Helper: Find which linked pages don't exist
+def find_missing_links(wiki, content):
+    links = extract_wiki_links(content)
+    missing = []
+    for link in links:
+        # Check if page exists (don't follow redirects for this check)
+        exists = mochi.db.exists("select 1 from pages where wiki=? and page=? and deleted=0", wiki, link)
+        if not exists:
+            # Also check if it's a valid redirect
+            is_redirect = mochi.db.exists("select 1 from redirects where wiki=? and source=?", wiki, link)
+            if not is_redirect:
+                missing.append(link)
+    return missing
+
 # Helper: Create a revision for a page
 def create_revision(page, title, content, author, name, version, comment):
     id = mochi.uid()
@@ -450,7 +511,8 @@ def action_create(a):
         mochi.access.allow("+", resource, "edit", creator)
     mochi.access.allow(creator, resource, "*", creator)
 
-    return {"data": {"id": entity, "name": name}}
+    fingerprint = mochi.entity.fingerprint(entity, False)
+    return {"data": {"id": entity, "name": name, "home": "home", "fingerprint": fingerprint}}
 
 # Join an existing remote wiki by creating a local copy
 def action_join(a):
@@ -488,8 +550,8 @@ def action_join(a):
     # Get the wiki name from the sync response
     name = dump.get("name") or "Joined Wiki"
 
-    # Create a new local entity for this wiki
-    entity = mochi.entity.create("wiki", name, "public", "")
+    # Create a new local entity for this wiki (private so it's not added to directory)
+    entity = mochi.entity.create("wiki", name, "private", "")
     if not entity:
         a.error(500, "Failed to create wiki entity")
         return
@@ -509,13 +571,14 @@ def action_join(a):
     mochi.access.allow("+", resource, "edit", creator)
     mochi.access.allow(creator, resource, "*", creator)
 
-    # Subscribe to the source wiki to receive updates
+    # Register as a replica with the source wiki to receive updates
     mochi.message.send(
-        {"from": entity, "to": source, "service": "wikis", "event": "subscribe"},
+        {"from": entity, "to": source, "service": "wikis", "event": "replicate"},
         {"name": name}
     )
 
-    return {"data": {"id": entity, "name": name, "source": source, "message": "Wiki joined successfully"}}
+    fingerprint = mochi.entity.fingerprint(entity, False)
+    return {"data": {"id": entity, "name": name, "source": source, "fingerprint": fingerprint, "home": dump.get("home") or "home", "message": "Wiki joined successfully"}}
 
 # Add a bookmark to follow an external wiki without making a local copy
 def action_bookmark_add(a):
@@ -862,8 +925,12 @@ def action_info_entity(a):
     else:
         permissions = {"view": True, "edit": False, "delete": False, "manage": False}
 
-    # Get fingerprint with hyphens for display
+    # Get fingerprint - with hyphens for display, without for URLs
     fp = mochi.entity.fingerprint(wiki["id"], True)
+    fp_url = mochi.entity.fingerprint(wiki["id"], False)
+
+    # Add fingerprint to wiki object for URL generation
+    wiki = dict(wiki, fingerprint=fp_url)
 
     # Also include all wikis and bookmarks for sidebar display
     # Add fingerprint (without hyphens) to each for shorter URLs
@@ -926,6 +993,9 @@ def action_page(a):
     tags = mochi.db.rows("select tag from tags where page=?", page["id"])
     taglist = [t["tag"] for t in tags]
 
+    # Find links to non-existent pages (for red link styling)
+    missing_links = find_missing_links(wiki["id"], page["content"])
+
     return {"data": {
         "page": {
             "id": page["id"],
@@ -937,7 +1007,8 @@ def action_page(a):
             "updated": page["updated"],
             "version": page["version"],
             "tags": taglist
-        }
+        },
+        "missing_links": missing_links
     }}
 
 # Edit a page (create or update)
@@ -1136,18 +1207,28 @@ def action_new(a):
     source = wiki.get("source")
 
     # Check if page already exists
-    existing = mochi.db.row("select id from pages where wiki=? and page=?", wiki["id"], slug)
-    if existing:
+    existing = mochi.db.row("select id, deleted, version from pages where wiki=? and page=?", wiki["id"], slug)
+    if existing and not existing["deleted"]:
         a.error(409, "Page already exists")
         return
 
-    # Create the page locally
+    # Create or restore the page
     now = mochi.time.now()
-    id = mochi.uid()
 
-    mochi.db.execute("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
-        id, wiki["id"], slug, title, content, author, now, now)
-    create_revision(id, title, content, author, name, 1, "Initial creation")
+    if existing and existing["deleted"]:
+        # Restore deleted page with new content
+        id = existing["id"]
+        version = existing["version"] + 1
+        mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=?, deleted=0 where id=?",
+            title, content, author, now, version, id)
+        create_revision(id, title, content, author, name, version, "Page restored")
+    else:
+        # Create new page
+        id = mochi.uid()
+        version = 1
+        mochi.db.execute("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
+            id, wiki["id"], slug, title, content, author, now, now)
+        create_revision(id, title, content, author, name, 1, "Initial creation")
 
     # Notify: source broadcasts to replicas, replica notifies source
     event_data = {
@@ -1158,7 +1239,7 @@ def action_new(a):
         "author": author,
         "name": name,
         "created": now,
-        "version": 1
+        "version": version
     }
     if source:
         mochi.message.send(
@@ -2585,10 +2666,11 @@ def event_replicate(e):
     if not wiki:
         return
 
-    # Get the replica's entity ID from message header
+    # Get the replica's entity ID and peer from message header
     replica = e.header("from")
     if not replica:
         return
+    peer = e.header("peer") or ""
 
     # Get optional name from content
     name = e.content("name") or ""
@@ -2597,10 +2679,10 @@ def event_replicate(e):
 
     # Use UPSERT to handle concurrent replicate requests atomically
     # New replica: set subscribed to now, seen and synced to 0
-    # Existing replica: update name only (don't reset timestamps)
-    mochi.db.execute("""insert into replicas (wiki, id, name, subscribed, seen, synced) values (?, ?, ?, ?, 0, 0)
-        on conflict(wiki, id) do update set name=excluded.name""",
-        wiki, replica, name, now)
+    # Existing replica: update name and peer (don't reset timestamps)
+    mochi.db.execute("""insert into replicas (wiki, id, name, peer, subscribed, seen, synced) values (?, ?, ?, ?, ?, 0, 0)
+        on conflict(wiki, id) do update set name=excluded.name, peer=excluded.peer""",
+        wiki, replica, name, peer, now)
 
 # Handle unreplication notification - remove replica and revoke access
 def event_unreplicate(e):
@@ -3058,16 +3140,10 @@ def import_sync_dump(wiki, dump):
         mochi.db.execute("update wikis set name=?, home=? where id=?",
             name or "", home or "home", wiki)
 
-    # Import attachments (store with local wiki as object, remote as entity for fetching)
-    attachments = dump.get("attachments") or []
-    source = dump.get("source", "")  # Remote wiki entity ID for on-demand fetching
-    for att in attachments:
-        mochi.db.execute("""replace into _attachments
-            (id, object, entity, name, size, content_type, creator, caption, description, rank, created)
-            values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            att.get("id"), wiki, source, att.get("name", ""),
-            att.get("size", 0), att.get("content_type") or att.get("type", ""), att.get("creator", ""),
-            att.get("caption", ""), att.get("description", ""), att.get("rank", 0), att.get("created", 0))
+    # Fetch attachment metadata from remote wiki for on-demand fetching
+    source = dump.get("source", "")
+    if source:
+        mochi.attachment.fetch(wiki, source)
 
     return True
 
