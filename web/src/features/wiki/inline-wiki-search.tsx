@@ -9,6 +9,7 @@ interface DirectoryEntry {
   id: string
   name: string
   fingerprint: string
+  location?: string
 }
 
 interface SearchResponse {
@@ -63,11 +64,11 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
   const handleSubscribe = async (wiki: DirectoryEntry) => {
     setPendingWikiId(wiki.id)
     try {
-      await wikisRequest.post(endpoints.wiki.subscribe, { wiki: wiki.id })
+      await wikisRequest.post(endpoints.wiki.subscribe, { target: wiki.id, server: wiki.location || undefined })
       onRefresh?.()
       void navigate({ to: '/$wikiId/$page', params: { wikiId: wiki.fingerprint || wiki.id, page: 'home' } })
     } catch (error) {
-      toast.error('Failed to join wiki', {
+      toast.error('Failed to subscribe', {
         description: error instanceof Error ? error.message : 'Unknown error',
       })
       setPendingWikiId(null)
@@ -137,7 +138,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
                     {isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      'Join'
+                      'Subscribe'
                     )}
                   </Button>
                 </div>

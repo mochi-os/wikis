@@ -1,6 +1,6 @@
-import { createFileRoute, Link, Navigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { usePage } from '@/hooks/use-wiki'
+import { createFileRoute, Link, Navigate, useNavigate } from '@tanstack/react-router'
+import { useCallback, useEffect, useState } from 'react'
+import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
 import {
   Button,
   DropdownMenu,
@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   usePageTitle,
+  toast,
 } from '@mochi/common'
 import {
   PageView,
@@ -32,6 +33,7 @@ export const Route = createFileRoute('/_authenticated/$page/')({
 function WikiPageRoute() {
   const params = Route.useParams()
   const slug = params.page ?? ''
+  const navigate = useNavigate()
 
   // If page param is empty, redirect to wiki home
   if (!slug) {
@@ -41,6 +43,7 @@ function WikiPageRoute() {
   const { data, isLoading, error } = usePage(slug)
   const { info } = useWikiContext()
   const permissions = usePermissions()
+  const unsubscribeWiki = useUnsubscribeWiki()
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(pageTitle)
 
@@ -61,6 +64,22 @@ function WikiPageRoute() {
 
   // Rename dialog state (controlled mode so menu closes when dialog opens)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+
+  // Unsubscribe handler
+  const handleUnsubscribe = useCallback(() => {
+    unsubscribeWiki.mutate(undefined, {
+      onSuccess: () => {
+        toast.success('Unsubscribed')
+        void navigate({ to: '/' })
+      },
+      onError: () => {
+        toast.error('Failed to unsubscribe')
+      },
+    })
+  }, [unsubscribeWiki, navigate])
+
+  // Can unsubscribe if viewing wiki but not owner/manager
+  const canUnsubscribe = !permissions.manage
 
   if (isLoading) {
     return (
@@ -145,72 +164,83 @@ function WikiPageRoute() {
   // Page found
   if (data && 'page' in data && typeof data.page === 'object') {
     const actionsMenu = (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Ellipsis className="size-4" />
+      <div className="flex items-center gap-2">
+        {canUnsubscribe && (
+          <Button
+            variant="outline"
+            onClick={handleUnsubscribe}
+            disabled={unsubscribeWiki.isPending}
+          >
+            {unsubscribeWiki.isPending ? 'Unsubscribing...' : 'Unsubscribe'}
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Page</DropdownMenuLabel>
-          {permissions.edit && (
+        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Ellipsis className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Page</DropdownMenuLabel>
+            {permissions.edit && (
+              <DropdownMenuItem asChild>
+                <Link to="/$page/edit" params={{ page: slug }}>
+                  <Pencil className="size-4" />
+                  Edit
+                </Link>
+              </DropdownMenuItem>
+            )}
+            {permissions.edit && (
+              <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
+                <FileEdit className="size-4" />
+                Rename
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem asChild>
-              <Link to="/$page/edit" params={{ page: slug }}>
-                <Pencil className="size-4" />
-                Edit
+              <Link to="/$page/history" params={{ page: slug }}>
+                <History className="size-4" />
+                History
               </Link>
             </DropdownMenuItem>
-          )}
-          {permissions.edit && (
-            <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
-              <FileEdit className="size-4" />
-              Rename
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem asChild>
-            <Link to="/$page/history" params={{ page: slug }}>
-              <History className="size-4" />
-              History
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel>Wiki</DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <Link to="/search">
-              <Search className="size-4" />
-              Search
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/tags">
-              <Tags className="size-4" />
-              Tags
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/changes">
-              <History className="size-4" />
-              Recent changes
-            </Link>
-          </DropdownMenuItem>
-          {permissions.edit && (
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Wiki</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link to="/new">
-                <FilePlus className="size-4" />
-                New page
+              <Link to="/search">
+                <Search className="size-4" />
+                Search
               </Link>
             </DropdownMenuItem>
-          )}
-          {permissions.manage && (
             <DropdownMenuItem asChild>
-              <Link to="/settings">
-                <Settings className="size-4" />
-                Settings
+              <Link to="/tags">
+                <Tags className="size-4" />
+                Tags
               </Link>
             </DropdownMenuItem>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+            <DropdownMenuItem asChild>
+              <Link to="/changes">
+                <History className="size-4" />
+                Recent changes
+              </Link>
+            </DropdownMenuItem>
+            {permissions.edit && (
+              <DropdownMenuItem asChild>
+                <Link to="/new">
+                  <FilePlus className="size-4" />
+                  New page
+                </Link>
+              </DropdownMenuItem>
+            )}
+            {permissions.manage && (
+              <DropdownMenuItem asChild>
+                <Link to="/settings">
+                  <Settings className="size-4" />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     )
 
     return (
@@ -219,7 +249,7 @@ function WikiPageRoute() {
           <PageHeader page={data.page} actions={actionsMenu} />
         </Header>
         <Main className="pt-2">
-          <PageView page={data.page} />
+          <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
         </Main>
         <RenamePageDialog
           slug={slug}

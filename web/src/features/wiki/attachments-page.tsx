@@ -15,10 +15,14 @@ import {
   ArrowLeft,
   X,
   Image,
+  ExternalLink,
 } from 'lucide-react'
 import {
   Button,
   getApiBasepath,
+  ImageLightbox,
+  type LightboxMedia,
+  useLightboxHash,
   Input,
   Skeleton,
   Separator,
@@ -105,10 +109,11 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
   }, [attachments, searchQuery, filterType, sortBy])
 
   const handleUpload = (files: FileList | File[]) => {
-    if (files.length > 0) {
-      uploadMutation.mutate(Array.from(files), {
+    const fileArray = Array.from(files)
+    if (fileArray.length > 0) {
+      uploadMutation.mutate(fileArray, {
         onSuccess: () => {
-          toast.success(`${files.length} file(s) uploaded`)
+          toast.success(`${fileArray.length} file(s) uploaded`)
         },
         onError: (error) => {
           toast.error(getErrorMessage(error, 'Failed to upload files'))
@@ -173,6 +178,31 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
 
   const imageCount = attachments.filter((a) => isImage(a.type)).length
   const documentCount = attachments.length - imageCount
+
+  // Build lightbox media from filtered image attachments
+  const imageAttachments = filteredAttachments.filter((a) => isImage(a.type))
+  const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({
+    id: a.id,
+    name: a.name,
+    url: getAttachmentUrl(a.id),
+    type: 'image' as const,
+  }))
+
+  const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } =
+    useLightboxHash(lightboxMedia)
+
+  // Map image attachment ID to lightbox index for click handling
+  const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i]))
+
+  const handleOpen = (attachment: Attachment) => {
+    const index = imageLightboxIndex.get(attachment.id)
+    if (index !== undefined) {
+      openLightbox(index)
+    } else {
+      // Non-image: open in new tab
+      window.open(getAttachmentUrl(attachment.id), '_blank')
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -330,6 +360,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
                 isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id}
                 onCopy={handleCopy}
                 onDelete={handleDelete}
+                onOpen={handleOpen}
               />
             ))}
           </div>
@@ -343,11 +374,20 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
                 isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id}
                 onCopy={handleCopy}
                 onDelete={handleDelete}
+                onOpen={handleOpen}
               />
             ))}
           </div>
         )}
       </div>
+
+      <ImageLightbox
+        images={lightboxMedia}
+        currentIndex={currentIndex}
+        open={lightboxOpen}
+        onOpenChange={(isOpen) => !isOpen && closeLightbox()}
+        onIndexChange={setCurrentIndex}
+      />
     </div>
   )
 }
@@ -358,6 +398,7 @@ interface AttachmentItemProps {
   isDeleting: boolean
   onCopy: (attachment: Attachment) => void
   onDelete: (attachment: Attachment) => void
+  onOpen: (attachment: Attachment) => void
 }
 
 function AttachmentGridItem({
@@ -366,23 +407,29 @@ function AttachmentGridItem({
   isDeleting,
   onCopy,
   onDelete,
+  onOpen,
 }: AttachmentItemProps) {
   const FileIcon = getFileIcon(attachment.type)
+  const attachmentUrl = getAttachmentUrl(attachment.id)
 
   return (
     <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors">
-      {/* Preview */}
-      <div className="bg-muted flex aspect-square items-center justify-center overflow-hidden">
+      {/* Preview - clickable to open lightbox (images) or new tab (files) */}
+      <button
+        type="button"
+        onClick={() => onOpen(attachment)}
+        className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden"
+      >
         {isImage(attachment.type) ? (
           <img
-            src={`${getAttachmentUrl(attachment.id)}/thumbnail`}
+            src={`${attachmentUrl}/thumbnail`}
             alt={attachment.name}
             className="h-full w-full object-cover"
           />
         ) : (
           <FileIcon className="text-muted-foreground h-12 w-12" />
         )}
-      </div>
+      </button>
 
       {/* Info */}
       <div className="p-3">
@@ -394,12 +441,15 @@ function AttachmentGridItem({
         </p>
       </div>
 
-      {/* Actions overlay */}
-      <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+      {/* Actions overlay - clicking background opens attachment, buttons stop propagation */}
+      <div
+        className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+        onClick={() => onOpen(attachment)}
+      >
         <Button
           variant="secondary"
           size="icon"
-          onClick={() => onCopy(attachment)}
+          onClick={(e) => { e.stopPropagation(); onCopy(attachment) }}
           title="Copy markdown"
         >
           {copiedId === attachment.id ? (
@@ -411,7 +461,7 @@ function AttachmentGridItem({
         <Button
           variant="secondary"
           size="icon"
-          onClick={() => onDelete(attachment)}
+          onClick={(e) => { e.stopPropagation(); onDelete(attachment) }}
           disabled={isDeleting}
           title="Delete"
         >
@@ -432,27 +482,39 @@ function AttachmentListItem({
   isDeleting,
   onCopy,
   onDelete,
+  onOpen,
 }: AttachmentItemProps) {
   const FileIcon = getFileIcon(attachment.type)
+  const attachmentUrl = getAttachmentUrl(attachment.id)
 
   return (
     <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors">
-      {/* Icon/Preview */}
-      <div className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded">
+      {/* Icon/Preview - clickable */}
+      <button
+        type="button"
+        onClick={() => onOpen(attachment)}
+        className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded"
+      >
         {isImage(attachment.type) ? (
           <img
-            src={`${getAttachmentUrl(attachment.id)}/thumbnail`}
+            src={`${attachmentUrl}/thumbnail`}
             alt=""
             className="h-16 w-16 rounded object-cover"
           />
         ) : (
           <FileIcon className="text-muted-foreground h-8 w-8" />
         )}
-      </div>
+      </button>
 
       {/* Info */}
       <div className="min-w-0 flex-1">
-        <p className="truncate font-medium">{attachment.name}</p>
+        <button
+          type="button"
+          onClick={() => onOpen(attachment)}
+          className="truncate font-medium hover:underline"
+        >
+          {attachment.name}
+        </button>
         <p className="text-muted-foreground text-sm">
           {formatFileSize(attachment.size)} &middot;{' '}
           {format(new Date(attachment.created * 1000), 'PPp')}
@@ -461,6 +523,14 @@ function AttachmentListItem({
 
       {/* Actions */}
       <div className="flex gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onOpen(attachment)}
+          title="Open"
+        >
+          <ExternalLink className="h-4 w-4" />
+        </Button>
         <Button
           variant="ghost"
           size="icon"

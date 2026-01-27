@@ -36,7 +36,7 @@ function JoinWikiPage() {
       toast.error('Wiki ID is required')
       return
     }
-    joinWiki.mutate(target.trim(), {
+    joinWiki.mutate({ target: target.trim() }, {
       onSuccess: () => {
         toast.success('Joined wiki')
         navigate({ to: '/' })
@@ -111,7 +111,7 @@ function JoinWikiPage() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={joinWiki.isPending || !target.trim()}>
+                  <Button variant="outline" type="submit" disabled={joinWiki.isPending || !target.trim()}>
                     <Link2 className="mr-2 h-4 w-4" />
                     {joinWiki.isPending ? 'Replicating...' : 'Replicate wiki'}
                   </Button>

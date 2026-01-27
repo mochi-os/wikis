@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@mochi/common'
-import { Ellipsis, FileEdit, FilePlus, History, Pencil, Search, Settings, Tags } from 'lucide-react'
+import { Ellipsis, FileEdit, FilePlus, History, Pencil, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import {
   PageView,
   PageNotFound,
@@ -161,7 +161,7 @@ function WikiPageRoute() {
           </div>
         </Header>
         <Main>
-          <PageNotFound slug={slug} />
+          <PageNotFound slug={slug} wikiId={wikiId} />
         </Main>
       </>
     )
@@ -198,6 +198,14 @@ function WikiPageRoute() {
               History
             </Link>
           </DropdownMenuItem>
+          {permissions.edit && (
+            <DropdownMenuItem asChild>
+              <Link to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
+                <Trash2 className="size-4" />
+                Delete
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Wiki</DropdownMenuLabel>
           <DropdownMenuItem asChild>
@@ -244,11 +252,12 @@ function WikiPageRoute() {
           <PageHeader page={data.page} actions={actionsMenu} />
         </Header>
         <Main className="pt-2">
-          <PageView page={data.page} />
+          <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
         </Main>
         <RenamePageDialog
           slug={slug}
           title={data.page.title}
+          wikiId={wikiId}
           open={renameDialogOpen}
           onOpenChange={setRenameDialogOpen}
         />

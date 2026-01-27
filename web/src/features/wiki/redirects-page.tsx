@@ -61,11 +61,6 @@ export function RedirectsPage() {
         <AddRedirectDialog />
       </div>
 
-      <p className="text-muted-foreground">
-        Manage URL redirects for your wiki. Redirects allow old or alternative
-        URLs to point to existing pages.
-      </p>
-
       <Separator />
 
       {/* Redirects table */}

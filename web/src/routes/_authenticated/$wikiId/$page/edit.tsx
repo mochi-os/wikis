@@ -1,12 +1,14 @@
 import { useEffect } from 'react'
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { usePage } from '@/hooks/use-wiki'
-import { usePageTitle } from '@mochi/common'
+import { useQuery } from '@tanstack/react-query'
+import { usePageTitle, requestHelpers } from '@mochi/common'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
 import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useAuthStore } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
+import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/edit')({
   beforeLoad: () => {
@@ -22,9 +24,16 @@ export const Route = createFileRoute('/_authenticated/$wikiId/$page/edit')({
 })
 
 function WikiPageEditRoute() {
-  const params = Route.useParams()
-  const slug = params.page ?? ''
-  const { data, isLoading, error } = usePage(slug)
+  const { wikiId, page: slug } = Route.useParams()
+  const { baseURL } = useWikiBaseURL()
+
+  // Fetch page data using the wiki's base URL (same as view page)
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['wiki', wikiId, 'page', slug],
+    queryFn: () =>
+      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
+    enabled: !!slug,
+  })
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(`Edit: ${pageTitle}`)
 
@@ -65,7 +74,7 @@ function WikiPageEditRoute() {
       <>
         <Header />
         <Main>
-          <PageEditor slug={slug} isNew />
+          <PageEditor slug={slug} isNew wikiId={wikiId} />
         </Main>
       </>
     )
@@ -77,7 +86,7 @@ function WikiPageEditRoute() {
       <>
         <Header />
         <Main>
-          <PageEditor page={data.page} slug={slug} />
+          <PageEditor page={data.page} slug={slug} wikiId={wikiId} />
         </Main>
       </>
     )

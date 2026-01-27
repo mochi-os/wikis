@@ -17,8 +17,9 @@ const isEntityId = (s: string): boolean =>
   /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(s) || /^[1-9A-HJ-NP-Za-km-z]{50,51}$/.test(s)
 
 // Get basepath based on URL context:
-// - Entity context (/<entity>/-/...): basepath is /<entity>/-/ so routes like $page work
+// - Entity context (/<entity>/...): basepath is /<entity> for page routes
 // - Class context (/wikis/...): basepath is /wikis so routes like $wikiId/$page work
+// Note: /-/ prefix is only for API endpoints, not page routes
 const getBasepath = () => {
   const pathname = window.location.pathname
   const match = pathname.match(/^\/([^/]+)/)
@@ -26,9 +27,9 @@ const getBasepath = () => {
 
   const firstSegment = match[1]
 
-  // Entity context: first segment is an entity ID, include /-/ in basepath
+  // Entity context: first segment is an entity ID
   if (isEntityId(firstSegment)) {
-    return `/${firstSegment}/-/`
+    return `/${firstSegment}`
   }
 
   // Class context: just use the app name

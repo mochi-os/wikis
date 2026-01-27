@@ -8,6 +8,7 @@ import {
   Check,
   CornerDownRight,
   Loader2,
+  Minus,
   Pencil,
   Plus,
   RefreshCw,
@@ -88,7 +89,7 @@ const tabs: Tab[] = [
 // Context for wiki-specific settings when accessed via /$wikiId/settings route
 interface WikiSettingsContextValue {
   baseURL: string | null
-  wiki: { id: string; name: string; home: string; fingerprint?: string } | null
+  wiki: { id: string; name: string; home: string; fingerprint?: string; source?: string } | null
   permissions: WikiPermissions
 }
 
@@ -107,7 +108,7 @@ interface WikiSettingsProps {
   onTabChange: (tab: WikiSettingsTabId) => void
   // Optional props for wiki-specific context (used in /$wikiId/settings route)
   baseURL?: string
-  wiki?: { id: string; name: string; home: string; fingerprint?: string }
+  wiki?: { id: string; name: string; home: string; fingerprint?: string; source?: string }
   permissions?: WikiPermissions
 }
 
@@ -118,12 +119,15 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
     permissions: permissions ?? { view: false, edit: false, delete: false, manage: false },
   }
 
+  // Hide Replicas tab for replica wikis (they don't have replicas of their own)
+  const visibleTabs = wiki?.source ? tabs.filter(t => t.id !== 'replicas') : tabs
+
   return (
     <WikiSettingsContext.Provider value={contextValue}>
     <div className="space-y-6">
       {/* Tabs */}
       <div className="flex gap-1 border-b">
-        {tabs.map((tab) => (
+        {visibleTabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
@@ -765,9 +769,6 @@ function ReplicasTab() {
       <Card>
         <CardHeader>
           <CardTitle>Replicas</CardTitle>
-          <CardDescription>
-            Other wikis that replicate content from this wiki.
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-sm">
@@ -782,9 +783,6 @@ function ReplicasTab() {
     <Card>
       <CardHeader>
         <CardTitle>Replicas</CardTitle>
-        <CardDescription>
-          Other wikis that replicate content from this wiki.
-        </CardDescription>
       </CardHeader>
       <CardContent>
         {replicas.length > 0 ? (
@@ -827,7 +825,7 @@ function ReplicasTab() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Remove replica?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            This will stop sending updates to "{replica.name || replica.id.slice(0, 16)}...".
+                            This will stop sending updates to "{replica.name || `${replica.id.slice(0, 16)}...`}".
                             They can replicate again if they want.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
@@ -836,6 +834,7 @@ function ReplicasTab() {
                           <AlertDialogAction
                             onClick={() => void handleRemove(replica.id, replica.name)}
                           >
+                            <Minus className="h-4 w-4" />
                             Remove
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -907,13 +906,7 @@ function RedirectsTab() {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Redirects</CardTitle>
-            <CardDescription>
-              Manage URL redirects for your wiki. Redirects allow old or alternative
-              URLs to point to existing pages.
-            </CardDescription>
-          </div>
+          <CardTitle>Redirects</CardTitle>
           <AddRedirectDialog baseURL={settingsContext.baseURL} onSuccess={loadRedirects} />
         </div>
       </CardHeader>

@@ -1,9 +1,9 @@
 import { Trash2, ArrowLeft } from 'lucide-react'
+import { Link, useNavigate } from '@tanstack/react-router'
 import {
   Button,
   Separator,
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -14,18 +14,25 @@ import {
 import { useDeletePage } from '@/hooks/use-wiki'
 
 interface DeletePageProps {
+  wikiId?: string
   slug: string
   title: string
+  homePage?: string
 }
 
-export function DeletePage({ slug, title }: DeletePageProps) {
+export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePageProps) {
   const deletePage = useDeletePage()
+  const navigate = useNavigate()
 
   const handleDelete = () => {
     deletePage.mutate(slug, {
       onSuccess: () => {
         toast.success(`Page "${title}" deleted`)
-        window.location.href = 'home'
+        if (wikiId) {
+          navigate({ to: '/$wikiId/$page', params: { wikiId, page: homePage } })
+        } else {
+          navigate({ to: '/$page', params: { page: homePage } })
+        }
       },
       onError: (error) => {
         toast.error(getErrorMessage(error, 'Failed to delete page'))
@@ -46,27 +53,28 @@ export function DeletePage({ slug, title }: DeletePageProps) {
             This action can be undone by restoring from history.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">
-            The page will be soft-deleted. Its content and history will be
-            preserved and can be restored later if needed.
-          </p>
-        </CardContent>
         <Separator />
         <CardFooter className="flex justify-between pt-4">
           <Button variant="outline" asChild>
-            <a href={slug}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Cancel
-            </a>
+            {wikiId ? (
+              <Link to="/$wikiId/$page" params={{ wikiId, page: slug }}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Cancel
+              </Link>
+            ) : (
+              <Link to="/$page" params={{ page: slug }}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Cancel
+              </Link>
+            )}
           </Button>
           <Button
-            variant="outline"
+            variant="destructive"
             onClick={handleDelete}
             disabled={deletePage.isPending}
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            {deletePage.isPending ? 'Deleting...' : 'Delete page'}
+            {deletePage.isPending ? 'Deleting...' : 'Delete'}
           </Button>
         </CardFooter>
       </Card>

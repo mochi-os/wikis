@@ -37,13 +37,25 @@ wikisClient.interceptors.request.use((config) => {
   return config
 })
 
+// Unwrap data envelope if present (backend returns {"data": {...}})
+function unwrapData<T>(responseData: unknown): T {
+  if (
+    responseData &&
+    typeof responseData === 'object' &&
+    'data' in responseData
+  ) {
+    return (responseData as { data: T }).data
+  }
+  return responseData as T
+}
+
 export const wikisRequest = {
   get: async <TResponse>(
     url: string,
     config?: Omit<AxiosRequestConfig, 'url' | 'method'>
   ): Promise<TResponse> => {
     const response = await wikisClient.get<TResponse>(url, config)
-    return response.data
+    return unwrapData<TResponse>(response.data)
   },
 
   post: async <TResponse, TBody = unknown>(
@@ -52,7 +64,7 @@ export const wikisRequest = {
     config?: Omit<AxiosRequestConfig<TBody>, 'url' | 'method' | 'data'>
   ): Promise<TResponse> => {
     const response = await wikisClient.post<TResponse>(url, data, config)
-    return response.data
+    return unwrapData<TResponse>(response.data)
   },
 }
 

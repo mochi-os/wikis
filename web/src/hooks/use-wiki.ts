@@ -27,6 +27,7 @@ import type {
 } from '@/types/wiki'
 import endpoints from '@/api/endpoints'
 import { requestHelpers } from '@mochi/common'
+import { wikisRequest } from '@/api/request'
 
 // Wiki info
 
@@ -42,7 +43,8 @@ export interface WikiInfoResponse {
 export function useWikiInfo() {
   return useQuery({
     queryKey: ['wiki', 'info'],
-    queryFn: () => requestHelpers.get<WikiInfoResponse>(endpoints.wiki.info),
+    // Use wikisRequest to always fetch from class level (app path)
+    queryFn: () => wikisRequest.get<WikiInfoResponse>(endpoints.wiki.info),
   })
 }
 
@@ -303,9 +305,15 @@ interface DeleteWikiResponse {
 }
 
 export function useDeleteWiki() {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: () =>
       requestHelpers.post<DeleteWikiResponse>(endpoints.wiki.delete, {}),
+    onSuccess: async () => {
+      // Fetch fresh data from class-level endpoint and update cache
+      const freshData = await wikisRequest.get<WikiInfoResponse>(endpoints.wiki.info)
+      queryClient.setQueryData(['wiki', 'info'], freshData)
+    },
   })
 }
 
@@ -536,7 +544,8 @@ export function useCreateWiki() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: { name: string; privacy?: string }) =>
-      requestHelpers.post<CreateWikiResponse>(endpoints.wiki.create, data),
+      // Use wikisRequest to ensure class-level action is called even when in entity context
+      wikisRequest.post<CreateWikiResponse>(endpoints.wiki.create, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },
@@ -548,6 +557,8 @@ export function useCreateWiki() {
 interface JoinWikiResponse {
   id: string
   name: string
+  fingerprint: string
+  home: string
   message: string
 }
 

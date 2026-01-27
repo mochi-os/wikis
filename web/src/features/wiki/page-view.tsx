@@ -12,13 +12,14 @@ import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 
 interface PageViewProps {
   page: WikiPage
+  missingLinks?: string[]
 }
 
-export function PageView({ page }: PageViewProps) {
+export function PageView({ page, missingLinks }: PageViewProps) {
   return (
     <article className="space-y-4">
       <Separator />
-      <MarkdownContent content={page.content} />
+      <MarkdownContent content={page.content} missingLinks={missingLinks} />
       <Separator />
       <div className="flex items-center justify-between gap-4">
         <TagManager slug={page.slug} tags={page.tags} />
@@ -32,14 +33,18 @@ export function PageView({ page }: PageViewProps) {
 
 interface PageNotFoundProps {
   slug: string
+  wikiId?: string
 }
 
-export function PageNotFound({ slug }: PageNotFoundProps) {
+export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
   // Get permissions from WikiContext (entity context) or WikiBaseURLContext ($wikiId context)
   const wikiContextPermissions = usePermissions()
   const wikiBaseURLContext = useWikiBaseURLOptional()
   const permissions = wikiBaseURLContext?.permissions ?? wikiContextPermissions
-  const wikiId = wikiBaseURLContext?.wiki?.fingerprint ?? wikiBaseURLContext?.wiki?.id
+
+  // Only use wikiId routes if explicitly passed (class context like /wikis/$wikiId/...)
+  // In entity context (/<entity>/...), the basepath already includes the entity, so use $page routes
+  const wikiId = wikiIdProp
 
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">

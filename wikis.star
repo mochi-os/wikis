@@ -2970,20 +2970,24 @@ def event_attachment_upload_request(e):
 # Source fetches the file from replica via stream and saves locally
 def event_attachment_create(e):
     wiki = e.header("to")
+    mochi.log.info("attachment/create: to=%s", wiki)
     if not wiki:
+        mochi.log.info("attachment/create: no wiki header, returning")
         return
 
     # Verify wiki exists and is a source wiki (not a replica)
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        mochi.log.info("attachment/create: wiki not found in db")
         return
 
     if wikirow.get("source"):
-        # This wiki is itself a replica, ignore
+        mochi.log.info("attachment/create: wiki is replica, ignoring")
         return
 
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
+        mochi.log.info("attachment/create: sender %s not valid", sender)
         return
 
     # Get attachment metadata from event content
@@ -2994,30 +2998,45 @@ def event_attachment_create(e):
     created = e.content("created")
     replica = e.content("replica")
 
+    mochi.log.info("attachment/create: id=%s name=%s replica=%s", attachment_id, name, replica)
+
     if not attachment_id or not name or not replica:
+        mochi.log.info("attachment/create: missing required fields")
         return
 
     # Validate timestamp is within reasonable range (not more than 1 day in future or 1 year in past)
     if created:
         now = mochi.time.now()
         if created > now + 86400 or created < now - 31536000:
+            mochi.log.info("attachment/create: timestamp out of range: %s", created)
             return
 
     # Check if we already have this attachment
     if mochi.attachment.exists(attachment_id):
-        mochi.log.debug("Attachment %s already exists, skipping", attachment_id)
+        mochi.log.info("attachment/create: attachment %s already exists, skipping", attachment_id)
         return
 
     mochi.log.info("Fetching attachment %s from replica %s", attachment_id, replica)
 
+    # Look up peer for the replica (private entities can't be resolved via directory)
+    replica_row = mochi.db.row("select peer from replicas where wiki=? and id=?", wiki, replica)
+    peer = replica_row["peer"] if replica_row else ""
+
     # Open stream to replica to fetch the file data
-    stream = mochi.stream(
-        {"from": wiki, "to": replica, "service": "wikis", "event": "attachment/fetch"},
-        {"id": attachment_id}
-    )
+    if peer:
+        stream = mochi.stream.peer(
+            peer,
+            {"from": wiki, "to": replica, "service": "wikis", "event": "attachment/fetch"},
+            {"id": attachment_id}
+        )
+    else:
+        stream = mochi.stream(
+            {"from": wiki, "to": replica, "service": "wikis", "event": "attachment/fetch"},
+            {"id": attachment_id}
+        )
 
     if not stream:
-        mochi.log.error("Failed to open stream to replica %s", replica)
+        mochi.log.error("Failed to open stream to replica %s (peer=%s)", replica, peer)
         return
 
     # Read response status first
@@ -3211,7 +3230,7 @@ def action_sync(a):
 
     # Subscribe to the source wiki for future updates
     mochi.message.send(
-        {"from": wiki["id"], "to": target, "service": "wikis", "event": "subscribe"},
+        {"from": wiki["id"], "to": target, "service": "wikis", "event": "replicate"},
         {"name": wiki.get("name") or ""}
     )
 
@@ -3230,8 +3249,16 @@ def action_attachments(a):
         a.error(403, "Access denied")
         return
 
-    attachments = mochi.attachment.list(wiki["id"])
-    return {"data": {"attachments": attachments or []}}
+    # For replica wikis, list attachments from both source and local entity
+    source = wiki.get("source")
+    attachments = list(mochi.attachment.list(wiki["id"]) or [])
+    if source and source != wiki["id"]:
+        source_attachments = mochi.attachment.list(source) or []
+        existing = {a["id"]: True for a in attachments}
+        for sa in source_attachments:
+            if sa["id"] not in existing:
+                attachments.append(sa)
+    return {"data": {"attachments": attachments}}
 
 # Upload an attachment
 def action_attachment_upload(a):

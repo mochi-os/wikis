@@ -1,20 +1,30 @@
 import { useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { usePage, usePageHistory } from '@/hooks/use-wiki'
-import { usePageTitle } from '@mochi/common'
+import { useQuery } from '@tanstack/react-query'
+import { usePageHistory } from '@/hooks/use-wiki'
+import { usePageTitle, requestHelpers } from '@mochi/common'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
 import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
+import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/history/')({
   component: PageHistoryRoute,
 })
 
 function PageHistoryRoute() {
-  const params = Route.useParams()
-  const slug = params.page ?? ''
-  const { data: pageData } = usePage(slug)
+  const { wikiId, page: slug } = Route.useParams()
+  const { baseURL } = useWikiBaseURL()
+
+  // Fetch page data using the wiki's base URL
+  const { data: pageData } = useQuery({
+    queryKey: ['wiki', wikiId, 'page', slug],
+    queryFn: () =>
+      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
+    enabled: !!slug,
+  })
   const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
   usePageTitle(`History: ${pageTitle}`)
   const { data, isLoading, error } = usePageHistory(slug)

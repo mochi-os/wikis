@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { FileEdit } from 'lucide-react'
 import {
   Button,
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -20,19 +20,27 @@ import { useRenamePage } from '@/hooks/use-wiki'
 interface RenamePageDialogProps {
   slug: string
   title: string
+  wikiId?: string
   trigger?: React.ReactNode
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
 
-export function RenamePageDialog({ slug, title, trigger, open: controlledOpen, onOpenChange }: RenamePageDialogProps) {
+export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: controlledOpen, onOpenChange }: RenamePageDialogProps) {
+  const navigate = useNavigate()
   const [internalOpen, setInternalOpen] = useState(false)
   const open = controlledOpen ?? internalOpen
   const setOpen = onOpenChange ?? setInternalOpen
   const [newSlug, setNewSlug] = useState(slug)
-  const [renameChildren, setRenameChildren] = useState(true)
   const [createRedirects, setCreateRedirects] = useState(false)
   const renamePage = useRenamePage()
+
+  // Reset newSlug when dialog opens or slug changes
+  useEffect(() => {
+    if (open) {
+      setNewSlug(slug)
+    }
+  }, [open, slug])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,7 +57,6 @@ export function RenamePageDialog({ slug, title, trigger, open: controlledOpen, o
       {
         slug,
         newSlug: newSlug.trim(),
-        children: renameChildren,
         redirects: createRedirects,
       },
       {
@@ -63,7 +70,12 @@ export function RenamePageDialog({ slug, title, trigger, open: controlledOpen, o
           toast.success(message)
           setOpen(false)
           // Navigate to new URL
-          window.location.href = newSlug.trim()
+          const targetSlug = newSlug.trim()
+          if (wikiId) {
+            navigate({ to: '/$wikiId/$page', params: { wikiId, page: targetSlug } })
+          } else {
+            navigate({ to: '/$page', params: { page: targetSlug } })
+          }
         },
         onError: (error) => {
           toast.error(getErrorMessage(error, 'Failed to rename page'))
@@ -77,9 +89,6 @@ export function RenamePageDialog({ slug, title, trigger, open: controlledOpen, o
       <form onSubmit={handleSubmit}>
         <DialogHeader>
           <DialogTitle>Rename page</DialogTitle>
-          <DialogDescription>
-            Change the URL for "{title}". Links to this page will be updated automatically.
-          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
@@ -90,19 +99,6 @@ export function RenamePageDialog({ slug, title, trigger, open: controlledOpen, o
               onChange={(e) => setNewSlug(e.target.value)}
               placeholder="new-page-url"
             />
-            <p className="text-sm text-muted-foreground">
-              Use lowercase letters, numbers, hyphens, and slashes
-            </p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="renameChildren"
-              checked={renameChildren}
-              onCheckedChange={(checked) => setRenameChildren(checked === true)}
-            />
-            <Label htmlFor="renameChildren" className="font-normal">
-              Rename child pages
-            </Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -111,7 +107,7 @@ export function RenamePageDialog({ slug, title, trigger, open: controlledOpen, o
               onCheckedChange={(checked) => setCreateRedirects(checked === true)}
             />
             <Label htmlFor="createRedirects" className="font-normal">
-              Create redirect from old links
+              Create redirect from old URL
             </Label>
           </div>
         </div>

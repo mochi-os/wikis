@@ -1,21 +1,30 @@
 import { useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { usePage } from '@/hooks/use-wiki'
-import { usePageTitle } from '@mochi/common'
+import { useQuery } from '@tanstack/react-query'
+import { usePageTitle, requestHelpers } from '@mochi/common'
 import { DeletePage } from '@/features/wiki/delete-page'
 import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { Skeleton } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
+import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/delete')({
   component: DeletePageRoute,
 })
 
 function DeletePageRoute() {
-  const params = Route.useParams()
-  const slug = params.page ?? ''
-  const { data, isLoading, error } = usePage(slug)
+  const { wikiId, page: slug } = Route.useParams()
+  const { baseURL, wiki } = useWikiBaseURL()
+
+  // Fetch page data using the wiki's base URL
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['wiki', wikiId, 'page', slug],
+    queryFn: () =>
+      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
+    enabled: !!slug,
+  })
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(`Delete: ${pageTitle}`)
 
@@ -72,7 +81,7 @@ function DeletePageRoute() {
       <>
         <Header />
         <Main>
-          <DeletePage slug={slug} title={data.page.title} />
+          <DeletePage wikiId={wikiId} slug={slug} title={data.page.title} homePage={wiki.home} />
         </Main>
       </>
     )

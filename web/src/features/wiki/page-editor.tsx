@@ -29,6 +29,7 @@ interface PageEditorProps {
   page?: WikiPage
   slug: string
   isNew?: boolean
+  wikiId?: string
 }
 
 // Build attachment URL using API basepath
@@ -36,13 +37,29 @@ function getAttachmentUrl(id: string): string {
   return `${getApiBasepath()}attachments/${id}`
 }
 
-export function PageEditor({ page, slug, isNew = false }: PageEditorProps) {
+export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: PageEditorProps) {
   const navigate = useNavigate()
   const editPage = useEditPage()
   const createPage = useCreatePage()
   const permissions = usePermissions()
   const wikiContext = useWikiBaseURLOptional()
-  const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
+
+  // Determine wikiId from multiple sources for robust routing:
+  // 1. Explicit prop (from route params)
+  // 2. Context (WikiBaseURLContext)
+  // 3. URL path (class context like /wikis/$wikiId/...)
+  let wikiId = wikiIdProp ?? wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
+
+  // If still no wikiId, try to extract from URL for class context
+  if (!wikiId) {
+    const pathname = window.location.pathname
+    // Check if we're in class context: /wikis/<wikiId>/...
+    const classContextMatch = pathname.match(/^\/wikis\/([^/]+)\//)
+    if (classContextMatch) {
+      wikiId = classContextMatch[1]
+    }
+  }
+
 
   const [title, setTitle] = useState(page?.title ?? '')
   const [content, setContent] = useState(page?.content ?? '')

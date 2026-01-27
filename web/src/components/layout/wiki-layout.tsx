@@ -64,6 +64,9 @@ function WikiLayoutInner() {
     searchDialogOpen,
     openSearchDialog,
     closeSearchDialog,
+    createDialogOpen,
+    openCreateDialog,
+    closeCreateDialog,
   } = useSidebarContext()
   const { info } = useWikiContext()
   const navigate = useNavigate()
@@ -75,7 +78,6 @@ function WikiLayoutInner() {
     navigate({ to: '/' })
   }, [queryClient, navigate])
   const [bookmarkTarget, setBookmarkTarget] = useState('')
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const addBookmark = useAddBookmark()
   const joinWiki = useJoinWiki()
   const createWiki = useCreateWiki()
@@ -93,26 +95,38 @@ function WikiLayoutInner() {
   })
   const recommendations = recommendationsData?.wikis ?? []
 
-  // Set of owned/bookmarked wiki IDs for search dialog
+  // Set of owned/bookmarked wiki IDs for search dialog (includes source for joined wikis)
   const subscribedWikiIds = useMemo(
     () => new Set([
-      ...(info?.wikis || []).flatMap((w) => [w.id, w.fingerprint].filter((x): x is string => !!x)),
+      ...(info?.wikis || []).flatMap((w) => [w.id, w.fingerprint, w.source].filter((x): x is string => !!x)),
       ...(info?.bookmarks || []).flatMap((b) => [b.id, b.fingerprint].filter((x): x is string => !!x)),
     ]),
     [info?.wikis, info?.bookmarks]
   )
 
-  const handleSearchSubscribe = async (wikiId: string) => {
+  const handleSearchSubscribe = async (wikiId: string, entity?: { location?: string; fingerprint?: string }) => {
     return new Promise<void>((resolve, reject) => {
-      joinWiki.mutate(wikiId, {
-        onSuccess: () => {
-          closeSearchDialog()
-          // Navigate to the wiki to show its content
-          navigate({ to: '/$wikiId', params: { wikiId } })
-          resolve()
-        },
+      const onSuccess = (data: { fingerprint: string; home: string }) => {
+        closeSearchDialog()
+        // Navigate to the wiki using fingerprint from join response for shorter URLs
+        navigate({ to: '/$wikiId/$page', params: { wikiId: data.fingerprint, page: data.home } })
+        resolve()
+      }
+
+      // Try with server location first, retry without if connection fails
+      joinWiki.mutate({ target: wikiId, server: entity?.location || undefined }, {
+        onSuccess,
         onError: (error) => {
-          reject(error)
+          // If server connection failed (502) and we had a server, retry without it
+          const status = (error as { status?: number })?.status
+          if (status === 502 && entity?.location) {
+            joinWiki.mutate({ target: wikiId }, {
+              onSuccess,
+              onError: reject,
+            })
+          } else {
+            reject(error)
+          }
         },
       })
     })
@@ -132,7 +146,7 @@ function WikiLayoutInner() {
       toast.error('Wiki ID is required')
       return
     }
-    addBookmark.mutate(bookmarkTarget.trim(), {
+    addBookmark.mutate({ target: bookmarkTarget.trim() }, {
       onSuccess: () => {
         toast.success('Wiki bookmarked')
         setBookmarkTarget('')
@@ -151,7 +165,7 @@ function WikiLayoutInner() {
         {
           onSuccess: (data) => {
             toast.success('Wiki created')
-            setCreateDialogOpen(false)
+            closeCreateDialog()
             const wikiId = data.fingerprint ?? data.id
             navigate({ to: '/$wikiId/$page', params: { wikiId, page: data.home } })
             resolve()
@@ -222,13 +236,13 @@ function WikiLayoutInner() {
         separator: true,
         items: [
           { title: 'Find wikis', icon: Search, onClick: openSearchDialog },
-          { title: 'Create wiki', icon: Plus, onClick: () => setCreateDialogOpen(true) },
+          { title: 'Create wiki', icon: Plus, onClick: openCreateDialog },
         ],
       },
     ]
 
     return { navGroups: groups }
-  }, [isInWiki, wikiName, info, urlEntityId, handleAllWikisClick, openSearchDialog, setCreateDialogOpen, location.pathname])
+  }, [isInWiki, wikiName, info, urlEntityId, handleAllWikisClick, openSearchDialog, openCreateDialog, location.pathname])
 
   return (
     <>
@@ -294,7 +308,7 @@ function WikiLayoutInner() {
       {/* Create wiki dialog */}
       <CreateEntityDialog
         open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
+        onOpenChange={(open) => { if (!open) closeCreateDialog() }}
         icon={BookOpen}
         title="Create wiki"
         entityLabel="Wiki"

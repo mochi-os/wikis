@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useMemo } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Link } from '@tanstack/react-router'
@@ -36,36 +36,50 @@ function getFullSizeUrl(url: string): string {
   return resolved.replace(/\/thumbnail$/, '')
 }
 
+// Extract image URLs from markdown content before rendering
+function extractImageUrls(content: string): string[] {
+  const urls: string[] = []
+  // Match markdown image syntax: ![alt](url)
+  const regex = /!\[[^\]]*\]\(([^)]+)\)/g
+  let match
+  while ((match = regex.exec(content)) !== null) {
+    urls.push(match[1])
+  }
+  return urls
+}
+
 interface MarkdownContentProps {
   content: string
   className?: string
+  missingLinks?: string[]
 }
 
-export function MarkdownContent({ content, className }: MarkdownContentProps) {
-  // Collect images during render for the lightbox gallery
-  const [images, setImages] = useState<LightboxMedia[]>([])
-  const imagesRef = useRef<LightboxMedia[]>([])
-  const imageIndexRef = useRef(0)
+export function MarkdownContent({ content, className, missingLinks = [] }: MarkdownContentProps) {
+  // Pre-extract images from markdown content and build lightbox media array
+  // This follows the same pattern as the feeds app PostAttachments component
+  const lightboxMedia = useMemo<LightboxMedia[]>(() => {
+    const urls = extractImageUrls(content)
+    return urls.map((url, i) => ({
+      id: String(i),
+      name: url.split('/').pop() || 'Image',
+      url: getFullSizeUrl(url),
+      type: 'image' as const,
+    }))
+  }, [content])
+
+  // Build a map from resolved src URL to lightbox index for fast lookup
+  const srcToIndex = useMemo(() => {
+    const map = new Map<string, number>()
+    const urls = extractImageUrls(content)
+    urls.forEach((url, i) => {
+      map.set(resolveAttachmentUrl(url), i)
+    })
+    return map
+  }, [content])
 
   // Use hash-based lightbox state for shareable URLs and back button support
   const { open, currentIndex, openLightbox, closeLightbox, setCurrentIndex } =
-    useLightboxHash(images)
-
-  // Reset image collection when content changes
-  useEffect(() => {
-    imagesRef.current = []
-    imageIndexRef.current = 0
-  }, [content])
-
-  // Sync collected images to state after render
-  useEffect(() => {
-    if (imagesRef.current.length > 0 && imagesRef.current.length !== images.length) {
-      setImages([...imagesRef.current])
-    }
-  })
-
-  // Reset index counter before each render
-  imageIndexRef.current = 0
+    useLightboxHash(lightboxMedia)
 
   return (
     <>
@@ -92,33 +106,32 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
           remarkPlugins={[remarkGfm]}
           components={{
             // Handle images - resolve attachment URLs and open in lightbox
-            img: ({ src, alt, ...props }) => {
+            img: ({ src, alt, node: _, ...props }) => {
               const resolvedSrc = src ? resolveAttachmentUrl(src) : src
-              const fullSizeUrl = src ? getFullSizeUrl(src) : src
+              const index = resolvedSrc ? srcToIndex.get(resolvedSrc) : undefined
 
-              // Register image and get its index for lightbox
-              const index = imageIndexRef.current++
-              if (fullSizeUrl && imagesRef.current.length <= index) {
-                imagesRef.current.push({
-                  id: String(index),
-                  name: alt || 'Image',
-                  url: fullSizeUrl,
-                  type: 'image',
-                })
+              if (index !== undefined) {
+                return (
+                  <button
+                    type="button"
+                    onClick={() => openLightbox(index)}
+                    className="cursor-pointer border-0 bg-transparent p-0"
+                  >
+                    <img
+                      src={resolvedSrc}
+                      alt={alt}
+                      className="m-0"
+                    />
+                  </button>
+                )
               }
 
               return (
-                <img
-                  src={resolvedSrc}
-                  alt={alt}
-                  {...props}
-                  className="cursor-pointer"
-                  onClick={() => openLightbox(index)}
-                />
+                <img src={resolvedSrc} alt={alt} {...props} />
               )
             },
             // Convert internal wiki links to router links
-            a: ({ href, children, target: _, ...props }) => {
+            a: ({ href, children, target: _, node: _node, ...props }) => {
               // Attachment links - resolve URL and render as regular links
               if (href && isAttachmentUrl(href)) {
                 const resolvedHref = resolveAttachmentUrl(href)
@@ -131,10 +144,18 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
               // Check if it's an internal wiki link (relative or absolute)
               const isExternal = href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//'))
               if (href && !isExternal) {
-                // Relative wiki page link - convert to absolute path
-                const absoluteHref = href.startsWith('/') ? href : `/${href}`
+                // Relative wiki page link - prefix with ../ to make it a sibling page
+                // e.g., on /wiki/abc/home, link to "page-2" becomes "../page-2" -> /wiki/abc/page-2
+                const siblingHref = href.startsWith('/') || href.startsWith('../') ? href : `../${href}`
+                // Check if this is a link to a non-existent page (Wikipedia-style "red link")
+                const cleanHref = href.split('#')[0].split('?')[0] // Remove anchors and query strings
+                const isMissing = missingLinks.includes(cleanHref)
                 return (
-                  <Link to={absoluteHref} {...props}>
+                  <Link
+                    to={siblingHref}
+                    {...props}
+                    className={isMissing ? '!text-red-600 dark:!text-red-400' : undefined}
+                  >
                     {children}
                   </Link>
                 )
@@ -153,7 +174,7 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
       </div>
 
       <ImageLightbox
-        images={images}
+        images={lightboxMedia}
         currentIndex={currentIndex}
         open={open}
         onOpenChange={(isOpen) => !isOpen && closeLightbox()}

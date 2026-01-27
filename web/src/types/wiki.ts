@@ -21,6 +21,7 @@ export interface WikiPage {
 
 export interface PageResponse {
   page: WikiPage
+  missing_links?: string[]
 }
 
 export interface PageNotFoundResponse {

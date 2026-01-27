@@ -8,6 +8,7 @@ interface WikiInfo {
   name: string
   home: string
   fingerprint?: string
+  source?: string
 }
 
 interface WikiRouteData {

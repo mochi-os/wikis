@@ -7,6 +7,7 @@ import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { Skeleton } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { useWikiContext } from '@/context/wiki-context'
 
 export const Route = createFileRoute('/_authenticated/$page/delete')({
   component: DeletePageRoute,
@@ -16,6 +17,8 @@ function DeletePageRoute() {
   const params = Route.useParams()
   const slug = params.page ?? ''
   const { data, isLoading, error } = usePage(slug)
+  const { info } = useWikiContext()
+  const homePage = info?.wiki?.home || 'home'
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(`Delete: ${pageTitle}`)
 
@@ -72,7 +75,7 @@ function DeletePageRoute() {
       <>
         <Header />
         <Main>
-          <DeletePage slug={slug} title={data.page.title} />
+          <DeletePage slug={slug} title={data.page.title} homePage={homePage} />
         </Main>
       </>
     )
