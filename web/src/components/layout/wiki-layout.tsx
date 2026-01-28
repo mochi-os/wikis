@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import {
@@ -6,14 +6,7 @@ import {
   getErrorMessage,
   requestHelpers,
   type SidebarData,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  Label,
-  Button,
+  type NavItem,
   toast,
   SearchEntityDialog,
   CreateEntityDialog,
@@ -21,7 +14,6 @@ import {
 } from '@mochi/common'
 import {
   BookOpen,
-  Bookmark,
   Library,
   Plus,
   Search,
@@ -29,7 +21,7 @@ import {
 import endpoints from '@/api/endpoints'
 import { SidebarProvider, useSidebarContext } from '@/context/sidebar-context'
 import { WikiProvider, useWikiContext } from '@/context/wiki-context'
-import { useAddBookmark, useJoinWiki, useCreateWiki } from '@/hooks/use-wiki'
+import { useJoinWiki, useCreateWiki } from '@/hooks/use-wiki'
 
 interface RecommendedWiki {
   id: string
@@ -59,8 +51,6 @@ function getEntityIdFromPath(pathname: string): string | null {
 
 function WikiLayoutInner() {
   const {
-    bookmarkDialogOpen,
-    closeBookmarkDialog,
     searchDialogOpen,
     openSearchDialog,
     closeSearchDialog,
@@ -77,8 +67,6 @@ function WikiLayoutInner() {
     queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     navigate({ to: '/' })
   }, [queryClient, navigate])
-  const [bookmarkTarget, setBookmarkTarget] = useState('')
-  const addBookmark = useAddBookmark()
   const joinWiki = useJoinWiki()
   const createWiki = useCreateWiki()
 
@@ -95,13 +83,12 @@ function WikiLayoutInner() {
   })
   const recommendations = recommendationsData?.wikis ?? []
 
-  // Set of owned/bookmarked wiki IDs for search dialog (includes source for joined wikis)
+  // Set of owned/joined wiki IDs for search dialog (includes source for joined wikis)
   const subscribedWikiIds = useMemo(
-    () => new Set([
-      ...(info?.wikis || []).flatMap((w) => [w.id, w.fingerprint, w.source].filter((x): x is string => !!x)),
-      ...(info?.bookmarks || []).flatMap((b) => [b.id, b.fingerprint].filter((x): x is string => !!x)),
-    ]),
-    [info?.wikis, info?.bookmarks]
+    () => new Set(
+      (info?.wikis || []).flatMap((w) => [w.id, w.fingerprint, w.source].filter((x): x is string => !!x))
+    ),
+    [info?.wikis]
   )
 
   const handleSearchSubscribe = async (wikiId: string, entity?: { location?: string; fingerprint?: string }) => {
@@ -140,24 +127,6 @@ function WikiLayoutInner() {
   const isInWiki = urlEntityId !== null
   const wikiName = info?.wiki?.name
 
-  const handleAddBookmark = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!bookmarkTarget.trim()) {
-      toast.error('Wiki ID is required')
-      return
-    }
-    addBookmark.mutate({ target: bookmarkTarget.trim() }, {
-      onSuccess: () => {
-        toast.success('Wiki bookmarked')
-        setBookmarkTarget('')
-        closeBookmarkDialog()
-      },
-      onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to bookmark wiki'))
-      },
-    })
-  }
-
   const handleCreateWiki = async (values: CreateEntityValues) => {
     return new Promise<void>((resolve, reject) => {
       createWiki.mutate(
@@ -184,30 +153,22 @@ function WikiLayoutInner() {
     // If urlEntityId is null, we're not in a wiki (e.g., at "All wikis")
     const currentWikiId = urlEntityId
 
-    // Merge owned wikis and bookmarks into a single flat list
-    // All wikis use the same icon (BookOpen), sorted alphabetically
-    const allWikiItems = [
-      ...(info?.wikis || []).map((wiki) => ({
+    // Build wiki items sorted alphabetically
+    const wikiItems: NavItem[] = [...(info?.wikis || [])]
+      .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+      .map((wiki) => ({
         title: wiki.name,
         url: `/${wiki.fingerprint ?? wiki.id}/${wiki.home}` as const,
         icon: BookOpen,
         isActive: wiki.id === currentWikiId || wiki.fingerprint === currentWikiId,
-      })),
-      ...(info?.bookmarks || []).map((bookmark) => ({
-        title: bookmark.name,
-        url: `/${bookmark.fingerprint ?? bookmark.id}/home` as const,
-        icon: BookOpen,
-        isActive: bookmark.id === currentWikiId || bookmark.fingerprint === currentWikiId,
-      })),
-    ].sort((a, b) => a.title.localeCompare(b.title))
+      }))
 
     // Build current wiki item when in entity context but not in the wikis list
     // (This handles when we're viewing a wiki that might not be in our class list)
     const currentWikiInList = info?.wikis?.some(w => w.id === currentWikiId || w.fingerprint === currentWikiId)
-    const currentWikiInBookmarks = info?.bookmarks?.some(b => b.id === currentWikiId || b.fingerprint === currentWikiId)
     const standaloneWikiUrl = info?.wiki?.fingerprint ?? info?.wiki?.id ?? urlEntityId
     const standaloneWikiHome = info?.wiki?.home || 'home'
-    const standaloneWikiItem = isInWiki && !currentWikiInList && !currentWikiInBookmarks && standaloneWikiUrl ? {
+    const standaloneWikiItem = isInWiki && !currentWikiInList && standaloneWikiUrl ? {
       title: wikiName || 'Wiki',
       url: `/${standaloneWikiUrl}/${standaloneWikiHome}` as const,
       icon: BookOpen,
@@ -227,7 +188,7 @@ function WikiLayoutInner() {
         title: '',
         items: [
           allWikisItem,
-          ...allWikiItems,
+          ...wikiItems,
           ...(standaloneWikiItem ? [standaloneWikiItem] : []),
         ],
       },
@@ -247,43 +208,6 @@ function WikiLayoutInner() {
   return (
     <>
       <AuthenticatedLayout sidebarData={sidebarData} />
-      {/* Bookmark wiki dialog */}
-      <Dialog open={bookmarkDialogOpen} onOpenChange={(open) => { if (!open) closeBookmarkDialog() }}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Bookmark wiki</DialogTitle>
-            <DialogDescription>
-              Follow a wiki without making a local copy. You'll be able to view it directly from the source.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleAddBookmark} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="bookmark-target">Wiki entity ID</Label>
-              <Input
-                id="bookmark-target"
-                placeholder="abc123..."
-                value={bookmarkTarget}
-                onChange={(e) => setBookmarkTarget(e.target.value)}
-                autoFocus
-              />
-            </div>
-            <div className="flex gap-2 justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={closeBookmarkDialog}
-                disabled={addBookmark.isPending}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={addBookmark.isPending}>
-                <Bookmark className="mr-2 h-4 w-4" />
-                {addBookmark.isPending ? 'Bookmarking...' : 'Bookmark'}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
 
       {/* Search wiki dialog */}
       <SearchEntityDialog

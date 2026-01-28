@@ -11,14 +11,8 @@ interface StoredWiki {
   source?: string
 }
 
-interface StoredBookmark {
-  id: string
-  name: string
-}
-
 interface WikisCache {
   wikis: StoredWiki[]
-  bookmarks: StoredBookmark[]
   timestamp: number
 }
 
@@ -29,11 +23,10 @@ interface LastLocation {
 }
 
 // Cache wikis list
-export function cacheWikisList(wikis: StoredWiki[], bookmarks: StoredBookmark[]): void {
+export function cacheWikisList(wikis: StoredWiki[]): void {
   try {
     const cache: WikisCache = {
       wikis,
-      bookmarks,
       timestamp: Date.now(),
     }
     localStorage.setItem(STORAGE_KEYS.WIKIS_LIST, JSON.stringify(cache))

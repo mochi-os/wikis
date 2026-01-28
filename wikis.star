@@ -29,16 +29,12 @@ def database_create():
     # Replicas table - downstream wikis that replicate from this wiki
     mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', peer text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
 
-    # Bookmarks table - for following external wikis without making a local copy
-    mochi.db.execute("create table if not exists bookmarks (id text primary key, name text not null, server text not null default '', added integer not null)")
-    mochi.db.execute("create index if not exists bookmarks_added on bookmarks(added)")
-
 # Database upgrade
 def database_upgrade(to_version):
     if to_version == 9:
         # Add server column for remote wiki connections
         mochi.db.execute("alter table wikis add column server text not null default ''")
-        mochi.db.execute("alter table bookmarks add column server text not null default ''")
+
     if to_version == 10:
         # Rename subscribers table to replicas and add synced column
         mochi.db.execute("alter table subscribers rename to replicas")
@@ -46,6 +42,8 @@ def database_upgrade(to_version):
     if to_version == 11:
         # Add peer column to replicas table for direct P2P messaging
         mochi.db.execute("alter table replicas add column peer text not null default ''")
+    if to_version == 12:
+        mochi.db.execute("drop table if exists bookmarks")
 
 # Helper: Update replica's seen and synced timestamps
 def update_replica_seen(wiki, replica_id):
@@ -584,72 +582,6 @@ def action_join(a):
     fingerprint = mochi.entity.fingerprint(entity, False)
     return {"data": {"id": entity, "name": name, "source": source, "fingerprint": fingerprint, "home": dump.get("home") or "home", "message": "Wiki joined successfully"}}
 
-# Add a bookmark to follow an external wiki without making a local copy
-def action_bookmark_add(a):
-    if not a.user:
-        a.error(401, "Not logged in")
-        return
-
-    # Get the remote wiki entity ID and optional server
-    target = a.input("target")
-    server = a.input("server")
-    if not target:
-        a.error(400, "Target wiki entity ID is required")
-        return
-
-    # Check if already bookmarked
-    existing = mochi.db.row("select * from bookmarks where id=?", target)
-    if existing:
-        a.error(400, "Already bookmarked")
-        return
-
-    # Check if we already have this as a local wiki
-    local = mochi.db.row("select * from wikis where id=? or source=?", target, target)
-    if local:
-        a.error(400, "This wiki is already in your list")
-        return
-
-    # Connect to specified server, or use directory lookup
-    peer = None
-    if server:
-        peer = mochi.remote.peer(server)
-        if not peer:
-            a.error(502, "Unable to connect to server")
-            return
-
-    # Fetch the wiki name from the remote
-    dump = mochi.remote.request(target, "wikis", "sync", {}, peer)
-    if dump.get("error") or dump.get("status") != "200":
-        a.error(500, "Failed to fetch wiki info")
-        return
-
-    name = dump.get("name") or "Bookmarked Wiki"
-    now = mochi.time.now()
-
-    mochi.db.execute("insert into bookmarks (id, name, server, added) values (?, ?, ?, ?)", target, name, server or "", now)
-
-    return {"data": {"id": target, "name": name, "message": "Wiki bookmarked"}}
-
-# Remove a bookmark
-def action_bookmark_remove(a):
-    if not a.user:
-        a.error(401, "Not logged in")
-        return
-
-    target = a.input("target")
-    if not target:
-        a.error(400, "Target wiki entity ID is required")
-        return
-
-    existing = mochi.db.row("select * from bookmarks where id=?", target)
-    if not existing:
-        a.error(404, "Bookmark not found")
-        return
-
-    mochi.db.execute("delete from bookmarks where id=?", target)
-
-    return {"data": {"ok": True, "message": "Bookmark removed"}}
-
 # Delete a wiki and all its data
 def action_delete(a):
     if not a.user:
@@ -720,9 +652,7 @@ def action_info_class(a):
     # Add fingerprint (without hyphens) to each for shorter URLs
     wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis order by name")
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"], False)) for w in wikis_raw]
-    bookmarks_raw = mochi.db.rows("select id, name, added from bookmarks order by name")
-    bookmarks = [dict(b, fingerprint=mochi.entity.fingerprint(b["id"], False)) for b in bookmarks_raw]
-    return {"data": {"entity": False, "wikis": wikis, "bookmarks": bookmarks}}
+    return {"data": {"entity": False, "wikis": wikis}}
 
 # Search directory for remote wikis
 def action_directory_search(a):
@@ -814,7 +744,7 @@ def action_directory_search(a):
 
 # Action: Get wiki recommendations
 def action_recommendations(a):
-    # Gather IDs of wikis the user already has (owned + subscribed + bookmarked)
+    # Gather IDs of wikis the user already has (owned + subscribed)
     existing_ids = set()
     wikis = mochi.db.rows("select id, source from wikis")
     if wikis:
@@ -822,10 +752,6 @@ def action_recommendations(a):
             existing_ids.add(w["id"])
             if w["source"]:
                 existing_ids.add(w["source"])
-    bookmarks = mochi.db.rows("select id from bookmarks")
-    if bookmarks:
-        for b in bookmarks:
-            existing_ids.add(b["id"])
 
     # Request recommendations from the recommendations service
     s = mochi.remote.stream("1JYmMpQU7fxvTrwHpNpiwKCgUg3odWqX7s9t1cLswSMAro5M2P", "recommendations", "list", {"type": "wiki", "language": "en"})
@@ -857,59 +783,6 @@ def action_recommendations(a):
 def action_info_entity(a):
     wiki = get_wiki(a)
     if not wiki:
-        # Check if this is a bookmark to a remote wiki
-        wiki_id = a.input("wiki")
-        bookmark = mochi.db.row("select * from bookmarks where id=?", wiki_id) if wiki_id else None
-        if bookmark:
-            # Fetch wiki info from remote
-            remote_info = fetch_remote_wiki_info(a, wiki_id)
-
-            # Check for errors
-            if remote_info.get("error"):
-                error = remote_info["error"]
-                if error == "access_denied":
-                    return a.error(403, "Access denied to this wiki")
-                if error == "not_found":
-                    return a.error(404, "Wiki not found")
-                if error == "offline" or error == "bad_request":
-                    # Remote wiki unreachable or invalid request, return cached bookmark info
-                    fp = mochi.entity.fingerprint(wiki_id, True)
-                    return {"data": {
-                        "entity": True,
-                        "bookmark": True,
-                        "offline": True,
-                        "wiki": {
-                            "id": wiki_id,
-                            "name": bookmark["name"],
-                            "home": "home",
-                            "created": bookmark["added"],
-                        },
-                        "permissions": {"view": True, "edit": False, "delete": False, "manage": False},
-                        "fingerprint": fp
-                    }}
-                # Unknown error
-                return a.error(500, "Error accessing wiki: " + error)
-
-            # Success - return bookmark info with remote data
-            fp = mochi.entity.fingerprint(wiki_id, True)
-            remote_perms = remote_info.get("permissions") or {}
-            return {"data": {
-                "entity": True,
-                "bookmark": True,
-                "wiki": {
-                    "id": wiki_id,
-                    "name": remote_info.get("name") or bookmark["name"],
-                    "home": remote_info.get("home") or "home",
-                    "created": bookmark["added"],
-                },
-                "permissions": {
-                    "view": remote_perms.get("view", True),
-                    "edit": remote_perms.get("edit", False),
-                    "delete": False,
-                    "manage": False,
-                },
-                "fingerprint": fp
-            }}
         a.error(404, "Wiki not found")
         return
 
@@ -936,47 +809,17 @@ def action_info_entity(a):
     # Add fingerprint to wiki object for URL generation
     wiki = dict(wiki, fingerprint=fp_url)
 
-    # Also include all wikis and bookmarks for sidebar display
+    # Also include all wikis for sidebar display
     # Add fingerprint (without hyphens) to each for shorter URLs
     wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis order by name")
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"], False)) for w in wikis_raw]
-    bookmarks_raw = mochi.db.rows("select id, name, added from bookmarks order by name")
-    bookmarks = [dict(b, fingerprint=mochi.entity.fingerprint(b["id"], False)) for b in bookmarks_raw]
 
-    return {"data": {"entity": True, "wiki": wiki, "wikis": wikis, "bookmarks": bookmarks, "permissions": permissions, "fingerprint": fp}}
+    return {"data": {"entity": True, "wiki": wiki, "wikis": wikis, "permissions": permissions, "fingerprint": fp}}
 
 # View a page
 def action_page(a):
     wiki = get_wiki(a)
     if not wiki:
-        # Check if this is a bookmark to a remote wiki
-        wiki_id = a.input("wiki")
-        bookmark = mochi.db.row("select * from bookmarks where id=?", wiki_id) if wiki_id else None
-        if bookmark:
-            slug = a.input("page")
-            if not slug:
-                a.error(400, "Missing page parameter")
-                return
-
-            # Fetch page from remote wiki
-            page = fetch_remote_page(a, wiki_id, slug)
-
-            # Check for errors
-            if page and page.get("error"):
-                error = page["error"]
-                if error == "access_denied":
-                    return a.error(403, "Access denied to this wiki")
-                if error == "not_found":
-                    return {"data": {"error": "not_found", "page": slug, "bookmark": True}}
-                if error == "offline" or error == "bad_request":
-                    return a.error(503, "Wiki is offline")
-                return a.error(500, "Error accessing wiki: " + error)
-
-            if not page:
-                return {"data": {"error": "not_found", "page": slug, "bookmark": True}}
-
-            return {"data": {"page": page, "bookmark": True}}
-
         a.error(404, "Wiki not found")
         return
 
@@ -1023,22 +866,6 @@ def action_page_edit(a):
 
     wiki = get_wiki(a)
     if not wiki:
-        # Check if this is a bookmark to a remote wiki
-        wiki_id = a.input("wiki")
-        bookmark = mochi.db.row("select * from bookmarks where id=?", wiki_id) if wiki_id else None
-        if bookmark:
-            # Send edit request to remote wiki
-            result = send_remote_page_edit(a, wiki_id)
-            if result.get("error"):
-                error = result["error"]
-                if error == "access_denied":
-                    return a.error(403, "Access denied")
-                if error == "not_found":
-                    return a.error(404, "Wiki not found")
-                if error == "offline":
-                    return a.error(503, "Wiki is offline")
-                return a.error(400, error)
-            return {"data": result}
         a.error(404, "Wiki not found")
         return
 
@@ -1259,35 +1086,6 @@ def action_new(a):
 def action_page_history(a):
     wiki = get_wiki(a)
     if not wiki:
-        # Check if this is a bookmark to a remote wiki
-        wiki_id = a.input("wiki")
-        bookmark = mochi.db.row("select * from bookmarks where id=?", wiki_id) if wiki_id else None
-        if bookmark:
-            slug = a.input("page")
-            if not slug:
-                a.error(400, "Missing page parameter")
-                return
-
-            # Fetch history from remote wiki
-            result = fetch_remote_page_history(a, wiki_id, slug)
-
-            # Check for errors
-            if result and result.get("error"):
-                error = result["error"]
-                if error == "access_denied":
-                    return a.error(403, "Access denied to this wiki")
-                if error == "not_found":
-                    return a.error(404, "Page not found")
-                if error == "offline" or error == "bad_request":
-                    return a.error(503, "Wiki is offline")
-                return a.error(500, "Error accessing wiki: " + error)
-
-            if not result:
-                a.error(404, "Page not found")
-                return
-
-            return {"data": result}
-
         a.error(404, "Wiki not found")
         return
 

@@ -1,7 +1,6 @@
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getErrorMessage } from '@mochi/common'
 import endpoints from '@/api/endpoints'
 import { wikisRequest } from '@/api/request'
 import {
@@ -19,9 +18,9 @@ import {
   PageHeader as CommonPageHeader,
   toast,
 } from '@mochi/common'
-import { BookOpen, Bookmark, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, Pencil, Plus, Search, Settings, Tags, X } from 'lucide-react'
+import { BookOpen, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, Pencil, Plus, Search, Settings, Tags } from 'lucide-react'
 import { usePageTitle } from '@mochi/common'
-import { usePage, useRemoveBookmark, useUnsubscribeWiki } from '@/hooks/use-wiki'
+import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
 import { Header } from '@mochi/common'
 import {
   PageView,
@@ -40,10 +39,9 @@ interface InfoResponse {
   entity: boolean
   wiki?: { id: string; name: string; home: string; fingerprint?: string }
   wikis?: Array<{ id: string; name: string; home: string; source?: string; fingerprint?: string }>
-  bookmarks?: Array<{ id: string; name: string; added: number; fingerprint?: string }>
 }
 
-type WikiType = 'owned' | 'subscribed' | 'bookmarked'
+type WikiType = 'owned' | 'subscribed'
 
 interface WikiItem {
   id: string
@@ -61,10 +59,9 @@ export const Route = createFileRoute('/_authenticated/')({
     const info = await wikisRequest.get<InfoResponse>(endpoints.wiki.info)
 
     // Cache wikis list for sidebar
-    if (info.wikis || info.bookmarks) {
+    if (info.wikis) {
       cacheWikisList(
-        info.wikis?.map(w => ({ id: w.id, name: w.name, source: w.source })) || [],
-        info.bookmarks?.map(b => ({ id: b.id, name: b.name })) || []
+        info.wikis.map(w => ({ id: w.id, name: w.name, source: w.source }))
       )
     }
 
@@ -78,10 +75,7 @@ export const Route = createFileRoute('/_authenticated/')({
     if (!info.entity) {
       const lastLocation = getLastLocation()
       if (lastLocation) {
-        const allWikis = [
-          ...(info.wikis || []),
-          ...(info.bookmarks || []),
-        ]
+        const allWikis = info.wikis || []
         const wiki = allWikis.find(w => w.id === lastLocation.wikiId || w.fingerprint === lastLocation.wikiId)
         if (wiki) {
           // Use fingerprint for shorter URLs when available
@@ -121,7 +115,7 @@ function IndexPage() {
   }
 
   // Class context - show wikis list
-  return <WikisListPage wikis={data.wikis} bookmarks={data.bookmarks} />
+  return <WikisListPage wikis={data.wikis} />
 }
 
 function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }) {
@@ -306,7 +300,6 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
 
 interface WikisListPageProps {
   wikis?: Array<{ id: string; name: string; home: string; source?: string; fingerprint?: string }>
-  bookmarks?: Array<{ id: string; name: string; added: number; fingerprint?: string }>
 }
 
 interface RecommendedWiki {
@@ -320,9 +313,8 @@ interface RecommendationsResponse {
   wikis: RecommendedWiki[]
 }
 
-function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
+function WikisListPage({ wikis }: WikisListPageProps) {
   usePageTitle('Wikis')
-  const removeBookmark = useRemoveBookmark()
   const { openCreateDialog } = useSidebarContext()
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
 
@@ -330,17 +322,6 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
   useEffect(() => {
     clearLastLocation()
   }, [])
-
-  const handleRemoveBookmark = (id: string) => {
-    removeBookmark.mutate(id, {
-      onSuccess: () => {
-        toast.success('Bookmark removed')
-      },
-      onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to remove bookmark'))
-      },
-    })
-  }
 
   // Combine all wikis into a single list with type indicators
   const allWikis: WikiItem[] = [
@@ -350,13 +331,6 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
       type: (w.source ? 'subscribed' : 'owned') as WikiType,
       fingerprint: w.fingerprint,
       home: w.home,
-    })),
-    ...(bookmarks || []).map((b) => ({
-      id: b.id,
-      name: b.name,
-      type: 'bookmarked' as WikiType,
-      fingerprint: b.fingerprint,
-      home: 'home', // Bookmarks don't have home page info, use default
     })),
   ].sort((a, b) => a.name.localeCompare(b.name))
 
@@ -400,8 +374,6 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
         return <BookOpen className="h-5 w-5" />
       case 'subscribed':
         return <Link2 className="h-5 w-5" />
-      case 'bookmarked':
-        return <Bookmark className="h-5 w-5" />
     }
   }
 
@@ -489,17 +461,6 @@ function WikisListPage({ wikis, bookmarks }: WikisListPageProps) {
                     </CardTitle>
                   </CardHeader>
                 </Link>
-                {wiki.type === 'bookmarked' && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 absolute top-2 right-2"
-                    onClick={() => handleRemoveBookmark(wiki.id)}
-                    disabled={removeBookmark.isPending}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
               </Card>
             ))}
           </div>

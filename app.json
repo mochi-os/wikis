@@ -12,7 +12,7 @@
 	"execute": ["wikis.star"],
 
 	"database": {
-		"schema": 11,
+		"schema": 12,
 		"file": "wikis.db",
 		"create": {"function": "database_create"},
 		"upgrade": {"function": "database_upgrade"}
@@ -30,8 +30,6 @@
 		"subscribe": {"function": "action_join"},
 		"directory/search": {"function": "action_directory_search"},
 		"recommendations": {"function": "action_recommendations"},
-		"bookmark/add": {"function": "action_bookmark_add"},
-		"bookmark/remove": {"function": "action_bookmark_remove"},
 		"assets": {"files": "web/dist/assets", "public": true},
 		"images": {"files": "web/dist/images", "public": true},
 		":wiki": {"file": "web/dist/index.html", "public": true, "opengraph": "opengraph_wiki"},

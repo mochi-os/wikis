@@ -35,7 +35,6 @@ export interface WikiInfoResponse {
   entity: boolean
   wiki?: { id: string; name: string; home: string; fingerprint?: string }
   wikis?: Array<{ id: string; name: string; home: string; source?: string; fingerprint?: string }>
-  bookmarks?: Array<{ id: string; name: string; added: number; fingerprint?: string }>
   permissions?: WikiPermissions
   fingerprint?: string
 }
@@ -591,37 +590,3 @@ export function useUnsubscribeWiki() {
   })
 }
 
-// Bookmark a remote wiki (follow without making a local copy)
-
-interface BookmarkAddResponse {
-  id: string
-  name: string
-  message: string
-}
-
-export function useAddBookmark() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: ({ target, server }: { target: string; server?: string }) =>
-      requestHelpers.post<BookmarkAddResponse>(endpoints.wiki.bookmarkAdd, { target, server }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
-    },
-  })
-}
-
-interface BookmarkRemoveResponse {
-  ok: boolean
-  message: string
-}
-
-export function useRemoveBookmark() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (target: string) =>
-      requestHelpers.post<BookmarkRemoveResponse>(endpoints.wiki.bookmarkRemove, { target }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
-    },
-  })
-}

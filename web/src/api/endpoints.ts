@@ -65,9 +65,6 @@ const endpoints = {
     attachmentUpload: 'attachment/upload',
     attachmentDelete: 'attachment/delete',
     attachment: (id: string) => `-/attachments/${id}`,
-    // Bookmarks
-    bookmarkAdd: 'bookmark/add',
-    bookmarkRemove: 'bookmark/remove',
   },
   user: {
     account: 'user/account/data',
