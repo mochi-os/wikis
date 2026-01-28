@@ -148,9 +148,13 @@ def validate_event_sender(wikirow, wiki, sender):
 def broadcast_event(wiki, event, data, exclude=None):
     if not wiki:
         return
+    resource = "wiki/" + wiki
     replicas = mochi.db.rows("select id, peer from replicas where wiki=?", wiki)
     for r in replicas:
         if exclude and r["id"] == exclude:
+            continue
+        # Skip replicas that no longer have view access
+        if not mochi.access.check(r["id"], resource, "view"):
             continue
         if r["peer"]:
             mochi.message.send.peer(
