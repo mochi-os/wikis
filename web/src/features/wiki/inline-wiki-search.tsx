@@ -13,7 +13,7 @@ interface DirectoryEntry {
 }
 
 interface SearchResponse {
-  data: DirectoryEntry[]
+  results: DirectoryEntry[]
 }
 
 interface InlineWikiSearchProps {
@@ -47,10 +47,12 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
     const search = async () => {
       setIsLoading(true)
       try {
+        // wikisRequest already unwraps the outer data envelope
+        // Response is {results: [...]}
         const response = await wikisRequest.get<SearchResponse>(
           `${endpoints.wiki.directorySearch}?search=${encodeURIComponent(debouncedQuery)}`
         )
-        setResults(response.data ?? [])
+        setResults(response.results ?? [])
       } catch {
         setResults([])
       } finally {
