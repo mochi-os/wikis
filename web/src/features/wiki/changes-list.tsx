@@ -2,6 +2,7 @@ import { format } from 'date-fns'
 import { History } from 'lucide-react'
 import { Separator } from '@mochi/common'
 import { Skeleton } from '@mochi/common'
+import { EmptyState } from '@mochi/common'
 import {
   Table,
   TableBody,
@@ -33,9 +34,13 @@ export function ChangesList({ changes }: ChangesListProps) {
 
       {/* Changes table */}
       {changes.length === 0 ? (
-        <p className="text-muted-foreground py-8 text-center">
-          No changes yet.
-        </p>
+        <div className="py-12">
+          <EmptyState
+            icon={History}
+            title="No changes yet"
+            description="Changes will appear here when pages are edited."
+          />
+        </div>
       ) : (
         <Table>
           <TableHeader>

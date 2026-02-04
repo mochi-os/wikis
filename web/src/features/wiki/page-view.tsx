@@ -1,9 +1,7 @@
 import { format } from 'date-fns'
 import { Edit, FileQuestion } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { Button } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
-import { Separator } from '@mochi/common'
+import { Button, Skeleton, Separator, EmptyState } from '@mochi/common'
 import type { WikiPage } from '@/types/wiki'
 import { MarkdownContent } from './markdown-content'
 import { TagManager } from './tag-manager'
@@ -47,12 +45,11 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
   const wikiId = wikiIdProp
 
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <FileQuestion className="text-muted-foreground mb-4 h-16 w-16" />
-      <h1 className="mb-2 text-2xl font-bold">Page not found</h1>
-      <p className="text-muted-foreground mb-6">
-        The page "{slug}" does not exist yet.
-      </p>
+    <EmptyState
+      icon={FileQuestion}
+      title="Page not found"
+      description={`The page "${slug}" does not exist yet.`}
+    >
       {permissions.edit && (
         <Button asChild>
           {wikiId ? (
@@ -68,7 +65,7 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
           )}
         </Button>
       )}
-    </div>
+    </EmptyState>
   )
 }
 
