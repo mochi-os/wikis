@@ -2,6 +2,7 @@ import { Tags, Tag as TagIcon } from 'lucide-react'
 import { Badge } from '@mochi/common'
 import { Separator } from '@mochi/common'
 import { Skeleton } from '@mochi/common'
+import { EmptyState } from '@mochi/common'
 import type { Tag } from '@/types/wiki'
 
 interface TagsListProps {
@@ -25,9 +26,13 @@ export function TagsList({ tags }: TagsListProps) {
 
       {/* Tags grid */}
       {tags.length === 0 ? (
-        <p className="text-muted-foreground py-8 text-center">
-          No tags found. Add tags to pages to organize your wiki.
-        </p>
+        <div className="py-12">
+          <EmptyState
+            icon={Tags}
+            title="No tags found"
+            description="Add tags to pages to organize your wiki."
+          />
+        </div>
       ) : (
         <div className="flex flex-wrap gap-3">
           {tags.map((tag) => (
