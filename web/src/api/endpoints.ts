@@ -60,6 +60,11 @@ const endpoints = {
     sync: 'sync',
     subscribe: 'subscribe',
     unsubscribe: 'unsubscribe',
+    // Comments
+    pageComments: (slug: string) => `${slug}/comments`,
+    commentCreate: (slug: string) => `${slug}/comment/create`,
+    commentEdit: (slug: string) => `${slug}/comment/edit`,
+    commentDelete: (slug: string) => `${slug}/comment/delete`,
     // Attachments
     attachments: 'attachment/list',
     attachmentUpload: 'attachment/upload',

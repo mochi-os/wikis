@@ -17,6 +17,7 @@ import {
   Main,
   PageHeader as CommonPageHeader,
   toast,
+  getErrorMessage,
 } from '@mochi/common'
 import { BookOpen, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, Pencil, Plus, Search, Settings, Tags } from 'lucide-react'
 import { usePageTitle } from '@mochi/common'
@@ -30,7 +31,7 @@ import {
 import { PageHeader } from '@/features/wiki/page-header'
 import { GeneralError } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
-import { usePermissions } from '@/context/wiki-context'
+import { usePermissions, useWikiContext } from '@/context/wiki-context'
 import { cacheWikisList, setLastLocation, getLastLocation, clearLastLocation } from '@/hooks/use-wiki-storage'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { InlineWikiSearch } from '@/features/wiki/inline-wiki-search'
@@ -148,14 +149,15 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
         toast.success('Unsubscribed')
         void navigate({ to: '/' })
       },
-      onError: () => {
-        toast.error('Failed to unsubscribe')
+      onError: (error) => {
+        toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
       },
     })
   }, [unsubscribeWiki, navigate])
 
-  // Can unsubscribe if viewing wiki but not owner/manager
-  const canUnsubscribe = !permissions.manage
+  // Can unsubscribe if viewing a subscribed wiki (has source)
+  const { info } = useWikiContext()
+  const canUnsubscribe = !!info?.wiki?.source
 
   if (isLoading) {
     return (
@@ -361,9 +363,7 @@ function WikisListPage({ wikis }: WikisListPageProps) {
       // Reload page to refresh wikis list
       window.location.reload()
     } catch (error) {
-      toast.error('Failed to subscribe', {
-        description: error instanceof Error ? error.message : 'Unknown error',
-      })
+      toast.error(getErrorMessage(error, 'Failed to subscribe'))
       setPendingWikiId(null)
     }
   }

@@ -29,6 +29,13 @@ def database_create():
     # Replicas table - downstream wikis that replicate from this wiki
     mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', peer text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
 
+    # Comments table
+    mochi.db.execute("create table if not exists comments (id text primary key, wiki text not null references wikis(id), page text not null, parent text not null default '', author text not null, name text not null default '', body text not null, created integer not null, edited integer not null default 0, deleted integer not null default 0)")
+    mochi.db.execute("create index if not exists comments_wiki on comments(wiki)")
+    mochi.db.execute("create index if not exists comments_page on comments(page)")
+    mochi.db.execute("create index if not exists comments_parent on comments(parent)")
+    mochi.db.execute("create index if not exists comments_created on comments(created)")
+
 # Database upgrade
 def database_upgrade(to_version):
     if to_version == 9:
@@ -44,6 +51,12 @@ def database_upgrade(to_version):
         mochi.db.execute("alter table replicas add column peer text not null default ''")
     if to_version == 12:
         mochi.db.execute("drop table if exists bookmarks")
+    if to_version == 13:
+        mochi.db.execute("create table if not exists comments (id text primary key, wiki text not null references wikis(id), page text not null, parent text not null default '', author text not null, name text not null default '', body text not null, created integer not null, edited integer not null default 0, deleted integer not null default 0)")
+        mochi.db.execute("create index if not exists comments_wiki on comments(wiki)")
+        mochi.db.execute("create index if not exists comments_page on comments(page)")
+        mochi.db.execute("create index if not exists comments_parent on comments(parent)")
+        mochi.db.execute("create index if not exists comments_created on comments(created)")
 
 # Helper: Update replica's seen and synced timestamps
 def update_replica_seen(wiki, replica_id):
@@ -539,9 +552,6 @@ def action_join(a):
     peer = None
     if server:
         peer = mochi.remote.peer(server)
-        if not peer:
-            a.error(502, "Unable to connect to server")
-            return
 
     # Sync data from the remote wiki first to get the name
     dump = mochi.remote.request(source, "wikis", "sync", {}, peer)
@@ -843,7 +853,11 @@ def action_page(a):
     # Find links to non-existent pages (for red link styling)
     missing_links = find_missing_links(wiki["id"], page["content"])
 
+    # Comment count for this page
+    comment_count = page_comment_count(wiki["id"], slug)
+
     return {"data": {
+        "comment_count": comment_count,
         "page": {
             "id": page["id"],
             "slug": page["page"],
@@ -1942,6 +1956,7 @@ def action_unsubscribe(a):
     mochi.db.execute("delete from revisions where page in (select id from pages where wiki=?)", wiki_id)
     mochi.db.execute("delete from pages where wiki=?", wiki_id)
     mochi.db.execute("delete from redirects where wiki=?", wiki_id)
+    mochi.db.execute("delete from comments where wiki=?", wiki_id)
     mochi.db.execute("delete from replicas where wiki=?", wiki_id)
     mochi.db.execute("delete from wikis where id=?", wiki_id)
 
@@ -2544,6 +2559,7 @@ def event_sync(e):
     """, wiki)
 
     redirects = mochi.db.rows("select * from redirects where wiki=?", wiki)
+    comments = mochi.db.rows("select * from comments where wiki=? and deleted=0", wiki)
     wikirow = mochi.db.row("select name, home from wikis where id=?", wiki)
     attachments = mochi.attachment.list(wiki) or []
 
@@ -2558,8 +2574,15 @@ def event_sync(e):
         "revisions": revisions,
         "tags": tags,
         "redirects": redirects,
+        "comments": comments,
         "attachments": attachments,
     })
+
+    # Push attachment files to the requester (wiki-level and comment-level)
+    if requester:
+        mochi.attachment.sync(wiki, [requester])
+        for c in comments:
+            mochi.attachment.sync(c["id"], [requester])
 
 # Handle remote page edit request from a replica (stream-based)
 def event_page_edit_request(e):
@@ -2954,6 +2977,12 @@ def import_sync_dump(wiki, dump):
     for r in redirects:
         mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, r["source"], r["target"], r["created"])
 
+    # Import comments
+    comments = dump.get("comments") or []
+    for c in comments:
+        mochi.db.execute("replace into comments (id, wiki, page, parent, author, name, body, created, edited, deleted) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            c["id"], wiki, c["page"], c.get("parent", ""), c["author"], c.get("name", ""), c["body"], c["created"], c.get("edited", 0), c.get("deleted", 0))
+
     # Import wiki name and home setting
     name = dump.get("name")
     home = dump.get("home")
@@ -2961,10 +2990,7 @@ def import_sync_dump(wiki, dump):
         mochi.db.execute("update wikis set name=?, home=? where id=?",
             name or "", home or "home", wiki)
 
-    # Fetch attachment metadata from remote wiki for on-demand fetching
-    source = dump.get("source", "")
-    if source:
-        mochi.attachment.fetch(wiki, source)
+    # Attachment files are pushed by the source via mochi.attachment.sync in event_sync
 
     return True
 
@@ -3037,6 +3063,340 @@ def action_sync(a):
     )
 
     return {"data": {"ok": True, "message": "Sync completed successfully"}}
+
+# COMMENTS
+
+# Helper: Build comment tree recursively for a page
+def page_comments(wiki_id, page_slug, parent_id, depth):
+    if depth > 100:
+        return []
+    comments = mochi.db.rows("select * from comments where wiki=? and page=? and parent=? and deleted=0 order by created", wiki_id, page_slug, parent_id)
+    for i in range(len(comments)):
+        comments[i]["body_markdown"] = mochi.markdown.render(comments[i]["body"])
+        comments[i]["children"] = page_comments(wiki_id, page_slug, comments[i]["id"], depth + 1)
+        comments[i]["attachments"] = mochi.attachment.list(comments[i]["id"], wiki_id) or []
+    return comments
+
+# Helper: Count comments for a page
+def page_comment_count(wiki_id, page_slug):
+    row = mochi.db.row("select count(*) as count from comments where wiki=? and page=? and deleted=0", wiki_id, page_slug)
+    if row:
+        return row["count"]
+    return 0
+
+# Helper: Delete a comment tree recursively
+def delete_comment_tree(comment_id, wiki_id):
+    children = mochi.db.rows("select id from comments where parent=?", comment_id)
+    for child in children:
+        delete_comment_tree(child["id"], wiki_id)
+    for att in (mochi.attachment.list(comment_id, wiki_id) or []):
+        mochi.attachment.delete(att["id"])
+    mochi.db.execute("delete from comments where id=?", comment_id)
+
+# List comments for a page
+def action_page_comments(a):
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    if not check_access(a, wiki["id"], "view"):
+        a.error(403, "Access denied")
+        return
+
+    slug = a.input("page")
+    if not slug:
+        a.error(400, "Missing page parameter")
+        return
+
+    comments = page_comments(wiki["id"], slug, "", 0)
+    count = page_comment_count(wiki["id"], slug)
+    return {"data": {"comments": comments, "count": count}}
+
+# Create a comment on a page
+def action_comment_create(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    if not check_access(a, wiki["id"], "edit"):
+        a.error(403, "Access denied")
+        return
+
+    slug = a.input("page")
+    if not slug:
+        a.error(400, "Missing page parameter")
+        return
+
+    body = a.input("body")
+    if not body:
+        a.error(400, "Comment body is required")
+        return
+    if len(body) > 100000:
+        a.error(400, "Comment too long (max 100,000 characters)")
+        return
+
+    parent = a.input("parent") or ""
+    if parent:
+        if not mochi.db.exists("select 1 from comments where id=? and wiki=? and deleted=0", parent, wiki["id"]):
+            a.error(404, "Parent comment not found")
+            return
+
+    now = mochi.time.now()
+    id = mochi.uid()
+    author = a.user.identity.id
+    name = a.user.identity.name or ""
+
+    mochi.db.execute("insert into comments (id, wiki, page, parent, author, name, body, created) values (?, ?, ?, ?, ?, ?, ?, ?)",
+        id, wiki["id"], slug, parent, author, name, body, now)
+
+    # Save attachments — notify replicas so they receive the files
+    source = wiki.get("source")
+    notify = []
+    if not source:
+        replica_rows = mochi.db.rows("select id from replicas where wiki=?", wiki["id"])
+        notify = [r["id"] for r in (replica_rows or [])]
+    attachments = mochi.attachment.save(id, "files", [], [], notify) or []
+
+    data = {
+        "id": id,
+        "wiki": wiki["id"],
+        "page": slug,
+        "parent": parent,
+        "author": author,
+        "name": name,
+        "body": body,
+        "created": now,
+    }
+
+    if source:
+        mochi.message.send(
+            {"from": wiki["id"], "to": source, "service": "wikis", "event": "comment/create"},
+            data
+        )
+    else:
+        broadcast_event(wiki["id"], "comment/create", data)
+
+    return {"data": data}
+
+# Edit a comment
+def action_comment_edit(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    if not check_access(a, wiki["id"], "edit"):
+        a.error(403, "Access denied")
+        return
+
+    id = a.input("id")
+    if not id:
+        a.error(400, "Comment ID is required")
+        return
+
+    comment = mochi.db.row("select * from comments where id=? and wiki=? and deleted=0", id, wiki["id"])
+    if not comment:
+        a.error(404, "Comment not found")
+        return
+
+    # Only the author can edit their own comment
+    if comment["author"] != a.user.identity.id:
+        a.error(403, "You can only edit your own comments")
+        return
+
+    body = a.input("body")
+    if not body:
+        a.error(400, "Comment body is required")
+        return
+    if len(body) > 100000:
+        a.error(400, "Comment too long (max 100,000 characters)")
+        return
+
+    now = mochi.time.now()
+    mochi.db.execute("update comments set body=?, edited=? where id=?", body, now, id)
+
+    data = {
+        "id": id,
+        "wiki": wiki["id"],
+        "page": comment["page"],
+        "body": body,
+        "edited": now,
+    }
+
+    source = wiki.get("source")
+    if source:
+        mochi.message.send(
+            {"from": wiki["id"], "to": source, "service": "wikis", "event": "comment/edit"},
+            data
+        )
+    else:
+        broadcast_event(wiki["id"], "comment/edit", data)
+
+    return {"data": data}
+
+# Delete a comment
+def action_comment_delete(a):
+    if not a.user:
+        a.error(401, "Not logged in")
+        return
+
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    if not check_access(a, wiki["id"], "edit"):
+        a.error(403, "Access denied")
+        return
+
+    id = a.input("id")
+    if not id:
+        a.error(400, "Comment ID is required")
+        return
+
+    comment = mochi.db.row("select * from comments where id=? and wiki=? and deleted=0", id, wiki["id"])
+    if not comment:
+        a.error(404, "Comment not found")
+        return
+
+    # Only the author or wiki owner can delete
+    is_owner = bool(mochi.entity.get(wiki["id"]))
+    if comment["author"] != a.user.identity.id and not is_owner:
+        a.error(403, "You can only delete your own comments")
+        return
+
+    delete_comment_tree(id, wiki["id"])
+
+    data = {
+        "id": id,
+        "wiki": wiki["id"],
+        "page": comment["page"],
+    }
+
+    source = wiki.get("source")
+    if source:
+        mochi.message.send(
+            {"from": wiki["id"], "to": source, "service": "wikis", "event": "comment/delete"},
+            data
+        )
+    else:
+        broadcast_event(wiki["id"], "comment/delete", data)
+
+    return {"data": {"ok": True}}
+
+# P2P event: comment/create
+def event_comment_create(e):
+    wiki = e.header("to")
+    if not wiki:
+        return
+
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
+
+    id = e.content("id")
+    page = e.content("page")
+    parent = e.content("parent") or ""
+    author = e.content("author")
+    name = e.content("name") or ""
+    body = e.content("body")
+    created = e.content("created")
+
+    if not id or not page or not author or not body or not created:
+        return
+
+    mochi.db.execute("insert or ignore into comments (id, wiki, page, parent, author, name, body, created) values (?, ?, ?, ?, ?, ?, ?, ?)",
+        id, wiki, page, parent, author, name, body, created)
+
+    # Re-broadcast if we are the source wiki
+    if not wikirow.get("source") and sender:
+        broadcast_event(wiki, "comment/create", {
+            "id": id,
+            "page": page,
+            "parent": parent,
+            "author": author,
+            "name": name,
+            "body": body,
+            "created": created,
+        }, exclude=sender)
+
+# P2P event: comment/edit
+def event_comment_edit(e):
+    wiki = e.header("to")
+    if not wiki:
+        return
+
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
+
+    id = e.content("id")
+    body = e.content("body")
+    edited = e.content("edited")
+
+    if not id or not body or not edited:
+        return
+
+    mochi.db.execute("update comments set body=?, edited=? where id=? and wiki=?", body, edited, id, wiki)
+
+    # Re-broadcast if we are the source wiki
+    if not wikirow.get("source") and sender:
+        broadcast_event(wiki, "comment/edit", {
+            "id": id,
+            "wiki": wiki,
+            "body": body,
+            "edited": edited,
+        }, exclude=sender)
+
+# P2P event: comment/delete
+def event_comment_delete(e):
+    wiki = e.header("to")
+    if not wiki:
+        return
+
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
+
+    id = e.content("id")
+    if not id:
+        return
+
+    comment = mochi.db.row("select * from comments where id=? and wiki=?", id, wiki)
+    if not comment:
+        return
+
+    delete_comment_tree(id, wiki)
+
+    # Re-broadcast if we are the source wiki
+    if not wikirow.get("source") and sender:
+        broadcast_event(wiki, "comment/delete", {
+            "id": id,
+            "wiki": wiki,
+            "page": comment["page"],
+        }, exclude=sender)
 
 # ATTACHMENTS
 

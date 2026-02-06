@@ -22,6 +22,7 @@ export interface WikiPage {
 export interface PageResponse {
   page: WikiPage
   missing_links?: string[]
+  comment_count?: number
 }
 
 export interface PageNotFoundResponse {
@@ -199,6 +200,50 @@ export interface AttachmentUploadResponse {
 }
 
 export interface AttachmentDeleteResponse {
+  ok: boolean
+}
+
+// Comments
+export interface WikiComment {
+  id: string
+  wiki: string
+  page: string
+  parent: string
+  author: string
+  name: string
+  body: string
+  body_markdown: string
+  created: number
+  edited: number
+  children: WikiComment[]
+  attachments: Attachment[]
+}
+
+export interface CommentsResponse {
+  comments: WikiComment[]
+  count: number
+}
+
+export interface CommentCreateResponse {
+  id: string
+  wiki: string
+  page: string
+  parent: string
+  author: string
+  name: string
+  body: string
+  created: number
+}
+
+export interface CommentEditResponse {
+  id: string
+  wiki: string
+  page: string
+  body: string
+  edited: number
+}
+
+export interface CommentDeleteResponse {
   ok: boolean
 }
 

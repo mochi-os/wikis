@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
   usePageTitle,
   toast,
+  getErrorMessage,
 } from '@mochi/common'
 import {
   PageView,
@@ -24,7 +25,7 @@ import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiContext, usePermissions } from '@/context/wiki-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
-import { Ellipsis, FileEdit, FilePlus, History, Pencil, Search, Settings, Tags } from 'lucide-react'
+import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Search, Settings, Tags } from 'lucide-react'
 
 export const Route = createFileRoute('/_authenticated/$page/')({
   component: WikiPageRoute,
@@ -72,14 +73,14 @@ function WikiPageRoute() {
         toast.success('Unsubscribed')
         void navigate({ to: '/' })
       },
-      onError: () => {
-        toast.error('Failed to unsubscribe')
+      onError: (error) => {
+        toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
       },
     })
   }, [unsubscribeWiki, navigate])
 
-  // Can unsubscribe if viewing wiki but not owner/manager
-  const canUnsubscribe = !permissions.manage
+  // Can unsubscribe if viewing a subscribed wiki (has source)
+  const canUnsubscribe = !!info?.wiki?.source
 
   if (isLoading) {
     return (
@@ -163,8 +164,18 @@ function WikiPageRoute() {
 
   // Page found
   if (data && 'page' in data && typeof data.page === 'object') {
+    const commentCount = data && 'comment_count' in data ? (data.comment_count ?? 0) : 0
+
     const actionsMenu = (
       <div className="flex items-center gap-2">
+        {commentCount > 0 && (
+          <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" asChild>
+            <Link to="/$page/comments" params={{ page: slug }}>
+              <MessageSquare className="size-4" />
+              {commentCount === 1 ? '1 comment' : `${commentCount} comments`}
+            </Link>
+          </Button>
+        )}
         {canUnsubscribe && (
           <Button
             variant="outline"
@@ -200,6 +211,12 @@ function WikiPageRoute() {
               <Link to="/$page/history" params={{ page: slug }}>
                 <History className="size-4" />
                 History
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/$page/comments" params={{ page: slug }}>
+                <MessageSquare className="size-4" />
+                Comments
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

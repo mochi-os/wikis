@@ -19,6 +19,10 @@ import type {
   RedirectsResponse,
   RedirectSetResponse,
   RedirectDeleteResponse,
+  CommentsResponse,
+  CommentCreateResponse,
+  CommentEditResponse,
+  CommentDeleteResponse,
   AttachmentsResponse,
   AttachmentUploadResponse,
   AttachmentDeleteResponse,
@@ -33,7 +37,7 @@ import { wikisRequest } from '@/api/request'
 
 export interface WikiInfoResponse {
   entity: boolean
-  wiki?: { id: string; name: string; home: string; fingerprint?: string }
+  wiki?: { id: string; name: string; home: string; fingerprint?: string; source?: string }
   wikis?: Array<{ id: string; name: string; home: string; source?: string; fingerprint?: string }>
   permissions?: WikiPermissions
   fingerprint?: string
@@ -344,6 +348,75 @@ export function useDeleteRedirect() {
       requestHelpers.post<RedirectDeleteResponse>(endpoints.wiki.redirectDelete, { source }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'redirects'] })
+    },
+  })
+}
+
+// Comments
+
+export function usePageComments(slug: string) {
+  return useQuery({
+    queryKey: ['wiki', 'comments', slug],
+    queryFn: () =>
+      requestHelpers.get<CommentsResponse>(endpoints.wiki.pageComments(slug)),
+    enabled: !!slug,
+  })
+}
+
+export function useCreateComment() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: { slug: string; body: string; parent?: string; files?: FileList | File[] }) => {
+      const formData = new FormData()
+      formData.append('body', data.body)
+      if (data.parent) formData.append('parent', data.parent)
+      if (data.files) {
+        Array.from(data.files).forEach((file) => {
+          formData.append('files', file)
+        })
+      }
+      return requestHelpers.post<CommentCreateResponse>(
+        endpoints.wiki.commentCreate(data.slug),
+        formData
+      )
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
+      // Update comment count in page data
+      queryClient.invalidateQueries({ queryKey: ['wiki'], predicate: (query) =>
+        query.queryKey.includes('page') && query.queryKey.includes(variables.slug)
+      })
+    },
+  })
+}
+
+export function useEditComment() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: { slug: string; id: string; body: string }) =>
+      requestHelpers.post<CommentEditResponse>(
+        endpoints.wiki.commentEdit(data.slug),
+        { id: data.id, body: data.body }
+      ),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
+    },
+  })
+}
+
+export function useDeleteComment() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: { slug: string; id: string }) =>
+      requestHelpers.post<CommentDeleteResponse>(
+        endpoints.wiki.commentDelete(data.slug),
+        { id: data.id }
+      ),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
+      queryClient.invalidateQueries({ queryKey: ['wiki'], predicate: (query) =>
+        query.queryKey.includes('page') && query.queryKey.includes(variables.slug)
+      })
     },
   })
 }

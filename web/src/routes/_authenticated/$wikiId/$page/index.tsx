@@ -1,5 +1,5 @@
-import { createFileRoute, Navigate, Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { createFileRoute, Navigate, Link, useNavigate } from '@tanstack/react-router'
+import { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   usePageTitle,
@@ -13,8 +13,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  toast,
+  getErrorMessage,
 } from '@mochi/common'
-import { Ellipsis, FileEdit, FilePlus, History, Pencil, Search, Settings, Tags, Trash2 } from 'lucide-react'
+import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import {
   PageView,
   PageNotFound,
@@ -33,7 +35,24 @@ export const Route = createFileRoute('/_authenticated/$wikiId/$page/')({
 
 function WikiPageRoute() {
   const { wikiId, page: slug } = Route.useParams()
+  const navigate = useNavigate()
   const { baseURL, wiki, permissions } = useWikiBaseURL()
+
+  // Can unsubscribe if viewing a subscribed wiki (has source)
+  const canUnsubscribe = !!wiki.source
+  const [isUnsubscribing, setIsUnsubscribing] = useState(false)
+
+  const handleUnsubscribe = useCallback(async () => {
+    setIsUnsubscribing(true)
+    try {
+      await requestHelpers.post(`${baseURL}unsubscribe`, {})
+      toast.success('Unsubscribed')
+      void navigate({ to: '/' })
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
+      setIsUnsubscribing(false)
+    }
+  }, [baseURL, navigate])
 
   // If page param is empty, redirect to wiki home
   if (!slug) {
@@ -41,7 +60,7 @@ function WikiPageRoute() {
   }
 
   // Fetch page data using the wiki's base URL (absolute path since apiClient overwrites baseURL)
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error: pageError } = useQuery({
     queryKey: ['wiki', wikiId, 'page', slug],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
@@ -79,13 +98,13 @@ function WikiPageRoute() {
     )
   }
 
-  if (error) {
+  if (pageError) {
     return (
       <>
         <Header />
         <Main>
           <div className="text-destructive">
-            Error loading page: {error.message}
+            Error loading page: {pageError.message}
           </div>
         </Main>
       </>
@@ -169,7 +188,27 @@ function WikiPageRoute() {
 
   // Page found
   if (isValidResponse && 'page' in data && typeof data.page === 'object') {
+    const commentCount = isValidResponse && 'comment_count' in data ? (data.comment_count ?? 0) : 0
+
     const actionsMenu = (
+      <div className="flex items-center gap-2">
+        {commentCount > 0 && (
+          <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" asChild>
+            <Link to="/$wikiId/$page/comments" params={{ wikiId, page: slug }}>
+              <MessageSquare className="size-4" />
+              {commentCount === 1 ? '1 comment' : `${commentCount} comments`}
+            </Link>
+          </Button>
+        )}
+        {canUnsubscribe && (
+          <Button
+            variant="outline"
+            onClick={handleUnsubscribe}
+            disabled={isUnsubscribing}
+          >
+            {isUnsubscribing ? 'Unsubscribing...' : 'Unsubscribe'}
+          </Button>
+        )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
@@ -196,6 +235,12 @@ function WikiPageRoute() {
             <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
               <History className="size-4" />
               History
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/$wikiId/$page/comments" params={{ wikiId, page: slug }}>
+              <MessageSquare className="size-4" />
+              Comments
             </Link>
           </DropdownMenuItem>
           {permissions.edit && (
@@ -244,6 +289,7 @@ function WikiPageRoute() {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+      </div>
     )
 
     return (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Search, Loader2, BookOpen } from 'lucide-react'
-import { Button, Input, toast } from '@mochi/common'
+import { Button, Input, toast, getErrorMessage } from '@mochi/common'
 import { wikisRequest } from '@/api/request'
 import endpoints from '@/api/endpoints'
 
@@ -66,13 +66,11 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
   const handleSubscribe = async (wiki: DirectoryEntry) => {
     setPendingWikiId(wiki.id)
     try {
-      await wikisRequest.post(endpoints.wiki.subscribe, { target: wiki.id, server: wiki.location || undefined })
+      const result = await wikisRequest.post<{ id: string; fingerprint: string; home: string }>(endpoints.wiki.subscribe, { target: wiki.id, server: wiki.location || undefined })
       onRefresh?.()
-      void navigate({ to: '/$wikiId/$page', params: { wikiId: wiki.fingerprint || wiki.id, page: 'home' } })
+      void navigate({ to: '/$wikiId/$page', params: { wikiId: result.fingerprint || result.id, page: result.home || 'home' } })
     } catch (error) {
-      toast.error('Failed to subscribe', {
-        description: error instanceof Error ? error.message : 'Unknown error',
-      })
+      toast.error(getErrorMessage(error, 'Failed to subscribe'))
       setPendingWikiId(null)
     }
   }
