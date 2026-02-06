@@ -3070,7 +3070,7 @@ def action_sync(a):
 def page_comments(wiki_id, page_slug, parent_id, depth):
     if depth > 100:
         return []
-    comments = mochi.db.rows("select * from comments where wiki=? and page=? and parent=? and deleted=0 order by created", wiki_id, page_slug, parent_id)
+    comments = mochi.db.rows("select * from comments where wiki=? and page=? and parent=? and deleted=0 order by created desc", wiki_id, page_slug, parent_id)
     for i in range(len(comments)):
         comments[i]["body_markdown"] = mochi.markdown.render(comments[i]["body"])
         comments[i]["children"] = page_comments(wiki_id, page_slug, comments[i]["id"], depth + 1)
@@ -3155,10 +3155,12 @@ def action_comment_create(a):
     mochi.db.execute("insert into comments (id, wiki, page, parent, author, name, body, created) values (?, ?, ?, ?, ?, ?, ?, ?)",
         id, wiki["id"], slug, parent, author, name, body, now)
 
-    # Save attachments — notify replicas so they receive the files
+    # Save attachments — notify source and replicas so they receive the files
     source = wiki.get("source")
     notify = []
-    if not source:
+    if source:
+        notify = [source]
+    else:
         replica_rows = mochi.db.rows("select id from replicas where wiki=?", wiki["id"])
         notify = [r["id"] for r in (replica_rows or [])]
     attachments = mochi.attachment.save(id, "files", [], [], notify) or []
