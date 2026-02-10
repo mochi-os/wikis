@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { requestHelpers, GeneralError } from '@mochi/common'
+import { requestHelpers, GeneralError, isDomainEntityRouting } from '@mochi/common'
 import type { WikiPermissions } from '@/types/wiki'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 
@@ -35,13 +35,14 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
     // Use window.location.pathname since TanStack Router's location is relative to app mount
     const pathname = window.location.pathname
     const firstSegment = pathname.match(/^\/([^/]+)/)?.[1] || ''
-    // Check for entity ID (9-char fingerprint or 50-51 char full ID)
-    const isEntityContext = /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(firstSegment) ||
+    // Check for entity ID (9-char fingerprint or 50-51 char full ID) or domain entity routing
+    const isEntityContext = isDomainEntityRouting() ||
+      /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(firstSegment) ||
       /^[1-9A-HJ-NP-Za-km-z]{50,51}$/.test(firstSegment)
 
-    // In entity context, don't prepend app path; in app context, include app path
+    // In entity/domain context, use /-/ prefix; in app context, include app path
     const baseURL = isEntityContext
-      ? `/${wikiId}/-/`
+      ? `/-/`
       : `/${firstSegment}/${wikiId}/-/`
 
     // Use absolute URL path since apiClient interceptor overwrites baseURL

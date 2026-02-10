@@ -131,7 +131,7 @@ export function MarkdownContent({ content, className, missingLinks = [] }: Markd
               )
             },
             // Convert internal wiki links to router links
-            a: ({ href, children, target: _, node: _node, ...props }) => {
+            a: ({ href, children, target: _, node: _node, ref: _ref, ...props }) => {
               // Attachment links - resolve URL and render as regular links
               if (href && isAttachmentUrl(href)) {
                 const resolvedHref = resolveAttachmentUrl(href)

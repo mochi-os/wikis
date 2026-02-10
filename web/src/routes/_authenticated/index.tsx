@@ -18,6 +18,7 @@ import {
   PageHeader as CommonPageHeader,
   toast,
   getErrorMessage,
+  isDomainEntityRouting,
 } from '@mochi/common'
 import { BookOpen, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, Pencil, Plus, Search, Settings, Tags } from 'lucide-react'
 import { usePageTitle } from '@mochi/common'
@@ -98,8 +99,9 @@ export const Route = createFileRoute('/_authenticated/')({
 })
 
 // Check if we're in entity context based on browser URL
-// Entity context: first URL segment is an entity ID (9-char fingerprint or 50-51 char full ID)
+// Entity context: first URL segment is an entity ID, or domain-routed entity (e.g. docs.mochi-os.org)
 function isEntityContext(): boolean {
+  if (isDomainEntityRouting()) return true
   const pathname = window.location.pathname
   const firstSegment = pathname.match(/^\/([^/]+)/)?.[1] || ''
   return /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(firstSegment) ||
