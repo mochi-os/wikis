@@ -2,7 +2,7 @@ import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-ro
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import endpoints from '@/api/endpoints'
-import { wikisRequest } from '@/api/request'
+import { wikisRequest, getRssToken } from '@/api/request'
 import {
   Button,
   Card,
@@ -13,6 +13,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
   Main,
   PageHeader as CommonPageHeader,
@@ -20,7 +23,7 @@ import {
   getErrorMessage,
   isDomainEntityRouting,
 } from '@mochi/common'
-import { BookOpen, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, Pencil, Plus, Search, Settings, Tags } from 'lucide-react'
+import { BookOpen, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, Pencil, Plus, Rss, Search, Settings, Tags } from 'lucide-react'
 import { usePageTitle } from '@mochi/common'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
 import { Header } from '@mochi/common'
@@ -161,6 +164,18 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
   const { info } = useWikiContext()
   const canUnsubscribe = !!info?.wiki?.source
 
+  // RSS feed handler
+  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
+    try {
+      const { token } = await getRssToken(wikiId, mode)
+      const url = `${window.location.origin}/wikis/${wikiId}/-/rss?token=${token}`
+      await navigator.clipboard.writeText(url)
+      toast.success('RSS URL copied to clipboard')
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to get RSS token'))
+    }
+  }
+
   if (isLoading) {
     return (
       <>
@@ -260,6 +275,17 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
                 Recent changes
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Rss className="mr-2 size-4" />
+                RSS feed
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onSelect={() => void handleCopyRssUrl('changes')}>Changes</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => void handleCopyRssUrl('comments')}>Comments</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>Changes and comments</DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             {permissions.edit && (
               <DropdownMenuItem asChild>
                 <Link to="/new">
@@ -321,6 +347,18 @@ function WikisListPage({ wikis }: WikisListPageProps) {
   usePageTitle('Wikis')
   const { openCreateDialog } = useSidebarContext()
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
+
+  // RSS feed handler for all wikis
+  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
+    try {
+      const { token } = await getRssToken('*', mode)
+      const url = `${window.location.origin}/wikis/-/rss?token=${token}`
+      await navigator.clipboard.writeText(url)
+      toast.success('RSS URL copied to clipboard')
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to get RSS token'))
+    }
+  }
 
   // Clear last location when viewing "All wikis"
   useEffect(() => {
@@ -384,6 +422,28 @@ function WikisListPage({ wikis }: WikisListPageProps) {
       <CommonPageHeader
         title="Wikis"
         icon={<BookOpen className="size-4 md:size-5" />}
+        actions={
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Ellipsis className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Rss className="mr-2 size-4" />
+                  RSS feed
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem onSelect={() => void handleCopyRssUrl('changes')}>Changes</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => void handleCopyRssUrl('comments')}>Comments</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>Changes and comments</DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        }
       />
       <Main>
         <div className="container mx-auto p-6">

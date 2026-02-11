@@ -68,4 +68,12 @@ export const wikisRequest = {
   },
 }
 
+// Get RSS token for a wiki entity and mode
+export async function getRssToken(
+  entity: string,
+  mode: 'changes' | 'comments' | 'all'
+): Promise<{ token: string }> {
+  return wikisRequest.post<{ token: string }>('/wikis/-/rss/token', { entity, mode })
+}
+
 export default wikisRequest

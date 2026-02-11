@@ -36,6 +36,9 @@ def database_create():
     mochi.db.execute("create index if not exists comments_parent on comments(parent)")
     mochi.db.execute("create index if not exists comments_created on comments(created)")
 
+    # RSS tokens table
+    mochi.db.execute("create table if not exists rss (token text not null primary key, entity text not null, mode text not null, created integer not null, unique(entity, mode))")
+
 # Database upgrade
 def database_upgrade(to_version):
     if to_version == 9:
@@ -57,6 +60,8 @@ def database_upgrade(to_version):
         mochi.db.execute("create index if not exists comments_page on comments(page)")
         mochi.db.execute("create index if not exists comments_parent on comments(parent)")
         mochi.db.execute("create index if not exists comments_created on comments(created)")
+    if to_version == 14:
+        mochi.db.execute("create table if not exists rss (token text not null primary key, entity text not null, mode text not null, created integer not null, unique(entity, mode))")
 
 # Helper: Update replica's seen and synced timestamps
 def update_replica_seen(wiki, replica_id):
@@ -3571,6 +3576,239 @@ def action_groups(a):
         return
     groups = mochi.service.call("people", "groups/list")
     return {"data": {"groups": groups}}
+
+# RSS FEED SUPPORT
+
+# Escape special XML characters
+def escape_xml(s):
+    if not s:
+        return ""
+    s = s.replace("&", "&amp;")
+    s = s.replace("<", "&lt;")
+    s = s.replace(">", "&gt;")
+    s = s.replace('"', "&quot;")
+    return s
+
+# Generate or retrieve an RSS token for an entity and mode
+def action_rss_token(a):
+    if not a.user:
+        a.error(401, "Authentication required")
+        return
+
+    entity = a.input("entity")
+    mode = a.input("mode")
+    if not entity or not mode:
+        a.error(400, "Missing entity or mode")
+        return
+    if mode != "changes" and mode != "comments" and mode != "all":
+        a.error(400, "Mode must be 'changes', 'comments', or 'all'")
+        return
+
+    if entity == "*":
+        wiki_id = "*"
+    else:
+        wiki = mochi.db.row("select * from wikis where id=?", entity)
+        if not wiki:
+            # Try resolving as fingerprint
+            all_wikis = mochi.db.rows("select id from wikis")
+            for w in all_wikis:
+                if mochi.entity.fingerprint(w["id"]) == entity:
+                    wiki = w
+                    break
+        if not wiki:
+            a.error(404, "Wiki not found")
+            return
+        wiki_id = wiki["id"]
+
+    # Check existing token
+    existing = mochi.db.row("select token from rss where entity=? and mode=?", wiki_id, mode)
+    if existing:
+        return {"data": {"token": existing["token"]}}
+
+    # Create new token
+    token = mochi.token.create("rss", ["rss"])
+    if not token:
+        a.error(500, "Failed to create token")
+        return
+
+    now = mochi.time.now()
+    mochi.db.execute("insert into rss (token, entity, mode, created) values (?, ?, ?, ?)", token, wiki_id, mode, now)
+    return {"data": {"token": token}}
+
+# Per-wiki RSS feed
+def action_rss(a):
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error(404, "Wiki not found")
+        return
+
+    if not check_access(a, wiki["id"], "view"):
+        a.error(403, "Not authorized")
+        return
+
+    # Look up mode from token
+    token = a.input("token")
+    mode = "changes"
+    if token:
+        rss_row = mochi.db.row("select mode from rss where token=? and entity=?", token, wiki["id"])
+        if rss_row:
+            mode = rss_row["mode"]
+
+    wiki_name = wiki["name"]
+    fingerprint = mochi.entity.fingerprint(wiki["id"])
+
+    a.header("Content-Type", "application/rss+xml; charset=utf-8")
+    a.print('<?xml version="1.0" encoding="UTF-8"?>\n')
+    a.print('<rss version="2.0">\n')
+    a.print('<channel>\n')
+    a.print('<title>' + escape_xml(wiki_name) + '</title>\n')
+    a.print('<link>/wikis/' + escape_xml(fingerprint) + '</link>\n')
+    a.print('<description>' + escape_xml(wiki_name) + ' wiki changes</description>\n')
+
+    if mode == "all":
+        rows = mochi.db.rows("""
+            select 'change' as type, r.id, r.title, r.name, r.created, r.version, r.comment as description, p.page as slug
+            from revisions r join pages p on p.id = r.page
+            where p.wiki = ? and p.deleted = 0
+            union all
+            select 'comment' as type, c.id, '' as title, c.name, c.created, 0 as version, c.body as description, c.page as slug
+            from comments c
+            where c.wiki = ? and c.deleted = 0
+            order by created desc limit 100
+        """, wiki["id"], wiki["id"])
+    elif mode == "comments":
+        rows = mochi.db.rows("""
+            select 'comment' as type, c.id, '' as title, c.name, c.created, 0 as version, c.body as description, c.page as slug
+            from comments c
+            where c.wiki = ? and c.deleted = 0
+            order by c.created desc limit 50
+        """, wiki["id"])
+    else:
+        rows = mochi.db.rows("""
+            select 'change' as type, r.id, r.title, r.name, r.created, r.version, r.comment as description, p.page as slug
+            from revisions r join pages p on p.id = r.page
+            where p.wiki = ? and p.deleted = 0
+            order by r.created desc limit 50
+        """, wiki["id"])
+
+    if rows:
+        a.print('<lastBuildDate>' + mochi.time.local(rows[0]["created"], "rfc822") + '</lastBuildDate>\n')
+
+    for row in rows:
+        if row["type"] == "comment":
+            # Look up the page title for the comment
+            page_row = mochi.db.row("select title from pages where wiki=? and page=? and deleted=0", wiki["id"], row["slug"])
+            page_title = page_row["title"] if page_row else row["slug"]
+            title = "Comment on \"" + page_title + "\" by " + row["name"]
+            desc = row["description"]
+            if len(desc) > 500:
+                desc = desc[:500] + "..."
+        else:
+            title = "\"" + row["title"] + "\" edited by " + row["name"]
+            desc = row["description"] if row["description"] else "Version " + str(row["version"])
+
+        link = "/wikis/" + fingerprint + "/" + row["slug"]
+
+        a.print('<item>\n')
+        a.print('<title>' + escape_xml(title) + '</title>\n')
+        a.print('<link>' + escape_xml(link) + '</link>\n')
+        a.print('<description>' + escape_xml(desc) + '</description>\n')
+        a.print('<pubDate>' + mochi.time.local(row["created"], "rfc822") + '</pubDate>\n')
+        a.print('<guid isPermaLink="false">' + escape_xml(row["id"]) + '</guid>\n')
+        a.print('</item>\n')
+
+    a.print('</channel>\n')
+    a.print('</rss>')
+
+# All wikis RSS feed
+def action_rss_all(a):
+    if not a.user:
+        a.error(401, "Authentication required")
+        return
+
+    # Look up mode from token
+    token = a.input("token")
+    mode = "changes"
+    if token:
+        rss_row = mochi.db.row("select mode from rss where token=? and entity='*'", token)
+        if rss_row:
+            mode = rss_row["mode"]
+
+    a.header("Content-Type", "application/rss+xml; charset=utf-8")
+    a.print('<?xml version="1.0" encoding="UTF-8"?>\n')
+    a.print('<rss version="2.0">\n')
+    a.print('<channel>\n')
+    a.print('<title>All wikis</title>\n')
+    a.print('<link>/wikis</link>\n')
+    a.print('<description>All wiki changes</description>\n')
+
+    # Build wiki name lookup
+    wiki_names = {}
+    wiki_fps = {}
+    all_wikis = mochi.db.rows("select id, name from wikis")
+    for w in all_wikis:
+        wiki_names[w["id"]] = w["name"]
+        fp = mochi.entity.fingerprint(w["id"])
+        if fp:
+            wiki_fps[w["id"]] = fp
+
+    if mode == "all":
+        rows = mochi.db.rows("""
+            select 'change' as type, r.id, r.title, r.name, r.created, r.version, r.comment as description, p.page as slug, p.wiki
+            from revisions r join pages p on p.id = r.page
+            where p.deleted = 0
+            union all
+            select 'comment' as type, c.id, '' as title, c.name, c.created, 0 as version, c.body as description, c.page as slug, c.wiki
+            from comments c
+            where c.deleted = 0
+            order by created desc limit 100
+        """)
+    elif mode == "comments":
+        rows = mochi.db.rows("""
+            select 'comment' as type, c.id, '' as title, c.name, c.created, 0 as version, c.body as description, c.page as slug, c.wiki
+            from comments c
+            where c.deleted = 0
+            order by c.created desc limit 50
+        """)
+    else:
+        rows = mochi.db.rows("""
+            select 'change' as type, r.id, r.title, r.name, r.created, r.version, r.comment as description, p.page as slug, p.wiki
+            from revisions r join pages p on p.id = r.page
+            where p.deleted = 0
+            order by r.created desc limit 50
+        """)
+
+    if rows:
+        a.print('<lastBuildDate>' + mochi.time.local(rows[0]["created"], "rfc822") + '</lastBuildDate>\n')
+
+    for row in rows:
+        wiki_id = row["wiki"]
+        wiki_name = wiki_names.get(wiki_id, "Wiki")
+        wiki_fp = wiki_fps.get(wiki_id, wiki_id)
+
+        if row["type"] == "comment":
+            page_row = mochi.db.row("select title from pages where wiki=? and page=? and deleted=0", wiki_id, row["slug"])
+            page_title = page_row["title"] if page_row else row["slug"]
+            title = wiki_name + ": Comment on \"" + page_title + "\" by " + row["name"]
+            desc = row["description"]
+            if len(desc) > 500:
+                desc = desc[:500] + "..."
+        else:
+            title = wiki_name + ": \"" + row["title"] + "\" edited by " + row["name"]
+            desc = row["description"] if row["description"] else "Version " + str(row["version"])
+
+        link = "/wikis/" + wiki_fp + "/" + row["slug"]
+
+        a.print('<item>\n')
+        a.print('<title>' + escape_xml(title) + '</title>\n')
+        a.print('<link>' + escape_xml(link) + '</link>\n')
+        a.print('<description>' + escape_xml(desc) + '</description>\n')
+        a.print('<pubDate>' + mochi.time.local(row["created"], "rfc822") + '</pubDate>\n')
+        a.print('<guid isPermaLink="false">' + escape_xml(row["id"]) + '</guid>\n')
+        a.print('</item>\n')
+
+    a.print('</channel>\n')
+    a.print('</rss>')
 
 # Generate Open Graph meta tags for wiki pages
 def opengraph_wiki(params):

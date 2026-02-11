@@ -65,6 +65,8 @@ const endpoints = {
     commentCreate: (slug: string) => `${slug}/comment/create`,
     commentEdit: (slug: string) => `${slug}/comment/edit`,
     commentDelete: (slug: string) => `${slug}/comment/delete`,
+    // RSS
+    rssToken: 'rss/token',
     // Attachments
     attachments: 'attachment/list',
     attachmentUpload: 'attachment/upload',

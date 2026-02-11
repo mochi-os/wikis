@@ -12,11 +12,14 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
   toast,
   getErrorMessage,
 } from '@mochi/common'
-import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Search, Settings, Tags, Trash2 } from 'lucide-react'
+import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Rss, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import {
   PageView,
   PageNotFound,
@@ -27,6 +30,7 @@ import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
+import { getRssToken } from '@/api/request'
 import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/')({
@@ -86,6 +90,18 @@ function WikiPageRoute() {
 
   // Rename dialog state (controlled mode so menu closes when dialog opens)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+
+  // RSS feed handler
+  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
+    try {
+      const { token } = await getRssToken(wikiId, mode)
+      const url = `${window.location.origin}/wikis/${wikiId}/-/rss?token=${token}`
+      await navigator.clipboard.writeText(url)
+      toast.success('RSS URL copied to clipboard')
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Failed to get RSS token'))
+    }
+  }
 
   if (isLoading) {
     return (
@@ -271,6 +287,17 @@ function WikiPageRoute() {
               Recent changes
             </Link>
           </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Rss className="mr-2 size-4" />
+              RSS feed
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('changes')}>Changes</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('comments')}>Comments</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>Changes and comments</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link to="/$wikiId/new" params={{ wikiId }}>

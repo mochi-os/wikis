@@ -2,7 +2,7 @@
 // Copyright Alistair Cunningham 2025
 
 {
-	"version": "3.3",
+	"version": "3.4",
 	"label": "app_name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -12,7 +12,7 @@
 	"execute": ["wikis.star"],
 
 	"database": {
-		"schema": 13,
+		"schema": 14,
 		"file": "wikis.db",
 		"create": {"function": "database_create"},
 		"upgrade": {"function": "database_upgrade"}
@@ -79,6 +79,9 @@
 		":wiki/-/:page/tag/add": {"function": "action_tag_add"},
 		":wiki/-/:page/tag/remove": {"function": "action_tag_remove"},
 		":wiki/:page": {"file": "web/dist/index.html", "public": true, "opengraph": "opengraph_wiki"},
+		"-/rss": {"function": "action_rss_all", "public": true},
+		":wiki/-/rss": {"function": "action_rss", "public": true},
+		"-/rss/token": {"function": "action_rss_token"},
 		"-/users/search": {"function": "action_users_search"},
 		"-/groups": {"function": "action_groups"}
 	},
