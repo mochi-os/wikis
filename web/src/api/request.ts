@@ -75,5 +75,3 @@ export async function getRssToken(
 ): Promise<{ token: string }> {
   return wikisRequest.post<{ token: string }>('/wikis/-/rss/token', { entity, mode })
 }
-
-export default wikisRequest
