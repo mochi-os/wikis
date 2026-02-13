@@ -1,23 +1,19 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
-import { usePageTitle, getErrorMessage } from '@mochi/common'
 import type { Passkey, TotpSetupResponse } from '@/types/account'
 import { startRegistration } from '@simplewebauthn/browser'
 import {
   Check,
-  Copy,
   Key,
   Loader2,
   Pencil,
   Plus,
   RefreshCw,
   Shield,
-  Smartphone,
   Trash2,
   User,
 } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
-import { toast } from '@mochi/common'
 import {
   useAccountData,
   useMethods,
@@ -44,31 +40,42 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@mochi/common'
-import { Button } from '@mochi/common'
-import {
+  Button,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@mochi/common'
-import { Input } from '@mochi/common'
-import { Label } from '@mochi/common'
-import { Separator } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
-import { Switch } from '@mochi/common'
-import {
+  Input,
+  Label,
+  Skeleton,
+  Switch,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
+  PageHeader,
+  Main,
+  usePageTitle,
+  Section,
+  FieldRow,
+  DataChip,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  GeneralError,
+  EmptyState,
+  getErrorMessage,
+  toast,
 } from '@mochi/common'
-import { Header } from '@mochi/common'
-import { Main } from '@mochi/common'
 
 function formatTimestamp(timestamp: number): string {
   if (timestamp === 0) return 'Never'
@@ -83,40 +90,38 @@ function IdentitySection() {
   const { data, isLoading } = useAccountData()
 
   return (
-    <section>
-      <div className='mb-4 flex items-center gap-2'>
-        <User className='h-5 w-5' />
-        <h2 className='text-lg font-semibold'>Identity</h2>
-      </div>
+    <Section
+      title='Identity'
+      description='Your personal account information'
+    >
       {isLoading ? (
-        <div className='space-y-3'>
-          <Skeleton className='h-4 w-48' />
-          <Skeleton className='h-4 w-64' />
-          <Skeleton className='h-4 w-32' />
+        <div className='space-y-4 py-2'>
+          <Skeleton className='h-12 w-full' />
+          <Skeleton className='h-12 w-full' />
+          <Skeleton className='h-12 w-full' />
+          <Skeleton className='h-12 w-full' />
         </div>
-      ) : data ? (
-        <dl className='grid gap-3 text-sm'>
-          <div className='flex flex-col gap-1 sm:flex-row sm:gap-4'>
-            <dt className='text-muted-foreground w-28 shrink-0'>Name</dt>
-            <dd className='font-medium'>{data.identity.name}</dd>
-          </div>
-          <div className='flex flex-col gap-1 sm:flex-row sm:gap-4'>
-            <dt className='text-muted-foreground w-28 shrink-0'>Username</dt>
-            <dd className='font-medium'>{data.identity.username}</dd>
-          </div>
-          <div className='flex flex-col gap-1 sm:flex-row sm:gap-4'>
-            <dt className='text-muted-foreground w-28 shrink-0'>Fingerprint</dt>
-            <dd className='font-mono text-xs'>{data.identity.fingerprint}</dd>
-          </div>
-          <div className='flex flex-col gap-1 sm:flex-row sm:gap-4'>
-            <dt className='text-muted-foreground w-28 shrink-0'>Entity ID</dt>
-            <dd className='font-mono text-xs break-all'>
-              {data.identity.entity}
-            </dd>
-          </div>
-        </dl>
+      ) : data?.identity ? (
+        <div className='divide-y-0'>
+          <FieldRow label="Name">
+            <span className='text-foreground text-base font-semibold'>
+              {data.identity.name}
+            </span>
+          </FieldRow>
+          <FieldRow label="Username">
+            <span className='text-foreground text-base'>
+              {data.identity.username}
+            </span>
+          </FieldRow>
+          <FieldRow label="Fingerprint">
+            <DataChip value={data.identity.fingerprint} />
+          </FieldRow>
+          <FieldRow label="Entity ID">
+            <DataChip value={data.identity.entity} />
+          </FieldRow>
+        </div>
       ) : null}
-    </section>
+    </Section>
   )
 }
 
@@ -157,28 +162,26 @@ function LoginRequirementsSection() {
   }
 
   return (
-    <section>
-      <div className='mb-4 flex items-center gap-2'>
-        <Shield className='h-5 w-5' />
-        <h2 className='text-lg font-semibold'>Login requirements</h2>
-      </div>
-      <p className='text-muted-foreground mb-4 text-sm'>
-        Require all selected methods to log in:
-      </p>
+    <Section
+      title='Login requirements'
+      description='Require all selected methods to log in'
+    >
       {isLoading ? (
-        <div className='space-y-3'>
-          <Skeleton className='h-8 w-full' />
-          <Skeleton className='h-8 w-full' />
-          <Skeleton className='h-8 w-full' />
+        <div className='space-y-4 py-2'>
+          <Skeleton className='h-16 w-full' />
+          <Skeleton className='h-16 w-full' />
+          <Skeleton className='h-16 w-full' />
         </div>
       ) : (
-        <div className='space-y-4'>
-          <div className='flex items-center justify-between'>
-            <div>
-              <Label htmlFor='method-passkey'>Passkey</Label>
-              <p className='text-muted-foreground text-xs'>
+        <div className='space-y-0 divide-y-0'>
+          <div className='flex items-center justify-between py-4 border-b border-border/40'>
+            <div className='space-y-1 pr-4'>
+              <Label htmlFor='method-passkey' className='text-sm font-medium'>
+                Passkey
+              </Label>
+              <p className='text-muted-foreground text-xs leading-relaxed'>
                 {hasPasskey
-                  ? 'Use a registered passkey'
+                  ? 'Use a registered passkey to sign in'
                   : 'Register a passkey below to enable'}
               </p>
             </div>
@@ -192,12 +195,14 @@ function LoginRequirementsSection() {
             />
           </div>
 
-          <div className='flex items-center justify-between'>
-            <div>
-              <Label htmlFor='method-totp'>Authenticator app</Label>
-              <p className='text-muted-foreground text-xs'>
+          <div className='flex items-center justify-between py-4 border-b border-border/40'>
+            <div className='space-y-1 pr-4'>
+              <Label htmlFor='method-totp' className='text-sm font-medium'>
+                Authenticator app
+              </Label>
+              <p className='text-muted-foreground text-xs leading-relaxed'>
                 {hasTOTP
-                  ? 'Use an authenticator app code'
+                  ? 'Use an authenticator app code to sign in'
                   : 'Set up an authenticator below to enable'}
               </p>
             </div>
@@ -209,11 +214,13 @@ function LoginRequirementsSection() {
             />
           </div>
 
-          <div className='flex items-center justify-between'>
-            <div>
-              <Label htmlFor='method-email'>Email code</Label>
-              <p className='text-muted-foreground text-xs'>
-                Receive a code by email
+          <div className='flex items-center justify-between py-4'>
+            <div className='space-y-1 pr-4'>
+              <Label htmlFor='method-email' className='text-sm font-medium'>
+                Email code
+              </Label>
+              <p className='text-muted-foreground text-xs leading-relaxed'>
+                Receive a verification code by email
               </p>
             </div>
             <Switch
@@ -230,7 +237,7 @@ function LoginRequirementsSection() {
           </div>
         </div>
       )}
-    </section>
+    </Section>
   )
 }
 
@@ -307,7 +314,7 @@ function PasskeyRow({
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onDelete(passkey.id)}>
+                <AlertDialogAction variant='destructive' onClick={() => onDelete(passkey.id)}>
                   Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -332,22 +339,15 @@ function PasskeysSection() {
   const handleRegister = async () => {
     setIsRegistering(true)
     try {
-      // Begin registration
       const beginResult = await registerBegin.mutateAsync()
-
-      // Perform WebAuthn ceremony
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const credential = await startRegistration({
-        optionsJSON: beginResult.options as any,
+        optionsJSON: beginResult.options as Parameters<typeof startRegistration>[0]['optionsJSON'],
       })
-
-      // Complete registration
       await registerFinish.mutateAsync({
         ceremony: beginResult.ceremony,
         credential,
         name: passkeyName || 'Passkey',
       })
-
       toast.success('Passkey registered')
       setRegisterDialogOpen(false)
       setPasskeyName('')
@@ -382,11 +382,11 @@ function PasskeysSection() {
   const passkeys = data?.passkeys ?? []
 
   return (
-    <section>
-      <div className='mb-4 flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
-          <Key className='h-5 w-5' />
-          <h2 className='text-lg font-semibold'>Passkeys</h2>
+    <Card className='shadow-md'>
+      <CardHeader className='border-b/60 border-b pb-4 flex flex-row items-center justify-between'>
+        <div className='space-y-1'>
+          <CardTitle className='text-lg'>Passkeys</CardTitle>
+          <CardDescription>Sign in with biometrics or security keys</CardDescription>
         </div>
         <Dialog open={registerDialogOpen} onOpenChange={setRegisterDialogOpen}>
           <Button
@@ -401,8 +401,7 @@ function PasskeysSection() {
             <DialogHeader>
               <DialogTitle>Register passkey</DialogTitle>
               <DialogDescription>
-                Use a security key, fingerprint, or face recognition to sign in
-                without a password.
+                Use a security key, fingerprint, or face recognition.
               </DialogDescription>
             </DialogHeader>
             <div className='py-4'>
@@ -425,40 +424,43 @@ function PasskeysSection() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
-
-      {isLoading ? (
-        <div className='space-y-3'>
-          <Skeleton className='h-10 w-full' />
-          <Skeleton className='h-10 w-full' />
-        </div>
-      ) : passkeys.length === 0 ? (
-        <p className='text-muted-foreground text-sm'>
-          No passkeys registered. Add a passkey to sign in without a password.
-        </p>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead>Last used</TableHead>
-              <TableHead className='w-24'></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {passkeys.map((passkey) => (
-              <PasskeyRow
-                key={passkey.id}
-                passkey={passkey}
-                onRename={handleRename}
-                onDelete={handleDelete}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      )}
-    </section>
+      </CardHeader>
+      <CardContent className='pt-2'>
+        {isLoading ? (
+          <div className='space-y-3 py-4'>
+            <Skeleton className='h-10 w-full' />
+            <Skeleton className='h-10 w-full' />
+          </div>
+        ) : passkeys.length === 0 ? (
+          <EmptyState
+            icon={Key}
+            title="No passkeys registered"
+            className="my-4"
+          />
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead>Last used</TableHead>
+                <TableHead className='w-24'></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {passkeys.map((passkey) => (
+                <PasskeyRow
+                  key={passkey.id}
+                  passkey={passkey}
+                  onRename={handleRename}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   )
 }
 
@@ -494,9 +496,7 @@ function AuthenticatorSection() {
         setSetupData(null)
         setVerifyCode('')
       } else {
-        toast.error('Invalid code', {
-          description: 'Please check the code and try again.',
-        })
+        toast.error('Invalid code')
       }
     } catch (error) {
       toast.error(getErrorMessage(error, 'Failed to verify code'))
@@ -512,126 +512,84 @@ function AuthenticatorSection() {
     })
   }
 
-  const handleCopySecret = () => {
-    if (setupData?.secret) {
-      navigator.clipboard.writeText(setupData.secret)
-      toast.success('Secret copied to clipboard')
-    }
-  }
-
   const isEnabled = data?.enabled ?? false
 
   return (
-    <section>
-      <div className='mb-4 flex items-center gap-2'>
-        <Smartphone className='h-5 w-5' />
-        <h2 className='text-lg font-semibold'>Authenticator app</h2>
-      </div>
-
+    <Section
+      title='Authenticator App'
+      description='Use an authenticator app to generate one-time codes'
+    >
       {isLoading ? (
-        <Skeleton className='h-8 w-48' />
+        <div className='py-2'>
+          <Skeleton className='h-20 w-full' />
+        </div>
       ) : setupData ? (
-        <div className='space-y-4'>
-          <p className='text-sm'>
-            Scan this QR code with your TOTP authenticator app:
-          </p>
-          <div className='flex justify-center rounded-lg border bg-white p-4'>
-            <QRCodeSVG value={setupData.url} size={200} />
-          </div>
-          <div className='space-y-2'>
-            <Label>Or enter this secret manually:</Label>
-            <div className='flex items-center gap-2'>
-              <code className='bg-muted flex-1 rounded px-3 py-2 font-mono text-sm'>
-                {setupData.secret}
-              </code>
-              <Button variant='outline' size='sm' onClick={handleCopySecret}>
-                <Copy className='h-4 w-4' />
-              </Button>
+        <div className='space-y-6 py-4'>
+          <div className='space-y-3'>
+            <p className='text-sm font-medium'>1. Scan QR Code</p>
+            <div className='flex justify-center rounded-xl border-2 bg-white p-6 shadow-sm'>
+              <QRCodeSVG value={setupData.url} size={200} />
             </div>
           </div>
-          <div className='space-y-2'>
-            <Label htmlFor='totp-verify'>Enter verification code:</Label>
-            <div className='flex items-center gap-2'>
+          <div className='space-y-2.5'>
+            <Label className='text-sm font-medium'>2. Manual Entry</Label>
+            <DataChip value={setupData.secret} chipClassName='flex-1' />
+          </div>
+          <div className='border-t pt-6 space-y-4'>
+            <p className='text-sm font-medium'>3. Verify Code</p>
+            <div className='flex items-center gap-3'>
               <Input
-                id='totp-verify'
                 placeholder='000000'
                 value={verifyCode}
                 onChange={(e) => setVerifyCode(e.target.value)}
-                className='w-32 font-mono'
+                className='w-32 font-mono text-center'
                 maxLength={6}
               />
               <Button
                 onClick={handleVerify}
                 disabled={isVerifying || !verifyCode}
               >
-                Verify
-                {isVerifying && (
-                  <Loader2 className='ml-2 h-4 w-4 animate-spin' />
-                )}
+                Verify & Enable
+                {isVerifying && <Loader2 className='ml-2 h-4 w-4 animate-spin' />}
               </Button>
-              <Button
-                variant='ghost'
-                onClick={() => {
-                  setSetupData(null)
-                  setVerifyCode('')
-                }}
-              >
-                Cancel
-              </Button>
+              <Button variant='ghost' onClick={() => setSetupData(null)}>Cancel</Button>
             </div>
           </div>
         </div>
       ) : isEnabled ? (
-        <div className='flex items-center justify-between'>
-          <div>
-            <p className='text-sm font-medium text-green-600'>Enabled</p>
-            <p className='text-muted-foreground text-xs'>
-              Your authenticator app is configured.
-            </p>
+        <div className='flex items-center justify-between py-4'>
+          <div className='flex items-center gap-3'>
+            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30'>
+              <Check className='h-5 w-5 text-green-600 dark:text-green-500' />
+            </div>
+            <div>
+              <p className='text-sm font-medium'>Status: Enabled</p>
+              <p className='text-muted-foreground text-xs'>Authenticator app is active</p>
+            </div>
           </div>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant='outline' size='sm'>
-                Disable
-              </Button>
+              <Button variant='destructive' size='sm'>Disable</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Disable authenticator?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will remove the authenticator app from your account. If
-                  it's a required login method, you'll need to update your login
-                  requirements first.
-                </AlertDialogDescription>
+                <AlertDialogDescription>This will remove the app from your account.</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDisable}>
-                  Disable
-                </AlertDialogAction>
+                <AlertDialogAction onClick={handleDisable}>Disable</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </div>
       ) : (
-        <div className='flex items-center justify-between'>
-          <p className='text-muted-foreground text-sm'>
-            Add an authenticator app for additional security.
-          </p>
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={handleSetup}
-            disabled={setupTotp.isPending}
-          >
-            Set up
-            {setupTotp.isPending && (
-              <Loader2 className='ml-2 h-4 w-4 animate-spin' />
-            )}
-          </Button>
+        <div className='py-6 text-center'>
+          <p className='text-muted-foreground mb-4 text-sm'>Add an app for additional security</p>
+          <Button onClick={handleSetup} disabled={setupTotp.isPending}>Set up authenticator</Button>
         </div>
       )}
-    </section>
+    </Section>
   )
 }
 
@@ -649,112 +607,68 @@ function RecoveryCodesSection() {
       const result = await generateCodes.mutateAsync()
       setShowCodes(result.codes)
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to generate recovery codes'))
-    }
-  }
-
-  const handleCopyCodes = () => {
-    if (showCodes) {
-      navigator.clipboard.writeText(showCodes.join('\n'))
-      toast.success('Recovery codes copied to clipboard')
+      toast.error(getErrorMessage(error, 'Failed to generate codes'))
     }
   }
 
   const count = data?.count ?? 0
 
   return (
-    <section>
-      <div className='mb-4 flex items-center gap-2'>
-        <RefreshCw className='h-5 w-5' />
-        <h2 className='text-lg font-semibold'>Recovery codes</h2>
-      </div>
-
+    <Section
+      title='Recovery Codes'
+      description='Backup codes for account recovery'
+    >
       {isLoading ? (
-        <Skeleton className='h-8 w-48' />
+        <div className='py-2'><Skeleton className='h-20 w-full' /></div>
       ) : showCodes ? (
-        <div className='space-y-4'>
-          <p className='text-sm'>
-            Save these recovery codes in a secure place. Each code can only be
-            used once.
-          </p>
-          <div className='bg-muted rounded-lg p-4'>
-            <div className='grid grid-cols-2 gap-2 font-mono text-sm'>
+        <div className='space-y-5 py-4'>
+          <Alert variant='destructive' className='bg-amber-50 dark:bg-amber-950/20 border-amber-200'>
+            <Shield className='h-4 w-4 text-amber-600' />
+            <AlertTitle>Save these codes</AlertTitle>
+            <AlertDescription>Each code can only be used once.</AlertDescription>
+          </Alert>
+          <div className='bg-muted/30 rounded-xl border p-5'>
+            <div className='grid grid-cols-2 gap-3 font-mono text-sm'>
               {showCodes.map((code, i) => (
-                <div key={i} className='bg-background rounded px-2 py-1'>
-                  {code}
-                </div>
+                <div key={i} className='bg-background flex items-center justify-center rounded-md border py-2.5 font-semibold'>{code}</div>
               ))}
             </div>
           </div>
           <div className='flex gap-2'>
-            <Button variant='outline' size='sm' onClick={handleCopyCodes}>
-              Copy all
-              <Copy className='ml-2 h-4 w-4' />
-            </Button>
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={() => setShowCodes(null)}
-            >
-              Done
-            </Button>
+            <Button variant='outline' size='sm' onClick={() => {
+              navigator.clipboard.writeText(showCodes.join('\n'))
+              toast.success('Codes copied')
+            }}>Copy all</Button>
+            <Button variant='ghost' size='sm' onClick={() => setShowCodes(null)}>Done</Button>
           </div>
         </div>
       ) : (
-        <div className='flex items-center justify-between'>
-          <div>
-            {count > 0 ? (
-              <>
-                <p className='text-sm font-medium'>
-                  {count} code{count !== 1 ? 's' : ''} remaining
-                </p>
-                <p className='text-muted-foreground text-xs'>
-                  Use a recovery code if you lose access to other methods.
-                </p>
-              </>
-            ) : (
-              <p className='text-muted-foreground text-sm'>
-                Generate recovery codes as a backup login method.
-              </p>
-            )}
+        <div className='flex items-center justify-between py-4'>
+          <div className='flex items-center gap-3'>
+            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30'>
+              <RefreshCw className='h-5 w-5 text-blue-600 dark:text-blue-500' />
+            </div>
+            <div>
+              <p className='text-sm font-medium'>{count > 0 ? `${count} remaining` : 'No codes'}</p>
+              <p className='text-muted-foreground text-xs'>Recovery codes</p>
+            </div>
           </div>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button
-                variant='outline'
-                size='sm'
-                disabled={generateCodes.isPending}
-              >
-                {count > 0 ? 'Regenerate' : 'Generate'}
-                {generateCodes.isPending && (
-                  <Loader2 className='ml-2 h-4 w-4 animate-spin' />
-                )}
-              </Button>
+              <Button variant='outline' size='sm'>{count > 0 ? 'Regenerate' : 'Generate'}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  {count > 0
-                    ? 'Regenerate recovery codes?'
-                    : 'Generate recovery codes?'}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  {count > 0
-                    ? 'This will invalidate your existing recovery codes and generate new ones. Make sure to save the new codes.'
-                    : 'You will receive 10 recovery codes. Save them in a secure place.'}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
+              <AlertDialogTitle>{count > 0 ? 'Regenerate?' : 'Generate?'}</AlertDialogTitle>
+              <AlertDialogDescription>Make sure to save the new codes.</AlertDialogDescription>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleGenerate}>
-                  {count > 0 ? 'Regenerate' : 'Generate'}
-                </AlertDialogAction>
+                <AlertDialogAction onClick={handleGenerate}>Proceed</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </div>
       )}
-    </section>
+    </Section>
   )
 }
 
@@ -769,13 +683,9 @@ export function UserAccount() {
   if (error) {
     return (
       <>
-        <Header>
-          <h1 className='text-lg font-semibold'>Account</h1>
-        </Header>
+        <PageHeader title="Account" icon={<User className='size-4 md:size-5' />} />
         <Main>
-          <p className='text-muted-foreground'>
-            Failed to load account information
-          </p>
+          <GeneralError error={error} minimal />
         </Main>
       </>
     )
@@ -783,20 +693,13 @@ export function UserAccount() {
 
   return (
     <>
-      <Header>
-        <h1 className='text-lg font-semibold'>Account</h1>
-      </Header>
-
+      <PageHeader title="Account" icon={<User className='size-4 md:size-5' />} />
       <Main>
-        <div className='space-y-8'>
+        <div className='space-y-8 pb-10'>
           <IdentitySection />
-          <Separator />
           <LoginRequirementsSection />
-          <Separator />
           <PasskeysSection />
-          <Separator />
           <AuthenticatorSection />
-          <Separator />
           <RecoveryCodesSection />
         </div>
       </Main>

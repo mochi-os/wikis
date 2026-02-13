@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { ArrowRight, Plus, Trash2, Link2 } from 'lucide-react'
-import { toast } from '@mochi/common'
 import {
   Button,
+  DataChip,
   Input,
   Label,
   Separator,
@@ -30,8 +30,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  toast,
   getErrorMessage,
 } from '@mochi/common'
+import { ValueLinkChip } from '@/components/value-link-chip'
 import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wiki'
 import type { Redirect } from '@/types/wiki'
 
@@ -106,17 +108,20 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
 
   return (
     <TableRow>
-      <TableCell className="font-mono">{redirect.source}</TableCell>
+      <TableCell>
+        <ValueLinkChip value={redirect.source} />
+      </TableCell>
       <TableCell>
         <ArrowRight className="text-muted-foreground h-4 w-4" />
       </TableCell>
       <TableCell>
-        <a href={redirect.target} className="font-mono hover:underline">
-          {redirect.target}
-        </a>
+        <ValueLinkChip value={redirect.target} />
       </TableCell>
       <TableCell className="text-muted-foreground">
-        {format(new Date(redirect.created * 1000), 'PPP')}
+        <DataChip
+          value={format(new Date(redirect.created * 1000), 'yyyy-MM-dd HH:mm:ss')}
+          copyable={false}
+        />
       </TableCell>
       <TableCell>
         <AlertDialog>

@@ -1,10 +1,16 @@
 import { format } from 'date-fns'
 import { Activity } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
+import {
+  DataChip,
+  FieldRow,
+  Main,
+  PageHeader,
+  Section,
+  Skeleton,
+  usePageTitle,
+} from '@mochi/common'
 import { useSystemSettingsData } from '@/hooks/use-system-settings'
-import { usePageTitle } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
-import { Header } from '@mochi/common'
-import { Main } from '@mochi/common'
 
 function formatTimestamp(value: string): string {
   const timestamp = parseInt(value, 10)
@@ -14,14 +20,18 @@ function formatTimestamp(value: string): string {
 
 export function SystemStatus() {
   usePageTitle('Status')
+  const navigate = useNavigate()
   const { data, isLoading, error } = useSystemSettingsData()
+  const goBackToWikis = () => navigate({ to: '/' })
 
   if (error) {
     return (
       <>
-        <Header>
-          <h1 className='text-lg font-semibold'>Status</h1>
-        </Header>
+        <PageHeader
+          title='Status'
+          icon={<Activity className='size-4 md:size-5' />}
+          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+        />
         <Main>
           <p className='text-muted-foreground'>Failed to load status</p>
         </Main>
@@ -37,34 +47,30 @@ export function SystemStatus() {
 
   return (
     <>
-      <Header>
-        <h1 className='text-lg font-semibold'>Status</h1>
-      </Header>
+      <PageHeader
+        title='Status'
+        icon={<Activity className='size-4 md:size-5' />}
+        back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+      />
 
       <Main>
-        <div className='mb-6 flex items-center gap-2'>
-          <Activity className='h-5 w-5' />
-          <h2 className='text-lg font-semibold'>Server</h2>
-        </div>
-        {isLoading ? (
-          <div className='space-y-3'>
-            <Skeleton className='h-4 w-48' />
-            <Skeleton className='h-4 w-64' />
-          </div>
-        ) : (
-          <dl className='grid gap-3 text-sm'>
-            <div className='flex flex-col gap-1 sm:flex-row sm:gap-4'>
-              <dt className='text-muted-foreground w-28 shrink-0'>Version</dt>
-              <dd className='font-medium'>{serverVersion}</dd>
+        <Section title='Server' description='Current server status and runtime metadata'>
+          {isLoading ? (
+            <div className='space-y-4 py-2'>
+              <Skeleton className='h-12 w-full' />
+              <Skeleton className='h-12 w-full' />
             </div>
-            <div className='flex flex-col gap-1 sm:flex-row sm:gap-4'>
-              <dt className='text-muted-foreground w-28 shrink-0'>Started</dt>
-              <dd className='font-mono text-xs'>
-                {formatTimestamp(serverStarted)}
-              </dd>
+          ) : (
+            <div className='divide-y-0'>
+              <FieldRow label='Version'>
+                <DataChip value={serverVersion || '(unknown)'} copyable={false} />
+              </FieldRow>
+              <FieldRow label='Started'>
+                <DataChip value={formatTimestamp(serverStarted)} copyable={false} />
+              </FieldRow>
             </div>
-          </dl>
-        )}
+          )}
+        </Section>
       </Main>
     </>
   )

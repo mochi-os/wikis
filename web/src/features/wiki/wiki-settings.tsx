@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import { toast } from '@mochi/common'
 import {
   ArrowRight,
   Check,
@@ -21,8 +20,11 @@ import {
 } from 'lucide-react'
 import {
   Button,
+  DataChip,
+  FieldRow,
   Input,
   Label,
+  Section,
   Skeleton,
   Card,
   CardContent,
@@ -55,10 +57,12 @@ import {
   AccessDialog,
   AccessList,
   type AccessLevel,
+  toast,
   requestHelpers,
   getErrorMessage,
 } from '@mochi/common'
 import endpoints from '@/api/endpoints'
+import { ValueLinkChip } from '@/components/value-link-chip'
 import {
   useWikiSettings,
   useSetWikiSetting,
@@ -69,7 +73,6 @@ import {
 } from '@/hooks/use-wiki'
 import { useWikiContext } from '@/context/wiki-context'
 import type { WikiPermissions } from '@/types/wiki'
-import { createContext, useContext } from 'react'
 
 export type WikiSettingsTabId = 'settings' | 'access' | 'redirects' | 'replicas'
 
@@ -394,111 +397,96 @@ function SettingsTab() {
   return (
     <div className="space-y-6">
       {wikiInfo && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Identity</CardTitle>
-            <CardDescription>
-              Unique identifiers for this wiki.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <dl className="space-y-3">
-              <div className="flex flex-col gap-1 sm:flex-row sm:gap-4 sm:items-center">
-                <dt className="text-muted-foreground w-28 shrink-0">Name</dt>
-                <dd className="flex-1">
-                  {isEditingName ? (
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <Input
-                          value={editName}
-                          onChange={(e) => {
-                            setEditName(e.target.value)
-                            setNameError(null)
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') void handleSaveEditName()
-                            if (e.key === 'Escape') handleCancelEditName()
-                          }}
-                          className="h-8"
-                          disabled={isRenaming}
-                          autoFocus
-                        />
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => void handleSaveEditName()}
-                          disabled={isRenaming}
-                          className="h-8 w-8 p-0"
-                        >
-                          {isRenaming ? (
-                            <Loader2 className="size-4 animate-spin" />
-                          ) : (
-                            <Check className="size-4" />
-                          )}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={handleCancelEditName}
-                          disabled={isRenaming}
-                          className="h-8 w-8 p-0"
-                        >
-                          <X className="size-4" />
-                        </Button>
-                      </div>
-                      {nameError && (
-                        <span className="text-sm text-destructive">{nameError}</span>
+        <Section title="Identity" description="Unique identifiers for this wiki.">
+          <div className="divide-y-0">
+            <FieldRow label="Name">
+              {isEditingName ? (
+                <div className="flex w-full flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={editName}
+                      onChange={(e) => {
+                        setEditName(e.target.value)
+                        setNameError(null)
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') void handleSaveEditName()
+                        if (e.key === 'Escape') handleCancelEditName()
+                      }}
+                      className="h-8"
+                      disabled={isRenaming}
+                      autoFocus
+                    />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => void handleSaveEditName()}
+                      disabled={isRenaming}
+                      className="h-8 w-8 p-0"
+                    >
+                      {isRenaming ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        <Check className="size-4" />
                       )}
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <span>{currentName}</span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={handleStartEditName}
-                        className="h-6 w-6 p-0"
-                      >
-                        <Pencil className="size-3" />
-                      </Button>
-                    </div>
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleCancelEditName}
+                      disabled={isRenaming}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="size-4" />
+                    </Button>
+                  </div>
+                  {nameError && (
+                    <span className="text-sm text-destructive">{nameError}</span>
                   )}
-                </dd>
-              </div>
-              <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
-                <dt className="text-muted-foreground w-28 shrink-0">Entity</dt>
-                <dd className="font-mono text-xs break-all">{wikiInfo.id}</dd>
-              </div>
-              {fingerprint && (
-                <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
-                  <dt className="text-muted-foreground w-28 shrink-0">Fingerprint</dt>
-                  <dd className="font-mono text-xs">{fingerprint}</dd>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span>{currentName}</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleStartEditName}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Pencil className="size-3" />
+                  </Button>
                 </div>
               )}
-            </dl>
-          </CardContent>
-        </Card>
+            </FieldRow>
+            <FieldRow label="Entity ID">
+              <DataChip value={wikiInfo.id} />
+            </FieldRow>
+            {fingerprint && (
+              <FieldRow label="Fingerprint">
+                <DataChip value={fingerprint} />
+              </FieldRow>
+            )}
+          </div>
+        </Section>
       )}
 
       {data?.settings?.source && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Subscription</CardTitle>
-            <CardDescription>
-              This wiki is subscribed to a source wiki and receives updates from it.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
-              <dt className="text-muted-foreground w-28 shrink-0">Source</dt>
-              <dd className="font-mono text-xs break-all">{data.settings.source}</dd>
-            </div>
+        <Section
+          title="Subscription"
+          description="This wiki is subscribed to a source wiki and receives updates from it."
+          action={
             <Button variant="outline" onClick={() => void handleSync()} disabled={syncPending}>
               <RefreshCw className={cn("mr-2 h-4 w-4", syncPending && "animate-spin")} />
               {syncPending ? 'Syncing...' : 'Sync now'}
             </Button>
-          </CardContent>
-        </Card>
+          }
+        >
+          <div className="divide-y-0">
+            <FieldRow label="Source">
+              <ValueLinkChip value={data.settings.source} />
+            </FieldRow>
+          </div>
+        </Section>
       )}
 
       <Card>
@@ -604,7 +592,6 @@ function AccessTab() {
       )
       setRules(response?.rules ?? [])
     } catch (err) {
-      console.error('[AccessTab] Failed to load rules', err)
       setError(err instanceof Error ? err : new Error('Failed to load access rules'))
     } finally {
       setIsLoading(false)
@@ -621,7 +608,6 @@ function AccessTab() {
       toast.success(`Access set for ${subjectName}`)
       void loadRules()
     } catch (err) {
-      console.error('[AccessTab] Failed to set access level', err)
       toast.error(getErrorMessage(err, 'Failed to set access level'))
       throw err
     }
@@ -633,7 +619,6 @@ function AccessTab() {
       toast.success('Access updated')
       void loadRules()
     } catch (err) {
-      console.error('[AccessTab] Failed to update access level', err)
       toast.error(getErrorMessage(err, 'Failed to update access level'))
     }
   }
@@ -644,7 +629,6 @@ function AccessTab() {
       toast.success('Access removed')
       void loadRules()
     } catch (err) {
-      console.error('[AccessTab] Failed to revoke access', err)
       toast.error(getErrorMessage(err, 'Failed to remove access'))
     }
   }
@@ -709,7 +693,6 @@ function ReplicasTab() {
       )
       setReplicas(response?.replicas ?? [])
     } catch (err) {
-      console.error('[ReplicasTab] Failed to load replicas', err)
       setError(err instanceof Error ? err : new Error('Failed to load replicas'))
     } finally {
       setIsLoading(false)
@@ -729,7 +712,6 @@ function ReplicasTab() {
       toast.success(`Replica "${name || replicaId.slice(0, 12)}..." removed`)
       void loadReplicas()
     } catch (err) {
-      console.error('[ReplicasTab] Failed to remove replica', err)
       toast.error(getErrorMessage(err, 'Failed to remove replica'))
     } finally {
       setIsRemoving(false)
@@ -798,8 +780,8 @@ function ReplicasTab() {
             <TableBody>
               {replicas.map((replica) => (
                 <TableRow key={replica.id}>
-                  <TableCell className="font-mono text-xs">
-                    {replica.id.slice(0, 20)}...
+                  <TableCell>
+                    <DataChip value={replica.id} />
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {format(new Date(replica.subscribed * 1000), 'yyyy-MM-dd HH:mm')}
@@ -877,7 +859,6 @@ function RedirectsTab() {
       )
       setRedirects(response?.redirects ?? [])
     } catch (err) {
-      console.error('[RedirectsTab] Failed to load redirects', err)
       setError(err instanceof Error ? err : new Error('Failed to load redirects'))
     } finally {
       setIsLoading(false)
@@ -895,7 +876,6 @@ function RedirectsTab() {
       toast.success(`Redirect "${source}" deleted`)
       void loadRedirects()
     } catch (err) {
-      console.error('[RedirectsTab] Failed to delete redirect', err)
       toast.error(getErrorMessage(err, 'Failed to delete redirect'))
     } finally {
       setIsDeleting(false)
@@ -939,14 +919,14 @@ function RedirectsTab() {
             <TableBody>
               {redirects.map((redirect) => (
                 <TableRow key={redirect.source}>
-                  <TableCell className="font-mono">{redirect.source}</TableCell>
+                  <TableCell>
+                    <ValueLinkChip value={redirect.source} />
+                  </TableCell>
                   <TableCell>
                     <ArrowRight className="text-muted-foreground h-4 w-4" />
                   </TableCell>
                   <TableCell>
-                    <a href={redirect.target} className="font-mono hover:underline">
-                      {redirect.target}
-                    </a>
+                    <ValueLinkChip value={redirect.target} />
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {format(new Date(redirect.created * 1000), 'yyyy-MM-dd HH:mm:ss')}
@@ -1028,7 +1008,6 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
       setOpen(false)
       onSuccess()
     } catch (err) {
-      console.error('[AddRedirectDialog] Failed to create redirect', err)
       toast.error(getErrorMessage(err, 'Failed to create redirect'))
     } finally {
       setIsCreating(false)
