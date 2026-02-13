@@ -1,13 +1,13 @@
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import endpoints from '@/api/endpoints'
 import { wikisRequest, getRssToken } from '@/api/request'
 import {
   Button,
   Card,
-  CardHeader,
-  CardTitle,
+  CardContent,
+  ConfirmDialog,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -23,7 +23,7 @@ import {
   getErrorMessage,
   isDomainEntityRouting,
 } from '@mochi/common'
-import { BookOpen, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, Pencil, Plus, Rss, Search, Settings, Tags } from 'lucide-react'
+import { BookOpen, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, MoreHorizontal, Pencil, Plus, Rss, Search, Settings, Tags } from 'lucide-react'
 import { usePageTitle } from '@mochi/common'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
 import {
@@ -356,7 +356,22 @@ interface RecommendationsResponse {
 function WikisListPage({ wikis }: WikisListPageProps) {
   usePageTitle('Wikis')
   const { openCreateDialog } = useSidebarContext()
+  const queryClient = useQueryClient()
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
+  const [unsubscribeId, setUnsubscribeId] = useState<string | null>(null)
+
+  const unsubscribeMutation = useMutation({
+    mutationFn: (wiki: WikiItem) =>
+      wikisRequest.post(`${wiki.fingerprint ?? wiki.id}/-/${endpoints.wiki.unsubscribe}`, { wiki: wiki.id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
+      setUnsubscribeId(null)
+      window.location.reload()
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
+    },
+  })
 
   // RSS feed handler for all wikis
   const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
@@ -421,9 +436,9 @@ function WikisListPage({ wikis }: WikisListPageProps) {
   const getIcon = (type: WikiType) => {
     switch (type) {
       case 'owned':
-        return <BookOpen className="h-5 w-5" />
+        return <BookOpen className="text-muted-foreground mt-0.5 size-5 shrink-0" />
       case 'subscribed':
-        return <Link2 className="h-5 w-5" />
+        return <Link2 className="text-muted-foreground mt-0.5 size-5 shrink-0" />
     }
   }
 
@@ -522,23 +537,59 @@ function WikisListPage({ wikis }: WikisListPageProps) {
             )}
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {allWikis.map((wiki) => (
-              <Card key={wiki.id} className="transition-colors hover:bg-highlight relative">
-                <Link to="/$wikiId/$page" params={{ wikiId: wiki.fingerprint ?? wiki.id, page: wiki.home }} className="block">
-                  <CardHeader className="flex items-center justify-center py-8">
-                    <CardTitle className="flex items-center gap-2 text-xl">
+              <Link key={wiki.id} to="/$wikiId/$page" params={{ wikiId: wiki.fingerprint ?? wiki.id, page: wiki.home }}>
+                <Card className="hover:border-primary/50 h-full cursor-pointer transition-colors">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between gap-2">
                       {getIcon(wiki.type)}
-                      {wiki.name}
-                    </CardTitle>
-                  </CardHeader>
-                </Link>
-              </Card>
+                      <h3 className="min-w-0 flex-1 truncate font-medium">{wiki.name}</h3>
+                      {wiki.type === 'subscribed' && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              className="hover:bg-muted shrink-0 rounded p-1 transition-colors"
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              <MoreHorizontal className="text-muted-foreground size-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.preventDefault()
+                                setUnsubscribeId(wiki.id)
+                              }}
+                            >
+                              Unsubscribe
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
           )}
         </div>
       </Main>
+
+      <ConfirmDialog
+        open={!!unsubscribeId}
+        onOpenChange={(open) => { if (!open) setUnsubscribeId(null) }}
+        title="Unsubscribe"
+        desc="Are you sure you want to unsubscribe from this wiki?"
+        confirmText="Unsubscribe"
+        destructive
+        isLoading={unsubscribeMutation.isPending}
+        handleConfirm={() => {
+          const wiki = allWikis.find((w) => w.id === unsubscribeId)
+          if (wiki) unsubscribeMutation.mutate(wiki)
+        }}
+      />
     </>
   )
 }
