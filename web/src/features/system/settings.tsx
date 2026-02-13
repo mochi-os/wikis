@@ -2,12 +2,6 @@ import { useState } from 'react'
 import type { SystemSetting } from '@/types/settings'
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2, Lock, RotateCcw, Settings } from 'lucide-react'
-import { usePageTitle, getErrorMessage, toast } from '@mochi/common'
-import { usePreferencesData } from '@/hooks/use-preferences'
-import {
-  useSystemSettingsData,
-  useSetSystemSetting,
-} from '@/hooks/use-system-settings'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,14 +12,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  Button,
+  DataChip,
+  FieldRow,
+  Input,
+  Main,
+  PageHeader,
+  Section,
+  Skeleton,
+  Switch,
+  getErrorMessage,
+  toast,
+  usePageTitle,
 } from '@mochi/common'
-import { Button } from '@mochi/common'
-import { Input } from '@mochi/common'
-import { Label } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
-import { Switch } from '@mochi/common'
-import { PageHeader } from '@mochi/common'
-import { Main } from '@mochi/common'
+import { usePreferencesData } from '@/hooks/use-preferences'
+import {
+  useSystemSettingsData,
+  useSetSystemSetting,
+} from '@/hooks/use-system-settings'
 
 function formatSettingName(name: string): string {
   return name
@@ -86,113 +90,101 @@ function SettingRow({
   }
 
   return (
-    <div className='flex flex-col gap-4 py-4 sm:flex-row sm:items-start sm:justify-between'>
-      <div className='flex-1 space-y-1'>
+    <FieldRow
+      label={formatSettingName(setting.name)}
+      description={setting.description}
+    >
+      {setting.read_only ? (
+        <DataChip
+          value={formatSettingValue(setting.name, setting.value, timezone)}
+          icon={<Lock className='size-3' />}
+          copyable={false}
+        />
+      ) : isBoolean ? (
         <div className='flex items-center gap-2'>
-          <Label className='text-base'>{formatSettingName(setting.name)}</Label>
-          {setting.read_only && (
-            <Lock className='text-muted-foreground h-3.5 w-3.5' />
+          <Switch
+            checked={localValue === 'true'}
+            onCheckedChange={handleToggle}
+            disabled={isSaving}
+          />
+          {!isDefault && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='h-8 w-8'
+                  disabled={isSaving}
+                >
+                  <RotateCcw className='h-4 w-4' />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset to default?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will reset "{formatSettingName(setting.name)}" to its
+                    default value ({setting.default || '(empty)'}).
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleReset}>
+                    Reset
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
-        <p className='text-muted-foreground text-sm'>{setting.description}</p>
-        {!isDefault && !setting.read_only && (
-          <p className='text-muted-foreground text-xs'>
-            Default: {setting.default || '(empty)'}
-          </p>
-        )}
-      </div>
-      <div className='flex items-center gap-2'>
-        {setting.read_only ? (
-          <div className='text-muted-foreground font-mono text-sm'>
-            {formatSettingValue(setting.name, setting.value, timezone)}
-          </div>
-        ) : isBoolean ? (
-          <>
-            <Switch
-              checked={localValue === 'true'}
-              onCheckedChange={handleToggle}
-              disabled={isSaving}
-            />
-            {!isDefault && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    className='h-8 w-8'
-                    disabled={isSaving}
-                  >
-                    <RotateCcw className='h-4 w-4' />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Reset to default?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will reset "{formatSettingName(setting.name)}" to its
-                      default value ({setting.default}).
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleReset}>
-                      Reset
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </>
-        ) : (
-          <>
-            <Input
-              value={localValue}
-              onChange={(e) => setLocalValue(e.target.value)}
-              className='w-64 font-mono text-sm'
-              disabled={isSaving}
-            />
-            {hasChanged && (
-              <Button size='sm' onClick={handleSave} disabled={isSaving}>
-                {isSaving ? (
-                  <Loader2 className='h-4 w-4 animate-spin' />
-                ) : (
-                  'Save'
-                )}
-              </Button>
-            )}
-            {!hasChanged && !isDefault && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    className='h-8 w-8'
-                    disabled={isSaving}
-                  >
-                    <RotateCcw className='h-4 w-4' />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Reset to default?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will reset "{formatSettingName(setting.name)}" to its
-                      default value ({setting.default || '(empty)'}).
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleReset}>
-                      Reset
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </>
-        )}
-      </div>
-    </div>
+      ) : (
+        <div className='flex w-full max-w-sm items-center gap-2'>
+          <Input
+            value={localValue}
+            onChange={(e) => setLocalValue(e.target.value)}
+            className='h-9 font-mono text-sm'
+            disabled={isSaving}
+          />
+          {hasChanged ? (
+            <Button size='sm' onClick={handleSave} disabled={isSaving}>
+              {isSaving ? (
+                <Loader2 className='h-4 w-4 animate-spin' />
+              ) : (
+                'Save'
+              )}
+            </Button>
+          ) : !isDefault && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='h-9 w-9'
+                  disabled={isSaving}
+                >
+                  <RotateCcw className='h-4 w-4' />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset to default?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will reset "{formatSettingName(setting.name)}" to its
+                    default value ({setting.default || '(empty)'}).
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleReset}>
+                    Reset
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
+      )}
+    </FieldRow>
   )
 }
 
@@ -254,26 +246,28 @@ export function SystemSettings() {
       />
 
       <Main>
-        {isLoading ? (
-          <div className='space-y-6'>
-            <Skeleton className='h-16 w-full' />
-            <Skeleton className='h-16 w-full' />
-            <Skeleton className='h-16 w-full' />
-            <Skeleton className='h-16 w-full' />
+        <Section title='Configuration' description='Global server settings'>
+          <div className='divide-y-0'>
+            {isLoading ? (
+              <div className='space-y-6 py-4'>
+                <Skeleton className='h-12 w-full' />
+                <Skeleton className='h-12 w-full' />
+                <Skeleton className='h-12 w-full' />
+                <Skeleton className='h-12 w-full' />
+              </div>
+            ) : (
+              sortedSettings.map((setting) => (
+                <SettingRow
+                  key={setting.name}
+                  setting={setting}
+                  onSave={handleSave}
+                  isSaving={savingName === setting.name}
+                  timezone={timezone}
+                />
+              ))
+            )}
           </div>
-        ) : (
-          <div className='divide-y'>
-            {sortedSettings.map((setting) => (
-              <SettingRow
-                key={setting.name}
-                setting={setting}
-                onSave={handleSave}
-                isSaving={savingName === setting.name}
-                timezone={timezone}
-              />
-            ))}
-          </div>
-        )}
+        </Section>
       </Main>
     </>
   )
