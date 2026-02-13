@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { formatDistanceToNow } from 'date-fns'
-import { usePageTitle, getErrorMessage } from '@mochi/common'
+import { usePageTitle, getErrorMessage, formatTimestamp } from '@mochi/common'
 import type { User, Session } from '@/types/users'
 import {
   Ban,
@@ -334,9 +333,7 @@ function SessionsDialog({ user }: { user: User }) {
                       {session.address || 'Unknown'}
                     </TableCell>
                     <TableCell>
-                      {formatDistanceToNow(session.accessed * 1000, {
-                        addSuffix: true,
-                      })}
+                      {formatTimestamp(session.accessed)}
                     </TableCell>
                     <TableCell>
                       <Button
@@ -432,7 +429,7 @@ function UserRow({ user, onUpdate, isSelf }: { user: User; onUpdate: () => void;
       </TableCell>
       <TableCell className='text-muted-foreground text-sm'>
         {user.last_login ? (
-          formatDistanceToNow(user.last_login * 1000, { addSuffix: true })
+          formatTimestamp(user.last_login)
         ) : (
           <span className='italic'>Never</span>
         )}
