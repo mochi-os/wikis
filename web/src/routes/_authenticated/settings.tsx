@@ -2,8 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { usePageTitle } from '@mochi/common'
 import { WikiSettings, type WikiSettingsTabId } from '@/features/wiki/wiki-settings'
 import { WikiProvider } from '@/context/wiki-context'
-import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 type SettingsSearch = {
   tab?: WikiSettingsTabId
@@ -21,6 +21,7 @@ export const Route = createFileRoute('/_authenticated/settings')({
 function WikiSettingsRoute() {
   const { tab } = Route.useSearch()
   const navigate = Route.useNavigate()
+  const goBackToWikis = () => navigate({ to: '/' })
 
   const setActiveTab = (newTab: WikiSettingsTabId) => {
     void navigate({ search: { tab: newTab }, replace: true })
@@ -29,7 +30,7 @@ function WikiSettingsRoute() {
   usePageTitle('Wiki settings')
   return (
     <>
-      <Header />
+      <WikiRouteHeader title="Wiki settings" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
       <Main>
         <WikiProvider>
           <WikiSettings activeTab={tab ?? 'settings'} onTabChange={setActiveTab} />

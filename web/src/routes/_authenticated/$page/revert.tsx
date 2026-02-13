@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { z } from 'zod'
 import { usePageTitle } from '@mochi/common'
 import { RevertPage } from '@/features/wiki/revert-page'
-import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 const searchSchema = z.object({
   version: z.coerce.number(),
@@ -20,6 +20,8 @@ function RevertPageRoute() {
   const params = Route.useParams()
   const { version } = Route.useSearch()
   const slug = params.page ?? ''
+  const navigate = useNavigate()
+  const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   usePageTitle(`Revert: ${slug}`)
 
   // Register page with sidebar context for tree expansion
@@ -32,7 +34,7 @@ function RevertPageRoute() {
   if (!version || version < 1) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`Revert: ${slug}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <div className="text-destructive">Invalid version number</div>
         </Main>
@@ -42,7 +44,7 @@ function RevertPageRoute() {
 
   return (
     <>
-      <Header />
+      <WikiRouteHeader title={`Revert: ${slug}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
       <Main>
         <RevertPage slug={slug} version={version} />
       </Main>

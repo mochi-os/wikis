@@ -1,15 +1,14 @@
+import { PageHeader as CommonPageHeader, type HeaderBackConfig } from '@mochi/common'
 import type { WikiPage } from '@/types/wiki'
 
 interface PageHeaderProps {
   page: WikiPage
   actions?: React.ReactNode
+  back?: HeaderBackConfig
 }
 
-export function PageHeader({ page, actions }: PageHeaderProps) {
+export function PageHeader({ page, actions, back }: PageHeaderProps) {
   return (
-    <div className="flex flex-1 items-center justify-between gap-4">
-      <h1 className="truncate text-2xl font-semibold">{page.title}</h1>
-      {actions}
-    </div>
+    <CommonPageHeader title={page.title} actions={actions} back={back} />
   )
 }

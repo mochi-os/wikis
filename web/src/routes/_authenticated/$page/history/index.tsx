@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePage, usePageHistory } from '@/hooks/use-wiki'
 import { usePageTitle } from '@mochi/common'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
-import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/history/')({
   component: PageHistoryRoute,
@@ -14,6 +14,8 @@ export const Route = createFileRoute('/_authenticated/$page/history/')({
 function PageHistoryRoute() {
   const params = Route.useParams()
   const slug = params.page ?? ''
+  const navigate = useNavigate()
+  const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   const { data: pageData } = usePage(slug)
   const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
   usePageTitle(`History: ${pageTitle}`)
@@ -29,7 +31,7 @@ function PageHistoryRoute() {
   if (isLoading) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <PageHistorySkeleton />
         </Main>
@@ -40,7 +42,7 @@ function PageHistoryRoute() {
   if (error) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <div className="text-destructive">
             Error loading history: {error.message}
@@ -56,7 +58,7 @@ function PageHistoryRoute() {
 
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <PageHistory
             slug={slug}

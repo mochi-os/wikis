@@ -1,14 +1,14 @@
 import { useEffect } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { usePageHistory } from '@/hooks/use-wiki'
 import { usePageTitle, requestHelpers } from '@mochi/common'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
-import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/history/')({
   component: PageHistoryRoute,
@@ -16,6 +16,8 @@ export const Route = createFileRoute('/_authenticated/$wikiId/$page/history/')({
 
 function PageHistoryRoute() {
   const { wikiId, page: slug } = Route.useParams()
+  const navigate = useNavigate()
+  const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
   const { baseURL } = useWikiBaseURL()
 
   // Fetch page data using the wiki's base URL
@@ -39,7 +41,7 @@ function PageHistoryRoute() {
   if (isLoading) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <PageHistorySkeleton />
         </Main>
@@ -50,7 +52,7 @@ function PageHistoryRoute() {
   if (error) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <div className="text-destructive">
             Error loading history: {error.message}
@@ -66,7 +68,7 @@ function PageHistoryRoute() {
 
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <PageHistory
             slug={slug}

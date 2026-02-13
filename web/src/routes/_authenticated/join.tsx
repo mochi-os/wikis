@@ -11,13 +11,13 @@ import {
   CardHeader,
   CardTitle,
   usePageTitle,
-  Header,
   Main,
   getErrorMessage,
   toast,
 } from '@mochi/common'
 import { useJoinWiki } from '@/hooks/use-wiki'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/join')({
   component: JoinWikiPage,
@@ -26,6 +26,7 @@ export const Route = createFileRoute('/_authenticated/join')({
 function JoinWikiPage() {
   usePageTitle('Replicate wiki')
   const navigate = useNavigate()
+  const goBackToWikis = () => navigate({ to: '/' })
   const [target, setTarget] = useState('')
   const joinWiki = useJoinWiki()
   const { openSearchDialog } = useSidebarContext()
@@ -53,7 +54,7 @@ function JoinWikiPage() {
 
   return (
     <>
-      <Header />
+      <WikiRouteHeader title="Replicate wiki" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
       <Main>
         <div className="container mx-auto max-w-lg p-6">
           <Card>

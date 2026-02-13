@@ -1,14 +1,14 @@
 import { useEffect } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { usePageTitle, requestHelpers } from '@mochi/common'
 import { AttachmentsPage, AttachmentsPageSkeleton } from '@/features/wiki/attachments-page'
-import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useAttachments } from '@/hooks/use-wiki'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/attachments')({
   component: AttachmentsRoute,
@@ -16,6 +16,8 @@ export const Route = createFileRoute('/_authenticated/$wikiId/$page/attachments'
 
 function AttachmentsRoute() {
   const { wikiId, page: slug } = Route.useParams()
+  const navigate = useNavigate()
+  const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
   const { baseURL } = useWikiBaseURL()
 
   // Fetch page data using the wiki's base URL
@@ -39,7 +41,7 @@ function AttachmentsRoute() {
   if (isLoading) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title="Attachments" back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <AttachmentsPageSkeleton viewMode="grid" />
         </Main>
@@ -49,7 +51,7 @@ function AttachmentsRoute() {
 
   return (
     <>
-      <Header />
+      <WikiRouteHeader title="Attachments" back={{ label: 'Back to page', onFallback: goBackToPage }} />
       <Main>
         <AttachmentsPage slug={slug} />
       </Main>

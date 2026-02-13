@@ -26,7 +26,6 @@ import {
 import { BookOpen, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, Pencil, Plus, Rss, Search, Settings, Tags } from 'lucide-react'
 import { usePageTitle } from '@mochi/common'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
-import { Header } from '@mochi/common'
 import {
   PageView,
   PageNotFound,
@@ -39,6 +38,7 @@ import { usePermissions, useWikiContext } from '@/context/wiki-context'
 import { cacheWikisList, setLastLocation, getLastLocation, clearLastLocation } from '@/hooks/use-wiki-storage'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { InlineWikiSearch } from '@/features/wiki/inline-wiki-search'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 interface InfoResponse {
   entity: boolean
@@ -126,6 +126,7 @@ function IndexPage() {
 
 function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }) {
   const navigate = useNavigate()
+  const goBackToWikis = () => navigate({ to: '/' })
   const { data, isLoading, error } = usePage(homeSlug)
   const permissions = usePermissions()
   const unsubscribeWiki = useUnsubscribeWiki()
@@ -179,7 +180,10 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
   if (isLoading) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader
+          title={pageTitle}
+          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+        />
         <Main>
           <PageViewSkeleton />
         </Main>
@@ -190,7 +194,10 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
   if (error) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader
+          title={pageTitle}
+          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+        />
         <Main>
           <div className="text-destructive">
             Error loading page: {error.message}
@@ -204,9 +211,10 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
   if (data && 'error' in data && data.error === 'not_found') {
     return (
       <>
-        <Header>
-          <h1 className="text-lg font-semibold">Page not found</h1>
-        </Header>
+        <WikiRouteHeader
+          title="Page not found"
+          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+        />
         <Main>
           <PageNotFound slug={homeSlug} wikiId={wikiId} />
         </Main>
@@ -309,9 +317,11 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
 
     return (
       <>
-        <Header>
-          <PageHeader page={data.page} actions={actionsMenu} />
-        </Header>
+        <PageHeader
+          page={data.page}
+          actions={actionsMenu}
+          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+        />
         <Main className="pt-2">
           <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
         </Main>
