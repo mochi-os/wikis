@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
-import { usePageTitle, useAuthStore, Header, Main } from '@mochi/common'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { usePageTitle, useAuthStore, Main } from '@mochi/common'
 import { PageComments } from '@/features/wiki/page-comments'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { usePermissions } from '@/context/wiki-context'
 import { usePage } from '@/hooks/use-wiki'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/comments')({
   component: CommentsRoute,
@@ -13,6 +14,8 @@ export const Route = createFileRoute('/_authenticated/$page/comments')({
 function CommentsRoute() {
   const params = Route.useParams()
   const slug = params.page ?? ''
+  const navigate = useNavigate()
+  const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   const permissions = usePermissions()
   const identity = useAuthStore((s) => s.identity)
 
@@ -32,11 +35,10 @@ function CommentsRoute() {
 
   return (
     <>
-      <Header>
-        <div className="flex flex-1 items-center gap-4">
-          <h1 className="truncate text-lg font-semibold">{pageTitle} - Comments</h1>
-        </div>
-      </Header>
+      <WikiRouteHeader
+        title={`${pageTitle} - Comments`}
+        back={{ label: 'Back to page', onFallback: goBackToPage }}
+      />
       <Main>
         <PageComments
           slug={slug}

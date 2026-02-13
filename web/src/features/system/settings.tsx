@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { SystemSetting } from '@/types/settings'
-import { Loader2, Lock, RotateCcw } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
+import { Loader2, Lock, RotateCcw, Settings } from 'lucide-react'
 import { usePageTitle, getErrorMessage, toast } from '@mochi/common'
 import { usePreferencesData } from '@/hooks/use-preferences'
 import {
@@ -23,7 +24,7 @@ import { Input } from '@mochi/common'
 import { Label } from '@mochi/common'
 import { Skeleton } from '@mochi/common'
 import { Switch } from '@mochi/common'
-import { Header } from '@mochi/common'
+import { PageHeader } from '@mochi/common'
 import { Main } from '@mochi/common'
 
 function formatSettingName(name: string): string {
@@ -197,11 +198,13 @@ function SettingRow({
 
 export function SystemSettings() {
   usePageTitle('System settings')
+  const navigate = useNavigate()
   const { data, isLoading, error } = useSystemSettingsData()
   const { data: prefsData } = usePreferencesData()
   const setSetting = useSetSystemSetting()
   const [savingName, setSavingName] = useState<string | null>(null)
   const timezone = prefsData?.preferences.timezone
+  const goBackToWikis = () => navigate({ to: '/' })
 
   const handleSave = (name: string, value: string) => {
     setSavingName(name)
@@ -223,9 +226,11 @@ export function SystemSettings() {
   if (error) {
     return (
       <>
-        <Header>
-          <h1 className='text-lg font-semibold'>System settings</h1>
-        </Header>
+        <PageHeader
+          title='System settings'
+          icon={<Settings className='size-4 md:size-5' />}
+          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+        />
         <Main>
           <p className='text-muted-foreground'>Failed to load settings</p>
         </Main>
@@ -242,9 +247,11 @@ export function SystemSettings() {
 
   return (
     <>
-      <Header>
-        <h1 className='text-lg font-semibold'>System settings</h1>
-      </Header>
+      <PageHeader
+        title='System settings'
+        icon={<Settings className='size-4 md:size-5' />}
+        back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+      />
 
       <Main>
         {isLoading ? (

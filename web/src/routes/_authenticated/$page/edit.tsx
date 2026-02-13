@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { usePage } from '@/hooks/use-wiki'
 import { usePageTitle } from '@mochi/common'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
-import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useAuthStore } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/edit')({
   beforeLoad: () => {
@@ -24,6 +24,8 @@ export const Route = createFileRoute('/_authenticated/$page/edit')({
 function WikiPageEditRoute() {
   const params = Route.useParams()
   const slug = params.page ?? ''
+  const navigate = useNavigate()
+  const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   const { data, isLoading, error } = usePage(slug)
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(`Edit: ${pageTitle}`)
@@ -38,7 +40,7 @@ function WikiPageEditRoute() {
   if (isLoading) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`Edit: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <PageEditorSkeleton />
         </Main>
@@ -49,7 +51,7 @@ function WikiPageEditRoute() {
   if (error) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`Edit: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <div className="text-destructive">
             Error loading page: {error.message}
@@ -63,7 +65,7 @@ function WikiPageEditRoute() {
   if (data && 'error' in data && data.error === 'not_found') {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`Edit: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <PageEditor slug={slug} isNew />
         </Main>
@@ -75,7 +77,7 @@ function WikiPageEditRoute() {
   if (data && 'page' in data && typeof data.page === 'object') {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`Edit: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <PageEditor page={data.page} slug={slug} />
         </Main>

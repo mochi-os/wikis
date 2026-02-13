@@ -1,20 +1,21 @@
 import { useEffect } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePageRevision } from '@/hooks/use-wiki'
 import { usePageTitle } from '@mochi/common'
 import { RevisionView, RevisionViewSkeleton } from '@/features/wiki/revision-view'
-import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/history/$version')({
   component: RevisionViewRoute,
 })
 
 function RevisionViewRoute() {
-  const params = Route.useParams()
-  const slug = params.page ?? ''
-  const version = parseInt(params.version, 10)
+  const { wikiId, page: slug, version: versionParam } = Route.useParams()
+  const version = parseInt(versionParam, 10)
+  const navigate = useNavigate()
+  const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
   usePageTitle(`${slug} v${version}`)
 
   // Register page with sidebar context for tree expansion
@@ -29,7 +30,7 @@ function RevisionViewRoute() {
   if (isLoading) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <RevisionViewSkeleton />
         </Main>
@@ -40,7 +41,7 @@ function RevisionViewRoute() {
   if (error) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <div className="text-destructive">
             Error loading revision: {error.message}
@@ -53,7 +54,7 @@ function RevisionViewRoute() {
   if (data) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
           <RevisionView
             slug={slug}

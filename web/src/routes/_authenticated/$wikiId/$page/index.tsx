@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import {
   usePageTitle,
   requestHelpers,
-  Header,
   Main,
   Button,
   DropdownMenu,
@@ -32,6 +31,7 @@ import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
 import { getRssToken } from '@/api/request'
 import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/')({
   component: WikiPageRoute,
@@ -40,6 +40,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId/$page/')({
 function WikiPageRoute() {
   const { wikiId, page: slug } = Route.useParams()
   const navigate = useNavigate()
+  const goBackToWikis = () => navigate({ to: '/' })
   const { baseURL, wiki, permissions } = useWikiBaseURL()
 
   // Can unsubscribe if viewing a subscribed wiki (has source)
@@ -106,7 +107,7 @@ function WikiPageRoute() {
   if (isLoading) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
           <PageViewSkeleton />
         </Main>
@@ -117,7 +118,7 @@ function WikiPageRoute() {
   if (pageError) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
           <div className="text-destructive">
             Error loading page: {pageError.message}
@@ -133,7 +134,7 @@ function WikiPageRoute() {
     console.error('[WikiPage] Invalid API response:', { baseURL, slug, data: typeof rawData === 'string' ? rawData.slice(0, 100) : rawData })
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
           <div className="text-destructive">
             <p>Error: Received invalid response from server.</p>
@@ -189,12 +190,11 @@ function WikiPageRoute() {
 
     return (
       <>
-        <Header>
-          <div className="flex flex-1 items-center justify-between gap-4">
-            <h1 className="text-lg font-semibold">Page not found</h1>
-            {notFoundMenu}
-          </div>
-        </Header>
+        <WikiRouteHeader
+          title="Page not found"
+          actions={notFoundMenu}
+          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+        />
         <Main>
           <PageNotFound slug={slug} wikiId={wikiId} />
         </Main>
@@ -321,9 +321,11 @@ function WikiPageRoute() {
 
     return (
       <>
-        <Header>
-          <PageHeader page={data.page} actions={actionsMenu} />
-        </Header>
+        <PageHeader
+          page={data.page}
+          actions={actionsMenu}
+          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+        />
         <Main className="pt-2">
           <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
         </Main>

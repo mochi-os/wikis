@@ -20,12 +20,12 @@ import {
 } from '@/features/wiki/page-view'
 import { PageHeader } from '@/features/wiki/page-header'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
-import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiContext, usePermissions } from '@/context/wiki-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
 import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Search, Settings, Tags } from 'lucide-react'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/')({
   component: WikiPageRoute,
@@ -35,6 +35,7 @@ function WikiPageRoute() {
   const params = Route.useParams()
   const slug = params.page ?? ''
   const navigate = useNavigate()
+  const goBackToWikis = () => navigate({ to: '/' })
 
   // If page param is empty, redirect to wiki home
   if (!slug) {
@@ -85,7 +86,7 @@ function WikiPageRoute() {
   if (isLoading) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
           <PageViewSkeleton />
         </Main>
@@ -96,7 +97,7 @@ function WikiPageRoute() {
   if (error) {
     return (
       <>
-        <Header />
+        <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
           <div className="text-destructive">
             Error loading page: {error.message}
@@ -149,12 +150,11 @@ function WikiPageRoute() {
 
     return (
       <>
-        <Header>
-          <div className="flex flex-1 items-center justify-between gap-4">
-            <h1 className="text-lg font-semibold">Page not found</h1>
-            {notFoundMenu}
-          </div>
-        </Header>
+        <WikiRouteHeader
+          title="Page not found"
+          actions={notFoundMenu}
+          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+        />
         <Main>
           <PageNotFound slug={slug} />
         </Main>
@@ -262,9 +262,11 @@ function WikiPageRoute() {
 
     return (
       <>
-        <Header>
-          <PageHeader page={data.page} actions={actionsMenu} />
-        </Header>
+        <PageHeader
+          page={data.page}
+          actions={actionsMenu}
+          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+        />
         <Main className="pt-2">
           <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
         </Main>
