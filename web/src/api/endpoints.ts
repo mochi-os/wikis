@@ -14,11 +14,11 @@ const endpoints = {
   },
   wiki: {
     // Info
-    info: 'info',
-    create: 'create',
-    join: 'subscribe',
-    directorySearch: 'directory/search',
-    recommendations: 'recommendations',
+    info: '-/info',
+    create: '-/create',
+    join: '-/subscribe',
+    directorySearch: '-/directory/search',
+    recommendations: '-/recommendations',
     // Pages
     page: (slug: string) => `${slug}`,
     pageEdit: (slug: string) => `${slug}/edit`,

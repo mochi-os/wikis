@@ -425,7 +425,7 @@ function WikisListPage({ wikis }: WikisListPageProps) {
   const handleSubscribeRecommendation = async (wiki: RecommendedWiki) => {
     setPendingWikiId(wiki.id)
     try {
-      await wikisRequest.post(endpoints.wiki.subscribe, { target: wiki.id })
+      await wikisRequest.post(endpoints.wiki.join, { target: wiki.id })
       // Reload page to refresh wikis list
       window.location.reload()
     } catch (error) {
