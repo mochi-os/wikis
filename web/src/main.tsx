@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { useAuthStore, ThemeProvider, createQueryClient } from '@mochi/common'
+import { useAuthStore, ThemeProvider, createQueryClient, isDomainEntityRouting } from '@mochi/common'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 // Styles
@@ -17,10 +17,16 @@ const isEntityId = (s: string): boolean =>
   /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(s) || /^[1-9A-HJ-NP-Za-km-z]{50,51}$/.test(s)
 
 // Get basepath based on URL context:
+// - Domain entity routing (e.g., docs.mochi-os.org): basepath is / (pages are at root)
 // - Entity context (/<entity>/...): basepath is /<entity> for page routes
 // - Class context (/wikis/...): basepath is /wikis so routes like $wikiId/$page work
 // Note: /-/ prefix is only for API endpoints, not page routes
 const getBasepath = () => {
+  // Domain entity routing: no basepath prefix needed
+  if (isDomainEntityRouting()) {
+    return '/'
+  }
+
   const pathname = window.location.pathname
   const match = pathname.match(/^\/([^/]+)/)
   if (!match) return '/'

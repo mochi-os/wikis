@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Link } from '@tanstack/react-router'
-import { cn, ImageLightbox, type LightboxMedia, useLightboxHash } from '@mochi/common'
+import { cn, ImageLightbox, type LightboxMedia, useLightboxHash, isDomainEntityRouting } from '@mochi/common'
 import { getApiBasepath } from '@mochi/common'
 
 // Check if URL is an attachment URL
@@ -144,9 +144,11 @@ export function MarkdownContent({ content, className, missingLinks = [] }: Markd
               // Check if it's an internal wiki link (relative or absolute)
               const isExternal = href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//'))
               if (href && !isExternal) {
-                // Relative wiki page link - prefix with ../ to make it a sibling page
-                // e.g., on /wiki/abc/home, link to "page-2" becomes "../page-2" -> /wiki/abc/page-2
-                const siblingHref = href.startsWith('/') || href.startsWith('../') ? href : `../${href}`
+                // Relative wiki page link - convert to navigable path
+                // Domain routing (e.g., docs.mochi-os.org): pages are at root, so use absolute /page
+                // Normal routing (e.g., /wikis/abc/home): use ../page to stay within wiki context
+                const siblingHref = href.startsWith('/') || href.startsWith('../') ? href
+                  : isDomainEntityRouting() ? `/${href}` : `../${href}`
                 // Check if this is a link to a non-existent page (Wikipedia-style "red link")
                 const cleanHref = href.split('#')[0].split('?')[0] // Remove anchors and query strings
                 const isMissing = missingLinks.includes(cleanHref)
