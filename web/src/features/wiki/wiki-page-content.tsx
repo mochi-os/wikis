@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
   toast,
   getErrorMessage,
+  getAppPath,
 } from '@mochi/common'
 import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Rss, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import {
@@ -98,7 +99,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
     try {
       const { token } = await getRssToken(wikiId, mode)
-      const url = `${window.location.origin}/wikis/${wikiId}/-/rss?token=${token}`
+      const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       await navigator.clipboard.writeText(url)
       toast.success('RSS URL copied to clipboard')
     } catch (error) {

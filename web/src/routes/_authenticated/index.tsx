@@ -22,6 +22,7 @@ import {
   toast,
   getErrorMessage,
   isDomainEntityRouting,
+  getAppPath,
 } from '@mochi/common'
 import { BookOpen, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, MoreHorizontal, Pencil, Plus, Rss, Search, Settings, Tags } from 'lucide-react'
 import { usePageTitle } from '@mochi/common'
@@ -169,7 +170,7 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
   const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
     try {
       const { token } = await getRssToken(wikiId, mode)
-      const url = `${window.location.origin}/wikis/${wikiId}/-/rss?token=${token}`
+      const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       await navigator.clipboard.writeText(url)
       toast.success('RSS URL copied to clipboard')
     } catch (error) {
@@ -377,7 +378,7 @@ function WikisListPage({ wikis }: WikisListPageProps) {
   const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
     try {
       const { token } = await getRssToken('*', mode)
-      const url = `${window.location.origin}/wikis/-/rss?token=${token}`
+      const url = `${window.location.origin}${getAppPath()}/-/rss?token=${token}`
       await navigator.clipboard.writeText(url)
       toast.success('RSS URL copied to clipboard')
     } catch (error) {

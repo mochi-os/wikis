@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { BookOpen } from 'lucide-react'
-import { FindEntityPage, requestHelpers } from '@mochi/common'
+import { FindEntityPage, requestHelpers, getAppPath } from '@mochi/common'
 import { useWikiContext } from '@/context/wiki-context'
 import { useJoinWiki } from '@/hooks/use-wiki'
 import endpoints from '@/api/endpoints'
@@ -34,7 +34,7 @@ function FindWikisPage() {
     isError: isRecommendationsError,
   } = useQuery({
     queryKey: ['wikis', 'recommendations'],
-    queryFn: () => requestHelpers.get<RecommendationsResponse>(`/wikis/${endpoints.wiki.recommendations}`),
+    queryFn: () => requestHelpers.get<RecommendationsResponse>(`${getAppPath()}/${endpoints.wiki.recommendations}`),
     retry: false,
     refetchOnWindowFocus: false,
   })
@@ -78,7 +78,7 @@ function FindWikisPage() {
       onSubscribe={handleSubscribe}
       subscribedIds={subscribedWikiIds}
       entityClass="wiki"
-      searchEndpoint="/wikis/directory/search"
+      searchEndpoint={`${getAppPath()}/directory/search`}
       icon={BookOpen}
       iconClassName="bg-emerald-500/10 text-emerald-600"
       title="Find wikis"

@@ -1,10 +1,10 @@
 const endpoints = {
   // Cross-app endpoints (proxied via wikis backend)
   users: {
-    search: '/wikis/-/users/search',
+    search: '-/users/search',
   },
   groups: {
-    list: '/wikis/-/groups',
+    list: '-/groups',
   },
   auth: {
     code: '/_/code',
