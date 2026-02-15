@@ -31,9 +31,6 @@ import { Route as AuthenticatedUserSessionsRouteImport } from './routes/_authent
 import { Route as AuthenticatedUserPreferencesRouteImport } from './routes/_authenticated/user/preferences'
 import { Route as AuthenticatedUserAccountRouteImport } from './routes/_authenticated/user/account'
 import { Route as AuthenticatedTagTagRouteImport } from './routes/_authenticated/tag/$tag'
-import { Route as AuthenticatedSystemUsersRouteImport } from './routes/_authenticated/system/users'
-import { Route as AuthenticatedSystemStatusRouteImport } from './routes/_authenticated/system/status'
-import { Route as AuthenticatedSystemSettingsRouteImport } from './routes/_authenticated/system/settings'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedWikiIdSettingsRouteImport } from './routes/_authenticated/$wikiId/settings'
 import { Route as AuthenticatedWikiIdNewRouteImport } from './routes/_authenticated/$wikiId/new'
@@ -167,24 +164,6 @@ const AuthenticatedTagTagRoute = AuthenticatedTagTagRouteImport.update({
   path: '/tag/$tag',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedSystemUsersRoute =
-  AuthenticatedSystemUsersRouteImport.update({
-    id: '/system/users',
-    path: '/system/users',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSystemStatusRoute =
-  AuthenticatedSystemStatusRouteImport.update({
-    id: '/system/status',
-    path: '/system/status',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSystemSettingsRoute =
-  AuthenticatedSystemSettingsRouteImport.update({
-    id: '/system/settings',
-    path: '/system/settings',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
@@ -314,9 +293,6 @@ export interface FileRoutesByFullPath {
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/system/settings': typeof AuthenticatedSystemSettingsRoute
-  '/system/status': typeof AuthenticatedSystemStatusRoute
-  '/system/users': typeof AuthenticatedSystemUsersRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
   '/user/account': typeof AuthenticatedUserAccountRoute
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
@@ -357,9 +333,6 @@ export interface FileRoutesByTo {
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/system/settings': typeof AuthenticatedSystemSettingsRoute
-  '/system/status': typeof AuthenticatedSystemStatusRoute
-  '/system/users': typeof AuthenticatedSystemUsersRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
   '/user/account': typeof AuthenticatedUserAccountRoute
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
@@ -403,9 +376,6 @@ export interface FileRoutesById {
   '/_authenticated/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/_authenticated/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/_authenticated/system/settings': typeof AuthenticatedSystemSettingsRoute
-  '/_authenticated/system/status': typeof AuthenticatedSystemStatusRoute
-  '/_authenticated/system/users': typeof AuthenticatedSystemUsersRoute
   '/_authenticated/tag/$tag': typeof AuthenticatedTagTagRoute
   '/_authenticated/user/account': typeof AuthenticatedUserAccountRoute
   '/_authenticated/user/preferences': typeof AuthenticatedUserPreferencesRoute
@@ -449,9 +419,6 @@ export interface FileRouteTypes {
     | '/$wikiId/new'
     | '/$wikiId/settings'
     | '/errors/$error'
-    | '/system/settings'
-    | '/system/status'
-    | '/system/users'
     | '/tag/$tag'
     | '/user/account'
     | '/user/preferences'
@@ -492,9 +459,6 @@ export interface FileRouteTypes {
     | '/$wikiId/new'
     | '/$wikiId/settings'
     | '/errors/$error'
-    | '/system/settings'
-    | '/system/status'
-    | '/system/users'
     | '/tag/$tag'
     | '/user/account'
     | '/user/preferences'
@@ -537,9 +501,6 @@ export interface FileRouteTypes {
     | '/_authenticated/$wikiId/new'
     | '/_authenticated/$wikiId/settings'
     | '/_authenticated/errors/$error'
-    | '/_authenticated/system/settings'
-    | '/_authenticated/system/status'
-    | '/_authenticated/system/users'
     | '/_authenticated/tag/$tag'
     | '/_authenticated/user/account'
     | '/_authenticated/user/preferences'
@@ -721,27 +682,6 @@ declare module '@tanstack/react-router' {
       path: '/tag/$tag'
       fullPath: '/tag/$tag'
       preLoaderRoute: typeof AuthenticatedTagTagRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/system/users': {
-      id: '/_authenticated/system/users'
-      path: '/system/users'
-      fullPath: '/system/users'
-      preLoaderRoute: typeof AuthenticatedSystemUsersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/system/status': {
-      id: '/_authenticated/system/status'
-      path: '/system/status'
-      fullPath: '/system/status'
-      preLoaderRoute: typeof AuthenticatedSystemStatusRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/system/settings': {
-      id: '/_authenticated/system/settings'
-      path: '/system/settings'
-      fullPath: '/system/settings'
-      preLoaderRoute: typeof AuthenticatedSystemSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/errors/$error': {
@@ -927,9 +867,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPageEditRoute: typeof AuthenticatedPageEditRoute
   AuthenticatedPageRevertRoute: typeof AuthenticatedPageRevertRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
-  AuthenticatedSystemSettingsRoute: typeof AuthenticatedSystemSettingsRoute
-  AuthenticatedSystemStatusRoute: typeof AuthenticatedSystemStatusRoute
-  AuthenticatedSystemUsersRoute: typeof AuthenticatedSystemUsersRoute
   AuthenticatedTagTagRoute: typeof AuthenticatedTagTagRoute
   AuthenticatedUserAccountRoute: typeof AuthenticatedUserAccountRoute
   AuthenticatedUserPreferencesRoute: typeof AuthenticatedUserPreferencesRoute
@@ -956,9 +893,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPageEditRoute: AuthenticatedPageEditRoute,
   AuthenticatedPageRevertRoute: AuthenticatedPageRevertRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
-  AuthenticatedSystemSettingsRoute: AuthenticatedSystemSettingsRoute,
-  AuthenticatedSystemStatusRoute: AuthenticatedSystemStatusRoute,
-  AuthenticatedSystemUsersRoute: AuthenticatedSystemUsersRoute,
   AuthenticatedTagTagRoute: AuthenticatedTagTagRoute,
   AuthenticatedUserAccountRoute: AuthenticatedUserAccountRoute,
   AuthenticatedUserPreferencesRoute: AuthenticatedUserPreferencesRoute,
