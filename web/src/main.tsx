@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { useAuthStore, ThemeProvider, createQueryClient, getRouterBasepath } from '@mochi/common'
+import { useAuthStore, ThemeProvider, createQueryClient, getAppPath, getRouterBasepath } from '@mochi/common'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 // Styles
@@ -12,10 +12,19 @@ const queryClient = createQueryClient({
   onServerError: () => router.navigate({ to: '/500' }),
 })
 
+// Use app path as basepath, ignoring entity fingerprint.
+// Routes use $wikiId to handle entity fingerprints — including the fingerprint
+// in the basepath would cause links to double it (e.g. /wikis/<fp>/<fp>/...).
+function getBasepath(): string {
+  const appPath = getAppPath()
+  if (appPath) return appPath + '/'
+  return getRouterBasepath()
+}
+
 const router = createRouter({
   routeTree,
   context: { queryClient },
-  basepath: getRouterBasepath(),
+  basepath: getBasepath(),
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
 })
