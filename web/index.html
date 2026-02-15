@@ -3,16 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-      // Set base href to entity root for proper asset resolution in nested routes
       (function() {
-        var path = window.location.pathname;
-        var match = path.match(/^(\/wiki\/[^/]+\/|\/[^/]+\/)/);
-        if (match) {
-          var baseEl = document.createElement('base');
-          baseEl.href = match[1];
-          document.head.appendChild(baseEl);
-        }
-      })();
+        var app = document.querySelector('meta[name="mochi:app"]')
+        var fp = document.querySelector('meta[name="mochi:fingerprint"]')
+        var domain = document.querySelector('meta[name="mochi:domain"]')
+        var base = '/'
+        if (domain) base = '/'
+        else if (fp && app) base = '/' + app.content + '/' + fp.content + '/'
+        else if (fp) base = '/' + fp.content + '/'
+        else if (app) base = '/' + app.content + '/'
+        else { var m = location.pathname.match(/^\/([^/]+)/); if (m) base = '/' + m[1] + '/' }
+        var el = document.createElement('base')
+        el.href = base
+        document.head.appendChild(el)
+      })()
     </script>
     <link rel="icon" type="image/svg+xml" href="./images/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
