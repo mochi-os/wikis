@@ -114,10 +114,10 @@ function IdentitySection() {
             </span>
           </FieldRow>
           <FieldRow label="Fingerprint">
-            <DataChip value={data.identity.fingerprint} />
+            <DataChip value={data.identity.fingerprint} truncate='middle' />
           </FieldRow>
           <FieldRow label="Entity ID">
-            <DataChip value={data.identity.entity} />
+            <DataChip value={data.identity.entity} truncate='middle' />
           </FieldRow>
         </div>
       ) : null}

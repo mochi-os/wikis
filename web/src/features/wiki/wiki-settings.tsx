@@ -459,11 +459,11 @@ function SettingsTab() {
               )}
             </FieldRow>
             <FieldRow label="Entity ID">
-              <DataChip value={wikiInfo.id} />
+              <DataChip value={wikiInfo.id} truncate="middle" />
             </FieldRow>
             {fingerprint && (
               <FieldRow label="Fingerprint">
-                <DataChip value={fingerprint} />
+                <DataChip value={fingerprint} truncate="middle" />
               </FieldRow>
             )}
           </div>

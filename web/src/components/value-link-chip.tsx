@@ -18,7 +18,12 @@ export function ValueLinkChip({
 
   return (
     <div className={cn('flex min-w-0 items-center gap-1.5', className)}>
-      <DataChip value={value} className='min-w-0 flex-1' chipClassName={chipClassName} />
+      <DataChip
+        value={value}
+        className='min-w-0 flex-1'
+        chipClassName={chipClassName}
+        truncate='middle'
+      />
       <Button variant='ghost' size='icon' className='size-8 shrink-0' asChild>
         <a href={targetHref} target='_blank' rel='noopener noreferrer'>
           <ExternalLink className='h-3.5 w-3.5' />

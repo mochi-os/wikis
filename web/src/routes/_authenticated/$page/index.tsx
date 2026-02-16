@@ -37,10 +37,7 @@ function WikiPageRoute() {
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
 
-  // If page param is empty, redirect to wiki home
-  if (!slug) {
-    return <Navigate to="/" />
-  }
+
 
   const { data, isLoading, error } = usePage(slug)
   const { info } = useWikiContext()
@@ -82,6 +79,10 @@ function WikiPageRoute() {
 
   // Can unsubscribe if viewing a subscribed wiki (has source)
   const canUnsubscribe = !!info?.wiki?.source
+
+  if (!slug) {
+    return <Navigate to="/" />
+  }
 
   if (isLoading) {
     return (
