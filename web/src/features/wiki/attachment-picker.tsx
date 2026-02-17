@@ -11,6 +11,7 @@ import {
   DialogTrigger,
   ScrollArea,
   EmptyState,
+  GeneralError,
   ListSkeleton,
   formatFileSize,
   getFileIcon,
@@ -35,7 +36,7 @@ export function AttachmentPicker({ onSelect, onDelete, trigger }: AttachmentPick
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { data, isLoading } = useAttachments()
+  const { data, isLoading, error } = useAttachments()
   const uploadMutation = useUploadAttachment()
   const deleteMutation = useDeleteAttachment()
 
@@ -142,6 +143,8 @@ export function AttachmentPicker({ onSelect, onDelete, trigger }: AttachmentPick
           <ScrollArea className="h-[400px] rounded-md border p-4">
             {isLoading ? (
               <ListSkeleton variant="simple" height="h-16" count={3} />
+            ) : error ? (
+              <GeneralError error={error} minimal mode="inline" className="py-8" />
             ) : attachments.length === 0 ? (
               <EmptyState
                 icon={Image}

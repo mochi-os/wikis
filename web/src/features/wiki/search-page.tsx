@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { Search, FileText, ArrowRight } from 'lucide-react'
-import { EmptyState, Input, ListSkeleton, Separator } from '@mochi/common'
+import { EmptyState, GeneralError, Input, ListSkeleton, Separator } from '@mochi/common'
 import { useSearch } from '@/hooks/use-wiki'
 import type { SearchResult } from '@/types/wiki'
 
@@ -35,7 +35,8 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
     }
   }, [debouncedQuery, initialQuery])
 
-  const { data, isLoading } = useSearch(debouncedQuery)
+  const { data, isLoading, error } = useSearch(debouncedQuery)
+  const results = data?.results ?? []
 
   return (
     <div className="space-y-6">
@@ -71,7 +72,9 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
         />
       ) : isLoading ? (
         <ListSkeleton variant="card" count={5} />
-      ) : data?.results.length === 0 ? (
+      ) : error ? (
+        <GeneralError error={error} minimal mode="inline" />
+      ) : results.length === 0 ? (
         <EmptyState
           icon={FileText}
           title={`No pages found for "${debouncedQuery}"`}
@@ -81,11 +84,11 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
       ) : (
         <div className="space-y-4">
           <p className="text-muted-foreground text-sm">
-            Found {data?.results.length} result
-            {data?.results.length !== 1 ? 's' : ''} for "{debouncedQuery}"
+            Found {results.length} result
+            {results.length !== 1 ? 's' : ''} for "{debouncedQuery}"
           </p>
           <div className="space-y-2">
-            {data?.results.map((result) => (
+            {results.map((result) => (
               <SearchResultItem key={result.page} result={result} />
             ))}
           </div>
