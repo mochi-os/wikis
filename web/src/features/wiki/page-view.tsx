@@ -66,7 +66,7 @@ function TableOfContents({
 
   if (mobile) {
     return (
-      <details className='group bg-muted/20 mb-4 rounded-lg border lg:hidden'>
+      <details className='bg-surface-1 group mb-4 rounded-lg border lg:hidden'>
         <summary className='flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2'>
           <span className='flex items-center gap-2 text-sm font-medium'>
             <ListTree className='text-muted-foreground size-4' />
@@ -81,7 +81,7 @@ function TableOfContents({
 
   return (
     <aside className='hidden lg:block'>
-      <div className='bg-muted/20 sticky top-20 rounded-lg border p-3'>
+      <div className='bg-surface-1 sticky top-20 rounded-lg border p-3'>
         <p className='mb-2 flex items-center gap-2 text-sm font-semibold'>
           <ListTree className='text-muted-foreground size-4' />
           On this page
@@ -239,7 +239,7 @@ export function PageView({ page, missingLinks }: PageViewProps) {
 
       <Separator />
 
-      <footer className='bg-muted/15 flex flex-wrap items-center justify-between gap-4 rounded-lg border px-3 py-2'>
+      <footer className='bg-surface-1 flex flex-wrap items-center justify-between gap-4 rounded-lg border px-3 py-2'>
         <TagManager slug={page.slug} tags={page.tags} />
 
         <div className='text-muted-foreground flex items-center gap-2 text-xs'>
