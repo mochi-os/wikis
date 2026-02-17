@@ -15,6 +15,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
+  GeneralError,
   toast,
   getErrorMessage,
 } from '@mochi/common'
@@ -120,9 +121,7 @@ function WikiPageRoute() {
       <>
         <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
-          <div className="text-destructive">
-            Error loading page: {pageError.message}
-          </div>
+          <GeneralError error={pageError} minimal mode="inline" />
         </Main>
       </>
     )
@@ -136,12 +135,14 @@ function WikiPageRoute() {
       <>
         <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
-          <div className="text-destructive">
-            <p>Error: Received invalid response from server.</p>
-            <p className="text-muted-foreground mt-2 text-sm">
-              Request URL: {baseURL}{slug}
-            </p>
-          </div>
+          <GeneralError
+            error={new Error('Received invalid response from server.')}
+            minimal
+            mode="inline"
+          />
+          <p className="text-muted-foreground mt-2 text-sm">
+            Request URL: {baseURL}{slug}
+          </p>
         </Main>
       </>
     )

@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react'
 import { Check, ChevronsUpDown, Loader2, RotateCcw } from 'lucide-react'
 import { usePageTitle, getErrorMessage, toast } from '@mochi/common'
 import { cn } from '@mochi/common'
+import { GeneralError } from '@mochi/common'
+import { ListSkeleton } from '@mochi/common'
 import { useTheme } from '@mochi/common'
 import {
   usePreferencesData,
@@ -41,7 +43,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
 import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
 
@@ -218,7 +219,7 @@ export function UserPreferences() {
           <h1 className='text-lg font-semibold'>Preferences</h1>
         </Header>
         <Main>
-          <p className='text-muted-foreground'>Failed to load preferences</p>
+          <GeneralError error={error} minimal mode='inline' />
         </Main>
       </>
     )
@@ -232,11 +233,7 @@ export function UserPreferences() {
 
       <Main>
         {isLoading ? (
-          <div className='space-y-6'>
-            <Skeleton className='h-16 w-full' />
-            <Skeleton className='h-16 w-full' />
-            <Skeleton className='h-16 w-full' />
-          </div>
+          <ListSkeleton variant='simple' height='h-16' count={3} />
         ) : data ? (
           <>
             <div className='divide-y'>

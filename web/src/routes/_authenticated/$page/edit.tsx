@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { usePage } from '@/hooks/use-wiki'
-import { usePageTitle } from '@mochi/common'
+import { GeneralError, usePageTitle } from '@mochi/common'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
 import { Main } from '@mochi/common'
 import { useAuthStore } from '@mochi/common'
@@ -53,9 +53,7 @@ function WikiPageEditRoute() {
       <>
         <WikiRouteHeader title={`Edit: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <div className="text-destructive">
-            Error loading page: {error.message}
-          </div>
+          <GeneralError error={error} minimal mode="inline" />
         </Main>
       </>
     )

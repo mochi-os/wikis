@@ -15,11 +15,12 @@ import {
   Button,
   DataChip,
   FieldRow,
+  GeneralError,
   Input,
+  ListSkeleton,
   Main,
   PageHeader,
   Section,
-  Skeleton,
   Switch,
   getErrorMessage,
   toast,
@@ -224,7 +225,7 @@ export function SystemSettings() {
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main>
-          <p className='text-muted-foreground'>Failed to load settings</p>
+          <GeneralError error={error} minimal mode='inline' />
         </Main>
       </>
     )
@@ -249,12 +250,7 @@ export function SystemSettings() {
         <Section title='Configuration' description='Global server settings'>
           <div className='divide-y-0'>
             {isLoading ? (
-              <div className='space-y-6 py-4'>
-                <Skeleton className='h-12 w-full' />
-                <Skeleton className='h-12 w-full' />
-                <Skeleton className='h-12 w-full' />
-                <Skeleton className='h-12 w-full' />
-              </div>
+              <ListSkeleton variant='simple' height='h-12' count={4} />
             ) : (
               sortedSettings.map((setting) => (
                 <SettingRow

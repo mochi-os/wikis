@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import {
   Button,
+  EmptyState,
   getApiBasepath,
   ImageLightbox,
   type LightboxMedia,
@@ -335,21 +336,20 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
         {isLoading ? (
           <AttachmentsPageSkeleton viewMode={viewMode} />
         ) : filteredAttachments.length === 0 ? (
-          <div className="flex h-[400px] flex-col items-center justify-center text-center">
-            <Image className="text-muted-foreground mb-4 h-12 w-12" />
-            {attachments.length === 0 ? (
-              <>
-                <p className="text-muted-foreground mb-2">No attachments yet</p>
-                <p className="text-muted-foreground text-sm">
-                  Drag and drop files here, or click "Upload files" to get started.
-                </p>
-              </>
-            ) : (
-              <p className="text-muted-foreground">
-                No attachments match your search
-              </p>
-            )}
-          </div>
+          <EmptyState
+            icon={attachments.length === 0 ? Image : Search}
+            title={
+              attachments.length === 0
+                ? 'No attachments yet'
+                : 'No attachments match your search'
+            }
+            description={
+              attachments.length === 0
+                ? 'Drag and drop files here, or click "Upload files" to get started.'
+                : 'Try a different search term or filter.'
+            }
+            className="h-[400px]"
+          />
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {filteredAttachments.map((attachment) => (

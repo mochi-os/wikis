@@ -1,6 +1,50 @@
 import { useEffect, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
-import { usePageTitle, getErrorMessage } from '@mochi/common'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Badge,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  EmptyState,
+  GeneralError,
+  Header,
+  Input,
+  Label,
+  ListSkeleton,
+  Main,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  getErrorMessage,
+  toast,
+  usePageTitle,
+} from '@mochi/common'
 import type { User, Session } from '@/types/users'
 import {
   Ban,
@@ -17,7 +61,6 @@ import {
   Trash2,
   UserCheck,
 } from 'lucide-react'
-import { toast } from '@mochi/common'
 import {
   useSystemUsersData,
   useCreateUser,
@@ -29,53 +72,6 @@ import {
   useRevokeUserSessions,
 } from '@/hooks/use-system-users'
 import { useAccountData } from '@/hooks/use-account'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@mochi/common'
-import { Badge } from '@mochi/common'
-import { Button } from '@mochi/common'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@mochi/common'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@mochi/common'
-import { Input } from '@mochi/common'
-import { Label } from '@mochi/common'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@mochi/common'
-import { Skeleton } from '@mochi/common'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@mochi/common'
-import { Header } from '@mochi/common'
-import { Main } from '@mochi/common'
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value)
@@ -592,7 +588,7 @@ export function SystemUsers() {
           <h1 className='text-lg font-semibold'>Users</h1>
         </Header>
         <Main>
-          <p className='text-muted-foreground'>Failed to load users</p>
+          <GeneralError error={error} minimal mode='inline' />
         </Main>
       </>
     )
@@ -627,11 +623,7 @@ export function SystemUsers() {
 
       <Main>
         {isLoading ? (
-          <div className='space-y-2'>
-            <Skeleton className='h-12 w-full' />
-            <Skeleton className='h-12 w-full' />
-            <Skeleton className='h-12 w-full' />
-          </div>
+          <ListSkeleton variant='simple' height='h-12' count={3} />
         ) : sortedUsers.length > 0 ? (
           <>
             <Table>
@@ -723,9 +715,11 @@ export function SystemUsers() {
             )}
           </>
         ) : (
-          <p className='text-muted-foreground py-8 text-center text-sm'>
-            {debouncedSearch ? 'No users match your search' : 'No users found'}
-          </p>
+          <EmptyState
+            icon={Search}
+            title={debouncedSearch ? 'No users match your search' : 'No users found'}
+            className='py-8'
+          />
         )}
       </Main>
     </>

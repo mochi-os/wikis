@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { Search, FileText, ArrowRight } from 'lucide-react'
-import { Input } from '@mochi/common'
-import { Separator } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
+import { EmptyState, Input, ListSkeleton, Separator } from '@mochi/common'
 import { useSearch } from '@/hooks/use-wiki'
 import type { SearchResult } from '@/types/wiki'
 
@@ -65,15 +63,21 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
 
       {/* Results */}
       {!debouncedQuery ? (
-        <p className="text-muted-foreground py-8 text-center">
-          Enter a search term to find pages.
-        </p>
+        <EmptyState
+          icon={Search}
+          title="Enter a search term"
+          description="Search pages by title or content."
+          className="py-8"
+        />
       ) : isLoading ? (
-        <SearchResultsSkeleton />
+        <ListSkeleton variant="card" count={5} />
       ) : data?.results.length === 0 ? (
-        <p className="text-muted-foreground py-8 text-center">
-          No pages found for "{debouncedQuery}".
-        </p>
+        <EmptyState
+          icon={FileText}
+          title={`No pages found for "${debouncedQuery}"`}
+          description="Try different search terms."
+          className="py-8"
+        />
       ) : (
         <div className="space-y-4">
           <p className="text-muted-foreground text-sm">
@@ -115,25 +119,5 @@ function SearchResultItem({ result }: SearchResultItemProps) {
         </p>
       </div>
     </a>
-  )
-}
-
-function SearchResultsSkeleton() {
-  return (
-    <div className="space-y-4">
-      <Skeleton className="h-5 w-48" />
-      <div className="space-y-2">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="flex items-start gap-4 rounded-lg border p-4">
-            <Skeleton className="mt-1 h-5 w-5" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-5 w-48" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-3 w-32" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
   )
 }

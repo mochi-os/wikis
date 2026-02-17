@@ -4,6 +4,7 @@ import { toast } from '@mochi/common'
 import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus } from 'lucide-react'
 import {
   Button,
+  EmptyState,
   getApiBasepath,
   Input,
   Textarea,
@@ -367,9 +368,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
           {/* Attachments grid */}
           {attachments.length === 0 ? (
-            <div className="py-8 text-center text-muted-foreground">
-              No attachments yet. Upload a file to get started.
-            </div>
+            <EmptyState
+              icon={Image}
+              title="No attachments yet"
+              description="Upload a file to get started."
+              className="py-8"
+            />
           ) : (
             <div className="grid grid-cols-4 gap-3 max-h-[400px] overflow-y-auto">
               {attachments.map((attachment) => {

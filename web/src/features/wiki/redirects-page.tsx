@@ -7,6 +7,9 @@ import {
   Input,
   Label,
   Separator,
+  EmptyState,
+  GeneralError,
+  ListSkeleton,
   Skeleton,
   Table,
   TableBody,
@@ -46,9 +49,7 @@ export function RedirectsPage() {
 
   if (error) {
     return (
-      <div className="text-destructive">
-        Error loading redirects: {error.message}
-      </div>
+      <GeneralError error={error} minimal mode="inline" />
     )
   }
 
@@ -67,9 +68,12 @@ export function RedirectsPage() {
 
       {/* Redirects table */}
       {!data?.redirects || data.redirects.length === 0 ? (
-        <p className="text-muted-foreground py-8 text-center">
-          No redirects configured. Create a redirect to forward one URL to another.
-        </p>
+        <EmptyState
+          icon={Link2}
+          title="No redirects configured"
+          description="Create a redirect to forward one URL to another."
+          className="py-8"
+        />
       ) : (
         <Table>
           <TableHeader>
@@ -262,11 +266,7 @@ export function RedirectsPageSkeleton() {
       </div>
       <Skeleton className="h-5 w-96" />
       <Separator />
-      <div className="space-y-2">
-        {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-12 w-full" />
-        ))}
-      </div>
+      <ListSkeleton variant="simple" height="h-12" count={3} />
     </div>
   )
 }

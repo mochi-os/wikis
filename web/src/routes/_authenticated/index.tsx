@@ -249,9 +249,7 @@ function WikiHomePage({
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main>
-          <div className='text-destructive'>
-            Error loading page: {error.message}
-          </div>
+          <GeneralError error={error} minimal mode='inline' />
         </Main>
       </>
     )
