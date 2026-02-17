@@ -1,7 +1,6 @@
 import { useState, useRef, useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import { format } from 'date-fns'
-import { toast } from '@mochi/common'
 import {
   Upload,
   Trash2,
@@ -18,8 +17,10 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import {
+  toast,
   Button,
   EmptyState,
+  GeneralError,
   getApiBasepath,
   ImageLightbox,
   type LightboxMedia,
@@ -52,6 +53,7 @@ interface AttachmentsPageProps {
 type ViewMode = 'grid' | 'list'
 type FilterType = 'all' | 'images' | 'documents'
 type SortBy = 'name' | 'date' | 'size'
+const EMPTY_ATTACHMENTS: Attachment[] = []
 
 // Build attachment URL using API basepath for correct resolution from any route
 function getAttachmentUrl(id: string): string {
@@ -67,13 +69,13 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { data, isLoading } = useAttachments()
+  const { data, isLoading, error } = useAttachments()
   const uploadMutation = useUploadAttachment()
   const deleteMutation = useDeleteAttachment()
   const wikiContext = useWikiBaseURLOptional()
   const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
 
-  const attachments = data?.attachments || []
+  const attachments = data?.attachments ?? EMPTY_ATTACHMENTS
 
   // Filter and sort attachments
   const filteredAttachments = useMemo(() => {
@@ -335,6 +337,10 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
       >
         {isLoading ? (
           <AttachmentsPageSkeleton viewMode={viewMode} />
+        ) : error ? (
+          <div className="px-4 py-8">
+            <GeneralError error={error} minimal mode="inline" />
+          </div>
         ) : filteredAttachments.length === 0 ? (
           <EmptyState
             icon={attachments.length === 0 ? Image : Search}
