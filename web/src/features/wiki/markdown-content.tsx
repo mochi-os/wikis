@@ -144,9 +144,8 @@ export function MarkdownContent({
     ({ children, ...props }: ComponentPropsWithoutRef<'h2'>) => {
       const headingText = getNodeText(children).trim()
       const id = resolveHeadingId(level, headingText)
-
-      return (
-        <h2 id={id} className={classes} {...props}>
+      const content = (
+        <>
           <span>{children}</span>
           <a
             href={
@@ -159,7 +158,29 @@ export function MarkdownContent({
           >
             <Hash className='size-3.5' />
           </a>
-        </h2>
+        </>
+      )
+
+      if (level === 2) {
+        return (
+          <h2 id={id} className={classes} {...props}>
+            {content}
+          </h2>
+        )
+      }
+
+      if (level === 3) {
+        return (
+          <h3 id={id} className={classes} {...props}>
+            {content}
+          </h3>
+        )
+      }
+
+      return (
+        <h4 id={id} className={classes} {...props}>
+          {content}
+        </h4>
       )
     }
 
