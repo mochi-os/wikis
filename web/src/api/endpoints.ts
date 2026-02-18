@@ -1,10 +1,10 @@
 const endpoints = {
   // Cross-app endpoints (proxied via wikis backend)
   users: {
-    search: '/wikis/-/users/search',
+    search: '-/users/search',
   },
   groups: {
-    list: '/wikis/-/groups',
+    list: '-/groups',
   },
   auth: {
     code: '/_/code',
@@ -14,11 +14,11 @@ const endpoints = {
   },
   wiki: {
     // Info
-    info: 'info',
-    create: 'create',
-    join: 'subscribe',
-    directorySearch: 'directory/search',
-    recommendations: 'recommendations',
+    info: '-/info',
+    create: '-/create',
+    join: '-/subscribe',
+    directorySearch: '-/directory/search',
+    recommendations: '-/recommendations',
     // Pages
     page: (slug: string) => `${slug}`,
     pageEdit: (slug: string) => `${slug}/edit`,
@@ -99,36 +99,6 @@ const endpoints = {
     preferences: 'user/preferences/data',
     preferencesSet: 'user/preferences/set',
     preferencesReset: 'user/preferences/reset',
-  },
-  system: {
-    settings: 'system/settings/list',
-    settingsGet: 'system/settings/get',
-    settingsSet: 'system/settings/set',
-    users: 'system/users/data',
-    usersList: 'system/users/list',
-    usersGet: 'system/users/get',
-    usersCreate: 'system/users/create',
-    usersUpdate: 'system/users/update',
-    usersDelete: 'system/users/delete',
-    usersSuspend: 'system/users/suspend',
-    usersActivate: 'system/users/activate',
-    usersSessions: 'system/users/sessions',
-    usersSessionsRevoke: 'system/users/sessions/revoke',
-  },
-  domains: {
-    data: 'domains/data',
-    create: 'domains/create',
-    get: 'domains/get',
-    update: 'domains/update',
-    delete: 'domains/delete',
-    routeCreate: 'domains/route/create',
-    routeUpdate: 'domains/route/update',
-    routeDelete: 'domains/route/delete',
-    delegationCreate: 'domains/delegation/create',
-    delegationDelete: 'domains/delegation/delete',
-    userSearch: 'domains/user/search',
-    apps: 'domains/apps',
-    entities: 'domains/entities',
   },
 } as const
 

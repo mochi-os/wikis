@@ -541,7 +541,7 @@ export function useUserSearch(query: string) {
     queryFn: async () => {
       const formData = new URLSearchParams()
       formData.append('search', query)
-      return requestHelpers.post<UserSearchResponse>(
+      return wikisRequest.post<UserSearchResponse>(
         endpoints.users.search,
         formData.toString(),
         { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
@@ -564,7 +564,7 @@ export interface GroupListResponse {
 export function useGroups() {
   return useQuery({
     queryKey: ['groups', 'list'],
-    queryFn: () => requestHelpers.get<GroupListResponse>(endpoints.groups.list),
+    queryFn: () => wikisRequest.get<GroupListResponse>(endpoints.groups.list),
   })
 }
 

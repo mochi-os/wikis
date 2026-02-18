@@ -66,7 +66,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
   const handleSubscribe = async (wiki: DirectoryEntry) => {
     setPendingWikiId(wiki.id)
     try {
-      const result = await wikisRequest.post<{ id: string; fingerprint: string; home: string }>(endpoints.wiki.subscribe, { target: wiki.id, server: wiki.location || undefined })
+      const result = await wikisRequest.post<{ id: string; fingerprint: string; home: string }>(endpoints.wiki.join, { target: wiki.id, server: wiki.location || undefined })
       onRefresh?.()
       void navigate({ to: '/$wikiId/$page', params: { wikiId: result.fingerprint || result.id, page: result.home || 'home' } })
     } catch (error) {

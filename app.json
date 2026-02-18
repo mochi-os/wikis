@@ -2,13 +2,13 @@
 // Copyright Alistair Cunningham 2025
 
 {
-	"version": "3.4",
+	"version": "3.16",
 	"label": "app_name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
 	"services": ["wikis"],
 
-	"architecture": {"engine": "starlark", "version": 2},
+	"architecture": {"engine": "starlark", "version": 4},
 	"execute": ["wikis.star"],
 
 	"database": {
@@ -24,12 +24,12 @@
 
 	"actions": {
 		"": {"file": "web/dist/index.html", "public": true},
-		"info": {"function": "action_info_class", "public": true},
-		"create": {"function": "action_create"},
+		"-/info": {"function": "action_info_class", "public": true},
+		"-/create": {"function": "action_create"},
 		"join": {"file": "web/dist/index.html", "public": true},
-		"subscribe": {"function": "action_join"},
-		"directory/search": {"function": "action_directory_search"},
-		"recommendations": {"function": "action_recommendations"},
+		"-/subscribe": {"function": "action_join"},
+		"-/directory/search": {"function": "action_directory_search"},
+		"-/recommendations": {"function": "action_recommendations"},
 		"assets": {"files": "web/dist/assets", "public": true},
 		"images": {"files": "web/dist/images", "public": true},
 		":wiki": {"file": "web/dist/index.html", "public": true, "opengraph": "opengraph_wiki"},
@@ -100,6 +100,8 @@
 		"attachment/create": {"function": "event_attachment_create"},
 		"attachment/delete": {"function": "event_attachment_delete"},
 		"attachment/fetch": {"function": "event_attachment_fetch"},
+		"attachment/add": {"function": "event_attachment_add"},
+		"attachment/remove": {"function": "event_attachment_remove"},
 		"redirect/set": {"function": "event_redirect_set"},
 		"redirect/delete": {"function": "event_redirect_delete"},
 		"tag/add": {"function": "event_tag_add"},
