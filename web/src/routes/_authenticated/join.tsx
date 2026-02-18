@@ -16,7 +16,6 @@ import {
   toast,
 } from '@mochi/common'
 import { useJoinWiki } from '@/hooks/use-wiki'
-import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/join')({
@@ -29,7 +28,6 @@ function JoinWikiPage() {
   const goBackToWikis = () => navigate({ to: '/' })
   const [target, setTarget] = useState('')
   const joinWiki = useJoinWiki()
-  const { openSearchDialog } = useSidebarContext()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -72,7 +70,7 @@ function JoinWikiPage() {
                 <Button
                   variant="outline"
                   className="w-full justify-start gap-2"
-                  onClick={openSearchDialog}
+                  onClick={() => navigate({ to: '/find' })}
                 >
                   <Search className="h-4 w-4" />
                   Search for wikis...
