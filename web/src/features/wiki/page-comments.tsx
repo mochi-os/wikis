@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { MessageSquare } from 'lucide-react'
-import { EmptyState, Skeleton, toast, getErrorMessage } from '@mochi/common'
+import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage } from '@mochi/common'
 import {
   usePageComments,
   useCreateComment,
@@ -18,7 +18,7 @@ interface PageCommentsProps {
 }
 
 export function PageComments({ slug, currentUserId, isOwner, canComment }: PageCommentsProps) {
-  const { data, isLoading } = usePageComments(slug)
+  const { data, isLoading, error } = usePageComments(slug)
   const createComment = useCreateComment()
   const editComment = useEditComment()
   const deleteComment = useDeleteComment()
@@ -70,6 +70,10 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
 
   if (isLoading) {
     return <PageCommentsSkeleton />
+  }
+
+  if (error) {
+    return <GeneralError error={error} minimal mode="inline" />
   }
 
   const comments = data?.comments ?? []

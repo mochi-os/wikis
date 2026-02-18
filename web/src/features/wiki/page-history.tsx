@@ -1,9 +1,6 @@
 import { format } from 'date-fns'
 import { History, Eye, RotateCcw } from 'lucide-react'
-import { Button } from '@mochi/common'
-import { getRouterBasepath } from '@mochi/common'
-import { Separator } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
+import { Button, EmptyState, getRouterBasepath, Separator, Skeleton } from '@mochi/common'
 import {
   Table,
   TableBody,
@@ -41,9 +38,11 @@ export function PageHistory({
 
       {/* Revisions table */}
       {revisions.length === 0 ? (
-        <p className="text-muted-foreground py-8 text-center">
-          No revisions found.
-        </p>
+        <EmptyState
+          icon={History}
+          title="No revisions found"
+          className="py-8"
+        />
       ) : (
         <Table>
           <TableHeader>

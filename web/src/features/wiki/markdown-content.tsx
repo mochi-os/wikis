@@ -202,7 +202,7 @@ export function MarkdownContent({
           'prose-ol:my-4 prose-ol:space-y-2 prose-ol:marker:text-muted-foreground',
           'prose-li:my-1',
           'prose-code:before:content-none prose-code:after:content-none',
-          'prose-code:bg-muted prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.9em]',
+          'prose-code:bg-surface-2 prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.9em]',
           'prose-pre:bg-transparent prose-pre:p-0 prose-pre:shadow-none',
           'prose-table:border prose-th:border prose-td:border',
           'prose-th:px-3 prose-th:py-2 prose-td:px-3 prose-td:py-2',
@@ -275,8 +275,8 @@ export function MarkdownContent({
               ).replace(/\n$/, '')
 
               return (
-                <div className='not-prose bg-muted/30 my-6 overflow-hidden rounded-xl border'>
-                  <div className='bg-muted/70 flex items-center justify-between border-b px-3 py-1.5'>
+                <div className='not-prose bg-surface-1 my-6 overflow-hidden rounded-xl border'>
+                  <div className='bg-surface-2 flex items-center justify-between border-b px-3 py-1.5'>
                     <span className='text-muted-foreground font-mono text-[11px] tracking-wide uppercase'>
                       {language}
                     </span>
@@ -296,7 +296,7 @@ export function MarkdownContent({
               if (!isBlockCode) {
                 return (
                   <code
-                    className={cn('bg-muted rounded px-1.5 py-0.5', className)}
+                    className={cn('bg-surface-2 rounded px-1.5 py-0.5', className)}
                     {...props}
                   >
                     {children}

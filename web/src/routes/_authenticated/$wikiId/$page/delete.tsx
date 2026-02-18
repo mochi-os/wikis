@@ -1,10 +1,16 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { usePageTitle, requestHelpers } from '@mochi/common'
+import {
+  EmptyState,
+  GeneralError,
+  Main,
+  Skeleton,
+  requestHelpers,
+  usePageTitle,
+} from '@mochi/common'
 import { DeletePage } from '@/features/wiki/delete-page'
-import { Main } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
+import { FileX } from 'lucide-react'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
@@ -22,7 +28,7 @@ function DeletePageRoute() {
 
   // Fetch page data using the wiki's base URL
   const { data, isLoading, error } = useQuery({
-    queryKey: ['wiki', wikiId, 'page', slug],
+    queryKey: ['wiki', wikiId, 'page', slug, baseURL],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
     enabled: !!slug,
@@ -55,9 +61,7 @@ function DeletePageRoute() {
       <>
         <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <div className="text-destructive">
-            Error loading page: {error.message}
-          </div>
+          <GeneralError error={error} minimal mode="inline" />
         </Main>
       </>
     )
@@ -69,9 +73,11 @@ function DeletePageRoute() {
       <>
         <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <div className="text-muted-foreground py-12 text-center">
-            Page "{slug}" does not exist.
-          </div>
+          <EmptyState
+            icon={FileX}
+            title={`Page "${slug}" does not exist`}
+            className="py-12"
+          />
         </Main>
       </>
     )

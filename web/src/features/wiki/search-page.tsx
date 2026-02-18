@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { Search, FileText, ArrowRight } from 'lucide-react'
-import { Input } from '@mochi/common'
-import { Separator } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
+import { EmptyState, GeneralError, Input, ListSkeleton, Separator } from '@mochi/common'
 import { useSearch } from '@/hooks/use-wiki'
 import type { SearchResult } from '@/types/wiki'
 
@@ -37,7 +35,8 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
     }
   }, [debouncedQuery, initialQuery])
 
-  const { data, isLoading } = useSearch(debouncedQuery)
+  const { data, isLoading, error } = useSearch(debouncedQuery)
+  const results = data?.results ?? []
 
   return (
     <div className="space-y-6">
@@ -65,23 +64,31 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
 
       {/* Results */}
       {!debouncedQuery ? (
-        <p className="text-muted-foreground py-8 text-center">
-          Enter a search term to find pages.
-        </p>
+        <EmptyState
+          icon={Search}
+          title="Enter a search term"
+          description="Search pages by title or content."
+          className="py-8"
+        />
       ) : isLoading ? (
-        <SearchResultsSkeleton />
-      ) : data?.results.length === 0 ? (
-        <p className="text-muted-foreground py-8 text-center">
-          No pages found for "{debouncedQuery}".
-        </p>
+        <ListSkeleton variant="card" count={5} />
+      ) : error ? (
+        <GeneralError error={error} minimal mode="inline" />
+      ) : results.length === 0 ? (
+        <EmptyState
+          icon={FileText}
+          title={`No pages found for "${debouncedQuery}"`}
+          description="Try different search terms."
+          className="py-8"
+        />
       ) : (
         <div className="space-y-4">
           <p className="text-muted-foreground text-sm">
-            Found {data?.results.length} result
-            {data?.results.length !== 1 ? 's' : ''} for "{debouncedQuery}"
+            Found {results.length} result
+            {results.length !== 1 ? 's' : ''} for "{debouncedQuery}"
           </p>
           <div className="space-y-2">
-            {data?.results.map((result) => (
+            {results.map((result) => (
               <SearchResultItem key={result.page} result={result} />
             ))}
           </div>
@@ -115,25 +122,5 @@ function SearchResultItem({ result }: SearchResultItemProps) {
         </p>
       </div>
     </a>
-  )
-}
-
-function SearchResultsSkeleton() {
-  return (
-    <div className="space-y-4">
-      <Skeleton className="h-5 w-48" />
-      <div className="space-y-2">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="flex items-start gap-4 rounded-lg border p-4">
-            <Skeleton className="mt-1 h-5 w-5" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-5 w-48" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-3 w-32" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
   )
 }

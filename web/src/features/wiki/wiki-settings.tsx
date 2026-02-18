@@ -21,9 +21,12 @@ import {
 import {
   Button,
   DataChip,
+  EmptyState,
   FieldRow,
+  GeneralError,
   Input,
   Label,
+  ListSkeleton,
   Section,
   Skeleton,
   Card,
@@ -372,10 +375,7 @@ function SettingsTab() {
           <Skeleton className="h-4 w-96" />
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-10 w-full" />
-          </div>
+          <ListSkeleton variant="simple" height="h-10" count={2} />
         </CardContent>
       </Card>
     )
@@ -383,9 +383,7 @@ function SettingsTab() {
 
   if (error) {
     return (
-      <div className="text-destructive">
-        Error loading settings: {error.message}
-      </div>
+      <GeneralError error={error} minimal mode="inline" />
     )
   }
 
@@ -724,9 +722,8 @@ function ReplicasTab() {
         <CardHeader>
           <CardTitle>Replicas</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
+        <CardContent>
+          <ListSkeleton variant="simple" height="h-10" count={2} />
         </CardContent>
       </Card>
     )
@@ -739,7 +736,7 @@ function ReplicasTab() {
           <CardTitle>Replicas</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-destructive">Error loading replicas: {error.message}</p>
+          <GeneralError error={error} minimal mode="inline" />
         </CardContent>
       </Card>
     )
@@ -753,9 +750,12 @@ function ReplicasTab() {
           <CardTitle>Replicas</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            No replicas yet. When other wikis replicate this wiki, they will appear here.
-          </p>
+          <EmptyState
+            icon={Users}
+            title="No replicas yet"
+            description="When other wikis replicate this wiki, they will appear here."
+            className="py-6"
+          />
         </CardContent>
       </Card>
     )
@@ -828,9 +828,12 @@ function ReplicasTab() {
             </TableBody>
           </Table>
         ) : (
-          <p className="text-muted-foreground text-sm">
-            No replicas yet. When other wikis replicate this wiki, they will appear here.
-          </p>
+          <EmptyState
+            icon={Users}
+            title="No replicas yet"
+            description="When other wikis replicate this wiki, they will appear here."
+            className="py-6"
+          />
         )}
       </CardContent>
     </Card>
@@ -892,19 +895,16 @@ function RedirectsTab() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-            <Skeleton className="h-12 w-full" />
-          </div>
+          <ListSkeleton variant="simple" height="h-12" count={3} />
         ) : error ? (
-          <div className="text-destructive text-sm">
-            Error loading redirects: {error.message}
-          </div>
+          <GeneralError error={error} minimal mode="inline" />
         ) : redirects.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            No redirects configured. Create a redirect to forward one URL to another.
-          </p>
+          <EmptyState
+            icon={CornerDownRight}
+            title="No redirects configured"
+            description="Create a redirect to forward one URL to another."
+            className="py-6"
+          />
         ) : (
           <Table>
             <TableHeader>

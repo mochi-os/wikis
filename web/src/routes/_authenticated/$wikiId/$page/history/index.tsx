@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { usePageHistory } from '@/hooks/use-wiki'
-import { usePageTitle, requestHelpers } from '@mochi/common'
+import { GeneralError, requestHelpers, usePageTitle } from '@mochi/common'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
@@ -54,9 +54,7 @@ function PageHistoryRoute() {
       <>
         <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <div className="text-destructive">
-            Error loading history: {error.message}
-          </div>
+          <GeneralError error={error} minimal mode="inline" />
         </Main>
       </>
     )

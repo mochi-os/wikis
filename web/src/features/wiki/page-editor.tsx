@@ -1,13 +1,16 @@
 import { useState, useRef } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { toast } from '@mochi/common'
 import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus } from 'lucide-react'
 import {
+  toast,
   Button,
+  EmptyState,
+  GeneralError,
   getApiBasepath,
   Input,
   Textarea,
   Label,
+  ListSkeleton,
   Separator,
   Skeleton,
   Dialog,
@@ -71,7 +74,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   const cursorPositionRef = useRef<number>(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { data: attachmentsData } = useAttachments()
+  const { data: attachmentsData, isLoading: isAttachmentsLoading, error: attachmentsError } = useAttachments()
   const uploadMutation = useUploadAttachment()
   const attachments = attachmentsData?.attachments || []
 
@@ -366,10 +369,17 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           </div>
 
           {/* Attachments grid */}
-          {attachments.length === 0 ? (
-            <div className="py-8 text-center text-muted-foreground">
-              No attachments yet. Upload a file to get started.
-            </div>
+          {isAttachmentsLoading ? (
+            <ListSkeleton variant="simple" height="h-16" count={4} />
+          ) : attachmentsError ? (
+            <GeneralError error={attachmentsError} minimal mode="inline" className="py-8" />
+          ) : attachments.length === 0 ? (
+            <EmptyState
+              icon={Image}
+              title="No attachments yet"
+              description="Upload a file to get started."
+              className="py-8"
+            />
           ) : (
             <div className="grid grid-cols-4 gap-3 max-h-[400px] overflow-y-auto">
               {attachments.map((attachment) => {
