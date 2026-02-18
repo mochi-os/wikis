@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePage } from '@/hooks/use-wiki'
-import { usePageTitle } from '@mochi/common'
+import { EmptyState, GeneralError, Main, Skeleton, usePageTitle } from '@mochi/common'
 import { DeletePage } from '@/features/wiki/delete-page'
-import { Main } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
+import { FileX } from 'lucide-react'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiContext } from '@/context/wiki-context'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
@@ -49,9 +48,7 @@ function DeletePageRoute() {
       <>
         <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <div className="text-destructive">
-            Error loading page: {error.message}
-          </div>
+          <GeneralError error={error} minimal mode="inline" />
         </Main>
       </>
     )
@@ -63,9 +60,11 @@ function DeletePageRoute() {
       <>
         <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <div className="text-muted-foreground py-12 text-center">
-            Page "{slug}" does not exist.
-          </div>
+          <EmptyState
+            icon={FileX}
+            title={`Page "${slug}" does not exist`}
+            className="py-12"
+          />
         </Main>
       </>
     )

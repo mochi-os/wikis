@@ -10,7 +10,9 @@ import {
   DialogTitle,
   DialogTrigger,
   ScrollArea,
-  Skeleton,
+  EmptyState,
+  GeneralError,
+  ListSkeleton,
   formatFileSize,
   getFileIcon,
   isImage,
@@ -34,7 +36,7 @@ export function AttachmentPicker({ onSelect, onDelete, trigger }: AttachmentPick
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { data, isLoading } = useAttachments()
+  const { data, isLoading, error } = useAttachments()
   const uploadMutation = useUploadAttachment()
   const deleteMutation = useDeleteAttachment()
 
@@ -140,15 +142,16 @@ export function AttachmentPicker({ onSelect, onDelete, trigger }: AttachmentPick
           {/* Attachments list */}
           <ScrollArea className="h-[400px] rounded-md border p-4">
             {isLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
-                ))}
-              </div>
+              <ListSkeleton variant="simple" height="h-16" count={3} />
+            ) : error ? (
+              <GeneralError error={error} minimal mode="inline" className="py-8" />
             ) : attachments.length === 0 ? (
-              <div className="text-muted-foreground flex h-full items-center justify-center py-8 text-center">
-                No attachments yet. Upload files to get started.
-              </div>
+              <EmptyState
+                icon={Image}
+                title="No attachments yet"
+                description="Upload files to get started."
+                className="h-full py-8"
+              />
             ) : (
               <div className="space-y-2">
                 {attachments.map((attachment) => {

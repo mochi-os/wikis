@@ -73,6 +73,18 @@ const endpoints = {
     attachmentDelete: 'attachment/delete',
     attachment: (id: string) => `-/attachments/${id}`,
   },
+  system: {
+    settings: '-/system/settings/list',
+    settingsSet: '-/system/settings/set',
+    usersList: '-/system/users/list',
+    usersCreate: '-/system/users/create',
+    usersUpdate: '-/system/users/update',
+    usersDelete: '-/system/users/delete',
+    usersSuspend: '-/system/users/suspend',
+    usersActivate: '-/system/users/activate',
+    usersSessions: '-/system/users/sessions',
+    usersSessionsRevoke: '-/system/users/sessions/revoke',
+  },
   user: {
     account: 'user/account/data',
     accountIdentity: 'user/account/identity',

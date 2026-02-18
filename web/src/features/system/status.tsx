@@ -4,10 +4,11 @@ import { useNavigate } from '@tanstack/react-router'
 import {
   DataChip,
   FieldRow,
+  GeneralError,
+  ListSkeleton,
   Main,
   PageHeader,
   Section,
-  Skeleton,
   usePageTitle,
 } from '@mochi/common'
 import { useSystemSettingsData } from '@/hooks/use-system-settings'
@@ -33,7 +34,7 @@ export function SystemStatus() {
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main>
-          <p className='text-muted-foreground'>Failed to load status</p>
+          <GeneralError error={error} minimal mode='inline' />
         </Main>
       </>
     )
@@ -56,10 +57,7 @@ export function SystemStatus() {
       <Main>
         <Section title='Server' description='Current server status and runtime metadata'>
           {isLoading ? (
-            <div className='space-y-4 py-2'>
-              <Skeleton className='h-12 w-full' />
-              <Skeleton className='h-12 w-full' />
-            </div>
+            <ListSkeleton variant='simple' height='h-12' count={2} />
           ) : (
             <div className='divide-y-0'>
               <FieldRow label='Version'>

@@ -685,7 +685,7 @@ export function UserAccount() {
       <>
         <PageHeader title="Account" icon={<User className='size-4 md:size-5' />} />
         <Main>
-          <GeneralError error={error} minimal />
+          <GeneralError error={error} minimal mode='inline' />
         </Main>
       </>
     )

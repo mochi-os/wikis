@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePageRevision } from '@/hooks/use-wiki'
-import { usePageTitle } from '@mochi/common'
+import { GeneralError, usePageTitle } from '@mochi/common'
 import { RevisionView, RevisionViewSkeleton } from '@/features/wiki/revision-view'
 import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
@@ -43,9 +43,7 @@ function RevisionViewRoute() {
       <>
         <WikiRouteHeader title={`${slug} v${version}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <div className="text-destructive">
-            Error loading revision: {error.message}
-          </div>
+          <GeneralError error={error} minimal mode="inline" />
         </Main>
       </>
     )
