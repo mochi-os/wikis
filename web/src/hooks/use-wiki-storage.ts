@@ -31,7 +31,7 @@ export function cacheWikisList(wikis: StoredWiki[]): void {
     }
     localStorage.setItem(STORAGE_KEYS.WIKIS_LIST, JSON.stringify(cache))
   } catch (e) {
-    console.warn('[WikiStorage] Failed to cache wikis list:', e)
+    // console.warn('[WikiStorage] Failed to cache wikis list:', e)
   }
 }
 
@@ -42,7 +42,7 @@ export function getCachedWikisList(): WikisCache | null {
     if (!cached) return null
     return JSON.parse(cached) as WikisCache
   } catch (e) {
-    console.warn('[WikiStorage] Failed to get cached wikis list:', e)
+    // console.warn('[WikiStorage] Failed to get cached wikis list:', e)
     return null
   }
 }
@@ -57,7 +57,7 @@ export function setLastLocation(wikiId: string, pageSlug?: string): void {
     }
     localStorage.setItem(STORAGE_KEYS.LAST_LOCATION, JSON.stringify(location))
   } catch (e) {
-    console.warn('[WikiStorage] Failed to store last location:', e)
+    // console.warn('[WikiStorage] Failed to store last location:', e)
   }
 }
 
@@ -68,7 +68,7 @@ export function getLastLocation(): LastLocation | null {
     if (!stored) return null
     return JSON.parse(stored) as LastLocation
   } catch (e) {
-    console.warn('[WikiStorage] Failed to get last location:', e)
+    // console.warn('[WikiStorage] Failed to get last location:', e)
     return null
   }
 }
@@ -78,6 +78,6 @@ export function clearLastLocation(): void {
   try {
     localStorage.removeItem(STORAGE_KEYS.LAST_LOCATION)
   } catch (e) {
-    console.warn('[WikiStorage] Failed to clear last location:', e)
+    // console.warn('[WikiStorage] Failed to clear last location:', e)
   }
 }

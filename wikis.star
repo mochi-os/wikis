@@ -2568,7 +2568,13 @@ def event_sync(e):
     wikirow = mochi.db.row("select name, home from wikis where id=?", wiki)
     attachments = mochi.attachment.list(wiki) or []
 
-    # Send dump as a single payload
+    # Include comment-level attachments in each comment
+    for c in comments:
+        c_atts = mochi.attachment.list(c["id"]) or []
+        if c_atts:
+            c["attachments"] = c_atts
+
+    # Send dump as a single payload (attachment files pulled on demand)
     e.write({
         "status": "200",
         "source": wiki,  # Source wiki entity ID for attachment fetching
@@ -2582,12 +2588,6 @@ def event_sync(e):
         "comments": comments,
         "attachments": attachments,
     })
-
-    # Push attachment files to the requester (wiki-level and comment-level)
-    if requester:
-        mochi.attachment.sync(wiki, [requester])
-        for c in comments:
-            mochi.attachment.sync(c["id"], [requester])
 
 # Handle remote page edit request from a replica (stream-based)
 def event_page_edit_request(e):
@@ -2912,13 +2912,10 @@ def event_attachment_delete(e):
     if not attachment_id:
         return
 
-    # Get replicas for notification (excluding the one who deleted)
-    replicas = mochi.db.rows("select id from replicas where wiki=? and id!=?", wiki, sender)
-    notify = [r["id"] for r in replicas]
-
-    # Delete locally and notify other replicas
-    mochi.attachment.delete(attachment_id, notify)
-    mochi.log.debug("Deleted attachment %s from replica %s, notified %d others", attachment_id, sender, len(notify))
+    # Delete locally and broadcast removal to other replicas
+    mochi.attachment.delete(attachment_id, [])
+    broadcast_event(wiki, "attachment/remove", {"id": attachment_id}, exclude=sender)
+    mochi.log.debug("Deleted attachment %s from replica %s", attachment_id, sender)
 
 # Handle attachment/fetch event - serve attachment file data to requester via stream
 def event_attachment_fetch(e):
@@ -2951,6 +2948,43 @@ def event_attachment_fetch(e):
     e.write({"status": "200"})
     bytes_written = e.stream.write_from_file(path)
     mochi.log.debug("attachment/fetch sent %s bytes", bytes_written)
+
+# P2P event: attachment/add — store remote attachment metadata (files pulled on demand)
+def event_attachment_add(e):
+    wiki = e.header("to")
+    if not wiki:
+        return
+
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
+
+    attachments = e.content("attachments") or []
+    if attachments:
+        source = wikirow.get("source") or sender
+        mochi.attachment.store(attachments, source, wiki)
+
+# P2P event: attachment/remove — delete attachment metadata
+def event_attachment_remove(e):
+    wiki = e.header("to")
+    if not wiki:
+        return
+
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    sender = e.header("from")
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
+
+    attachment_id = e.content("id")
+    if attachment_id:
+        mochi.attachment.delete(attachment_id, [])
 
 # Helper: Import wiki dump from sync response
 def import_sync_dump(wiki, dump):
@@ -2995,7 +3029,16 @@ def import_sync_dump(wiki, dump):
         mochi.db.execute("update wikis set name=?, home=? where id=?",
             name or "", home or "home", wiki)
 
-    # Attachment files are pushed by the source via mochi.attachment.sync in event_sync
+    # Store attachment metadata from sync dump (files pulled on demand)
+    source = dump.get("source")
+    if source:
+        attachments = dump.get("attachments") or []
+        if attachments:
+            mochi.attachment.store(attachments, source, wiki)
+        for c in comments:
+            c_atts = c.get("attachments") or []
+            if c_atts:
+                mochi.attachment.store(c_atts, source, c["id"])
 
     return True
 
@@ -3160,15 +3203,9 @@ def action_comment_create(a):
     mochi.db.execute("insert into comments (id, wiki, page, parent, author, name, body, created) values (?, ?, ?, ?, ?, ?, ?, ?)",
         id, wiki["id"], slug, parent, author, name, body, now)
 
-    # Save attachments — notify source and replicas so they receive the files
+    # Save attachments (no push notification — metadata piggybacked on event)
+    attachments = mochi.attachment.save(id, "files", [], [], []) or []
     source = wiki.get("source")
-    notify = []
-    if source:
-        notify = [source]
-    else:
-        replica_rows = mochi.db.rows("select id from replicas where wiki=?", wiki["id"])
-        notify = [r["id"] for r in (replica_rows or [])]
-    attachments = mochi.attachment.save(id, "files", [], [], notify) or []
 
     data = {
         "id": id,
@@ -3180,6 +3217,12 @@ def action_comment_create(a):
         "body": body,
         "created": now,
     }
+
+    # Include attachment metadata in event
+    if attachments:
+        data["attachments"] = [{"id": att["id"], "name": att["name"], "size": att["size"],
+            "content_type": att.get("type") or att.get("content_type", ""),
+            "rank": att.get("rank", 0), "created": att.get("created", 0)} for att in attachments]
 
     if source:
         mochi.message.send(
@@ -3329,9 +3372,15 @@ def event_comment_create(e):
     mochi.db.execute("insert or ignore into comments (id, wiki, page, parent, author, name, body, created) values (?, ?, ?, ?, ?, ?, ?, ?)",
         id, wiki, page, parent, author, name, body, created)
 
+    # Store comment attachments from event (files pulled on demand)
+    attachments = e.content("attachments") or []
+    source = wikirow.get("source") or sender
+    if attachments:
+        mochi.attachment.store(attachments, source, id)
+
     # Re-broadcast if we are the source wiki
     if not wikirow.get("source") and sender:
-        broadcast_event(wiki, "comment/create", {
+        rebroadcast = {
             "id": id,
             "page": page,
             "parent": parent,
@@ -3339,7 +3388,10 @@ def event_comment_create(e):
             "name": name,
             "body": body,
             "created": created,
-        }, exclude=sender)
+        }
+        if attachments:
+            rebroadcast["attachments"] = attachments
+        broadcast_event(wiki, "comment/create", rebroadcast, exclude=sender)
 
 # P2P event: comment/edit
 def event_comment_edit(e):
@@ -3470,15 +3522,19 @@ def action_attachment_upload(a):
 
         return {"data": {"attachments": attachments}}
 
-    # Get replicas for notification
-    replicas = mochi.db.rows("select id from replicas where wiki=? and id!=?", wiki["id"], wiki["id"])
-
-    # Save uploaded attachments and notify replicas
-    attachments = mochi.attachment.save(wiki["id"], "files", [], [], replicas)
+    # Save uploaded attachments (no push notification — metadata piggybacked)
+    attachments = mochi.attachment.save(wiki["id"], "files", [], [], [])
 
     if not attachments:
         a.error(400, "No files uploaded")
         return
+
+    # Broadcast attachment metadata to replicas (files pulled on demand)
+    broadcast_event(wiki["id"], "attachment/add", {
+        "attachments": [{"id": att["id"], "name": att["name"], "size": att["size"],
+            "content_type": att.get("type") or att.get("content_type", ""),
+            "rank": att.get("rank", 0), "created": att.get("created", 0)} for att in attachments],
+    })
 
     return {"data": {"attachments": attachments}}
 
@@ -3504,16 +3560,14 @@ def action_attachment_delete(a):
 
     source = wiki.get("source")
 
-    # Delete locally - replica doesn't notify others (source will broadcast)
-    if source:
-        notify = []
-    else:
-        replicas = mochi.db.rows("select id from replicas where wiki=? and id!=?", wiki["id"], wiki["id"])
-        notify = [r["id"] for r in replicas]
-
-    if not mochi.attachment.delete(id, notify):
+    # Delete locally (no push notification — metadata piggybacked)
+    if not mochi.attachment.delete(id, []):
         a.error(404, "Attachment not found")
         return
+
+    # Source broadcasts removal to replicas
+    if not source:
+        broadcast_event(wiki["id"], "attachment/remove", {"id": id})
 
     # Remove references to this attachment from all pages
     ref = "attachments/" + id
