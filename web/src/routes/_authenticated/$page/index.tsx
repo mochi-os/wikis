@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
 import {
   Button,
+  ConfirmDialog,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -64,12 +65,14 @@ function WikiPageRoute() {
 
   // Rename dialog state (controlled mode so menu closes when dialog opens)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+  const [unsubscribeConfirmOpen, setUnsubscribeConfirmOpen] = useState(false)
 
   // Unsubscribe handler
   const handleUnsubscribe = useCallback(() => {
     unsubscribeWiki.mutate(undefined, {
       onSuccess: () => {
         toast.success('Unsubscribed')
+        setUnsubscribeConfirmOpen(false)
         void navigate({ to: '/' })
       },
       onError: (error) => {
@@ -179,7 +182,7 @@ function WikiPageRoute() {
         {canUnsubscribe && (
           <Button
             variant="outline"
-            onClick={handleUnsubscribe}
+            onClick={() => setUnsubscribeConfirmOpen(true)}
             disabled={unsubscribeWiki.isPending}
           >
             {unsubscribeWiki.isPending ? 'Unsubscribing...' : 'Unsubscribe'}
@@ -270,6 +273,16 @@ function WikiPageRoute() {
         <Main className="pt-2">
           <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
         </Main>
+        <ConfirmDialog
+          open={unsubscribeConfirmOpen}
+          onOpenChange={setUnsubscribeConfirmOpen}
+          title="Unsubscribe"
+          desc="Are you sure you want to unsubscribe from this wiki?"
+          confirmText="Unsubscribe"
+          destructive
+          isLoading={unsubscribeWiki.isPending}
+          handleConfirm={handleUnsubscribe}
+        />
         <RenamePageDialog
           slug={slug}
           title={data.page.title}

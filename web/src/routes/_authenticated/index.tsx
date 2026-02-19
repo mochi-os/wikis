@@ -199,12 +199,14 @@ function WikiHomePage({
 
   // Rename dialog state (controlled mode so menu closes when dialog opens)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+  const [unsubscribeConfirmOpen, setUnsubscribeConfirmOpen] = useState(false)
 
   // Unsubscribe handler
   const handleUnsubscribe = useCallback(() => {
     unsubscribeWiki.mutate(undefined, {
       onSuccess: () => {
         toast.success('Unsubscribed')
+        setUnsubscribeConfirmOpen(false)
         void navigate({ to: '/' })
       },
       onError: (error) => {
@@ -365,7 +367,7 @@ function WikiHomePage({
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onSelect={handleUnsubscribe}
+                  onSelect={() => setUnsubscribeConfirmOpen(true)}
                   disabled={unsubscribeWiki.isPending}
                 >
                   {unsubscribeWiki.isPending ? 'Unsubscribing...' : 'Unsubscribe'}
@@ -392,6 +394,16 @@ function WikiHomePage({
             }
           />
         </Main>
+        <ConfirmDialog
+          open={unsubscribeConfirmOpen}
+          onOpenChange={setUnsubscribeConfirmOpen}
+          title='Unsubscribe'
+          desc='Are you sure you want to unsubscribe from this wiki?'
+          confirmText='Unsubscribe'
+          destructive
+          isLoading={unsubscribeWiki.isPending}
+          handleConfirm={handleUnsubscribe}
+        />
         <RenamePageDialog
           slug={homeSlug}
           title={data.page.title}
@@ -501,9 +513,9 @@ function WikisListPage({ wikis }: WikisListPageProps) {
   const recommendations = recommendationsData?.wikis ?? []
 
   const handleSubscribeRecommendation = async (wiki: RecommendedWiki) => {
+    if (pendingWikiId === wiki.id) return
     setPendingWikiId(wiki.id)
     try {
-      await wikisRequest.post(endpoints.wiki.join, { target: wiki.id })
       await wikisRequest.post(endpoints.wiki.join, { target: wiki.id })
       // Reload page to refresh wikis list
       window.location.reload()

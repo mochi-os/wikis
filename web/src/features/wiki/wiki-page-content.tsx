@@ -6,6 +6,7 @@ import {
   requestHelpers,
   Main,
   Button,
+  ConfirmDialog,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -49,12 +50,14 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   // Can unsubscribe if viewing a subscribed wiki (has source)
   const canUnsubscribe = !!wiki.source
   const [isUnsubscribing, setIsUnsubscribing] = useState(false)
+  const [unsubscribeConfirmOpen, setUnsubscribeConfirmOpen] = useState(false)
 
   const handleUnsubscribe = useCallback(async () => {
     setIsUnsubscribing(true)
     try {
       await requestHelpers.post(`${baseURL}unsubscribe`, {})
       toast.success('Unsubscribed')
+      setUnsubscribeConfirmOpen(false)
       void navigate({ to: '/' })
     } catch (error) {
       toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
@@ -222,7 +225,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         {canUnsubscribe && (
           <Button
             variant="outline"
-            onClick={handleUnsubscribe}
+            onClick={() => setUnsubscribeConfirmOpen(true)}
             disabled={isUnsubscribing}
           >
             {isUnsubscribing ? 'Unsubscribing...' : 'Unsubscribe'}
@@ -332,6 +335,16 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <Main className="pt-2">
           <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
         </Main>
+        <ConfirmDialog
+          open={unsubscribeConfirmOpen}
+          onOpenChange={setUnsubscribeConfirmOpen}
+          title="Unsubscribe"
+          desc="Are you sure you want to unsubscribe from this wiki?"
+          confirmText="Unsubscribe"
+          destructive
+          isLoading={isUnsubscribing}
+          handleConfirm={() => void handleUnsubscribe()}
+        />
         <RenamePageDialog
           slug={slug}
           title={data.page.title}
