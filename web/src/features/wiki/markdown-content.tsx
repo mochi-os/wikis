@@ -5,10 +5,10 @@ import {
   useEffect,
   useMemo,
 } from 'react'
-import { Link } from '@tanstack/react-router'
 import { ExternalLink, Hash } from 'lucide-react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { Link } from '@tanstack/react-router'
 import { CopyButton, cn, ImageLightbox, type LightboxMedia, useLightboxHash, isDomainEntityRouting } from '@mochi/common'
 import { getApiBasepath } from '@mochi/common'
 import {
@@ -327,7 +327,11 @@ export function MarkdownContent({
               }
               const isExternal = href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//'))
               if (href && !isExternal) {
-                const siblingHref = href.startsWith('/') || href.startsWith('../') ? href : isDomainEntityRouting() ? `/${href}` : `../${href}`
+                // Relative wiki page link - prefix with ../ to make it a sibling page
+                // e.g., on /wiki/abc/home, link to "page-2" becomes "../page-2" -> /wiki/abc/page-2
+                const siblingHref = href.startsWith('/') || href.startsWith('../') ? href
+                  : isDomainEntityRouting() ? `/${href}` : `../${href}`
+                // Check if this is a link to a non-existent page (Wikipedia-style "red link")
                 const cleanHref = href.split('#')[0].split('?')[0] // Remove anchors and query strings
                 const isMissing = missingLinks.includes(cleanHref)
                 return (
@@ -336,7 +340,7 @@ export function MarkdownContent({
                     {...props}
                     className={cn(
                       'transition-colors',
-                      isMissing && '!text-red-600 dark:!text-red-400'
+                      isMissing && 'text-red-600! dark:text-red-400!'
                     )}
                   >
                     {children}

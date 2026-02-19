@@ -504,6 +504,7 @@ function WikisListPage({ wikis }: WikisListPageProps) {
     setPendingWikiId(wiki.id)
     try {
       await wikisRequest.post(endpoints.wiki.join, { target: wiki.id })
+      await wikisRequest.post(endpoints.wiki.join, { target: wiki.id })
       // Reload page to refresh wikis list
       window.location.reload()
     } catch (error) {
@@ -698,6 +699,20 @@ function WikisListPage({ wikis }: WikisListPageProps) {
           )}
         </div>
       </Main>
+
+      <ConfirmDialog
+        open={!!unsubscribeId}
+        onOpenChange={(open) => { if (!open) setUnsubscribeId(null) }}
+        title="Unsubscribe"
+        desc="Are you sure you want to unsubscribe from this wiki?"
+        confirmText="Unsubscribe"
+        destructive
+        isLoading={unsubscribeMutation.isPending}
+        handleConfirm={() => {
+          const wiki = allWikis.find((w) => w.id === unsubscribeId)
+          if (wiki) unsubscribeMutation.mutate(wiki)
+        }}
+      />
 
       <ConfirmDialog
         open={!!unsubscribeId}
