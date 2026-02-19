@@ -57,7 +57,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
         )
         setResults(response.results ?? [])
       } catch (error) {
-        setSearchError(error instanceof Error ? error : new Error('Failed to search wikis'))
+        setSearchError(new Error(getErrorMessage(error, 'Failed to search wikis')))
         setResults([])
       } finally {
         setIsLoading(false)

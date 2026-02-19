@@ -9,7 +9,7 @@ import { Link } from '@tanstack/react-router'
 import { ExternalLink, Hash } from 'lucide-react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { CopyButton, cn, ImageLightbox, type LightboxMedia, useLightboxHash } from '@mochi/common'
+import { CopyButton, cn, ImageLightbox, type LightboxMedia, useLightboxHash, isDomainEntityRouting } from '@mochi/common'
 import { getApiBasepath } from '@mochi/common'
 import {
   classifyWikiLink,
@@ -327,7 +327,7 @@ export function MarkdownContent({
               }
               const isExternal = href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//'))
               if (href && !isExternal) {
-               const siblingHref = href.startsWith('/') || href.startsWith('../') ? href : `../${href}`
+                const siblingHref = href.startsWith('/') || href.startsWith('../') ? href : isDomainEntityRouting() ? `/${href}` : `../${href}`
                 const cleanHref = href.split('#')[0].split('?')[0] // Remove anchors and query strings
                 const isMissing = missingLinks.includes(cleanHref)
                 return (

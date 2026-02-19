@@ -1,7 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { format } from 'date-fns'
 import {
   ArrowRight,
   Check,
@@ -63,6 +62,7 @@ import {
   toast,
   requestHelpers,
   getErrorMessage,
+  formatTimestamp,
 } from '@mochi/common'
 import endpoints from '@/api/endpoints'
 import { ValueLinkChip } from '@/components/value-link-chip'
@@ -590,7 +590,7 @@ function AccessTab() {
       )
       setRules(response?.rules ?? [])
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to load access rules'))
+      setError(new Error(getErrorMessage(err, 'Failed to load access rules')))
     } finally {
       setIsLoading(false)
     }
@@ -691,7 +691,7 @@ function ReplicasTab() {
       )
       setReplicas(response?.replicas ?? [])
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to load replicas'))
+      setError(new Error(getErrorMessage(err, 'Failed to load replicas')))
     } finally {
       setIsLoading(false)
     }
@@ -784,12 +784,10 @@ function ReplicasTab() {
                     <DataChip value={replica.id} />
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {format(new Date(replica.subscribed * 1000), 'yyyy-MM-dd HH:mm')}
+                    {formatTimestamp(replica.subscribed)}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {replica.synced > 0
-                      ? format(new Date(replica.synced * 1000), 'yyyy-MM-dd HH:mm')
-                      : 'Never'}
+                    {formatTimestamp(replica.synced, 'Never')}
                   </TableCell>
                   <TableCell>
                     <AlertDialog>
@@ -862,7 +860,7 @@ function RedirectsTab() {
       )
       setRedirects(response?.redirects ?? [])
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to load redirects'))
+      setError(new Error(getErrorMessage(err, 'Failed to load redirects')))
     } finally {
       setIsLoading(false)
     }
@@ -929,7 +927,7 @@ function RedirectsTab() {
                     <ValueLinkChip value={redirect.target} />
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {format(new Date(redirect.created * 1000), 'yyyy-MM-dd HH:mm:ss')}
+                    {formatTimestamp(redirect.created)}
                   </TableCell>
                   <TableCell>
                     <AlertDialog>
