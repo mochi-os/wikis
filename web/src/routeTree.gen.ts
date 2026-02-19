@@ -17,6 +17,7 @@ import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedRedirectsRouteImport } from './routes/_authenticated/redirects'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
 import { Route as AuthenticatedJoinRouteImport } from './routes/_authenticated/join'
+import { Route as AuthenticatedFindRouteImport } from './routes/_authenticated/find'
 import { Route as AuthenticatedChangesRouteImport } from './routes/_authenticated/changes'
 import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as errors500RouteImport } from './routes/(errors)/500'
@@ -30,9 +31,6 @@ import { Route as AuthenticatedUserSessionsRouteImport } from './routes/_authent
 import { Route as AuthenticatedUserPreferencesRouteImport } from './routes/_authenticated/user/preferences'
 import { Route as AuthenticatedUserAccountRouteImport } from './routes/_authenticated/user/account'
 import { Route as AuthenticatedTagTagRouteImport } from './routes/_authenticated/tag/$tag'
-import { Route as AuthenticatedSystemUsersRouteImport } from './routes/_authenticated/system/users'
-import { Route as AuthenticatedSystemStatusRouteImport } from './routes/_authenticated/system/status'
-import { Route as AuthenticatedSystemSettingsRouteImport } from './routes/_authenticated/system/settings'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedWikiIdSettingsRouteImport } from './routes/_authenticated/$wikiId/settings'
 import { Route as AuthenticatedWikiIdNewRouteImport } from './routes/_authenticated/$wikiId/new'
@@ -89,6 +87,11 @@ const AuthenticatedNewRoute = AuthenticatedNewRouteImport.update({
 const AuthenticatedJoinRoute = AuthenticatedJoinRouteImport.update({
   id: '/join',
   path: '/join',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFindRoute = AuthenticatedFindRouteImport.update({
+  id: '/find',
+  path: '/find',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedChangesRoute = AuthenticatedChangesRouteImport.update({
@@ -161,24 +164,6 @@ const AuthenticatedTagTagRoute = AuthenticatedTagTagRouteImport.update({
   path: '/tag/$tag',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedSystemUsersRoute =
-  AuthenticatedSystemUsersRouteImport.update({
-    id: '/system/users',
-    path: '/system/users',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSystemStatusRoute =
-  AuthenticatedSystemStatusRouteImport.update({
-    id: '/system/status',
-    path: '/system/status',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSystemSettingsRoute =
-  AuthenticatedSystemSettingsRouteImport.update({
-    id: '/system/settings',
-    path: '/system/settings',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
@@ -292,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/changes': typeof AuthenticatedChangesRoute
+  '/find': typeof AuthenticatedFindRoute
   '/join': typeof AuthenticatedJoinRoute
   '/new': typeof AuthenticatedNewRoute
   '/redirects': typeof AuthenticatedRedirectsRoute
@@ -307,9 +293,6 @@ export interface FileRoutesByFullPath {
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/system/settings': typeof AuthenticatedSystemSettingsRoute
-  '/system/status': typeof AuthenticatedSystemStatusRoute
-  '/system/users': typeof AuthenticatedSystemUsersRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
   '/user/account': typeof AuthenticatedUserAccountRoute
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
@@ -334,6 +317,7 @@ export interface FileRoutesByTo {
   '/500': typeof errors500Route
   '/503': typeof errors503Route
   '/changes': typeof AuthenticatedChangesRoute
+  '/find': typeof AuthenticatedFindRoute
   '/join': typeof AuthenticatedJoinRoute
   '/new': typeof AuthenticatedNewRoute
   '/redirects': typeof AuthenticatedRedirectsRoute
@@ -349,9 +333,6 @@ export interface FileRoutesByTo {
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/system/settings': typeof AuthenticatedSystemSettingsRoute
-  '/system/status': typeof AuthenticatedSystemStatusRoute
-  '/system/users': typeof AuthenticatedSystemUsersRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
   '/user/account': typeof AuthenticatedUserAccountRoute
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
@@ -379,6 +360,7 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500Route
   '/(errors)/503': typeof errors503Route
   '/_authenticated/changes': typeof AuthenticatedChangesRoute
+  '/_authenticated/find': typeof AuthenticatedFindRoute
   '/_authenticated/join': typeof AuthenticatedJoinRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
   '/_authenticated/redirects': typeof AuthenticatedRedirectsRoute
@@ -394,9 +376,6 @@ export interface FileRoutesById {
   '/_authenticated/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/_authenticated/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/_authenticated/system/settings': typeof AuthenticatedSystemSettingsRoute
-  '/_authenticated/system/status': typeof AuthenticatedSystemStatusRoute
-  '/_authenticated/system/users': typeof AuthenticatedSystemUsersRoute
   '/_authenticated/tag/$tag': typeof AuthenticatedTagTagRoute
   '/_authenticated/user/account': typeof AuthenticatedUserAccountRoute
   '/_authenticated/user/preferences': typeof AuthenticatedUserPreferencesRoute
@@ -424,6 +403,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/changes'
+    | '/find'
     | '/join'
     | '/new'
     | '/redirects'
@@ -439,9 +419,6 @@ export interface FileRouteTypes {
     | '/$wikiId/new'
     | '/$wikiId/settings'
     | '/errors/$error'
-    | '/system/settings'
-    | '/system/status'
-    | '/system/users'
     | '/tag/$tag'
     | '/user/account'
     | '/user/preferences'
@@ -466,6 +443,7 @@ export interface FileRouteTypes {
     | '/500'
     | '/503'
     | '/changes'
+    | '/find'
     | '/join'
     | '/new'
     | '/redirects'
@@ -481,9 +459,6 @@ export interface FileRouteTypes {
     | '/$wikiId/new'
     | '/$wikiId/settings'
     | '/errors/$error'
-    | '/system/settings'
-    | '/system/status'
-    | '/system/users'
     | '/tag/$tag'
     | '/user/account'
     | '/user/preferences'
@@ -510,6 +485,7 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/changes'
+    | '/_authenticated/find'
     | '/_authenticated/join'
     | '/_authenticated/new'
     | '/_authenticated/redirects'
@@ -525,9 +501,6 @@ export interface FileRouteTypes {
     | '/_authenticated/$wikiId/new'
     | '/_authenticated/$wikiId/settings'
     | '/_authenticated/errors/$error'
-    | '/_authenticated/system/settings'
-    | '/_authenticated/system/status'
-    | '/_authenticated/system/users'
     | '/_authenticated/tag/$tag'
     | '/_authenticated/user/account'
     | '/_authenticated/user/preferences'
@@ -611,6 +584,13 @@ declare module '@tanstack/react-router' {
       path: '/join'
       fullPath: '/join'
       preLoaderRoute: typeof AuthenticatedJoinRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/find': {
+      id: '/_authenticated/find'
+      path: '/find'
+      fullPath: '/find'
+      preLoaderRoute: typeof AuthenticatedFindRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/changes': {
@@ -702,27 +682,6 @@ declare module '@tanstack/react-router' {
       path: '/tag/$tag'
       fullPath: '/tag/$tag'
       preLoaderRoute: typeof AuthenticatedTagTagRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/system/users': {
-      id: '/_authenticated/system/users'
-      path: '/system/users'
-      fullPath: '/system/users'
-      preLoaderRoute: typeof AuthenticatedSystemUsersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/system/status': {
-      id: '/_authenticated/system/status'
-      path: '/system/status'
-      fullPath: '/system/status'
-      preLoaderRoute: typeof AuthenticatedSystemStatusRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/system/settings': {
-      id: '/_authenticated/system/settings'
-      path: '/system/settings'
-      fullPath: '/system/settings'
-      preLoaderRoute: typeof AuthenticatedSystemSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/errors/$error': {
@@ -894,6 +853,7 @@ const AuthenticatedWikiIdRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedWikiIdRouteRoute: typeof AuthenticatedWikiIdRouteRouteWithChildren
   AuthenticatedChangesRoute: typeof AuthenticatedChangesRoute
+  AuthenticatedFindRoute: typeof AuthenticatedFindRoute
   AuthenticatedJoinRoute: typeof AuthenticatedJoinRoute
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
   AuthenticatedRedirectsRoute: typeof AuthenticatedRedirectsRoute
@@ -907,9 +867,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPageEditRoute: typeof AuthenticatedPageEditRoute
   AuthenticatedPageRevertRoute: typeof AuthenticatedPageRevertRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
-  AuthenticatedSystemSettingsRoute: typeof AuthenticatedSystemSettingsRoute
-  AuthenticatedSystemStatusRoute: typeof AuthenticatedSystemStatusRoute
-  AuthenticatedSystemUsersRoute: typeof AuthenticatedSystemUsersRoute
   AuthenticatedTagTagRoute: typeof AuthenticatedTagTagRoute
   AuthenticatedUserAccountRoute: typeof AuthenticatedUserAccountRoute
   AuthenticatedUserPreferencesRoute: typeof AuthenticatedUserPreferencesRoute
@@ -922,6 +879,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedWikiIdRouteRoute: AuthenticatedWikiIdRouteRouteWithChildren,
   AuthenticatedChangesRoute: AuthenticatedChangesRoute,
+  AuthenticatedFindRoute: AuthenticatedFindRoute,
   AuthenticatedJoinRoute: AuthenticatedJoinRoute,
   AuthenticatedNewRoute: AuthenticatedNewRoute,
   AuthenticatedRedirectsRoute: AuthenticatedRedirectsRoute,
@@ -935,9 +893,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPageEditRoute: AuthenticatedPageEditRoute,
   AuthenticatedPageRevertRoute: AuthenticatedPageRevertRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
-  AuthenticatedSystemSettingsRoute: AuthenticatedSystemSettingsRoute,
-  AuthenticatedSystemStatusRoute: AuthenticatedSystemStatusRoute,
-  AuthenticatedSystemUsersRoute: AuthenticatedSystemUsersRoute,
   AuthenticatedTagTagRoute: AuthenticatedTagTagRoute,
   AuthenticatedUserAccountRoute: AuthenticatedUserAccountRoute,
   AuthenticatedUserPreferencesRoute: AuthenticatedUserPreferencesRoute,

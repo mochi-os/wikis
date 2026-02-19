@@ -1,4 +1,4 @@
-import { createFileRoute, Navigate, Link, useNavigate } from '@tanstack/react-router'
+import { Link, Navigate, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -15,9 +15,9 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-  GeneralError,
   toast,
   getErrorMessage,
+  getAppPath,
 } from '@mochi/common'
 import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Rss, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import {
@@ -34,12 +34,14 @@ import { getRssToken } from '@/api/request'
 import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
-export const Route = createFileRoute('/_authenticated/$wikiId/$page/')({
-  component: WikiPageRoute,
-})
+interface WikiPageContentProps {
+  wikiId: string
+  slug: string
+}
 
-function WikiPageRoute() {
-  const { wikiId, page: slug } = Route.useParams()
+// Shared page content component used by both the $wikiId/$page route and
+// the $wikiId index route (for domain routing where $wikiId is a page slug).
+export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   const { baseURL, wiki, permissions } = useWikiBaseURL()
@@ -60,12 +62,12 @@ function WikiPageRoute() {
     }
   }, [baseURL, navigate])
 
-  // If page param is empty, redirect to wiki home
+  // If slug is empty, redirect to wiki home
   if (!slug) {
     return <Navigate to="/$wikiId" params={{ wikiId }} />
   }
 
-  // Fetch page data using the wiki's base URL (absolute path since apiClient overwrites baseURL)
+  // Fetch page data using the wiki's base URL
   const { data, isLoading, error: pageError } = useQuery({
     queryKey: ['wiki', wikiId, 'page', slug],
     queryFn: () =>
@@ -97,7 +99,7 @@ function WikiPageRoute() {
   const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
     try {
       const { token } = await getRssToken(wikiId, mode)
-      const url = `${window.location.origin}/wikis/${wikiId}/-/rss?token=${token}`
+      const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       await navigator.clipboard.writeText(url)
       toast.success('RSS URL copied to clipboard')
     } catch (error) {
@@ -121,7 +123,9 @@ function WikiPageRoute() {
       <>
         <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
-          <GeneralError error={pageError} minimal mode="inline" />
+          <div className="text-destructive">
+            Error loading page: {pageError.message}
+          </div>
         </Main>
       </>
     )
@@ -135,14 +139,12 @@ function WikiPageRoute() {
       <>
         <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
-          <GeneralError
-            error={new Error('Received invalid response from server.')}
-            minimal
-            mode="inline"
-          />
-          <p className="text-muted-foreground mt-2 text-sm">
-            Request URL: {baseURL}{slug}
-          </p>
+          <div className="text-destructive">
+            <p>Error: Received invalid response from server.</p>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Request URL: {baseURL}{slug}
+            </p>
+          </div>
         </Main>
       </>
     )

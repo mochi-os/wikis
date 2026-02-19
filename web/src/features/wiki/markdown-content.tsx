@@ -6,35 +6,24 @@ import {
   useMemo,
 } from 'react'
 import { Link } from '@tanstack/react-router'
-import {
-  CopyButton,
-  cn,
-  getApiBasepath,
-  ImageLightbox,
-  type LightboxMedia,
-  useLightboxHash,
-} from '@mochi/common'
 import { ExternalLink, Hash } from 'lucide-react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { CopyButton, cn, ImageLightbox, type LightboxMedia, useLightboxHash } from '@mochi/common'
+import { getApiBasepath } from '@mochi/common'
 import {
   classifyWikiLink,
   extractTocHeadings,
   slugifyHeading,
   type TocHeading,
 } from './markdown-content.utils'
-
-// Convert attachment URLs to absolute URLs for the current wiki
 function resolveAttachmentUrl(url: string): string {
-  // Handle relative attachments/id format (preferred)
   if (url.startsWith('attachments/')) {
     return `${getApiBasepath()}${url}`
   }
-  // Handle legacy -/attachments/id format
   if (url.startsWith('-/attachments/')) {
     return `${getApiBasepath()}${url.slice(2)}`
   }
-  // Handle absolute URLs from any wiki - extract attachment ID and optional suffix
   const match = url.match(/\/-\/attachments\/([^/?#]+)(\/thumbnail)?/)
   if (match) {
     return `${getApiBasepath()}attachments/${match[1]}${match[2] || ''}`
@@ -42,13 +31,11 @@ function resolveAttachmentUrl(url: string): string {
   return url
 }
 
-// Get full-size URL for an attachment (removes /thumbnail suffix)
 function getFullSizeUrl(url: string): string {
   const resolved = resolveAttachmentUrl(url)
   return resolved.replace(/\/thumbnail$/, '')
 }
 
-// Extract image URLs from markdown content before rendering
 function extractImageUrls(content: string): string[] {
   const urls: string[] = []
   const regex = /!\[[^\]]*\]\(([^)]+)\)/g
@@ -338,33 +325,11 @@ export function MarkdownContent({
                   </a>
                 )
               }
-
-              if (kind === 'internal') {
-                if (href.startsWith('#')) {
-                  return (
-                    <a
-                      href={
-                        currentPathWithQuery
-                          ? `${currentPathWithQuery}${href}`
-                          : href
-                      }
-                      {...props}
-                    >
-                      {children}
-                    </a>
-                  )
-                }
-
-                const siblingHref =
-                  href.startsWith('/') || href.startsWith('../')
-                    ? href
-                    : `../${href}`
-                const cleanHref = href.split('#')[0].split('?')[0]
-                const trimmedHref = cleanHref.replace(/^\//, '')
-                const isMissing =
-                  missingLinks.includes(cleanHref) ||
-                  missingLinks.includes(trimmedHref)
-
+              const isExternal = href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//'))
+              if (href && !isExternal) {
+               const siblingHref = href.startsWith('/') || href.startsWith('../') ? href : `../${href}`
+                const cleanHref = href.split('#')[0].split('?')[0] // Remove anchors and query strings
+                const isMissing = missingLinks.includes(cleanHref)
                 return (
                   <Link
                     to={siblingHref}

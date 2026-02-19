@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { formatDistanceToNow } from 'date-fns'
 import { Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
-import { Button, CommentTreeLayout, ConfirmDialog } from '@mochi/common'
+import { Button, CommentTreeLayout, ConfirmDialog, formatTimestamp } from '@mochi/common'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
 
@@ -54,7 +53,7 @@ export function WikiCommentThread({
   }
   const totalDescendants = getTotalDescendants(comment)
 
-  const timeAgo = formatDistanceToNow(new Date(comment.created * 1000), { addSuffix: true })
+  const timeAgo = formatTimestamp(comment.created)
 
   const avatar = (
     <div className="bg-primary text-primary-foreground z-10 flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold">

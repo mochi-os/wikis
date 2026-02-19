@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createFileRoute,
   Link,
@@ -11,6 +11,7 @@ import {
   Card,
   CardHeader,
   CardTitle,
+  ConfirmDialog,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -25,6 +26,7 @@ import {
   PageHeader as CommonPageHeader,
   getErrorMessage,
   isDomainEntityRouting,
+  getAppPath,
   toast,
   usePageTitle,
 } from '@mochi/common'
@@ -219,7 +221,7 @@ function WikiHomePage({
   const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
     try {
       const { token } = await getRssToken(wikiId, mode)
-      const url = `${window.location.origin}/wikis/${wikiId}/-/rss?token=${token}`
+      const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       await navigator.clipboard.writeText(url)
       toast.success('RSS URL copied to clipboard')
     } catch (error) {
@@ -427,16 +429,28 @@ interface RecommendationsResponse {
 function WikisListPage({ wikis }: WikisListPageProps) {
   usePageTitle('Wikis')
   const { openCreateDialog } = useSidebarContext()
+  const queryClient = useQueryClient()
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
-  const [pendingUnsubscribeWikiId, setPendingUnsubscribeWikiId] = useState<
-    string | null
-  >(null)
+  const [unsubscribeId, setUnsubscribeId] = useState<string | null>(null)
+
+  const unsubscribeMutation = useMutation({
+    mutationFn: (wiki: WikiItem) =>
+      wikisRequest.post(`${wiki.fingerprint ?? wiki.id}/-/${endpoints.wiki.unsubscribe}`, { wiki: wiki.id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
+      setUnsubscribeId(null)
+      window.location.reload()
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
+    },
+  })
 
   // RSS feed handler for all wikis
   const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
     try {
       const { token } = await getRssToken('*', mode)
-      const url = `${window.location.origin}/wikis/-/rss?token=${token}`
+      const url = `${window.location.origin}${getAppPath()}/-/rss?token=${token}`
       await navigator.clipboard.writeText(url)
       toast.success('RSS URL copied to clipboard')
     } catch (error) {
@@ -489,24 +503,12 @@ function WikisListPage({ wikis }: WikisListPageProps) {
   const handleSubscribeRecommendation = async (wiki: RecommendedWiki) => {
     setPendingWikiId(wiki.id)
     try {
-      await wikisRequest.post(endpoints.wiki.subscribe, { target: wiki.id })
+      await wikisRequest.post(endpoints.wiki.join, { target: wiki.id })
       // Reload page to refresh wikis list
       window.location.reload()
     } catch (error) {
       toast.error(getErrorMessage(error, 'Failed to subscribe'))
       setPendingWikiId(null)
-    }
-  }
-
-  const handleUnsubscribeWiki = async (wikiId: string) => {
-    setPendingUnsubscribeWikiId(wikiId)
-    try {
-      await wikisRequest.post(endpoints.wiki.unsubscribe, { target: wikiId })
-      toast.success('Unsubscribed')
-      window.location.reload()
-    } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
-      setPendingUnsubscribeWikiId(null)
     }
   }
 
@@ -677,12 +679,10 @@ function WikisListPage({ wikis }: WikisListPageProps) {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align='end'>
                               <DropdownMenuItem
-                                onSelect={() =>
-                                  void handleUnsubscribeWiki(wiki.id)
-                                }
-                                disabled={pendingUnsubscribeWikiId === wiki.id}
+                                onSelect={() => setUnsubscribeId(wiki.id)}
+                                disabled={unsubscribeMutation.isPending && unsubscribeId === wiki.id}
                               >
-                                {pendingUnsubscribeWikiId === wiki.id
+                                {unsubscribeMutation.isPending && unsubscribeId === wiki.id
                                   ? 'Unsubscribing...'
                                   : 'Unsubscribe'}
                               </DropdownMenuItem>
@@ -698,6 +698,20 @@ function WikisListPage({ wikis }: WikisListPageProps) {
           )}
         </div>
       </Main>
+
+      <ConfirmDialog
+        open={!!unsubscribeId}
+        onOpenChange={(open) => { if (!open) setUnsubscribeId(null) }}
+        title="Unsubscribe"
+        desc="Are you sure you want to unsubscribe from this wiki?"
+        confirmText="Unsubscribe"
+        destructive
+        isLoading={unsubscribeMutation.isPending}
+        handleConfirm={() => {
+          const wiki = allWikis.find((w) => w.id === unsubscribeId)
+          if (wiki) unsubscribeMutation.mutate(wiki)
+        }}
+      />
     </>
   )
 }
