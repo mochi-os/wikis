@@ -165,7 +165,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <DropdownMenuContent align="end">
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
+              <Link preload={false} to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
                 <FilePlus className="size-4" />
                 Create this page
               </Link>
@@ -173,7 +173,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           )}
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/$wikiId/new" params={{ wikiId }}>
+              <Link preload={false} to="/$wikiId/new" params={{ wikiId }}>
                 <FilePlus className="size-4" />
                 New page
               </Link>
@@ -183,7 +183,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/$wikiId/settings" params={{ wikiId }}>
+                <Link preload={false} to="/$wikiId/settings" params={{ wikiId }}>
                   <Settings className="size-4" />
                   Wiki settings
                 </Link>
@@ -241,7 +241,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <DropdownMenuLabel>Page</DropdownMenuLabel>
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
+              <Link preload={false} to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
                 <Pencil className="size-4" />
                 Edit
               </Link>
@@ -254,20 +254,20 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
             </DropdownMenuItem>
           )}
           <DropdownMenuItem asChild>
-            <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
+            <Link preload={false} to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
               <History className="size-4" />
               History
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/$wikiId/$page/comments" params={{ wikiId, page: slug }}>
+            <Link preload={false} to="/$wikiId/$page/comments" params={{ wikiId, page: slug }}>
               <MessageSquare className="size-4" />
               Comments
             </Link>
           </DropdownMenuItem>
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
+              <Link preload={false} to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
                 <Trash2 className="size-4" />
                 Delete
               </Link>
@@ -276,19 +276,19 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Wiki</DropdownMenuLabel>
           <DropdownMenuItem asChild>
-            <Link to="/search">
+            <Link preload={false} to="/search">
               <Search className="size-4" />
               Search
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/tags">
+            <Link preload={false} to="/tags">
               <Tags className="size-4" />
               Tags
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to="/changes">
+            <Link preload={false} to="/changes">
               <History className="size-4" />
               Recent changes
             </Link>
@@ -306,7 +306,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           </DropdownMenuSub>
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/$wikiId/new" params={{ wikiId }}>
+              <Link preload={false} to="/$wikiId/new" params={{ wikiId }}>
                 <FilePlus className="size-4" />
                 New page
               </Link>
@@ -314,7 +314,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           )}
           {permissions.manage && (
             <DropdownMenuItem asChild>
-              <Link to="/$wikiId/settings" params={{ wikiId }}>
+              <Link preload={false} to="/$wikiId/settings" params={{ wikiId }}>
                 <Settings className="size-4" />
                 Settings
               </Link>

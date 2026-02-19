@@ -122,7 +122,7 @@ function WikiPageRoute() {
         <DropdownMenuContent align="end">
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/$page/edit" params={{ page: slug }}>
+              <Link preload={false} to="/$page/edit" params={{ page: slug }}>
                 <FilePlus className="size-4" />
                 Create this page
               </Link>
@@ -130,7 +130,7 @@ function WikiPageRoute() {
           )}
           {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link to="/new">
+              <Link preload={false} to="/new">
                 <FilePlus className="size-4" />
                 New page
               </Link>
@@ -140,7 +140,7 @@ function WikiPageRoute() {
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/settings">
+                <Link preload={false} to="/settings">
                   <Settings className="size-4" />
                   Wiki settings
                 </Link>
@@ -198,7 +198,7 @@ function WikiPageRoute() {
             <DropdownMenuLabel>Page</DropdownMenuLabel>
             {permissions.edit && (
               <DropdownMenuItem asChild>
-                <Link to="/$page/edit" params={{ page: slug }}>
+                <Link preload={false} to="/$page/edit" params={{ page: slug }}>
                   <Pencil className="size-4" />
                   Edit
                 </Link>
@@ -211,13 +211,13 @@ function WikiPageRoute() {
               </DropdownMenuItem>
             )}
             <DropdownMenuItem asChild>
-              <Link to="/$page/history" params={{ page: slug }}>
+              <Link preload={false} to="/$page/history" params={{ page: slug }}>
                 <History className="size-4" />
                 History
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/$page/comments" params={{ page: slug }}>
+              <Link preload={false} to="/$page/comments" params={{ page: slug }}>
                 <MessageSquare className="size-4" />
                 Comments
               </Link>
@@ -225,26 +225,26 @@ function WikiPageRoute() {
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Wiki</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link to="/search">
+              <Link preload={false} to="/search">
                 <Search className="size-4" />
                 Search
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/tags">
+              <Link preload={false} to="/tags">
                 <Tags className="size-4" />
                 Tags
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/changes">
+              <Link preload={false} to="/changes">
                 <History className="size-4" />
                 Recent changes
               </Link>
             </DropdownMenuItem>
             {permissions.edit && (
               <DropdownMenuItem asChild>
-                <Link to="/new">
+                <Link preload={false} to="/new">
                   <FilePlus className="size-4" />
                   New page
                 </Link>
@@ -252,7 +252,7 @@ function WikiPageRoute() {
             )}
             {permissions.manage && (
               <DropdownMenuItem asChild>
-                <Link to="/settings">
+                <Link preload={false} to="/settings">
                   <Settings className="size-4" />
                   Settings
                 </Link>
