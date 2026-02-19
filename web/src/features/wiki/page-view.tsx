@@ -66,7 +66,13 @@ function TableOfContents({
 
   if (mobile) {
     return (
-      <details className='bg-surface-1 group mb-4 rounded-lg border lg:hidden'>
+      <details
+        className={cn(
+          'bg-surface-1 group mb-4 rounded-lg border lg:hidden',
+          'sticky top-15 z-20',
+          'supports-[backdrop-filter]:bg-surface-1/90 backdrop-blur'
+        )}
+      >
         <summary className='flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2'>
           <span className='flex items-center gap-2 text-sm font-medium'>
             <ListTree className='text-muted-foreground size-4' />
