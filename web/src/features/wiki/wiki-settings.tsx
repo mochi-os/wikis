@@ -158,7 +158,7 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
 }
 
 // Characters disallowed in wiki names (matches backend validation)
-const DISALLOWED_NAME_CHARS = /[<>\r\n\\;"'`]/
+const DISALLOWED_NAME_CHARS = /[<>\r\n]/
 
 function SettingsTab() {
   const navigate = useNavigate()
@@ -230,7 +230,7 @@ function SettingsTab() {
   const validateName = (n: string): string | null => {
     if (!n.trim()) return 'Wiki name is required'
     if (n.length > 100) return 'Name must be 100 characters or less'
-    if (DISALLOWED_NAME_CHARS.test(n)) return 'Name cannot contain < > \\ ; " \' or ` characters'
+    if (DISALLOWED_NAME_CHARS.test(n)) return 'Name cannot contain < or > characters'
     return null
   }
 
