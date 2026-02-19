@@ -1,12 +1,16 @@
-import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import endpoints from '@/api/endpoints'
-import { wikisRequest, getRssToken } from '@/api/request'
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from '@tanstack/react-router'
 import {
   Button,
   Card,
-  CardContent,
+  CardHeader,
+  CardTitle,
   ConfirmDialog,
   DropdownMenu,
   DropdownMenuContent,
@@ -17,34 +21,61 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
+  GeneralError,
   Main,
   PageHeader as CommonPageHeader,
-  toast,
   getErrorMessage,
   isDomainEntityRouting,
   getAppPath,
+  toast,
+  usePageTitle,
 } from '@mochi/common'
-import { BookOpen, Ellipsis, FileEdit, FilePlus, History, Link2, Loader2, MoreHorizontal, Pencil, Plus, Rss, Search, Settings, Tags } from 'lucide-react'
-import { usePageTitle } from '@mochi/common'
+import {
+  BookOpen,
+  Ellipsis,
+  FileEdit,
+  FilePlus,
+  History,
+  Link2,
+  Loader2,
+  Pencil,
+  Plus,
+  Rss,
+  Search,
+  Settings,
+  Tags,
+} from 'lucide-react'
+import endpoints from '@/api/endpoints'
+import { wikisRequest, getRssToken } from '@/api/request'
+import { useSidebarContext } from '@/context/sidebar-context'
+import { usePermissions, useWikiContext } from '@/context/wiki-context'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
+import {
+  cacheWikisList,
+  setLastLocation,
+  getLastLocation,
+  clearLastLocation,
+} from '@/hooks/use-wiki-storage'
+import { InlineWikiSearch } from '@/features/wiki/inline-wiki-search'
+import { PageHeader } from '@/features/wiki/page-header'
 import {
   PageView,
   PageNotFound,
   PageViewSkeleton,
 } from '@/features/wiki/page-view'
-import { PageHeader } from '@/features/wiki/page-header'
-import { GeneralError } from '@mochi/common'
-import { useSidebarContext } from '@/context/sidebar-context'
-import { usePermissions, useWikiContext } from '@/context/wiki-context'
-import { cacheWikisList, setLastLocation, getLastLocation, clearLastLocation } from '@/hooks/use-wiki-storage'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
-import { InlineWikiSearch } from '@/features/wiki/inline-wiki-search'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 interface InfoResponse {
   entity: boolean
   wiki?: { id: string; name: string; home: string; fingerprint?: string }
-  wikis?: Array<{ id: string; name: string; home: string; source?: string; fingerprint?: string }>
+  wikis?: Array<{
+    id: string
+    name: string
+    home: string
+    source?: string
+    fingerprint?: string
+  }>
 }
 
 type WikiType = 'owned' | 'subscribed'
@@ -67,7 +98,7 @@ export const Route = createFileRoute('/_authenticated/')({
     // Cache wikis list for sidebar
     if (info.wikis) {
       cacheWikisList(
-        info.wikis.map(w => ({ id: w.id, name: w.name, source: w.source }))
+        info.wikis.map((w) => ({ id: w.id, name: w.name, source: w.source }))
       )
     }
 
@@ -82,7 +113,11 @@ export const Route = createFileRoute('/_authenticated/')({
       const lastLocation = getLastLocation()
       if (lastLocation) {
         const allWikis = info.wikis || []
-        const wiki = allWikis.find(w => w.id === lastLocation.wikiId || w.fingerprint === lastLocation.wikiId)
+        const wiki = allWikis.find(
+          (w) =>
+            w.id === lastLocation.wikiId ||
+            w.fingerprint === lastLocation.wikiId
+        )
         if (wiki) {
           // Use fingerprint for shorter URLs when available
           const wikiId = wiki.fingerprint || wiki.id
@@ -108,8 +143,10 @@ function isEntityContext(): boolean {
   if (isDomainEntityRouting()) return true
   const pathname = window.location.pathname
   const firstSegment = pathname.match(/^\/([^/]+)/)?.[1] || ''
-  return /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(firstSegment) ||
+  return (
+    /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(firstSegment) ||
     /^[1-9A-HJ-NP-Za-km-z]{50,51}$/.test(firstSegment)
+  )
 }
 
 function IndexPage() {
@@ -118,20 +155,34 @@ function IndexPage() {
   // If we're in entity context (URL starts with entity ID), show the wiki's home page directly
   // Use URL-based detection since API data.entity may be stale
   if (isEntityContext() && data.wiki) {
-    return <WikiHomePage wikiId={data.wiki.fingerprint ?? data.wiki.id} homeSlug={data.wiki.home} />
+    return (
+      <WikiHomePage
+        wikiId={data.wiki.fingerprint ?? data.wiki.id}
+        homeSlug={data.wiki.home}
+      />
+    )
   }
 
   // Class context - show wikis list
   return <WikisListPage wikis={data.wikis} />
 }
 
-function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }) {
+function WikiHomePage({
+  wikiId,
+  homeSlug,
+}: {
+  wikiId: string
+  homeSlug: string
+}) {
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   const { data, isLoading, error } = usePage(homeSlug)
   const permissions = usePermissions()
   const unsubscribeWiki = useUnsubscribeWiki()
-  const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : 'Home'
+  const pageTitle =
+    data && 'page' in data && typeof data.page === 'object' && data.page?.title
+      ? data.page.title
+      : 'Home'
   usePageTitle(pageTitle)
 
   // Register page with sidebar context for tree expansion
@@ -148,12 +199,14 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
 
   // Rename dialog state (controlled mode so menu closes when dialog opens)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+  const [unsubscribeConfirmOpen, setUnsubscribeConfirmOpen] = useState(false)
 
   // Unsubscribe handler
   const handleUnsubscribe = useCallback(() => {
     unsubscribeWiki.mutate(undefined, {
       onSuccess: () => {
         toast.success('Unsubscribed')
+        setUnsubscribeConfirmOpen(false)
         void navigate({ to: '/' })
       },
       onError: (error) => {
@@ -200,9 +253,7 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main>
-          <div className="text-destructive">
-            Error loading page: {error.message}
-          </div>
+          <GeneralError error={error} minimal mode='inline' />
         </Main>
       </>
     )
@@ -213,7 +264,7 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
     return (
       <>
         <WikiRouteHeader
-          title="Page not found"
+          title='Page not found'
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main>
@@ -226,90 +277,102 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
   // Page found
   if (data && 'page' in data && typeof data.page === 'object') {
     const actionsMenu = (
-      <div className="flex items-center gap-2">
-        {canUnsubscribe && (
-          <Button
-            variant="outline"
-            onClick={handleUnsubscribe}
-            disabled={unsubscribeWiki.isPending}
-          >
-            {unsubscribeWiki.isPending ? 'Unsubscribing...' : 'Unsubscribe'}
-          </Button>
-        )}
+      <div className='flex items-center gap-2'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Ellipsis className="size-4" />
+            <Button variant='ghost' size='icon'>
+              <Ellipsis className='size-4' />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align='end'>
             <DropdownMenuLabel>Page</DropdownMenuLabel>
             {permissions.edit && (
               <DropdownMenuItem asChild>
-                <Link to="/$page/edit" params={{ page: homeSlug }}>
-                  <Pencil className="size-4" />
+                <Link preload={false} to='/$page/edit' params={{ page: homeSlug }}>
+                  <Pencil className='size-4' />
                   Edit
                 </Link>
               </DropdownMenuItem>
             )}
             {permissions.edit && (
               <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
-                <FileEdit className="size-4" />
+                <FileEdit className='size-4' />
                 Rename
               </DropdownMenuItem>
             )}
             <DropdownMenuItem asChild>
-              <Link to="/$page/history" params={{ page: homeSlug }}>
-                <History className="size-4" />
+              <Link preload={false} to='/$page/history' params={{ page: homeSlug }}>
+                <History className='size-4' />
                 History
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuLabel>Wiki</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link to="/search">
-                <Search className="size-4" />
+              <Link preload={false} to='/search'>
+                <Search className='size-4' />
                 Search
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/tags">
-                <Tags className="size-4" />
+              <Link preload={false} to='/tags'>
+                <Tags className='size-4' />
                 Tags
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/changes">
-                <History className="size-4" />
+              <Link preload={false} to='/changes'>
+                <History className='size-4' />
                 Recent changes
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
-                <Rss className="mr-2 size-4" />
+                <Rss className='mr-2 size-4' />
                 RSS feed
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
-                <DropdownMenuItem onSelect={() => void handleCopyRssUrl('changes')}>Changes</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => void handleCopyRssUrl('comments')}>Comments</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>Changes and comments</DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => void handleCopyRssUrl('changes')}
+                >
+                  Changes
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => void handleCopyRssUrl('comments')}
+                >
+                  Comments
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>
+                  Changes and comments
+                </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             {permissions.edit && (
               <DropdownMenuItem asChild>
-                <Link to="/new">
-                  <FilePlus className="size-4" />
+                <Link preload={false} to='/new'>
+                  <FilePlus className='size-4' />
                   New page
                 </Link>
               </DropdownMenuItem>
             )}
             {permissions.manage && (
               <DropdownMenuItem asChild>
-                <Link to="/settings">
-                  <Settings className="size-4" />
+                <Link preload={false} to='/settings'>
+                  <Settings className='size-4' />
                   Settings
                 </Link>
               </DropdownMenuItem>
+            )}
+            {canUnsubscribe && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onSelect={() => setUnsubscribeConfirmOpen(true)}
+                  disabled={unsubscribeWiki.isPending}
+                >
+                  {unsubscribeWiki.isPending ? 'Unsubscribing...' : 'Unsubscribe'}
+                </DropdownMenuItem>
+              </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -323,9 +386,24 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
           actions={actionsMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
-        <Main className="pt-2">
-          <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
+        <Main className='pt-2'>
+          <PageView
+            page={data.page}
+            missingLinks={
+              'missing_links' in data ? data.missing_links : undefined
+            }
+          />
         </Main>
+        <ConfirmDialog
+          open={unsubscribeConfirmOpen}
+          onOpenChange={setUnsubscribeConfirmOpen}
+          title='Unsubscribe'
+          desc='Are you sure you want to unsubscribe from this wiki?'
+          confirmText='Unsubscribe'
+          destructive
+          isLoading={unsubscribeWiki.isPending}
+          handleConfirm={handleUnsubscribe}
+        />
         <RenamePageDialog
           slug={homeSlug}
           title={data.page.title}
@@ -340,7 +418,13 @@ function WikiHomePage({ wikiId, homeSlug }: { wikiId: string; homeSlug: string }
 }
 
 interface WikisListPageProps {
-  wikis?: Array<{ id: string; name: string; home: string; source?: string; fingerprint?: string }>
+  wikis?: Array<{
+    id: string
+    name: string
+    home: string
+    source?: string
+    fingerprint?: string
+  }>
 }
 
 interface RecommendedWiki {
@@ -406,23 +490,30 @@ function WikisListPage({ wikis }: WikisListPageProps) {
 
   // Set of subscribed wiki IDs for inline search
   const subscribedWikiIds = useMemo(
-    () => new Set(allWikis.flatMap((w) => [w.id, w.fingerprint].filter((x): x is string => !!x))),
+    () =>
+      new Set(
+        allWikis.flatMap((w) =>
+          [w.id, w.fingerprint].filter((x): x is string => !!x)
+        )
+      ),
     [allWikis]
   )
 
   // Recommendations query
-  const {
-    data: recommendationsData,
-    isError: isRecommendationsError,
-  } = useQuery({
-    queryKey: ['wikis', 'recommendations'],
-    queryFn: () => wikisRequest.get<RecommendationsResponse>(endpoints.wiki.recommendations),
-    retry: false,
-    refetchOnWindowFocus: false,
-  })
+  const { data: recommendationsData, isError: isRecommendationsError } =
+    useQuery({
+      queryKey: ['wikis', 'recommendations'],
+      queryFn: () =>
+        wikisRequest.get<RecommendationsResponse>(
+          endpoints.wiki.recommendations
+        ),
+      retry: false,
+      refetchOnWindowFocus: false,
+    })
   const recommendations = recommendationsData?.wikis ?? []
 
   const handleSubscribeRecommendation = async (wiki: RecommendedWiki) => {
+    if (pendingWikiId === wiki.id) return
     setPendingWikiId(wiki.id)
     try {
       await wikisRequest.post(endpoints.wiki.join, { target: wiki.id })
@@ -437,34 +528,46 @@ function WikisListPage({ wikis }: WikisListPageProps) {
   const getIcon = (type: WikiType) => {
     switch (type) {
       case 'owned':
-        return <BookOpen className="text-muted-foreground mt-0.5 size-5 shrink-0" />
+        return <BookOpen className='h-5 w-5' />
       case 'subscribed':
-        return <Link2 className="text-muted-foreground mt-0.5 size-5 shrink-0" />
+        return <Link2 className='h-5 w-5' />
     }
   }
 
   return (
     <>
       <CommonPageHeader
-        title="Wikis"
-        icon={<BookOpen className="size-4 md:size-5" />}
+        title='Wikis'
+        icon={<BookOpen className='size-4 md:size-5' />}
         actions={
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Ellipsis className="size-4" />
+              <Button variant='ghost' size='icon'>
+                <Ellipsis className='size-4' />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align='end'>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
-                  <Rss className="mr-2 size-4" />
+                  <Rss className='mr-2 size-4' />
                   RSS feed
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem onSelect={() => void handleCopyRssUrl('changes')}>Changes</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => void handleCopyRssUrl('comments')}>Comments</DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>Changes and comments</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => void handleCopyRssUrl('changes')}
+                  >
+                    Changes
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => void handleCopyRssUrl('comments')}
+                  >
+                    Comments
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => void handleCopyRssUrl('all')}
+                  >
+                    Changes and comments
+                  </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
             </DropdownMenuContent>
@@ -472,111 +575,156 @@ function WikisListPage({ wikis }: WikisListPageProps) {
         }
       />
       <Main>
-        <div className="container mx-auto p-6">
+        <div className='mx-auto w-full max-w-6xl px-4 py-4 md:px-6 md:py-6'>
           {!hasWikis ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center">
-              <BookOpen className="text-muted-foreground mx-auto mb-3 h-10 w-10 opacity-50" />
-              <p className="text-muted-foreground mb-1 text-sm font-medium">Wikis</p>
-            <p className="text-muted-foreground mb-4 max-w-sm text-xs">
-              You have no wikis yet.
-            </p>
-            <InlineWikiSearch subscribedIds={subscribedWikiIds} />
-            <Button variant="outline" onClick={openCreateDialog} className="mt-4">
-              <Plus className="mr-2 h-4 w-4" />
-              Create a new wiki
-            </Button>
+            <div className='bg-muted/10 mx-auto flex max-w-2xl flex-col items-center rounded-2xl border p-6 text-center md:p-8'>
+              <BookOpen className='text-muted-foreground mx-auto mb-3 h-10 w-10 opacity-70' />
+              <p className='mb-1 text-base font-semibold'>
+                Start your first wiki
+              </p>
+              <p className='text-muted-foreground mb-5 max-w-md text-sm'>
+                Search for a wiki to subscribe, or create one to publish your
+                own documentation.
+              </p>
+              <div className='w-full max-w-md'>
+                <InlineWikiSearch subscribedIds={subscribedWikiIds} />
+              </div>
+              <Button
+                variant='outline'
+                onClick={openCreateDialog}
+                className='mt-4'
+              >
+                <Plus className='mr-2 h-4 w-4' />
+                Create wiki
+              </Button>
 
-            {/* Recommendations Section */}
-            {!isRecommendationsError && recommendations.filter((rec) => !subscribedWikiIds.has(rec.id)).length > 0 && (
-              <>
-                <hr className="my-6 w-full max-w-md border-t" />
-                <div className="w-full max-w-md">
-                  <p className="text-muted-foreground mb-3 text-xs font-medium uppercase tracking-wide">
-                    Recommended wikis
-                  </p>
-                  <div className="divide-border divide-y rounded-lg border text-left">
-                    {recommendations
-                      .filter((rec) => !subscribedWikiIds.has(rec.id))
-                      .map((rec) => {
-                        const isPending = pendingWikiId === rec.id
+              {!isRecommendationsError &&
+                recommendations.filter((rec) => !subscribedWikiIds.has(rec.id))
+                  .length > 0 && (
+                  <>
+                    <hr className='my-6 w-full max-w-md border-t' />
+                    <div className='w-full max-w-md text-left'>
+                      <p className='text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase'>
+                        Recommended wikis
+                      </p>
+                      <div className='divide-border overflow-hidden rounded-xl border'>
+                        {recommendations
+                          .filter((rec) => !subscribedWikiIds.has(rec.id))
+                          .map((rec) => {
+                            const isPending = pendingWikiId === rec.id
 
-                        return (
-                          <div
-                            key={rec.id}
-                            className="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-muted/50"
-                          >
-                            <div className="flex min-w-0 flex-1 items-center gap-3">
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
-                                <BookOpen className="h-4 w-4 text-emerald-600" />
+                            return (
+                              <div
+                                key={rec.id}
+                                className='hover:bg-muted/50 flex items-center justify-between gap-3 px-4 py-3 transition-colors'
+                              >
+                                <div className='flex min-w-0 flex-1 items-center gap-3'>
+                                  <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10'>
+                                    <BookOpen className='h-4 w-4 text-emerald-600' />
+                                  </div>
+                                  <div className='flex min-w-0 flex-1 flex-col'>
+                                    <span className='truncate text-sm font-medium'>
+                                      {rec.name}
+                                    </span>
+                                    {rec.blurb && (
+                                      <span className='text-muted-foreground truncate text-xs'>
+                                        {rec.blurb}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <Button
+                                  size='sm'
+                                  onClick={() =>
+                                    handleSubscribeRecommendation(rec)
+                                  }
+                                  disabled={isPending}
+                                >
+                                  {isPending ? (
+                                    <Loader2 className='h-4 w-4 animate-spin' />
+                                  ) : (
+                                    'Subscribe'
+                                  )}
+                                </Button>
                               </div>
-                              <div className="flex min-w-0 flex-1 flex-col">
-                                <span className="truncate text-sm font-medium">{rec.name}</span>
-                                {rec.blurb && (
-                                  <span className="text-muted-foreground truncate text-xs">
-                                    {rec.blurb}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            <Button
-                              size="sm"
-                              onClick={() => handleSubscribeRecommendation(rec)}
-                              disabled={isPending}
-                            >
-                              {isPending ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                'Subscribe'
-                              )}
-                            </Button>
-                          </div>
-                        )
-                      })}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {allWikis.map((wiki) => (
-              <Link key={wiki.id} to="/$wikiId/$page" params={{ wikiId: wiki.fingerprint ?? wiki.id, page: wiki.home }}>
-                <Card className="hover:border-primary/50 h-full cursor-pointer transition-colors">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between gap-2">
-                      {getIcon(wiki.type)}
-                      <h3 className="min-w-0 flex-1 truncate font-medium">{wiki.name}</h3>
-                      {wiki.type === 'subscribed' && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button
-                              className="hover:bg-muted shrink-0 rounded p-1 transition-colors"
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              <MoreHorizontal className="text-muted-foreground size-4" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={(e) => {
-                                e.preventDefault()
-                                setUnsubscribeId(wiki.id)
-                              }}
-                            >
-                              Unsubscribe
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
+                            )
+                          })}
+                      </div>
                     </div>
-                  </CardContent>
+                  </>
+                )}
+            </div>
+          ) : (
+            <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
+              {allWikis.map((wiki) => (
+                <Card
+                  key={wiki.id}
+                  className='group border-border/70 hover:border-primary/30 relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md'
+                >
+                  <Link
+                    to='/$wikiId/$page'
+                    params={{
+                      wikiId: wiki.fingerprint ?? wiki.id,
+                      page: wiki.home,
+                    }}
+                    className='focus-visible:ring-ring absolute inset-0 rounded-xl focus-visible:ring-2 focus-visible:ring-offset-2'
+                  >
+                    <span className='sr-only'>Open {wiki.name}</span>
+                  </Link>
+
+                  <CardHeader className='space-y-3 pb-2'>
+                    <div className='flex items-start justify-between gap-2'>
+                      <div className='min-w-0'>
+                        <CardTitle className='flex items-center gap-2 truncate text-lg'>
+                          <span className='bg-muted text-muted-foreground inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border'>
+                            {getIcon(wiki.type)}
+                          </span>
+                          <span className='truncate'>{wiki.name}</span>
+                        </CardTitle>
+                      </div>
+                      <div className='relative z-10 flex items-center gap-2'>
+                        {wiki.type === 'subscribed' && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant='ghost' size='icon'>
+                                <Ellipsis className='size-4' />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align='end'>
+                              <DropdownMenuItem
+                                onSelect={() => setUnsubscribeId(wiki.id)}
+                                disabled={unsubscribeMutation.isPending && unsubscribeId === wiki.id}
+                              >
+                                {unsubscribeMutation.isPending && unsubscribeId === wiki.id
+                                  ? 'Unsubscribing...'
+                                  : 'Unsubscribe'}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
+                    </div>
+                  </CardHeader>
                 </Card>
-              </Link>
-            ))}
-          </div>
+              ))}
+            </div>
           )}
         </div>
       </Main>
+
+      <ConfirmDialog
+        open={!!unsubscribeId}
+        onOpenChange={(open) => { if (!open) setUnsubscribeId(null) }}
+        title="Unsubscribe"
+        desc="Are you sure you want to unsubscribe from this wiki?"
+        confirmText="Unsubscribe"
+        destructive
+        isLoading={unsubscribeMutation.isPending}
+        handleConfirm={() => {
+          const wiki = allWikis.find((w) => w.id === unsubscribeId)
+          if (wiki) unsubscribeMutation.mutate(wiki)
+        }}
+      />
 
       <ConfirmDialog
         open={!!unsubscribeId}

@@ -1,7 +1,6 @@
 import { useState, useRef, useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import { format } from 'date-fns'
-import { toast } from '@mochi/common'
 import {
   Upload,
   Trash2,
@@ -18,7 +17,10 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import {
+  toast,
   Button,
+  EmptyState,
+  GeneralError,
   getApiBasepath,
   ImageLightbox,
   type LightboxMedia,
@@ -51,6 +53,7 @@ interface AttachmentsPageProps {
 type ViewMode = 'grid' | 'list'
 type FilterType = 'all' | 'images' | 'documents'
 type SortBy = 'name' | 'date' | 'size'
+const EMPTY_ATTACHMENTS: Attachment[] = []
 
 // Build attachment URL using API basepath for correct resolution from any route
 function getAttachmentUrl(id: string): string {
@@ -66,13 +69,13 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { data, isLoading } = useAttachments()
+  const { data, isLoading, error } = useAttachments()
   const uploadMutation = useUploadAttachment()
   const deleteMutation = useDeleteAttachment()
   const wikiContext = useWikiBaseURLOptional()
   const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
 
-  const attachments = data?.attachments || []
+  const attachments = data?.attachments ?? EMPTY_ATTACHMENTS
 
   // Filter and sort attachments
   const filteredAttachments = useMemo(() => {
@@ -334,22 +337,25 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
       >
         {isLoading ? (
           <AttachmentsPageSkeleton viewMode={viewMode} />
-        ) : filteredAttachments.length === 0 ? (
-          <div className="flex h-[400px] flex-col items-center justify-center text-center">
-            <Image className="text-muted-foreground mb-4 h-12 w-12" />
-            {attachments.length === 0 ? (
-              <>
-                <p className="text-muted-foreground mb-2">No attachments yet</p>
-                <p className="text-muted-foreground text-sm">
-                  Drag and drop files here, or click "Upload files" to get started.
-                </p>
-              </>
-            ) : (
-              <p className="text-muted-foreground">
-                No attachments match your search
-              </p>
-            )}
+        ) : error ? (
+          <div className="px-4 py-8">
+            <GeneralError error={error} minimal mode="inline" />
           </div>
+        ) : filteredAttachments.length === 0 ? (
+          <EmptyState
+            icon={attachments.length === 0 ? Image : Search}
+            title={
+              attachments.length === 0
+                ? 'No attachments yet'
+                : 'No attachments match your search'
+            }
+            description={
+              attachments.length === 0
+                ? 'Drag and drop files here, or click "Upload files" to get started.'
+                : 'Try a different search term or filter.'
+            }
+            className="h-[400px]"
+          />
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {filteredAttachments.map((attachment) => (

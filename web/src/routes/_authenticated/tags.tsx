@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useTags } from '@/hooks/use-wiki'
-import { usePageTitle } from '@mochi/common'
+import { GeneralError, usePageTitle } from '@mochi/common'
 import { TagsList, TagsListSkeleton } from '@/features/wiki/tags-list'
 import { Main } from '@mochi/common'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
@@ -31,9 +31,7 @@ function TagsRoute() {
       <>
         <WikiRouteHeader title="All tags" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
-          <div className="text-destructive">
-            Error loading tags: {error.message}
-          </div>
+          <GeneralError error={error} minimal mode="inline" />
         </Main>
       </>
     )

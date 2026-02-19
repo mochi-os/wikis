@@ -1,7 +1,9 @@
-import { format } from 'date-fns'
 import type { Session } from '@/types/account'
 import { Loader2, LogOut } from 'lucide-react'
-import { usePageTitle, getErrorMessage, toast } from '@mochi/common'
+import { EmptyState } from '@mochi/common'
+import { GeneralError } from '@mochi/common'
+import { ListSkeleton } from '@mochi/common'
+import { usePageTitle, getErrorMessage, toast, formatTimestamp } from '@mochi/common'
 import { useAccountData, useRevokeSession } from '@/hooks/use-account'
 import {
   AlertDialog,
@@ -15,7 +17,6 @@ import {
   AlertDialogTrigger,
 } from '@mochi/common'
 import { Button } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
 import {
   Table,
   TableBody,
@@ -26,11 +27,6 @@ import {
 } from '@mochi/common'
 import { Header } from '@mochi/common'
 import { Main } from '@mochi/common'
-
-function formatTimestamp(timestamp: number): string {
-  if (timestamp === 0) return 'Never'
-  return format(new Date(timestamp * 1000), 'yyyy-MM-dd HH:mm:ss')
-}
 
 function SessionRow({
   session,
@@ -67,10 +63,10 @@ function SessionRow({
         </div>
       </TableCell>
       <TableCell className='text-muted-foreground text-sm'>
-        {formatTimestamp(session.created)}
+        {formatTimestamp(session.created, 'Never')}
       </TableCell>
       <TableCell className='text-muted-foreground text-sm'>
-        {formatTimestamp(session.accessed)}
+        {formatTimestamp(session.accessed, 'Never')}
       </TableCell>
       <TableCell className='text-right'>
         <AlertDialog>
@@ -119,9 +115,7 @@ export function UserSessions() {
         <Header>
           <h1 className='text-lg font-semibold'>Sessions</h1>
         </Header>
-        <Main>
-          <p className='text-muted-foreground'>Failed to load sessions</p>
-        </Main>
+        <Main><GeneralError error={error} minimal mode='inline' /></Main>
       </>
     )
   }
@@ -137,13 +131,14 @@ export function UserSessions() {
 
       <Main>
         {isLoading ? (
-          <div className='space-y-3'>
-            <Skeleton className='h-10 w-full' />
-            <Skeleton className='h-10 w-full' />
-            <Skeleton className='h-10 w-full' />
-          </div>
+          <ListSkeleton variant='simple' height='h-10' count={3} />
         ) : sessions.length === 0 ? (
-          <p className='text-muted-foreground text-sm'>No active sessions</p>
+          <EmptyState
+            icon={LogOut}
+            title='No active sessions'
+            description='Your active sessions will appear here.'
+            className='py-8'
+          />
         ) : (
           <Table>
             <TableHeader>

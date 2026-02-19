@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Search, Loader2, BookOpen } from 'lucide-react'
-import { Button, Input, toast, getErrorMessage } from '@mochi/common'
+import { Button, GeneralError, Input, toast, getErrorMessage } from '@mochi/common'
 import { wikisRequest } from '@/api/request'
 import endpoints from '@/api/endpoints'
 
@@ -25,6 +25,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [results, setResults] = useState<DirectoryEntry[]>([])
+  const [searchError, setSearchError] = useState<Error | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
   const navigate = useNavigate()
@@ -41,11 +42,13 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
   useEffect(() => {
     if (debouncedQuery.length === 0) {
       setResults([])
+      setSearchError(null)
       return
     }
 
     const search = async () => {
       setIsLoading(true)
+      setSearchError(null)
       try {
         // wikisRequest already unwraps the outer data envelope
         // Response is {results: [...]}
@@ -53,7 +56,8 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
           `${endpoints.wiki.directorySearch}?search=${encodeURIComponent(debouncedQuery)}`
         )
         setResults(response.results ?? [])
-      } catch {
+      } catch (error) {
+        setSearchError(new Error(getErrorMessage(error, 'Failed to search wikis')))
         setResults([])
       } finally {
         setIsLoading(false)
@@ -99,13 +103,17 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
         </div>
       )}
 
-      {!isLoading && showResults && results.length === 0 && (
+      {!isLoading && showResults && searchError && (
+        <GeneralError error={searchError} minimal mode="inline" className="py-4" />
+      )}
+
+      {!isLoading && showResults && !searchError && results.length === 0 && (
         <p className="text-muted-foreground text-sm text-center py-4">
           No wikis found
         </p>
       )}
 
-      {!isLoading && results.length > 0 && (
+      {!isLoading && showResults && !searchError && results.length > 0 && (
         <div className="divide-border divide-y rounded-lg border">
           {results
             .filter((wiki) => !subscribedIds.has(wiki.id) && !subscribedIds.has(wiki.fingerprint))
