@@ -9,8 +9,15 @@ import { ExternalLink, Hash } from 'lucide-react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Link } from '@tanstack/react-router'
-import { CopyButton, cn, ImageLightbox, type LightboxMedia, useLightboxHash, isDomainEntityRouting } from '@mochi/common'
-import { getApiBasepath } from '@mochi/common'
+import {
+  CopyButton,
+  cn,
+  ImageLightbox,
+  type LightboxMedia,
+  useLightboxHash,
+  isDomainEntityRouting,
+  getApiBasepath,
+} from '@mochi/common'
 import {
   classifyWikiLink,
   extractTocHeadings,
@@ -338,6 +345,7 @@ export function MarkdownContent({
                 return (
                   <Link
                     to={siblingHref}
+                    preload={false}
                     {...props}
                     className={cn(
                       'transition-colors',
