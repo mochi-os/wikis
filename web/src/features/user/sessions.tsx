@@ -1,10 +1,5 @@
 import type { Session } from '@/types/account'
 import { Loader2, LogOut } from 'lucide-react'
-import { EmptyState } from '@mochi/common'
-import { GeneralError } from '@mochi/common'
-import { ListSkeleton } from '@mochi/common'
-import { usePageTitle, getErrorMessage, toast, formatTimestamp } from '@mochi/common'
-import { useAccountData, useRevokeSession } from '@/hooks/use-account'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,18 +10,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@mochi/common'
-import { Button } from '@mochi/common'
-import {
+  Button,
+  EmptyState,
+  GeneralError,
+  Header,
+  ListSkeleton,
+  Main,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
+  formatTimestamp,
+  getErrorMessage,
+  toast,
+  usePageTitle,
 } from '@mochi/common'
-import { Header } from '@mochi/common'
-import { Main } from '@mochi/common'
+import { useAccountData, useRevokeSession } from '@/hooks/use-account'
 
 function SessionRow({
   session,
@@ -107,18 +108,7 @@ function SessionRow({
 
 export function UserSessions() {
   usePageTitle('Sessions')
-  const { data, isLoading, error } = useAccountData()
-
-  if (error) {
-    return (
-      <>
-        <Header>
-          <h1 className='text-lg font-semibold'>Sessions</h1>
-        </Header>
-        <Main><GeneralError error={error} minimal mode='inline' /></Main>
-      </>
-    )
-  }
+  const { data, isLoading, error, refetch } = useAccountData()
 
   const sessions = data?.sessions ?? []
   const sortedSessions = [...sessions].sort((a, b) => b.accessed - a.accessed)
@@ -130,7 +120,9 @@ export function UserSessions() {
       </Header>
 
       <Main>
-        {isLoading ? (
+        {error ? (
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
+        ) : isLoading ? (
           <ListSkeleton variant='simple' height='h-10' count={3} />
         ) : sessions.length === 0 ? (
           <EmptyState

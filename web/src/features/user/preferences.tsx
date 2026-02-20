@@ -1,15 +1,5 @@
 import { useState, useMemo } from 'react'
 import { Check, ChevronsUpDown, Loader2, RotateCcw } from 'lucide-react'
-import { usePageTitle, getErrorMessage, toast } from '@mochi/common'
-import { cn } from '@mochi/common'
-import { GeneralError } from '@mochi/common'
-import { ListSkeleton } from '@mochi/common'
-import { useTheme } from '@mochi/common'
-import {
-  usePreferencesData,
-  useSetPreference,
-  useResetPreferences,
-} from '@/hooks/use-preferences'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,31 +10,37 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@mochi/common'
-import { Button } from '@mochi/common'
-import {
+  Button,
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-} from '@mochi/common'
-import { Label } from '@mochi/common'
-import {
+  GeneralError,
+  Header,
+  Label,
+  ListSkeleton,
+  Main,
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@mochi/common'
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  cn,
+  getErrorMessage,
+  toast,
+  usePageTitle,
+  useTheme,
 } from '@mochi/common'
-import { Header } from '@mochi/common'
-import { Main } from '@mochi/common'
+import {
+  usePreferencesData,
+  useSetPreference,
+  useResetPreferences,
+} from '@/hooks/use-preferences'
 
 const themeLabels: Record<string, string> = {
   light: 'Light',
@@ -177,7 +173,7 @@ function PreferenceRow({
 
 export function UserPreferences() {
   usePageTitle('Preferences')
-  const { data, isLoading, error } = usePreferencesData()
+  const { data, isLoading, error, refetch } = usePreferencesData()
   const setPreference = useSetPreference()
   const resetPreferences = useResetPreferences()
   const { setTheme } = useTheme()
@@ -212,19 +208,6 @@ export function UserPreferences() {
     })
   }
 
-  if (error) {
-    return (
-      <>
-        <Header>
-          <h1 className='text-lg font-semibold'>Preferences</h1>
-        </Header>
-        <Main>
-          <GeneralError error={error} minimal mode='inline' />
-        </Main>
-      </>
-    )
-  }
-
   return (
     <>
       <Header>
@@ -232,7 +215,9 @@ export function UserPreferences() {
       </Header>
 
       <Main>
-        {isLoading ? (
+        {error ? (
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
+        ) : isLoading ? (
           <ListSkeleton variant='simple' height='h-16' count={3} />
         ) : data ? (
           <>

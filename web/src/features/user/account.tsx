@@ -87,14 +87,16 @@ function formatTimestamp(timestamp: number): string {
 // ============================================================================
 
 function IdentitySection() {
-  const { data, isLoading } = useAccountData()
+  const { data, isLoading, error, refetch } = useAccountData()
 
   return (
     <Section
       title='Identity'
       description='Your personal account information'
     >
-      {isLoading ? (
+      {error ? (
+        <GeneralError error={error} minimal mode='inline' reset={refetch} />
+      ) : isLoading ? (
         <div className='space-y-4 py-2'>
           <Skeleton className='h-12 w-full' />
           <Skeleton className='h-12 w-full' />
@@ -130,14 +132,14 @@ function IdentitySection() {
 // ============================================================================
 
 function LoginRequirementsSection() {
-  const { data: methodsData, isLoading } = useMethods()
-  const { data: passkeysData } = usePasskeys()
-  const { data: totpData } = useTotpStatus()
+  const { data: methodsData, isLoading, error, refetch } = useMethods()
+  const { data: passkeysData, error: passkeysError } = usePasskeys()
+  const { data: totpData, error: totpError } = useTotpStatus()
   const setMethods = useSetMethods()
 
   const methods = methodsData?.methods ?? ['email']
-  const hasPasskey = (passkeysData?.passkeys?.length ?? 0) > 0
-  const hasTOTP = totpData?.enabled ?? false
+  const hasPasskey = passkeysError ? false : (passkeysData?.passkeys?.length ?? 0) > 0
+  const hasTOTP = totpError ? false : (totpData?.enabled ?? false)
 
   const handleToggleMethod = (method: string, enabled: boolean) => {
     let newMethods: string[]
@@ -166,7 +168,9 @@ function LoginRequirementsSection() {
       title='Login requirements'
       description='Require all selected methods to log in'
     >
-      {isLoading ? (
+      {error ? (
+        <GeneralError error={error} minimal mode='inline' reset={refetch} />
+      ) : isLoading ? (
         <div className='space-y-4 py-2'>
           <Skeleton className='h-16 w-full' />
           <Skeleton className='h-16 w-full' />
@@ -327,7 +331,7 @@ function PasskeyRow({
 }
 
 function PasskeysSection() {
-  const { data, isLoading } = usePasskeys()
+  const { data, isLoading, error, refetch } = usePasskeys()
   const registerBegin = usePasskeyRegisterBegin()
   const registerFinish = usePasskeyRegisterFinish()
   const renamePasskey = usePasskeyRename()
@@ -426,7 +430,9 @@ function PasskeysSection() {
         </Dialog>
       </CardHeader>
       <CardContent className='pt-2'>
-        {isLoading ? (
+        {error ? (
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
+        ) : isLoading ? (
           <div className='space-y-3 py-4'>
             <Skeleton className='h-10 w-full' />
             <Skeleton className='h-10 w-full' />
@@ -469,7 +475,7 @@ function PasskeysSection() {
 // ============================================================================
 
 function AuthenticatorSection() {
-  const { data, isLoading } = useTotpStatus()
+  const { data, isLoading, error, refetch } = useTotpStatus()
   const setupTotp = useTotpSetup()
   const verifyTotp = useTotpVerify()
   const disableTotp = useTotpDisable()
@@ -519,7 +525,9 @@ function AuthenticatorSection() {
       title='Authenticator App'
       description='Use an authenticator app to generate one-time codes'
     >
-      {isLoading ? (
+      {error ? (
+        <GeneralError error={error} minimal mode='inline' reset={refetch} />
+      ) : isLoading ? (
         <div className='py-2'>
           <Skeleton className='h-20 w-full' />
         </div>
@@ -598,7 +606,7 @@ function AuthenticatorSection() {
 // ============================================================================
 
 function RecoveryCodesSection() {
-  const { data, isLoading } = useRecoveryStatus()
+  const { data, isLoading, error, refetch } = useRecoveryStatus()
   const generateCodes = useRecoveryGenerate()
   const [showCodes, setShowCodes] = useState<string[] | null>(null)
 
@@ -618,7 +626,9 @@ function RecoveryCodesSection() {
       title='Recovery Codes'
       description='Backup codes for account recovery'
     >
-      {isLoading ? (
+      {error ? (
+        <GeneralError error={error} minimal mode='inline' reset={refetch} />
+      ) : isLoading ? (
         <div className='py-2'><Skeleton className='h-20 w-full' /></div>
       ) : showCodes ? (
         <div className='space-y-5 py-4'>
@@ -678,18 +688,6 @@ function RecoveryCodesSection() {
 
 export function UserAccount() {
   usePageTitle('Account')
-  const { error } = useAccountData()
-
-  if (error) {
-    return (
-      <>
-        <PageHeader title="Account" icon={<User className='size-4 md:size-5' />} />
-        <Main>
-          <GeneralError error={error} minimal mode='inline' />
-        </Main>
-      </>
-    )
-  }
 
   return (
     <>
