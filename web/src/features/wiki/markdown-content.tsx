@@ -327,8 +327,9 @@ export function MarkdownContent({
               }
               const isExternal = href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//'))
               if (href && !isExternal) {
-                // Relative wiki page link - prefix with ../ to make it a sibling page
-                // e.g., on /wiki/abc/home, link to "page-2" becomes "../page-2" -> /wiki/abc/page-2
+                // Relative wiki page link - convert to navigable path
+                // Domain routing (e.g., docs.mochi-os.org): pages are at root, so use absolute /page
+                // Normal routing (e.g., /wikis/abc/home): use ../page to stay within wiki context
                 const siblingHref = href.startsWith('/') || href.startsWith('../') ? href
                   : isDomainEntityRouting() ? `/${href}` : `../${href}`
                 // Check if this is a link to a non-existent page (Wikipedia-style "red link")
