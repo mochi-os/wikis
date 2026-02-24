@@ -30,7 +30,7 @@ function WikiPageEditRoute() {
   const { baseURL } = useWikiBaseURL()
 
   // Fetch page data using the wiki's base URL (same as view page)
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['wiki', wikiId, 'page', slug],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
@@ -62,7 +62,7 @@ function WikiPageEditRoute() {
       <>
         <WikiRouteHeader title={`Edit: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
       </>
     )

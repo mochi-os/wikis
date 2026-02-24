@@ -1,5 +1,6 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
-import { requestHelpers, GeneralError, isDomainEntityRouting } from '@mochi/common'
+import { useCallback } from 'react'
+import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
+import { requestHelpers, GeneralError, getErrorMessage, isDomainEntityRouting } from '@mochi/common'
 import type { WikiPermissions } from '@/types/wiki'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 
@@ -16,6 +17,7 @@ interface WikiRouteData {
   wiki: WikiInfo
   permissions: WikiPermissions
   fingerprint: string
+  infoError?: string
 }
 
 interface InfoResponse {
@@ -46,10 +48,23 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
       : `/${firstSegment}/${wikiId}/-/`
 
     // Use absolute URL path since apiClient interceptor overwrites baseURL
-    const info = await requestHelpers.get<InfoResponse>(`${baseURL}info`)
+    let info: InfoResponse | null = null
+    let infoError: string | undefined
+    try {
+      info = await requestHelpers.get<InfoResponse>(`${baseURL}info`)
+    } catch (error) {
+      // Keep wiki routes usable when info is temporarily unavailable.
+      infoError = getErrorMessage(error, 'Failed to load wiki info')
+    }
 
-    if (!info.wiki) {
-      throw new Error('Wiki not found')
+    if (!info?.wiki) {
+      return {
+        baseURL,
+        wiki: { id: wikiId, name: wikiId, home: 'home', fingerprint: wikiId },
+        permissions: { view: false, edit: false, delete: false, manage: false },
+        fingerprint: wikiId,
+        infoError: infoError ?? 'Wiki not found',
+      }
     }
 
     return {
@@ -57,6 +72,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
       wiki: info.wiki,
       permissions: info.permissions ?? { view: false, edit: false, delete: false, manage: false },
       fingerprint: info.wiki.fingerprint || wikiId,
+      ...(infoError ? { infoError } : {}),
     }
   },
   component: WikiLayout,
@@ -65,9 +81,22 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
 
 function WikiLayout() {
   const data = Route.useLoaderData()
+  const router = useRouter()
+  const retryLoadInfo = useCallback(() => {
+    void router.invalidate()
+  }, [router])
 
   return (
     <WikiBaseURLProvider baseURL={data.baseURL} wiki={data.wiki} permissions={data.permissions}>
+      {data.infoError ? (
+        <GeneralError
+          error={data.infoError}
+          minimal
+          mode='inline'
+          reset={retryLoadInfo}
+          className='px-4 pt-4'
+        />
+      ) : null}
       <Outlet />
     </WikiBaseURLProvider>
   )

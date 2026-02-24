@@ -13,7 +13,7 @@ function TagsRoute() {
   const navigate = Route.useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   usePageTitle('All tags')
-  const { data, isLoading, error } = useTags()
+  const { data, isLoading, error, refetch } = useTags()
 
   if (isLoading) {
     return (
@@ -31,7 +31,7 @@ function TagsRoute() {
       <>
         <WikiRouteHeader title="All tags" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
       </>
     )

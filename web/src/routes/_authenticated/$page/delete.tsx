@@ -17,7 +17,7 @@ function DeletePageRoute() {
   const slug = params.page ?? ''
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
-  const { data, isLoading, error } = usePage(slug)
+  const { data, isLoading, error, refetch } = usePage(slug)
   const { info } = useWikiContext()
   const homePage = info?.wiki?.home || 'home'
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
@@ -48,7 +48,7 @@ function DeletePageRoute() {
       <>
         <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
       </>
     )

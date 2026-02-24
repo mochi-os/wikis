@@ -29,7 +29,7 @@ function PageHistoryRoute() {
   })
   const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
   usePageTitle(`History: ${pageTitle}`)
-  const { data, isLoading, error } = usePageHistory(slug)
+  const { data, isLoading, error, refetch } = usePageHistory(slug)
 
   // Register page with sidebar context for tree expansion
   const { setPage } = useSidebarContext()
@@ -54,7 +54,7 @@ function PageHistoryRoute() {
       <>
         <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
       </>
     )

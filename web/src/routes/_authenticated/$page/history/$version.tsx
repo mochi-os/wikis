@@ -26,7 +26,7 @@ function RevisionViewRoute() {
     return () => setPage(null)
   }, [slug, setPage])
 
-  const { data, isLoading, error } = usePageRevision(slug, version)
+  const { data, isLoading, error, refetch } = usePageRevision(slug, version)
 
   if (isLoading) {
     return (
@@ -44,7 +44,7 @@ function RevisionViewRoute() {
       <>
         <WikiRouteHeader title={`${slug} v${version}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
       </>
     )

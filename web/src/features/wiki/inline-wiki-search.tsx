@@ -28,6 +28,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
   const [searchError, setSearchError] = useState<Error | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
+  const [retryTick, setRetryTick] = useState(0)
   const navigate = useNavigate()
 
   // Debounce search query
@@ -65,7 +66,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
     }
 
     void search()
-  }, [debouncedQuery])
+  }, [debouncedQuery, retryTick])
 
   const handleSubscribe = async (wiki: DirectoryEntry) => {
     setPendingWikiId(wiki.id)
@@ -104,7 +105,13 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
       )}
 
       {!isLoading && showResults && searchError && (
-        <GeneralError error={searchError} minimal mode="inline" className="py-4" />
+        <GeneralError
+          error={searchError}
+          minimal
+          mode="inline"
+          reset={() => setRetryTick((tick) => tick + 1)}
+          className="py-4"
+        />
       )}
 
       {!isLoading && showResults && !searchError && results.length === 0 && (

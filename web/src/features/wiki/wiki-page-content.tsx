@@ -7,6 +7,7 @@ import {
   Main,
   Button,
   ConfirmDialog,
+  GeneralError,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -71,7 +72,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   }
 
   // Fetch page data using the wiki's base URL
-  const { data, isLoading, error: pageError } = useQuery({
+  const { data, isLoading, error: pageError, refetch } = useQuery({
     queryKey: ['wiki', wikiId, 'page', slug],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
@@ -126,9 +127,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
       <>
         <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
-          <div className="text-destructive">
-            Error loading page: {pageError.message}
-          </div>
+          <GeneralError error={pageError} minimal mode="inline" reset={refetch} />
         </Main>
       </>
     )

@@ -15,7 +15,7 @@ function TagPagesRoute() {
   const params = Route.useParams()
   const tag = params.tag
   usePageTitle(`Tag: ${tag}`)
-  const { data, isLoading, error } = useTagPages(tag)
+  const { data, isLoading, error, refetch } = useTagPages(tag)
 
   if (isLoading) {
     return (
@@ -33,7 +33,7 @@ function TagPagesRoute() {
       <>
         <WikiRouteHeader title={`Tag: ${tag}`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
       </>
     )

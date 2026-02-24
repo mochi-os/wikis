@@ -69,7 +69,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { data, isLoading, error } = useAttachments()
+  const { data, isLoading, error, refetch } = useAttachments()
   const uploadMutation = useUploadAttachment()
   const deleteMutation = useDeleteAttachment()
   const wikiContext = useWikiBaseURLOptional()
@@ -339,7 +339,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
           <AttachmentsPageSkeleton viewMode={viewMode} />
         ) : error ? (
           <div className="px-4 py-8">
-            <GeneralError error={error} minimal mode="inline" />
+            <GeneralError error={error} minimal mode="inline" reset={refetch} />
           </div>
         ) : filteredAttachments.length === 0 ? (
           <EmptyState

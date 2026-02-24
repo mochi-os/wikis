@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -190,24 +190,37 @@ function SettingsTab() {
   const [isSyncing, setIsSyncing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  const loadWikiSpecificSettings = useCallback(async () => {
+    if (!settingsContext.baseURL) return
+    setWikiSpecificLoading(true)
+    setWikiSpecificError(null)
+    try {
+      const data = await requestHelpers.get<{ settings: { home?: string; source?: string } }>(
+        `${settingsContext.baseURL}settings`
+      )
+      setWikiSpecificData(data)
+    } catch (err) {
+      setWikiSpecificError(err as Error)
+    } finally {
+      setWikiSpecificLoading(false)
+    }
+  }, [settingsContext.baseURL])
+
   // Load settings using baseURL when provided
   useEffect(() => {
     if (settingsContext.baseURL) {
-      setWikiSpecificLoading(true)
-      requestHelpers.get<{ settings: { home?: string; source?: string } }>(`${settingsContext.baseURL}settings`)
-        .then(data => {
-          setWikiSpecificData(data)
-          setWikiSpecificError(null)
-        })
-        .catch(err => setWikiSpecificError(err))
-        .finally(() => setWikiSpecificLoading(false))
+      void loadWikiSpecificSettings()
     }
-  }, [settingsContext.baseURL])
+  }, [settingsContext.baseURL, loadWikiSpecificSettings])
 
   // Use the appropriate data source
   const data = settingsContext.baseURL ? wikiSpecificData : defaultSettings.data
   const isLoading = settingsContext.baseURL ? wikiSpecificLoading : defaultSettings.isLoading
   const error = settingsContext.baseURL ? wikiSpecificError : defaultSettings.error
+  const retrySettings = useMemo(
+    () => (settingsContext.baseURL ? () => void loadWikiSpecificSettings() : defaultSettings.refetch),
+    [settingsContext.baseURL, loadWikiSpecificSettings, defaultSettings.refetch]
+  )
 
   const [homePage, setHomePage] = useState('')
   const [hasChanges, setHasChanges] = useState(false)
@@ -383,7 +396,7 @@ function SettingsTab() {
 
   if (error) {
     return (
-      <GeneralError error={error} minimal mode="inline" />
+      <GeneralError error={error} minimal mode="inline" reset={retrySettings} />
     )
   }
 
@@ -654,14 +667,18 @@ function AccessTab() {
           groups={groupsData?.groups ?? []}
         />
 
-        <AccessList
-          rules={rules}
-          levels={WIKI_ACCESS_LEVELS}
-          onLevelChange={handleLevelChange}
-          onRevoke={handleRevoke}
-          isLoading={isLoading}
-          error={error}
-        />
+        {error ? (
+          <GeneralError error={error} minimal mode="inline" reset={() => void loadRules()} />
+        ) : (
+          <AccessList
+            rules={rules}
+            levels={WIKI_ACCESS_LEVELS}
+            onLevelChange={handleLevelChange}
+            onRevoke={handleRevoke}
+            isLoading={isLoading}
+            error={null}
+          />
+        )}
       </CardContent>
     </Card>
   )
@@ -736,7 +753,7 @@ function ReplicasTab() {
           <CardTitle>Replicas</CardTitle>
         </CardHeader>
         <CardContent>
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={() => void loadReplicas()} />
         </CardContent>
       </Card>
     )
@@ -895,7 +912,7 @@ function RedirectsTab() {
         {isLoading ? (
           <ListSkeleton variant="simple" height="h-12" count={3} />
         ) : error ? (
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={() => void loadRedirects()} />
         ) : redirects.length === 0 ? (
           <EmptyState
             icon={CornerDownRight}

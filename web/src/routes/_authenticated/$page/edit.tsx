@@ -26,7 +26,7 @@ function WikiPageEditRoute() {
   const slug = params.page ?? ''
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
-  const { data, isLoading, error } = usePage(slug)
+  const { data, isLoading, error, refetch } = usePage(slug)
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(`Edit: ${pageTitle}`)
 
@@ -53,7 +53,7 @@ function WikiPageEditRoute() {
       <>
         <WikiRouteHeader title={`Edit: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
       </>
     )

@@ -18,7 +18,7 @@ interface PageCommentsProps {
 }
 
 export function PageComments({ slug, currentUserId, isOwner, canComment }: PageCommentsProps) {
-  const { data, isLoading, error } = usePageComments(slug)
+  const { data, isLoading, error, refetch } = usePageComments(slug)
   const createComment = useCreateComment()
   const editComment = useEditComment()
   const deleteComment = useDeleteComment()
@@ -73,7 +73,7 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
   }
 
   if (error) {
-    return <GeneralError error={error} minimal mode="inline" />
+    return <GeneralError error={error} minimal mode="inline" reset={refetch} />
   }
 
   const comments = data?.comments ?? []

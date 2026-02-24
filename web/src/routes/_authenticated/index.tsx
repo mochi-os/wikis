@@ -5,6 +5,7 @@ import {
   Link,
   redirect,
   useNavigate,
+  useRouter,
 } from '@tanstack/react-router'
 import {
   Button,
@@ -78,6 +79,10 @@ interface InfoResponse {
   }>
 }
 
+interface IndexRouteData extends InfoResponse {
+  infoError?: string
+}
+
 type WikiType = 'owned' | 'subscribed'
 
 interface WikiItem {
@@ -92,8 +97,17 @@ interface WikiItem {
 let hasCheckedRedirect = false
 
 export const Route = createFileRoute('/_authenticated/')({
-  loader: async () => {
-    const info = await wikisRequest.get<InfoResponse>(endpoints.wiki.info)
+  loader: async (): Promise<IndexRouteData> => {
+    let info: InfoResponse
+    try {
+      info = await wikisRequest.get<InfoResponse>(endpoints.wiki.info)
+    } catch (error) {
+      return {
+        entity: false,
+        wikis: [],
+        infoError: getErrorMessage(error, 'Failed to load wikis'),
+      }
+    }
 
     // Cache wikis list for sidebar
     if (info.wikis) {
@@ -151,6 +165,10 @@ function isEntityContext(): boolean {
 
 function IndexPage() {
   const data = Route.useLoaderData()
+  const router = useRouter()
+  const retryInfo = useCallback(() => {
+    void router.invalidate()
+  }, [router])
 
   // If we're in entity context (URL starts with entity ID), show the wiki's home page directly
   // Use URL-based detection since API data.entity may be stale
@@ -159,24 +177,36 @@ function IndexPage() {
       <WikiHomePage
         wikiId={data.wiki.fingerprint ?? data.wiki.id}
         homeSlug={data.wiki.home}
+        infoError={data.infoError}
+        onRetryInfo={retryInfo}
       />
     )
   }
 
   // Class context - show wikis list
-  return <WikisListPage wikis={data.wikis} />
+  return (
+    <WikisListPage
+      wikis={data.wikis}
+      infoError={data.infoError}
+      onRetryInfo={retryInfo}
+    />
+  )
 }
 
 function WikiHomePage({
   wikiId,
   homeSlug,
+  infoError,
+  onRetryInfo,
 }: {
   wikiId: string
   homeSlug: string
+  infoError?: string
+  onRetryInfo: () => void
 }) {
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
-  const { data, isLoading, error } = usePage(homeSlug)
+  const { data, isLoading, error, refetch } = usePage(homeSlug)
   const permissions = usePermissions()
   const unsubscribeWiki = useUnsubscribeWiki()
   const pageTitle =
@@ -200,6 +230,15 @@ function WikiHomePage({
   // Rename dialog state (controlled mode so menu closes when dialog opens)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
   const [unsubscribeConfirmOpen, setUnsubscribeConfirmOpen] = useState(false)
+  const infoErrorBanner = infoError ? (
+    <GeneralError
+      error={infoError}
+      minimal
+      mode='inline'
+      reset={onRetryInfo}
+      className='px-4 pt-4'
+    />
+  ) : null
 
   // Unsubscribe handler
   const handleUnsubscribe = useCallback(() => {
@@ -238,6 +277,7 @@ function WikiHomePage({
           title={pageTitle}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
+        {infoErrorBanner}
         <Main>
           <PageViewSkeleton />
         </Main>
@@ -252,8 +292,9 @@ function WikiHomePage({
           title={pageTitle}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
+        {infoErrorBanner}
         <Main>
-          <GeneralError error={error} minimal mode='inline' />
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
         </Main>
       </>
     )
@@ -267,6 +308,7 @@ function WikiHomePage({
           title='Page not found'
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
+        {infoErrorBanner}
         <Main>
           <PageNotFound slug={homeSlug} wikiId={wikiId} />
         </Main>
@@ -386,6 +428,7 @@ function WikiHomePage({
           actions={actionsMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
+        {infoErrorBanner}
         <Main className='pt-2'>
           <PageView
             page={data.page}
@@ -425,6 +468,8 @@ interface WikisListPageProps {
     source?: string
     fingerprint?: string
   }>
+  infoError?: string
+  onRetryInfo: () => void
 }
 
 interface RecommendedWiki {
@@ -438,7 +483,7 @@ interface RecommendationsResponse {
   wikis: RecommendedWiki[]
 }
 
-function WikisListPage({ wikis }: WikisListPageProps) {
+function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
   usePageTitle('Wikis')
   const { openCreateDialog } = useSidebarContext()
   const queryClient = useQueryClient()
@@ -576,6 +621,15 @@ function WikisListPage({ wikis }: WikisListPageProps) {
       />
       <Main>
         <div className='mx-auto w-full max-w-6xl px-4 py-4 md:px-6 md:py-6'>
+          {infoError ? (
+            <GeneralError
+              error={infoError}
+              minimal
+              mode='inline'
+              reset={onRetryInfo}
+              className='pb-6'
+            />
+          ) : null}
           {!hasWikis ? (
             <div className='bg-muted/10 mx-auto flex max-w-2xl flex-col items-center rounded-2xl border p-6 text-center md:p-8'>
               <BookOpen className='text-muted-foreground mx-auto mb-3 h-10 w-10 opacity-70' />

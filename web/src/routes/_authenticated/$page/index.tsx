@@ -41,7 +41,7 @@ function WikiPageRoute() {
 
 
 
-  const { data, isLoading, error } = usePage(slug)
+  const { data, isLoading, error, refetch } = usePage(slug)
   const { info } = useWikiContext()
   const permissions = usePermissions()
   const unsubscribeWiki = useUnsubscribeWiki()
@@ -104,7 +104,7 @@ function WikiPageRoute() {
       <>
         <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
       </>
     )

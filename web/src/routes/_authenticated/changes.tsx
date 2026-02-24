@@ -13,7 +13,7 @@ function ChangesRoute() {
   const navigate = Route.useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   usePageTitle('Recent changes')
-  const { data, isLoading, error } = useChanges()
+  const { data, isLoading, error, refetch } = useChanges()
 
   if (isLoading) {
     return (
@@ -31,7 +31,7 @@ function ChangesRoute() {
       <>
         <WikiRouteHeader title="Recent changes" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
-          <GeneralError error={error} minimal mode="inline" />
+          <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
       </>
     )

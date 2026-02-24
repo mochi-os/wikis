@@ -35,7 +35,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
     }
   }, [debouncedQuery, initialQuery])
 
-  const { data, isLoading, error } = useSearch(debouncedQuery)
+  const { data, isLoading, error, refetch } = useSearch(debouncedQuery)
   const results = data?.results ?? []
 
   return (
@@ -73,7 +73,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
       ) : isLoading ? (
         <ListSkeleton variant="card" count={5} />
       ) : error ? (
-        <GeneralError error={error} minimal mode="inline" />
+        <GeneralError error={error} minimal mode="inline" reset={refetch} />
       ) : results.length === 0 ? (
         <EmptyState
           icon={FileText}
