@@ -102,7 +102,13 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
               replyDraft={replyDraft}
               onStartReply={(id) => {
                 setReplyingTo(id)
-                setReplyDraft('')
+                const selected = window.getSelection()?.toString().trim()
+                if (selected) {
+                  const quoted = selected.split('\n').map((line) => `> ${line}`).join('\n') + '\n\n'
+                  setReplyDraft(quoted)
+                } else {
+                  setReplyDraft('')
+                }
               }}
               onCancelReply={() => {
                 setReplyingTo(null)
