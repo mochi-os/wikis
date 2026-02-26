@@ -50,7 +50,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
         onChange={(e) => setBody(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="border-input bg-background min-h-16 w-full resize-none rounded-lg border px-3 py-2 text-sm"
+        className="border-input bg-background min-h-16 w-full rounded-lg border px-3 py-2 text-sm"
         rows={3}
         autoFocus={autoFocus}
       />
