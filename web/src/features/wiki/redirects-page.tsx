@@ -41,7 +41,7 @@ import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wik
 import type { Redirect } from '@/types/wiki'
 
 export function RedirectsPage() {
-  const { data, isLoading, error } = useRedirects()
+  const { data, isLoading, error, refetch } = useRedirects()
 
   if (isLoading) {
     return <RedirectsPageSkeleton />
@@ -49,7 +49,7 @@ export function RedirectsPage() {
 
   if (error) {
     return (
-      <GeneralError error={error} minimal mode="inline" />
+      <GeneralError error={error} minimal mode="inline" reset={refetch} />
     )
   }
 

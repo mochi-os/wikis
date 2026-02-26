@@ -74,7 +74,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   const cursorPositionRef = useRef<number>(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { data: attachmentsData, isLoading: isAttachmentsLoading, error: attachmentsError } = useAttachments()
+  const {
+    data: attachmentsData,
+    isLoading: isAttachmentsLoading,
+    error: attachmentsError,
+    refetch: refetchAttachments,
+  } = useAttachments()
   const uploadMutation = useUploadAttachment()
   const attachments = attachmentsData?.attachments || []
 
@@ -372,7 +377,13 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           {isAttachmentsLoading ? (
             <ListSkeleton variant="simple" height="h-16" count={4} />
           ) : attachmentsError ? (
-            <GeneralError error={attachmentsError} minimal mode="inline" className="py-8" />
+            <GeneralError
+              error={attachmentsError}
+              minimal
+              mode="inline"
+              reset={refetchAttachments}
+              className="py-8"
+            />
           ) : attachments.length === 0 ? (
             <EmptyState
               icon={Image}
