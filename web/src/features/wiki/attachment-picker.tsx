@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react'
-import { format } from 'date-fns'
 import { Upload, Trash2, Copy, Check, Loader2, Image } from 'lucide-react'
 import {
   Button,
@@ -14,6 +13,7 @@ import {
   GeneralError,
   ListSkeleton,
   formatFileSize,
+  formatTimestamp,
   getFileIcon,
   isImage,
 } from '@mochi/common'
@@ -181,7 +181,7 @@ export function AttachmentPicker({ onSelect, onDelete, trigger }: AttachmentPick
                         </div>
                         <div className="text-muted-foreground text-sm">
                           {formatFileSize(attachment.size)} •{' '}
-                          {format(new Date(attachment.created * 1000), 'PP')}
+                          {formatTimestamp(attachment.created)}
                         </div>
                       </div>
 

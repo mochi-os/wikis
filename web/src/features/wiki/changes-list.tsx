@@ -1,6 +1,5 @@
-import { format } from 'date-fns'
 import { History } from 'lucide-react'
-import { Separator } from '@mochi/common'
+import { formatTimestamp, Separator } from '@mochi/common'
 import { Skeleton } from '@mochi/common'
 import { EmptyState } from '@mochi/common'
 import {
@@ -68,7 +67,7 @@ export function ChangesList({ changes }: ChangesListProps) {
                   {change.name}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {format(new Date(change.created * 1000), 'PPp')}
+                  {formatTimestamp(change.created)}
                 </TableCell>
                 <TableCell className="text-muted-foreground max-w-48 truncate">
                   {change.comment || '-'}

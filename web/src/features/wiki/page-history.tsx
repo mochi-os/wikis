@@ -1,6 +1,5 @@
-import { format } from 'date-fns'
 import { History, Eye, RotateCcw } from 'lucide-react'
-import { Button, EmptyState, getRouterBasepath, Separator, Skeleton } from '@mochi/common'
+import { Button, EmptyState, formatTimestamp, getRouterBasepath, Separator, Skeleton } from '@mochi/common'
 import {
   Table,
   TableBody,
@@ -78,7 +77,7 @@ export function PageHistory({
                   {revision.name}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {format(new Date(revision.created * 1000), 'PPp')}
+                  {formatTimestamp(revision.created)}
                 </TableCell>
                 <TableCell className="text-muted-foreground max-w-48 truncate">
                   {revision.comment || '-'}

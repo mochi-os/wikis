@@ -35,18 +35,6 @@ export function cacheWikisList(wikis: StoredWiki[]): void {
   }
 }
 
-// Get cached wikis list
-export function getCachedWikisList(): WikisCache | null {
-  try {
-    const cached = localStorage.getItem(STORAGE_KEYS.WIKIS_LIST)
-    if (!cached) return null
-    return JSON.parse(cached) as WikisCache
-  } catch (e) {
-    // console.warn('[WikiStorage] Failed to get cached wikis list:', e)
-    return null
-  }
-}
-
 // Store last visited location
 export function setLastLocation(wikiId: string, pageSlug?: string): void {
   try {

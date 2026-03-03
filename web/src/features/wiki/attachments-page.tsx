@@ -1,6 +1,5 @@
 import { useState, useRef, useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
-import { format } from 'date-fns'
 import {
   Upload,
   Trash2,
@@ -34,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
   formatFileSize,
+  formatTimestamp,
   getFileIcon,
   isImage,
   getErrorMessage,
@@ -523,7 +523,7 @@ function AttachmentListItem({
         </button>
         <p className="text-muted-foreground text-sm">
           {formatFileSize(attachment.size)} &middot;{' '}
-          {format(new Date(attachment.created * 1000), 'PPp')}
+          {formatTimestamp(attachment.created)}
         </p>
       </div>
 

@@ -1,6 +1,5 @@
-import { format } from 'date-fns'
 import { Clock, ArrowLeft, RotateCcw } from 'lucide-react'
-import { Button } from '@mochi/common'
+import { Button, formatTimestamp } from '@mochi/common'
 import { getRouterBasepath } from '@mochi/common'
 import { Badge } from '@mochi/common'
 import { Separator } from '@mochi/common'
@@ -61,7 +60,7 @@ export function RevisionView({
         <div className="text-muted-foreground flex flex-wrap items-center gap-4 text-sm">
           <span className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
-            {format(new Date(revision.created * 1000), 'PPpp')}
+            {formatTimestamp(revision.created)}
           </span>
           <span className="font-mono">by {revision.author.slice(0, 16)}...</span>
         </div>

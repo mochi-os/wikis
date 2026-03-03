@@ -1,6 +1,5 @@
-import { format } from 'date-fns'
 import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react'
-import { Badge, Button, EmptyState, Separator, Skeleton } from '@mochi/common'
+import { Badge, Button, EmptyState, formatTimestamp, Separator, Skeleton } from '@mochi/common'
 import type { TagPage } from '@/types/wiki'
 
 interface TagPagesProps {
@@ -58,7 +57,7 @@ export function TagPages({ tag, pages }: TagPagesProps) {
                   {page.title}
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Updated {format(new Date(page.updated * 1000), 'PPP')}
+                  Updated {formatTimestamp(page.updated)}
                 </p>
               </div>
             </a>

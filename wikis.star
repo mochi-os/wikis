@@ -236,193 +236,6 @@ def remove_attachment_refs(content, attachment_id):
 
     return "\n".join(result)
 
-# Helper: Fetch wiki info from a remote wiki via P2P stream
-def fetch_remote_wiki_info(a, wiki_id):
-    dump = mochi.remote.request(wiki_id, "wikis", "sync", {})
-    if dump.get("error"):
-        return {"error": "offline"}
-
-    status = dump.get("status")
-    if not status:
-        return {"error": "offline"}
-    if status == "400":
-        return {"error": dump.get("error", "bad_request")}
-    if status == "403":
-        return {"error": "access_denied"}
-    if status == "404":
-        return {"error": "not_found"}
-    if status != "200":
-        return {"error": dump.get("error", "unknown")}
-
-    permissions = dump.get("permissions") or {}
-    return {
-        "name": dump.get("name"),
-        "home": dump.get("home"),
-        "permissions": {
-            "view": permissions.get("view", True),
-            "edit": permissions.get("edit", False),
-        },
-    }
-
-# Helper: Fetch a page from a remote wiki via P2P stream
-def fetch_remote_page(a, wiki_id, slug):
-    dump = mochi.remote.request(wiki_id, "wikis", "sync", {})
-    if dump.get("error"):
-        return {"error": "offline"}
-
-    status = dump.get("status")
-    if not status:
-        return {"error": "offline"}
-    if status == "400":
-        return {"error": dump.get("error", "bad_request")}
-    if status == "403":
-        return {"error": "access_denied"}
-    if status == "404":
-        return {"error": "not_found"}
-    if status != "200":
-        return {"error": dump.get("error", "unknown")}
-
-    # Look for the page in the dump
-    pages = dump.get("pages") or []
-
-    # First check for redirects
-    redirects = dump.get("redirects") or []
-    for r in redirects:
-        if r.get("source") == slug:
-            slug = r.get("target")
-            break
-
-    # Find the page
-    for p in pages:
-        if p.get("page") == slug and not p.get("deleted"):
-            # Get tags for this page from the dump
-            tags = []
-            page_id = p.get("id")
-            for t in (dump.get("tags") or []):
-                if t.get("page") == page_id:
-                    tags.append(t.get("tag"))
-
-            return {
-                "id": p.get("id"),
-                "slug": p.get("page"),
-                "title": p.get("title"),
-                "content": p.get("content"),
-                "author": p.get("author"),
-                "created": p.get("created"),
-                "updated": p.get("updated"),
-                "version": p.get("version"),
-                "tags": tags
-            }
-
-    return None
-
-# Helper: Fetch page history from a remote wiki via P2P stream
-def fetch_remote_page_history(a, wiki_id, slug):
-    dump = mochi.remote.request(wiki_id, "wikis", "sync", {})
-    if dump.get("error"):
-        return {"error": "offline"}
-
-    status = dump.get("status")
-    if not status:
-        return {"error": "offline"}
-    if status == "400":
-        return {"error": dump.get("error", "bad_request")}
-    if status == "403":
-        return {"error": "access_denied"}
-    if status == "404":
-        return {"error": "not_found"}
-    if status != "200":
-        return {"error": dump.get("error", "unknown")}
-
-    # First check for redirects
-    redirects = dump.get("redirects") or []
-    for r in redirects:
-        if r.get("source") == slug:
-            slug = r.get("target")
-            break
-
-    # Find the page
-    pages = dump.get("pages") or []
-    page = None
-    for p in pages:
-        if p.get("page") == slug:
-            page = p
-            break
-
-    if not page:
-        return None
-
-    # Get revisions for this page
-    page_id = page.get("id")
-    revisions = []
-    for r in (dump.get("revisions") or []):
-        if r.get("page") == page_id:
-            rev = {
-                "id": r.get("id"),
-                "title": r.get("title"),
-                "author": r.get("author"),
-                "name": r.get("name", ""),
-                "created": r.get("created"),
-                "version": r.get("version"),
-                "comment": r.get("comment", "")
-            }
-            # Resolve author name if not stored
-            if not rev["name"]:
-                name = mochi.entity.name(rev["author"])
-                if name:
-                    rev["name"] = name
-                else:
-                    rev["name"] = rev["author"][:12] + "..."
-            revisions.append(rev)
-
-    # Sort by version descending
-    revisions = sorted(revisions, key=lambda x: x.get("version", 0), reverse=True)
-
-    return {"page": slug, "revisions": revisions}
-
-# Helper: Send a page edit request to a remote wiki via P2P stream
-def send_remote_page_edit(a, wiki_id):
-    slug = a.input("page")
-    title = a.input("title")
-    content = a.input("content")
-    comment = a.input("comment", "")
-
-    if not slug:
-        return {"error": "Missing page parameter"}
-    if not title:
-        return {"error": "Title is required"}
-
-    from_entity = a.user.identity.id if a.user and a.user.identity else ""
-    result = mochi.remote.request(wiki_id, "wikis", "page/edit/request", {
-        "page": slug,
-        "title": title,
-        "content": content or "",
-        "comment": comment,
-        "author": from_entity,
-        "name": a.user.identity.name if a.user and a.user.identity else "",
-    })
-    if result.get("error"):
-        return {"error": "offline"}
-
-    status = result.get("status")
-    if not status:
-        return {"error": "offline"}
-    if status == "400":
-        return {"error": result.get("error", "bad_request")}
-    if status == "403":
-        return {"error": "access_denied"}
-    if status == "404":
-        return {"error": "not_found"}
-    if status != "200":
-        return {"error": result.get("error", "unknown")}
-
-    return {
-        "id": result.get("id"),
-        "slug": result.get("slug"),
-        "version": result.get("version"),
-        "created": result.get("created", False),
-    }
-
 # Helper: Get page by slug, following redirects
 def get_page(wiki, slug):
     # Check for redirect first
@@ -635,10 +448,16 @@ def action_delete(a):
     # 4. Delete redirects
     mochi.db.execute("delete from redirects where wiki=?", wiki_id)
 
-    # 5. Delete replicas
+    # 5. Delete comments
+    mochi.db.execute("delete from comments where wiki=?", wiki_id)
+
+    # 6. Delete replicas
     mochi.db.execute("delete from replicas where wiki=?", wiki_id)
 
-    # 6. Delete wiki record
+    # 7. Delete RSS tokens
+    mochi.db.execute("delete from rss where entity=?", wiki_id)
+
+    # 8. Delete wiki record
     mochi.db.execute("delete from wikis where id=?", wiki_id)
 
     # 7. Delete all attachments for this entity
@@ -651,16 +470,6 @@ def action_delete(a):
     mochi.entity.delete(wiki_id)
 
     return {"data": {"ok": True, "deleted": wiki_id}}
-
-# Root action - redirect to home page or list wikis
-def action_root(a):
-    wiki = get_wiki(a)
-    if not wiki:
-        # No wiki specified - redirect to app page to list/create wikis
-        a.redirect("app")
-        return
-
-    a.redirect(wiki["home"])
 
 # Info endpoint for class context - returns list of wikis
 def action_info_class(a):
@@ -690,19 +499,15 @@ def action_directory_search(a):
     # Check if search term is a fingerprint (with or without hyphens)
     fingerprint = search.replace("-", "")
     if mochi.valid(fingerprint, "fingerprint"):
-        all_wikis = mochi.directory.search("wiki", "", False)
-        for entry in all_wikis:
-            entry_fp = entry.get("fingerprint", "").replace("-", "")
-            if entry_fp == fingerprint:
-                # Avoid duplicates
-                found = False
-                for r in results:
-                    if r.get("id") == entry.get("id"):
-                        found = True
-                        break
-                if not found:
-                    results.append(entry)
-                break
+        matches = mochi.directory.search("wiki", "", False, fingerprint=fingerprint)
+        for entry in matches:
+            found = False
+            for r in results:
+                if r.get("id") == entry.get("id"):
+                    found = True
+                    break
+            if not found:
+                results.append(entry)
 
     # Check if search term is a URL (e.g., https://example.com/wikis/ENTITY_ID or /wikis/FINGERPRINT)
     if search.startswith("http://") or search.startswith("https://"):
@@ -730,18 +535,15 @@ def action_directory_search(a):
                         results.append(entry)
             # Try as fingerprint
             elif mochi.valid(wiki_id, "fingerprint"):
-                all_wikis = mochi.directory.search("wiki", "", False)
-                for entry in all_wikis:
-                    entry_fp = entry.get("fingerprint", "").replace("-", "")
-                    if entry_fp == wiki_id.replace("-", ""):
-                        found = False
-                        for r in results:
-                            if r.get("id") == entry.get("id"):
-                                found = True
-                                break
-                        if not found:
-                            results.append(entry)
-                        break
+                matches = mochi.directory.search("wiki", "", False, fingerprint=wiki_id.replace("-", ""))
+                for entry in matches:
+                    found = False
+                    for r in results:
+                        if r.get("id") == entry.get("id"):
+                            found = True
+                            break
+                    if not found:
+                        results.append(entry)
 
     # Search by name
     name_results = mochi.directory.search("wiki", search, False)
@@ -896,6 +698,13 @@ def action_page_edit(a):
     if not slug:
         a.error(400, "Missing page parameter")
         return
+    if len(slug) > 100:
+        a.error(400, "Page URL too long (max 100 characters)")
+        return
+    for c in slug.elems():
+        if not (c.isalnum() or c in "-_"):
+            a.error(400, "Page URL can only contain letters, numbers, hyphens, and underscores")
+            return
 
     title = a.input("title")
     content = a.input("content")
@@ -1965,11 +1774,15 @@ def action_unsubscribe(a):
     mochi.db.execute("delete from replicas where wiki=?", wiki_id)
     mochi.db.execute("delete from wikis where id=?", wiki_id)
 
+    # Clean up attachments, access rules, and entity registration
+    mochi.attachment.clear(wiki_id)
+    mochi.access.clear.resource("wiki/" + wiki_id)
+    mochi.entity.delete(wiki_id)
+
     # Notify source wiki owner to remove us from their replicas list
     mochi.message.send(
-        {"from": a.user.identity.id, "to": wiki_id, "service": "wikis", "event": "unreplicate"},
-        {},
-        []
+        {"from": wiki["id"], "to": wiki["source"], "service": "wikis", "event": "unreplicate"},
+        {}
     )
 
     return {"data": {"ok": True}}
@@ -2132,14 +1945,15 @@ def action_search(a):
     query = query.strip()
 
     # Use LIKE for simple search (SQLite FTS could be added later for better performance)
-    pattern = "%" + query + "%"
+    escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    pattern = "%" + escaped + "%"
 
     results = mochi.db.rows("""
         select page, title, substr(content, 1, 200) as excerpt, updated
         from pages
-        where wiki=? and deleted=0 and (title like ? or content like ?)
+        where wiki=? and deleted=0 and (title like ? escape '\\' or content like ? escape '\\')
         order by
-            case when title like ? then 0 else 1 end,
+            case when title like ? escape '\\' then 0 else 1 end,
             updated desc
         limit 50
     """, wiki["id"], pattern, pattern, pattern)
@@ -3696,17 +3510,18 @@ def action_rss(a):
         a.error(404, "Wiki not found")
         return
 
-    if not check_access(a, wiki["id"], "view"):
-        a.error(403, "Not authorized")
-        return
-
-    # Look up mode from token
+    # Look up mode from token (token also authenticates for private wikis)
     token = a.input("token")
     mode = "changes"
+    rss_row = None
     if token:
         rss_row = mochi.db.row("select mode from rss where token=? and entity=?", token, wiki["id"])
         if rss_row:
             mode = rss_row["mode"]
+
+    if not rss_row and not check_access(a, wiki["id"], "view"):
+        a.error(403, "Not authorized")
+        return
 
     wiki_name = wiki["name"]
     fingerprint = mochi.entity.fingerprint(wiki["id"])
@@ -3725,15 +3540,15 @@ def action_rss(a):
             from revisions r join pages p on p.id = r.page
             where p.wiki = ? and p.deleted = 0
             union all
-            select 'comment' as type, c.id, '' as title, c.name, c.created, 0 as version, c.body as description, c.page as slug
-            from comments c
+            select 'comment' as type, c.id, coalesce(p.title, c.page) as title, c.name, c.created, 0 as version, c.body as description, c.page as slug
+            from comments c left join pages p on p.wiki = c.wiki and p.page = c.page and p.deleted = 0
             where c.wiki = ? and c.deleted = 0
             order by created desc limit 100
         """, wiki["id"], wiki["id"])
     elif mode == "comments":
         rows = mochi.db.rows("""
-            select 'comment' as type, c.id, '' as title, c.name, c.created, 0 as version, c.body as description, c.page as slug
-            from comments c
+            select 'comment' as type, c.id, coalesce(p.title, c.page) as title, c.name, c.created, 0 as version, c.body as description, c.page as slug
+            from comments c left join pages p on p.wiki = c.wiki and p.page = c.page and p.deleted = 0
             where c.wiki = ? and c.deleted = 0
             order by c.created desc limit 50
         """, wiki["id"])
@@ -3750,10 +3565,7 @@ def action_rss(a):
 
     for row in rows:
         if row["type"] == "comment":
-            # Look up the page title for the comment
-            page_row = mochi.db.row("select title from pages where wiki=? and page=? and deleted=0", wiki["id"], row["slug"])
-            page_title = page_row["title"] if page_row else row["slug"]
-            title = "Comment on \"" + page_title + "\" by " + row["name"]
+            title = "Comment on \"" + row["title"] + "\" by " + row["name"]
             desc = row["description"]
             if len(desc) > 500:
                 desc = desc[:500] + "..."
@@ -3776,17 +3588,18 @@ def action_rss(a):
 
 # All wikis RSS feed
 def action_rss_all(a):
-    if not a.user:
-        a.error(401, "Authentication required")
-        return
-
-    # Look up mode from token
+    # Look up mode from token (token also authenticates for RSS readers)
     token = a.input("token")
     mode = "changes"
+    rss_row = None
     if token:
         rss_row = mochi.db.row("select mode from rss where token=? and entity='*'", token)
         if rss_row:
             mode = rss_row["mode"]
+
+    if not rss_row and not a.user:
+        a.error(401, "Authentication required")
+        return
 
     a.header("Content-Type", "application/rss+xml; charset=utf-8")
     a.print('<?xml version="1.0" encoding="UTF-8"?>\n')
@@ -3812,15 +3625,15 @@ def action_rss_all(a):
             from revisions r join pages p on p.id = r.page
             where p.deleted = 0
             union all
-            select 'comment' as type, c.id, '' as title, c.name, c.created, 0 as version, c.body as description, c.page as slug, c.wiki
-            from comments c
+            select 'comment' as type, c.id, coalesce(p.title, c.page) as title, c.name, c.created, 0 as version, c.body as description, c.page as slug, c.wiki
+            from comments c left join pages p on p.wiki = c.wiki and p.page = c.page and p.deleted = 0
             where c.deleted = 0
             order by created desc limit 100
         """)
     elif mode == "comments":
         rows = mochi.db.rows("""
-            select 'comment' as type, c.id, '' as title, c.name, c.created, 0 as version, c.body as description, c.page as slug, c.wiki
-            from comments c
+            select 'comment' as type, c.id, coalesce(p.title, c.page) as title, c.name, c.created, 0 as version, c.body as description, c.page as slug, c.wiki
+            from comments c left join pages p on p.wiki = c.wiki and p.page = c.page and p.deleted = 0
             where c.deleted = 0
             order by c.created desc limit 50
         """)
@@ -3841,9 +3654,7 @@ def action_rss_all(a):
         wiki_fp = wiki_fps.get(wiki_id, wiki_id)
 
         if row["type"] == "comment":
-            page_row = mochi.db.row("select title from pages where wiki=? and page=? and deleted=0", wiki_id, row["slug"])
-            page_title = page_row["title"] if page_row else row["slug"]
-            title = wiki_name + ": Comment on \"" + page_title + "\" by " + row["name"]
+            title = wiki_name + ": Comment on \"" + row["title"] + "\" by " + row["name"]
             desc = row["description"]
             if len(desc) > 500:
                 desc = desc[:500] + "..."

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { format } from 'date-fns'
 import { ArrowRight, Plus, Trash2, Link2 } from 'lucide-react'
 import {
   Button,
@@ -35,6 +34,7 @@ import {
   AlertDialogTrigger,
   toast,
   getErrorMessage,
+  formatTimestamp,
 } from '@mochi/common'
 import { ValueLinkChip } from '@/components/value-link-chip'
 import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wiki'
@@ -123,7 +123,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
       </TableCell>
       <TableCell className="text-muted-foreground">
         <DataChip
-          value={format(new Date(redirect.created * 1000), 'yyyy-MM-dd HH:mm:ss')}
+          value={formatTimestamp(redirect.created)}
           copyable={false}
         />
       </TableCell>

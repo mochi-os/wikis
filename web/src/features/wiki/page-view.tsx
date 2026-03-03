@@ -1,8 +1,7 @@
 import { type MouseEvent, useEffect, useState } from 'react'
-import { format } from 'date-fns'
 import { Link } from '@tanstack/react-router'
 import type { WikiPage } from '@/types/wiki'
-import { Button, EmptyState, Skeleton, Separator, cn } from '@mochi/common'
+import { Button, EmptyState, formatTimestamp, Skeleton, Separator, cn } from '@mochi/common'
 import { ChevronDown, Edit, FileQuestion, ListTree } from 'lucide-react'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import { usePermissions } from '@/context/wiki-context'
@@ -254,7 +253,7 @@ export function PageView({ page, missingLinks }: PageViewProps) {
           </span>
           <time dateTime={new Date(page.updated * 1000).toISOString()}>
             Updated{' '}
-            {format(new Date(page.updated * 1000), 'yyyy-MM-dd HH:mm:ss')}
+            {formatTimestamp(page.updated)}
           </time>
         </div>
       </footer>
