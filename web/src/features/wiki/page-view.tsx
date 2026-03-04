@@ -205,8 +205,6 @@ export function PageView({ page, missingLinks }: PageViewProps) {
 
   return (
     <article className='space-y-5'>
-      <Separator />
-
       <div
         className={cn(
           'grid gap-8',

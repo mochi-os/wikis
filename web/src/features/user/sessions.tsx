@@ -115,7 +115,7 @@ export function UserSessions() {
 
   return (
     <>
-      <Header>
+      <Header className="border-b-0">
         <h1 className='text-lg font-semibold'>Sessions</h1>
       </Header>
 
