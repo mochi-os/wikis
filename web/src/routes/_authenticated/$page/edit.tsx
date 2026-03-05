@@ -1,10 +1,8 @@
 import { useEffect } from 'react'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { usePage } from '@/hooks/use-wiki'
-import { GeneralError, usePageTitle } from '@mochi/common'
+import { GeneralError, usePageTitle, Main, useAuthStore } from '@mochi/common'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
-import { Main } from '@mochi/common'
-import { useAuthStore } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 

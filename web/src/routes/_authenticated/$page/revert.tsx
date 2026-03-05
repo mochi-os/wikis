@@ -1,9 +1,8 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { z } from 'zod'
-import { usePageTitle } from '@mochi/common'
+import { usePageTitle, Main } from '@mochi/common'
 import { RevertPage } from '@/features/wiki/revert-page'
-import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 

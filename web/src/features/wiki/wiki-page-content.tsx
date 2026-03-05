@@ -66,35 +66,38 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     }
   }, [baseURL, navigate])
 
-  // If slug is empty, redirect to wiki home
-  if (!slug) {
-    return <Navigate to="/$wikiId" params={{ wikiId }} />
-  }
+  const shouldRedirect = !slug
 
   // Fetch page data using the wiki's base URL
   const { data, isLoading, error: pageError, refetch } = useQuery({
-    queryKey: ['wiki', wikiId, 'page', slug],
+    queryKey: ['wiki', wikiId, 'page', slug, baseURL],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
-    enabled: !!slug,
+    enabled: !shouldRedirect,
   })
 
   // Handle case where API returns non-JSON (e.g., HTML error page)
   const isValidResponse = data && typeof data === 'object'
-  const pageTitle = isValidResponse && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
+  const pageTitle = shouldRedirect
+    ? (wiki.name ?? 'Wiki')
+    : isValidResponse && 'page' in data && typeof data.page === 'object' && data.page?.title
+      ? data.page.title
+      : slug
   usePageTitle(pageTitle)
 
   // Register page with sidebar context for tree expansion
   const { setPage } = useSidebarContext()
   useEffect(() => {
+    if (shouldRedirect) return
     setPage(slug, pageTitle)
     return () => setPage(null)
-  }, [slug, pageTitle, setPage])
+  }, [shouldRedirect, slug, pageTitle, setPage])
 
   // Store last visited location (prefer fingerprint for shorter URLs)
   useEffect(() => {
+    if (shouldRedirect) return
     setLastLocation(wiki.fingerprint ?? wiki.id, slug)
-  }, [wiki.fingerprint, wiki.id, slug])
+  }, [shouldRedirect, wiki.fingerprint, wiki.id, slug])
 
   // Rename dialog state (controlled mode so menu closes when dialog opens)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
@@ -109,6 +112,10 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     } catch (error) {
       toast.error(getErrorMessage(error, 'Failed to get RSS token'))
     }
+  }
+
+  if (shouldRedirect) {
+    return <Navigate to="/$wikiId" params={{ wikiId }} />
   }
 
   if (isLoading) {
@@ -135,8 +142,6 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
 
   // Handle invalid response (e.g., server returned HTML instead of JSON)
   if (data && !isValidResponse) {
-    const rawData = data as unknown
-    console.error('[WikiPage] Invalid API response:', { baseURL, slug, data: typeof rawData === 'string' ? rawData.slice(0, 100) : rawData })
     return (
       <>
         <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />

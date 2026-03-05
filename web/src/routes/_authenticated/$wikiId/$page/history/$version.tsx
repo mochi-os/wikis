@@ -1,9 +1,8 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePageRevision } from '@/hooks/use-wiki'
-import { GeneralError, usePageTitle } from '@mochi/common'
+import { GeneralError, usePageTitle, Main } from '@mochi/common'
 import { RevisionView, RevisionViewSkeleton } from '@/features/wiki/revision-view'
-import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 

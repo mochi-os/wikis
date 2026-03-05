@@ -2,9 +2,8 @@ import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { usePageHistory } from '@/hooks/use-wiki'
-import { GeneralError, requestHelpers, usePageTitle } from '@mochi/common'
+import { GeneralError, Main, requestHelpers, usePageTitle } from '@mochi/common'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
-import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
@@ -22,7 +21,7 @@ function PageHistoryRoute() {
 
   // Fetch page data using the wiki's base URL
   const { data: pageData } = useQuery({
-    queryKey: ['wiki', wikiId, 'page', slug],
+    queryKey: ['wiki', wikiId, 'page', slug, baseURL],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
     enabled: !!slug,

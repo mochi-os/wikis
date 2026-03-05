@@ -1,9 +1,5 @@
 import { Clock, ArrowLeft, RotateCcw } from 'lucide-react'
-import { Button, formatTimestamp } from '@mochi/common'
-import { getRouterBasepath } from '@mochi/common'
-import { Badge } from '@mochi/common'
-import { Separator } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
+import { Button, formatTimestamp, getRouterBasepath, Badge, Separator, Skeleton } from '@mochi/common'
 import type { RevisionDetail } from '@/types/wiki'
 import { MarkdownContent } from './markdown-content'
 

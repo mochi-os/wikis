@@ -1,20 +1,7 @@
 import { createFileRoute, Link, Navigate, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useState } from 'react'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
-import {
-  Button,
-  ConfirmDialog,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  GeneralError,
-  usePageTitle,
-  toast,
-  getErrorMessage,
-} from '@mochi/common'
+import { Button, ConfirmDialog, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, GeneralError, usePageTitle, toast, getErrorMessage, Main } from '@mochi/common'
 import {
   PageView,
   PageNotFound,
@@ -22,7 +9,6 @@ import {
 } from '@/features/wiki/page-view'
 import { PageHeader } from '@/features/wiki/page-header'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
-import { Main } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiContext, usePermissions } from '@/context/wiki-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'

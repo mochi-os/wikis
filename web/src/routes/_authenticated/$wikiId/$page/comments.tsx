@@ -21,7 +21,7 @@ function CommentsRoute() {
 
   // Fetch page data for context
   const { data: pageData } = useQuery({
-    queryKey: ['wiki', wikiId, 'page', slug],
+    queryKey: ['wiki', wikiId, 'page', slug, baseURL],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
     enabled: !!slug,

@@ -1,13 +1,5 @@
 import { History, Eye, RotateCcw } from 'lucide-react'
-import { Button, EmptyState, formatTimestamp, getRouterBasepath, Separator, Skeleton } from '@mochi/common'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@mochi/common'
+import { Button, EmptyState, formatTimestamp, getRouterBasepath, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/common'
 import type { Revision } from '@/types/wiki'
 
 interface PageHistoryProps {

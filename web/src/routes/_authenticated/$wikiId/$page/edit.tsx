@@ -1,10 +1,8 @@
 import { useEffect } from 'react'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { GeneralError, requestHelpers, usePageTitle } from '@mochi/common'
+import { GeneralError, Main, requestHelpers, useAuthStore, usePageTitle } from '@mochi/common'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
-import { Main } from '@mochi/common'
-import { useAuthStore } from '@mochi/common'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
@@ -31,7 +29,7 @@ function WikiPageEditRoute() {
 
   // Fetch page data using the wiki's base URL (same as view page)
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['wiki', wikiId, 'page', slug],
+    queryKey: ['wiki', wikiId, 'page', slug, baseURL],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
     enabled: !!slug,

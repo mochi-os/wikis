@@ -1,8 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useTagPages } from '@/hooks/use-wiki'
-import { GeneralError, usePageTitle } from '@mochi/common'
+import { GeneralError, usePageTitle, Main } from '@mochi/common'
 import { TagPages, TagPagesSkeleton } from '@/features/wiki/tag-pages'
-import { Main } from '@mochi/common'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/tag/$tag')({

@@ -1,15 +1,5 @@
 import { History } from 'lucide-react'
-import { formatTimestamp, Separator } from '@mochi/common'
-import { Skeleton } from '@mochi/common'
-import { EmptyState } from '@mochi/common'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@mochi/common'
+import { formatTimestamp, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/common'
 import type { Change } from '@/types/wiki'
 
 interface ChangesListProps {
