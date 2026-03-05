@@ -591,8 +591,11 @@ function AccessTab() {
   const { data: userSearchData, isLoading: userSearchLoading } = useUserSearch(userSearchQuery)
 
   // Helper to build API URL with optional baseURL
-  const apiUrl = (endpoint: string) =>
-    settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint
+  const apiUrl = useCallback(
+    (endpoint: string) =>
+      settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint,
+    [settingsContext.baseURL]
+  )
 
   const loadRules = useCallback(async () => {
     setIsLoading(true)
@@ -607,7 +610,7 @@ function AccessTab() {
     } finally {
       setIsLoading(false)
     }
-  }, [settingsContext.baseURL])
+  }, [apiUrl])
 
   useEffect(() => {
     void loadRules()
@@ -696,8 +699,11 @@ function ReplicasTab() {
   const [isRemoving, setIsRemoving] = useState(false)
 
   // Helper to build API URL with optional baseURL
-  const apiUrl = (endpoint: string) =>
-    settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint
+  const apiUrl = useCallback(
+    (endpoint: string) =>
+      settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint,
+    [settingsContext.baseURL]
+  )
 
   const loadReplicas = useCallback(async () => {
     setIsLoading(true)
@@ -712,7 +718,7 @@ function ReplicasTab() {
     } finally {
       setIsLoading(false)
     }
-  }, [settingsContext.baseURL])
+  }, [apiUrl])
 
   useEffect(() => {
     void loadReplicas()
@@ -865,8 +871,11 @@ function RedirectsTab() {
   const [isDeleting, setIsDeleting] = useState(false)
 
   // Helper to build API URL with optional baseURL
-  const apiUrl = (endpoint: string) =>
-    settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint
+  const apiUrl = useCallback(
+    (endpoint: string) =>
+      settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint,
+    [settingsContext.baseURL]
+  )
 
   const loadRedirects = useCallback(async () => {
     setIsLoading(true)
@@ -881,7 +890,7 @@ function RedirectsTab() {
     } finally {
       setIsLoading(false)
     }
-  }, [settingsContext.baseURL])
+  }, [apiUrl])
 
   useEffect(() => {
     void loadRedirects()
