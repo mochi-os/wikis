@@ -16,6 +16,7 @@ import {
   formatTimestamp,
   getFileIcon,
   isImage,
+  authenticatedUrl,
 } from '@mochi/common'
 import {
   useAttachments,
@@ -165,7 +166,7 @@ export function AttachmentPicker({ onSelect, onDelete, trigger }: AttachmentPick
                       <div className="bg-muted flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded">
                         {isImage(attachment.type) ? (
                           <img
-                            src={`${endpoints.wiki.attachment(attachment.id)}/thumbnail`}
+                            src={authenticatedUrl(`${endpoints.wiki.attachment(attachment.id)}/thumbnail`)}
                             alt=""
                             className="h-12 w-12 rounded object-cover"
                           />
