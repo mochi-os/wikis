@@ -820,6 +820,8 @@ function ReplicasTab() {
                           size="icon"
                           className="h-8 w-8"
                           disabled={isRemoving}
+                          aria-label={`Remove replica ${replica.name || replica.id}`}
+                          title={`Remove replica ${replica.name || replica.id}`}
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -963,6 +965,8 @@ function RedirectsTab() {
                           size="icon"
                           className="text-destructive hover:text-destructive"
                           disabled={isDeleting}
+                          aria-label={`Delete redirect ${redirect.source}`}
+                          title={`Delete redirect ${redirect.source}`}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
