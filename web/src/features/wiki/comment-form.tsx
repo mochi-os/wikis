@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Button } from '@mochi/common'
+import { Button, IconButton } from '@mochi/common'
 import { Paperclip, Send, X } from 'lucide-react'
 
 interface CommentFormProps {
@@ -82,23 +82,29 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
           onChange={handleFileSelect}
           className="hidden"
         />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="size-8"
+        <IconButton
+          type='button'
+          variant='ghost'
+          className='size-8'
           onClick={() => fileInputRef.current?.click()}
+          label='Attach files'
         >
           <Paperclip className="size-4" />
-        </Button>
+        </IconButton>
         {onCancel && (
           <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={onCancel}>
             Cancel
           </Button>
         )}
-        <Button type="button" size="icon" className="size-8" disabled={!body.trim()} onClick={handleSubmit}>
+        <IconButton
+          type='button'
+          className='size-8'
+          disabled={!body.trim()}
+          onClick={handleSubmit}
+          label='Send comment'
+        >
           <Send className="size-4" />
-        </Button>
+        </IconButton>
       </div>
     </div>
   )

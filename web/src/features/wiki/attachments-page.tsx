@@ -212,7 +212,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild aria-label="Back to editor" title="Back to editor">
             {wikiId ? (
               <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
                 <ArrowLeft className="h-4 w-4" />
@@ -272,6 +272,8 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
               size="icon"
               className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
               onClick={() => setSearchQuery('')}
+              aria-label="Clear search"
+              title="Clear search"
             >
               <X className="h-3 w-3" />
             </Button>
@@ -310,6 +312,8 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
             size="icon"
             className="rounded-r-none"
             onClick={() => setViewMode('grid')}
+            aria-label="Grid view"
+            title="Grid view"
           >
             <Grid3X3 className="h-4 w-4" />
           </Button>
@@ -318,6 +322,8 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
             size="icon"
             className="rounded-l-none"
             onClick={() => setViewMode('list')}
+            aria-label="List view"
+            title="List view"
           >
             <List className="h-4 w-4" />
           </Button>
@@ -456,6 +462,7 @@ function AttachmentGridItem({
           variant="secondary"
           size="icon"
           onClick={(e) => { e.stopPropagation(); onCopy(attachment) }}
+          aria-label="Copy markdown"
           title="Copy markdown"
         >
           {copiedId === attachment.id ? (
@@ -469,6 +476,7 @@ function AttachmentGridItem({
           size="icon"
           onClick={(e) => { e.stopPropagation(); onDelete(attachment) }}
           disabled={isDeleting}
+          aria-label="Delete attachment"
           title="Delete"
         >
           {isDeleting ? (
@@ -533,6 +541,7 @@ function AttachmentListItem({
           variant="ghost"
           size="icon"
           onClick={() => onOpen(attachment)}
+          aria-label="Open attachment"
           title="Open"
         >
           <ExternalLink className="h-4 w-4" />
@@ -541,6 +550,7 @@ function AttachmentListItem({
           variant="ghost"
           size="icon"
           onClick={() => onCopy(attachment)}
+          aria-label="Copy markdown"
           title="Copy markdown"
         >
           {copiedId === attachment.id ? (
@@ -555,6 +565,7 @@ function AttachmentListItem({
           onClick={() => onDelete(attachment)}
           disabled={isDeleting}
           className="text-destructive hover:text-destructive"
+          aria-label="Delete attachment"
           title="Delete"
         >
           {isDeleting ? (

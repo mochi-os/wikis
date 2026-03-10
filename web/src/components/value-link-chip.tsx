@@ -24,7 +24,7 @@ export function ValueLinkChip({
         chipClassName={chipClassName}
         truncate='middle'
       />
-      <Button variant='ghost' size='icon' className='size-8 shrink-0' asChild>
+      <Button variant='ghost' size='icon' className='size-8 shrink-0' asChild aria-label='Open link in new tab' title='Open link in new tab'>
         <a href={targetHref} target='_blank' rel='noopener noreferrer'>
           <ExternalLink className='h-3.5 w-3.5' />
           <span className='sr-only'>Open link</span>

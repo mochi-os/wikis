@@ -162,7 +162,12 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     const notFoundMenu = (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Page actions"
+            title="Page actions"
+          >
             <Ellipsis className="size-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -237,7 +242,12 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Page actions"
+            title="Page actions"
+          >
             <Ellipsis className="size-4" />
           </Button>
         </DropdownMenuTrigger>

@@ -45,11 +45,7 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-          {/* <FontProvider> */}
-          {/* <DirectionProvider> */}
           <RouterProvider router={router} />
-          {/* </DirectionProvider> */}
-          {/* </FontProvider> */}
         </ThemeProvider>
       </QueryClientProvider>
     </StrictMode>

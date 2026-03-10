@@ -322,7 +322,12 @@ function WikiHomePage({
       <div className='flex items-center gap-2'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' size='icon'>
+            <Button
+              variant='ghost'
+              size='icon'
+              aria-label='Page actions'
+              title='Page actions'
+            >
               <Ellipsis className='size-4' />
             </Button>
           </DropdownMenuTrigger>
@@ -587,7 +592,12 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
         actions={
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='ghost' size='icon'>
+              <Button
+                variant='ghost'
+                size='icon'
+                aria-label='Wiki actions'
+                title='Wiki actions'
+              >
                 <Ellipsis className='size-4' />
               </Button>
             </DropdownMenuTrigger>
@@ -740,7 +750,12 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                         {wiki.type === 'subscribed' && (
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant='ghost' size='icon'>
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                aria-label='Subscribed wiki actions'
+                                title='Subscribed wiki actions'
+                              >
                                 <Ellipsis className='size-4' />
                               </Button>
                             </DropdownMenuTrigger>

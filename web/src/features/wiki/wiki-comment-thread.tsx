@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
-import { Button, CommentTreeLayout, ConfirmDialog, formatTimestamp } from '@mochi/common'
+import {
+  Button,
+  IconButton,
+  CommentTreeLayout,
+  ConfirmDialog,
+  formatTimestamp,
+} from '@mochi/common'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
 
@@ -217,21 +223,33 @@ export function WikiCommentThread({
               onChange={(e) => { if (e.target.files) { const f = Array.from(e.target.files); setReplyFiles((prev) => [...prev, ...f]) } e.target.value = '' }}
               className="hidden"
             />
-            <Button type="button" variant="ghost" size="icon" className="size-8" onClick={() => replyFileRef.current?.click()}>
+            <IconButton
+              type='button'
+              variant='ghost'
+              className='size-8'
+              onClick={() => replyFileRef.current?.click()}
+              label='Attach reply files'
+            >
               <Paperclip className="size-4" />
-            </Button>
-            <Button type="button" size="icon" variant="ghost" className="size-8" onClick={onCancelReply}>
+            </IconButton>
+            <IconButton
+              type='button'
+              variant='ghost'
+              className='size-8'
+              onClick={onCancelReply}
+              label='Cancel reply'
+            >
               <X className="size-4" />
-            </Button>
-            <Button
-              type="button"
-              size="icon"
-              className="size-8"
+            </IconButton>
+            <IconButton
+              type='button'
+              className='size-8'
               disabled={!replyDraft.trim()}
               onClick={() => onSubmitReply(comment.id, replyFiles.length > 0 ? replyFiles : undefined)}
+              label='Send reply'
             >
               <Send className="size-4" />
-            </Button>
+            </IconButton>
           </div>
         </div>
       )}
