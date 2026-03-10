@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Button, IconButton } from '@mochi/common'
+import { Button, IconButton, useImageObjectUrls } from '@mochi/common'
 import { Paperclip, Send, X } from 'lucide-react'
 
 interface CommentFormProps {
@@ -12,6 +12,7 @@ interface CommentFormProps {
 export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: CommentFormProps) {
   const [body, setBody] = useState('')
   const [files, setFiles] = useState<File[]>([])
+  const filePreviewUrls = useImageObjectUrls(files)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = () => {
@@ -60,7 +61,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
             <div key={i} className="bg-muted relative flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs">
               {file.type.startsWith('image/') && (
                 <img
-                  src={URL.createObjectURL(file)}
+                  src={filePreviewUrls[i] ?? undefined}
                   alt={file.name}
                   className="h-8 w-8 rounded object-cover"
                 />
