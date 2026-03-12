@@ -7,6 +7,7 @@ import {
   getFileIcon,
   ImageLightbox,
   type LightboxMedia,
+  authenticatedUrl,
 } from '@mochi/common'
 import type { Attachment } from '@/types/wiki'
 
@@ -25,7 +26,7 @@ export function CommentAttachments({ attachments }: CommentAttachmentsProps) {
   const lightboxMedia: LightboxMedia[] = images.map((img) => ({
     id: img.id,
     name: img.name,
-    url: `${getApiBasepath()}attachments/${img.id}`,
+    url: authenticatedUrl(`${getApiBasepath()}attachments/${img.id}`),
     type: 'image',
   }))
 
@@ -41,7 +42,7 @@ export function CommentAttachments({ attachments }: CommentAttachmentsProps) {
               onClick={() => setLightboxIndex(i)}
             >
               <img
-                src={`${getApiBasepath()}attachments/${img.id}/thumbnail`}
+                src={authenticatedUrl(`${getApiBasepath()}attachments/${img.id}/thumbnail`)}
                 alt={img.name}
                 className="h-20 w-auto object-cover"
               />
@@ -56,7 +57,7 @@ export function CommentAttachments({ attachments }: CommentAttachmentsProps) {
             return (
               <a
                 key={file.id}
-                href={`${getApiBasepath()}attachments/${file.id}`}
+                href={authenticatedUrl(`${getApiBasepath()}attachments/${file.id}`)}
                 download={file.name}
                 className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-xs"
               >
