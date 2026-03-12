@@ -1,4 +1,6 @@
-// localStorage utilities for wiki app
+// Shell storage utilities for wiki app
+
+import { shellStorage } from '@mochi/common'
 
 const STORAGE_KEYS = {
   WIKIS_LIST: 'mochi-wikis-list',
@@ -24,48 +26,35 @@ interface LastLocation {
 
 // Cache wikis list
 export function cacheWikisList(wikis: StoredWiki[]): void {
-  try {
-    const cache: WikisCache = {
-      wikis,
-      timestamp: Date.now(),
-    }
-    localStorage.setItem(STORAGE_KEYS.WIKIS_LIST, JSON.stringify(cache))
-  } catch (_e) {
-    // console.warn('[WikiStorage] Failed to cache wikis list:', e)
+  const cache: WikisCache = {
+    wikis,
+    timestamp: Date.now(),
   }
+  shellStorage.setItem(STORAGE_KEYS.WIKIS_LIST, JSON.stringify(cache))
 }
 
 // Store last visited location
 export function setLastLocation(wikiId: string, pageSlug?: string): void {
-  try {
-    const location: LastLocation = {
-      wikiId,
-      pageSlug,
-      timestamp: Date.now(),
-    }
-    localStorage.setItem(STORAGE_KEYS.LAST_LOCATION, JSON.stringify(location))
-  } catch (_e) {
-    // console.warn('[WikiStorage] Failed to store last location:', e)
+  const location: LastLocation = {
+    wikiId,
+    pageSlug,
+    timestamp: Date.now(),
   }
+  shellStorage.setItem(STORAGE_KEYS.LAST_LOCATION, JSON.stringify(location))
 }
 
 // Get last visited location
-export function getLastLocation(): LastLocation | null {
+export async function getLastLocation(): Promise<LastLocation | null> {
+  const stored = await shellStorage.getItem(STORAGE_KEYS.LAST_LOCATION)
+  if (!stored) return null
   try {
-    const stored = localStorage.getItem(STORAGE_KEYS.LAST_LOCATION)
-    if (!stored) return null
     return JSON.parse(stored) as LastLocation
-  } catch (_e) {
-    // console.warn('[WikiStorage] Failed to get last location:', e)
+  } catch {
     return null
   }
 }
 
 // Clear last location (e.g., when wiki is deleted)
 export function clearLastLocation(): void {
-  try {
-    localStorage.removeItem(STORAGE_KEYS.LAST_LOCATION)
-  } catch (_e) {
-    // console.warn('[WikiStorage] Failed to clear last location:', e)
-  }
+  shellStorage.removeItem(STORAGE_KEYS.LAST_LOCATION)
 }

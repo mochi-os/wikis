@@ -124,7 +124,7 @@ export const Route = createFileRoute('/_authenticated/')({
 
     // In class context, check for last visited wiki and redirect if it still exists
     if (!info.entity) {
-      const lastLocation = getLastLocation()
+      const lastLocation = await getLastLocation()
       if (lastLocation) {
         const allWikis = info.wikis || []
         const wiki = allWikis.find(
