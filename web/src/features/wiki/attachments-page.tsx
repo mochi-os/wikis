@@ -37,6 +37,7 @@ import {
   getFileIcon,
   isImage,
   getErrorMessage,
+  authenticatedUrl,
 } from '@mochi/common'
 import {
   useAttachments,
@@ -57,7 +58,7 @@ const EMPTY_ATTACHMENTS: Attachment[] = []
 
 // Build attachment URL using API basepath for correct resolution from any route
 function getAttachmentUrl(id: string): string {
-  return `${getApiBasepath()}attachments/${id}`
+  return authenticatedUrl(`${getApiBasepath()}attachments/${id}`)
 }
 
 export function AttachmentsPage({ slug }: AttachmentsPageProps) {

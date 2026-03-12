@@ -21,6 +21,7 @@ import {
   isImage,
   getFileIcon,
   getErrorMessage,
+  authenticatedUrl,
 } from '@mochi/common'
 import { useEditPage, useCreatePage, useAttachments, useUploadAttachment } from '@/hooks/use-wiki'
 import { usePermissions } from '@/context/wiki-context'
@@ -37,7 +38,7 @@ interface PageEditorProps {
 
 // Build attachment URL using API basepath
 function getAttachmentUrl(id: string): string {
-  return `${getApiBasepath()}attachments/${id}`
+  return authenticatedUrl(`${getApiBasepath()}attachments/${id}`)
 }
 
 export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: PageEditorProps) {
