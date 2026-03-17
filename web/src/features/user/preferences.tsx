@@ -1,5 +1,4 @@
-import { useState, useMemo } from 'react'
-import { Check, ChevronsUpDown, Loader2, RotateCcw } from 'lucide-react'
+import { Loader2, RotateCcw, Sliders } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,27 +10,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
   Button,
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
+  FieldRow,
   GeneralError,
-  Header,
-  Label,
   ListSkeleton,
   Main,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+  PageHeader,
+  Section,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  cn,
+  TimezoneSelect,
   getErrorMessage,
+  themeLabels,
   toast,
   usePageTitle,
   useTheme,
@@ -42,135 +34,6 @@ import {
   useResetPreferences,
 } from '@/hooks/use-preferences'
 
-const themeLabels: Record<string, string> = {
-  light: 'Light',
-  dark: 'Dark',
-  auto: 'System',
-}
-
-function getTimezones(): string[] {
-  try {
-    // TypeScript doesn't have types for supportedValuesOf yet
-    return (
-      (
-        Intl as { supportedValuesOf?: (key: string) => string[] }
-      ).supportedValuesOf?.('timeZone') ?? []
-    )
-  } catch {
-    return []
-  }
-}
-
-function getBrowserTimezone(): string {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone
-  } catch {
-    return 'UTC'
-  }
-}
-
-function TimezoneSelect({
-  value,
-  onChange,
-  disabled,
-}: {
-  value: string
-  onChange: (value: string) => void
-  disabled?: boolean
-}) {
-  const [open, setOpen] = useState(false)
-  const timezones = useMemo(() => getTimezones(), [])
-  const browserTimezone = useMemo(() => getBrowserTimezone(), [])
-
-  const formatTimezone = (tz: string) => tz.replace(/_/g, ' ')
-  const displayValue =
-    value === 'auto'
-      ? `Auto (${formatTimezone(browserTimezone)})`
-      : formatTimezone(value)
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant='outline'
-          role='combobox'
-          aria-expanded={open}
-          className='w-full justify-between'
-          disabled={disabled}
-        >
-          <span className='truncate'>{displayValue}</span>
-          <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className='w-[350px] p-0'>
-        <Command>
-          <CommandInput placeholder='Search timezone...' />
-          <CommandList>
-            <CommandEmpty>No timezone found.</CommandEmpty>
-            <CommandGroup>
-              <CommandItem
-                value='auto'
-                onSelect={() => {
-                  onChange('auto')
-                  setOpen(false)
-                }}
-              >
-                <Check
-                  className={cn(
-                    'mr-2 h-4 w-4 shrink-0',
-                    value === 'auto' ? 'opacity-100' : 'opacity-0'
-                  )}
-                />
-                <span className='truncate'>
-                  Auto ({formatTimezone(browserTimezone)})
-                </span>
-              </CommandItem>
-              {timezones.map((tz) => (
-                <CommandItem
-                  key={tz}
-                  value={tz}
-                  onSelect={() => {
-                    onChange(tz)
-                    setOpen(false)
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      'mr-2 h-4 w-4 shrink-0',
-                      value === tz ? 'opacity-100' : 'opacity-0'
-                    )}
-                  />
-                  <span className='truncate'>{formatTimezone(tz)}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  )
-}
-
-function PreferenceRow({
-  label,
-  description,
-  children,
-}: {
-  label: string
-  description: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className='flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between'>
-      <div className='space-y-0.5'>
-        <Label className='text-base'>{label}</Label>
-        <p className='text-muted-foreground text-sm'>{description}</p>
-      </div>
-      <div className='w-full sm:w-48'>{children}</div>
-    </div>
-  )
-}
-
 export function UserPreferences() {
   usePageTitle('Preferences')
   const { data, isLoading, error, refetch } = usePreferencesData()
@@ -178,16 +41,14 @@ export function UserPreferences() {
   const resetPreferences = useResetPreferences()
   const { setTheme } = useTheme()
 
-  const handleChange = (key: string, value: string) => {
-    if (key === 'theme') {
-      const themeValue =
-        value === 'auto' ? 'system' : (value as 'light' | 'dark')
-      setTheme(themeValue)
-    }
+  const handleChange = (key: 'theme' | 'timezone', value: string) => {
     setPreference.mutate(
       { [key]: value },
       {
         onSuccess: () => {
+          if (key === 'theme') {
+            setTheme(value === 'auto' ? 'system' : (value as 'light' | 'dark'))
+          }
           toast.success('Preference updated')
         },
         onError: (error) => {
@@ -210,82 +71,90 @@ export function UserPreferences() {
 
   return (
     <>
-      <Header className="border-b-0">
-        <h1 className='text-lg font-semibold'>Preferences</h1>
-      </Header>
+      <PageHeader title="Preferences" icon={<Sliders className='size-4 md:size-5' />} />
 
-      <Main>
-        {error ? (
-          <GeneralError error={error} minimal mode='inline' reset={refetch} />
-        ) : isLoading ? (
-          <ListSkeleton variant='simple' height='h-16' count={3} />
-        ) : data ? (
-          <>
-            <div className='divide-y'>
-              <PreferenceRow label='Theme' description='Appearance'>
-                <Select
-                  value={data.preferences.theme}
-                  onValueChange={(value) => handleChange('theme', value)}
-                  disabled={setPreference.isPending}
+      <Main className="space-y-8">
+        <Section
+          title="General"
+          description="Manage your display settings and preferences"
+          action={
+            !error && <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  disabled={isLoading || resetPreferences.isPending}
+                  className="text-muted-foreground hover:text-foreground"
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(themeLabels).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </PreferenceRow>
+                  {resetPreferences.isPending ? (
+                    <Loader2 className='mr-2 h-3.5 w-3.5 animate-spin' />
+                  ) : (
+                    <RotateCcw className='mr-2 h-3.5 w-3.5' />
+                  )}
+                  Reset to Defaults
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset preferences?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will reset all preferences to their default values.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleReset}>
+                    Reset
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          }
+        >
+          <div className='divide-y-0'>
+            {error ? (
+              <GeneralError error={error} minimal mode='inline' reset={refetch} />
+            ) : isLoading ? (
+              <ListSkeleton variant='simple' height='h-12' count={2} />
+            ) : data ? (
+              <>
+                <FieldRow label='Theme' description='Appearance'>
+                  <div className="w-full sm:w-64">
+                    <Select
+                      value={data.preferences.theme}
+                      onValueChange={(value) => handleChange('theme', value)}
+                      disabled={setPreference.isPending}
+                    >
+                      <SelectTrigger className='w-full'>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(themeLabels).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </FieldRow>
 
-              <PreferenceRow
-                label='Timezone'
-                description='Timezone for displaying dates and times'
-              >
-                <TimezoneSelect
-                  value={data.preferences.timezone}
-                  onChange={(value) => handleChange('timezone', value)}
-                  disabled={setPreference.isPending}
-                />
-              </PreferenceRow>
-            </div>
-
-            <div className='mt-6 flex justify-end'>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant='outline'
-                    disabled={isLoading || resetPreferences.isPending}
-                  >
-                    {resetPreferences.isPending ? (
-                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    ) : (
-                      <RotateCcw className='mr-2 h-4 w-4' />
-                    )}
-                    Reset to Defaults
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Reset preferences?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will reset all preferences to their default values.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleReset}>
-                      Reset
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          </>
-        ) : null}
+                <FieldRow
+                  label='Time zone'
+                  description='Used for displaying dates and times'
+                >
+                  <div className="w-full sm:w-64">
+                    <TimezoneSelect
+                      value={data.preferences.timezone}
+                      onChange={(value) => handleChange('timezone', value)}
+                      disabled={setPreference.isPending}
+                    />
+                  </div>
+                </FieldRow>
+              </>
+            ) : null}
+          </div>
+        </Section>
       </Main>
     </>
   )
