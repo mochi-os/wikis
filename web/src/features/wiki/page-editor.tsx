@@ -22,7 +22,7 @@ import {
   getFileIcon,
   getErrorMessage,
   authenticatedUrl,
-} from '@mochi/common'
+} from '@mochi/web'
 import { useEditPage, useCreatePage, useAttachments, useUploadAttachment } from '@/hooks/use-wiki'
 import { usePermissions } from '@/context/wiki-context'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'

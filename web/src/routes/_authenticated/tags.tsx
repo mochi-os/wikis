@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useTags } from '@/hooks/use-wiki'
-import { GeneralError, usePageTitle, Main } from '@mochi/common'
+import { GeneralError, usePageTitle, Main } from '@mochi/web'
 import { TagsList, TagsListSkeleton } from '@/features/wiki/tags-list'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 

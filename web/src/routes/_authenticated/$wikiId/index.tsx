@@ -1,5 +1,5 @@
 import { createFileRoute, Navigate } from '@tanstack/react-router'
-import { isDomainEntityRouting } from '@mochi/common'
+import { isDomainEntityRouting } from '@mochi/web'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { WikiPageContent } from '@/features/wiki/wiki-page-content'
 

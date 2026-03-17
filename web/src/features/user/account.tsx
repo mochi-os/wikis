@@ -75,7 +75,7 @@ import {
   getErrorMessage,
   formatTimestamp,
   toast,
-} from '@mochi/common'
+} from '@mochi/web'
 
 // ============================================================================
 // Identity Section

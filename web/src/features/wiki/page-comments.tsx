@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { MessageSquare } from 'lucide-react'
-import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage } from '@mochi/common'
+import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage } from '@mochi/web'
 import {
   usePageComments,
   useCreateComment,

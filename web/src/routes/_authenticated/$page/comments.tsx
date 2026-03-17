@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { usePageTitle, useAuthStore, Main } from '@mochi/common'
+import { usePageTitle, useAuthStore, Main } from '@mochi/web'
 import { PageComments } from '@/features/wiki/page-comments'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { usePermissions } from '@/context/wiki-context'

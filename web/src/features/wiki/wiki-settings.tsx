@@ -63,7 +63,7 @@ import {
   requestHelpers,
   getErrorMessage,
   formatTimestamp,
-} from '@mochi/common'
+} from '@mochi/web'
 import endpoints from '@/api/endpoints'
 import { ValueLinkChip } from '@/components/value-link-chip'
 import {

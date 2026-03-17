@@ -10,7 +10,7 @@ import {
   CardTitle,
   getErrorMessage,
   toast,
-} from '@mochi/common'
+} from '@mochi/web'
 import { useDeletePage } from '@/hooks/use-wiki'
 
 interface DeletePageProps {

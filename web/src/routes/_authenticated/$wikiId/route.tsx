@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
-import { requestHelpers, GeneralError, getErrorMessage, isDomainEntityRouting } from '@mochi/common'
+import { requestHelpers, GeneralError, getErrorMessage, isDomainEntityRouting } from '@mochi/web'
 import type { WikiPermissions } from '@/types/wiki'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 

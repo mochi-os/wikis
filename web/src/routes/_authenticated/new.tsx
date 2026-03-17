@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
-import { usePageTitle, Main } from '@mochi/common'
+import { usePageTitle, Main } from '@mochi/web'
 import { PageEditor } from '@/features/wiki/page-editor'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 

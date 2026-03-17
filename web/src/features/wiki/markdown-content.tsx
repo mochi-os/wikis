@@ -17,7 +17,7 @@ import {
   useLightboxHash,
   isDomainEntityRouting,
   getApiBasepath,
-} from '@mochi/common'
+} from '@mochi/web'
 import {
   classifyWikiLink,
   extractTocHeadings,

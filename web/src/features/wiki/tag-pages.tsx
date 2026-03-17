@@ -1,5 +1,5 @@
 import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react'
-import { Badge, Button, EmptyState, formatTimestamp, Separator, Skeleton } from '@mochi/common'
+import { Badge, Button, EmptyState, formatTimestamp, Separator, Skeleton } from '@mochi/web'
 import type { TagPage } from '@/types/wiki'
 
 interface TagPagesProps {

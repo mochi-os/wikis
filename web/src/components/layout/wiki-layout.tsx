@@ -9,7 +9,7 @@ import {
   toast,
   CreateEntityDialog,
   type CreateEntityValues,
-} from '@mochi/common'
+} from '@mochi/web'
 import {
   BookOpen,
   Library,

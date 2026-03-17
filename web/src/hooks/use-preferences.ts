@@ -2,7 +2,7 @@ import {
   usePreferencesData as usePreferencesDataCommon,
   useSetPreference as useSetPreferenceCommon,
   useResetPreferences as useResetPreferencesCommon,
-} from '@mochi/common'
+} from '@mochi/web'
 import endpoints from '@/api/endpoints'
 
 export function usePreferencesData() {

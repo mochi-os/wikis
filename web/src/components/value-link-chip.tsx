@@ -1,4 +1,4 @@
-import { Button, DataChip, cn } from '@mochi/common'
+import { Button, DataChip, cn } from '@mochi/web'
 import { ExternalLink } from 'lucide-react'
 
 interface ValueLinkChipProps {

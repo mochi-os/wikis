@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Search, FileText, ArrowRight } from 'lucide-react'
-import { EmptyState, formatTimestamp, GeneralError, Input, ListSkeleton, Separator } from '@mochi/common'
+import { EmptyState, formatTimestamp, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web'
 import { useSearch } from '@/hooks/use-wiki'
 import type { SearchResult } from '@/types/wiki'
 

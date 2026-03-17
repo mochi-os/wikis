@@ -20,7 +20,7 @@ import {
   toast,
   getErrorMessage,
   getAppPath,
-} from '@mochi/common'
+} from '@mochi/web'
 import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Rss, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import {
   PageView,

@@ -3,7 +3,7 @@
 // This ensures wiki IDs in URLs aren't doubled when on wiki detail pages
 
 import { type AxiosRequestConfig } from 'axios'
-import { getAppPath, requestHelpers } from '@mochi/common'
+import { getAppPath, requestHelpers } from '@mochi/web'
 
 function toClassScopedUrl(url: string): string {
   if (url.startsWith('/') || /^https?:\/\//.test(url)) {
