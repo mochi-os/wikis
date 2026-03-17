@@ -41,27 +41,7 @@ def database_create():
 
 # Database upgrade
 def database_upgrade(to_version):
-    if to_version == 9:
-        # Add server column for remote wiki connections
-        mochi.db.execute("alter table wikis add column server text not null default ''")
-
-    if to_version == 10:
-        # Rename subscribers table to replicas and add synced column
-        mochi.db.execute("alter table subscribers rename to replicas")
-        mochi.db.execute("alter table replicas add column synced integer not null default 0")
-    if to_version == 11:
-        # Add peer column to replicas table for direct P2P messaging
-        mochi.db.execute("alter table replicas add column peer text not null default ''")
-    if to_version == 12:
-        mochi.db.execute("drop table if exists bookmarks")
-    if to_version == 13:
-        mochi.db.execute("create table if not exists comments (id text primary key, wiki text not null references wikis(id), page text not null, parent text not null default '', author text not null, name text not null default '', body text not null, created integer not null, edited integer not null default 0, deleted integer not null default 0)")
-        mochi.db.execute("create index if not exists comments_wiki on comments(wiki)")
-        mochi.db.execute("create index if not exists comments_page on comments(page)")
-        mochi.db.execute("create index if not exists comments_parent on comments(parent)")
-        mochi.db.execute("create index if not exists comments_created on comments(created)")
-    if to_version == 14:
-        mochi.db.execute("create table if not exists rss (token text not null primary key, entity text not null, mode text not null, created integer not null, unique(entity, mode))")
+    pass
 
 # Helper: Update replica's seen and synced timestamps
 def update_replica_seen(wiki, replica_id):
