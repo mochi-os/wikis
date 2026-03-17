@@ -30,7 +30,7 @@ import {
   getAppPath,
   toast,
   usePageTitle,
-} from '@mochi/common'
+} from '@mochi/web'
 import {
   BookOpen,
   Ellipsis,

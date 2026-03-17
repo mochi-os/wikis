@@ -1,6 +1,6 @@
 // Shell storage utilities for wiki app
 
-import { shellStorage } from '@mochi/common'
+import { shellStorage } from '@mochi/web'
 
 const STORAGE_KEYS = {
   WIKIS_LIST: 'mochi-wikis-list',

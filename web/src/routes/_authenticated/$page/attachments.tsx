@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Main, usePageTitle } from '@mochi/common'
+import { Main, usePageTitle } from '@mochi/web'
 import { AttachmentsPage } from '@/features/wiki/attachments-page'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { usePage } from '@/hooks/use-wiki'

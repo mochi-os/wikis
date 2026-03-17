@@ -35,7 +35,7 @@ import {
   toast,
   getErrorMessage,
   formatTimestamp,
-} from '@mochi/common'
+} from '@mochi/web'
 import { ValueLinkChip } from '@/components/value-link-chip'
 import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wiki'
 import type { Redirect } from '@/types/wiki'

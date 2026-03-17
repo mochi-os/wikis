@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Button, IconButton, useImageObjectUrls } from '@mochi/common'
+import { Button, IconButton, useImageObjectUrls } from '@mochi/web'
 import { Paperclip, Send, X } from 'lucide-react'
 
 interface CommentFormProps {

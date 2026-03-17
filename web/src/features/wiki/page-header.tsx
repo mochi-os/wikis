@@ -1,4 +1,4 @@
-import { PageHeader as CommonPageHeader, type HeaderBackConfig } from '@mochi/common'
+import { PageHeader as CommonPageHeader, type HeaderBackConfig } from '@mochi/web'
 import type { WikiPage } from '@/types/wiki'
 
 interface PageHeaderProps {

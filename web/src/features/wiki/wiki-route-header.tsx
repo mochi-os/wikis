@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { PageHeader, type HeaderBackConfig } from '@mochi/common'
+import { PageHeader, type HeaderBackConfig } from '@mochi/web'
 
 interface WikiRouteHeaderProps {
   title: ReactNode

@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
   getErrorMessage,
   toast,
-} from '@mochi/common'
+} from '@mochi/web'
 import { useAddTag, useRemoveTag } from '@/hooks/use-wiki'
 import { usePermissions } from '@/context/wiki-context'
 

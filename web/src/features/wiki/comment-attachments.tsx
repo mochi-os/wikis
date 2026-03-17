@@ -8,7 +8,7 @@ import {
   ImageLightbox,
   type LightboxMedia,
   authenticatedUrl,
-} from '@mochi/common'
+} from '@mochi/web'
 import type { Attachment } from '@/types/wiki'
 
 interface CommentAttachmentsProps {

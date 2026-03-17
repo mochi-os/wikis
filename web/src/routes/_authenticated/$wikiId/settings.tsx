@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { usePageTitle, Main } from '@mochi/common'
+import { usePageTitle, Main } from '@mochi/web'
 import { WikiSettings, type WikiSettingsTabId } from '@/features/wiki/wiki-settings'
 import { WikiProvider } from '@/context/wiki-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'

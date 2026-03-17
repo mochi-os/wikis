@@ -1,7 +1,7 @@
 import { type MouseEvent, useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { WikiPage } from '@/types/wiki'
-import { Button, EmptyState, formatTimestamp, Skeleton, Separator, cn } from '@mochi/common'
+import { Button, EmptyState, formatTimestamp, Skeleton, Separator, cn } from '@mochi/web'
 import { ChevronDown, Edit, FileQuestion, ListTree } from 'lucide-react'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import { usePermissions } from '@/context/wiki-context'

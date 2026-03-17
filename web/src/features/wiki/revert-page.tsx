@@ -13,7 +13,7 @@ import {
   CardTitle,
   getErrorMessage,
   toast,
-} from '@mochi/common'
+} from '@mochi/web'
 import { useRevertPage } from '@/hooks/use-wiki'
 
 interface RevertPageProps {

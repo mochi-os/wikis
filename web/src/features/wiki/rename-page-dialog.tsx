@@ -14,7 +14,7 @@ import {
   Checkbox,
   getErrorMessage,
   toast,
-} from '@mochi/common'
+} from '@mochi/web'
 import { useRenamePage } from '@/hooks/use-wiki'
 
 interface RenamePageDialogProps {

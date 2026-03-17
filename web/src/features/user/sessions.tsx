@@ -26,7 +26,7 @@ import {
   getErrorMessage,
   toast,
   usePageTitle,
-} from '@mochi/common'
+} from '@mochi/web'
 import { useAccountData, useRevokeSession } from '@/hooks/use-account'
 
 function SessionRow({

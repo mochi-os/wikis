@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Search, Loader2, BookOpen } from 'lucide-react'
-import { Button, GeneralError, Input, toast, getErrorMessage } from '@mochi/common'
+import { Button, GeneralError, Input, toast, getErrorMessage } from '@mochi/web'
 import { wikisRequest } from '@/api/request'
 import endpoints from '@/api/endpoints'
 

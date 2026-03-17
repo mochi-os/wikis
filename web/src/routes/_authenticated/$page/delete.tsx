@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePage } from '@/hooks/use-wiki'
-import { EmptyState, GeneralError, Main, Skeleton, usePageTitle } from '@mochi/common'
+import { EmptyState, GeneralError, Main, Skeleton, usePageTitle } from '@mochi/web'
 import { DeletePage } from '@/features/wiki/delete-page'
 import { FileX } from 'lucide-react'
 import { useSidebarContext } from '@/context/sidebar-context'

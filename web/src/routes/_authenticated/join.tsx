@@ -14,7 +14,7 @@ import {
   Main,
   getErrorMessage,
   toast,
-} from '@mochi/common'
+} from '@mochi/web'
 import { useJoinWiki } from '@/hooks/use-wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 

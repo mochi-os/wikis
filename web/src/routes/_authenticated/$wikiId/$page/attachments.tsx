@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { Main, usePageTitle, requestHelpers } from '@mochi/common'
+import { Main, usePageTitle, requestHelpers } from '@mochi/web'
 import { AttachmentsPage } from '@/features/wiki/attachments-page'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'

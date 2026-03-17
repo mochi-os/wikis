@@ -38,7 +38,7 @@ import {
   isImage,
   getErrorMessage,
   authenticatedUrl,
-} from '@mochi/common'
+} from '@mochi/web'
 import {
   useAttachments,
   useUploadAttachment,

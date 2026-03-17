@@ -13,7 +13,7 @@ import type {
   RecoveryGenerateResponse,
 } from '@/types/account'
 import endpoints from '@/api/endpoints'
-import { requestHelpers } from '@mochi/common'
+import { requestHelpers } from '@mochi/web'
 
 const NO_GLOBAL_ERROR_TOAST_CONFIG = {
   mochi: { showGlobalErrorToast: false },

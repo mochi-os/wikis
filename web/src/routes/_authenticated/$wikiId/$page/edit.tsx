@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { GeneralError, Main, requestHelpers, useAuthStore, usePageTitle } from '@mochi/common'
+import { GeneralError, Main, requestHelpers, useAuthStore, usePageTitle } from '@mochi/web'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'

@@ -1,5 +1,5 @@
 import { Tags, Tag as TagIcon } from 'lucide-react'
-import { Badge, Separator, Skeleton, EmptyState } from '@mochi/common'
+import { Badge, Separator, Skeleton, EmptyState } from '@mochi/web'
 import type { Tag } from '@/types/wiki'
 
 interface TagsListProps {

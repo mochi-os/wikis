@@ -27,7 +27,7 @@ import {
   toast,
   usePageTitle,
   useTheme,
-} from '@mochi/common'
+} from '@mochi/web'
 import {
   usePreferencesData,
   useSetPreference,

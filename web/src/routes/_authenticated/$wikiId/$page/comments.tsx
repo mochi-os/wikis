@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { usePageTitle, useAuthStore, requestHelpers, Main } from '@mochi/common'
+import { usePageTitle, useAuthStore, requestHelpers, Main } from '@mochi/web'
 import { PageComments } from '@/features/wiki/page-comments'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'

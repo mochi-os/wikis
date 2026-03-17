@@ -8,7 +8,7 @@ import {
   Skeleton,
   requestHelpers,
   usePageTitle,
-} from '@mochi/common'
+} from '@mochi/web'
 import { DeletePage } from '@/features/wiki/delete-page'
 import { FileX } from 'lucide-react'
 import { useSidebarContext } from '@/context/sidebar-context'

@@ -6,7 +6,7 @@ import {
   CommentTreeLayout,
   ConfirmDialog,
   formatTimestamp,
-} from '@mochi/common'
+} from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
 
