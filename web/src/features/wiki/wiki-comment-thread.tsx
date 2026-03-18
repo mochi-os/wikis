@@ -1,10 +1,14 @@
 import { useState } from 'react'
-import { Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
+import { MoreHorizontal, Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
 import {
   Button,
-  IconButton,
   CommentTreeLayout,
   ConfirmDialog,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  IconButton,
   formatTimestamp,
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
@@ -139,7 +143,8 @@ export function WikiCommentThread({
         <CommentAttachments attachments={comment.attachments} />
 
         <div className="flex min-h-[28px] items-center gap-2 pt-0.5">
-          <div className="pointer-events-none flex items-center gap-1 opacity-0 transition-opacity group-hover/row:pointer-events-auto group-hover/row:opacity-100">
+          {/* Desktop: hover-reveal inline actions */}
+          <div className="pointer-events-none hidden items-center gap-1 opacity-0 transition-opacity group-hover/row:pointer-events-auto group-hover/row:opacity-100 md:flex">
             <button
               type="button"
               className="text-muted-foreground hover:bg-muted hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors"
@@ -174,6 +179,44 @@ export function WikiCommentThread({
               </button>
             )}
           </div>
+
+          {/* Mobile: always-visible dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="text-muted-foreground hover:bg-muted rounded-full p-1 transition-colors md:hidden"
+              >
+                <MoreHorizontal className="size-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={() => onStartReply(comment.id)}>
+                <Reply className="mr-2 size-4" />
+                Reply
+              </DropdownMenuItem>
+              {canEdit && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    setEditing(true)
+                    setEditBody(comment.body)
+                  }}
+                >
+                  <Pencil className="mr-2 size-4" />
+                  Edit
+                </DropdownMenuItem>
+              )}
+              {canDelete && (
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onClick={() => setDeleting(true)}
+                >
+                  <Trash2 className="mr-2 size-4" />
+                  Delete
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
