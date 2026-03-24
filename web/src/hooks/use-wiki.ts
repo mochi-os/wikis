@@ -32,6 +32,16 @@ import type {
 import endpoints from '@/api/endpoints'
 import { requestHelpers } from '@mochi/web'
 import { wikisRequest } from '@/api/request'
+import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
+
+// Resolve an entity-scoped endpoint URL. When inside a WikiBaseURLProvider
+// (entity context like /wikis/{fingerprint}/...), prefixes the endpoint with the
+// entity base URL to form an absolute path. In class context (no provider), the
+// endpoint is returned as-is and resolved by getApiBasepath().
+function useEntityEndpoint() {
+  const baseURL = useWikiBaseURLOptional()?.baseURL
+  return (endpoint: string) => baseURL ? `${baseURL}${endpoint}` : endpoint
+}
 
 // Wiki info
 
@@ -54,31 +64,34 @@ export function useWikiInfo() {
 // Page queries
 
 export function usePage(slug: string) {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'page', slug],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(
-        endpoints.wiki.page(slug)
+        e(endpoints.wiki.page(slug))
       ),
     enabled: !!slug,
   })
 }
 
 export function usePageHistory(slug: string) {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'page', slug, 'history'],
     queryFn: () =>
-      requestHelpers.get<PageHistoryResponse>(endpoints.wiki.pageHistory(slug)),
+      requestHelpers.get<PageHistoryResponse>(e(endpoints.wiki.pageHistory(slug))),
     enabled: !!slug,
   })
 }
 
 export function usePageRevision(slug: string, version: number) {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'page', slug, 'revision', version],
     queryFn: () =>
       requestHelpers.get<PageRevisionResponse>(
-        endpoints.wiki.pageRevision(slug, version)
+        e(endpoints.wiki.pageRevision(slug, version))
       ),
     enabled: !!slug && version > 0,
   })
@@ -88,6 +101,7 @@ export function usePageRevision(slug: string, version: number) {
 
 export function useEditPage() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: {
       slug: string
@@ -96,7 +110,7 @@ export function useEditPage() {
       comment?: string
     }) =>
       requestHelpers.post<PageEditResponse>(
-        endpoints.wiki.pageEdit(data.slug),
+        e(endpoints.wiki.pageEdit(data.slug)),
         {
           title: data.title,
           content: data.content,
@@ -113,9 +127,10 @@ export function useEditPage() {
 
 export function useCreatePage() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: { slug: string; title: string; content?: string }) =>
-      requestHelpers.post<NewPageResponse>(endpoints.wiki.newPage, data),
+      requestHelpers.post<NewPageResponse>(e(endpoints.wiki.newPage), data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki'] })
     },
@@ -124,10 +139,11 @@ export function useCreatePage() {
 
 export function useRevertPage() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: { slug: string; version: number; comment?: string }) =>
       requestHelpers.post<PageRevertResponse>(
-        endpoints.wiki.pageRevert(data.slug),
+        e(endpoints.wiki.pageRevert(data.slug)),
         {
           version: data.version,
           comment: data.comment,
@@ -143,9 +159,10 @@ export function useRevertPage() {
 
 export function useDeletePage() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (slug: string) =>
-      requestHelpers.post<PageDeleteResponse>(endpoints.wiki.pageDelete(slug)),
+      requestHelpers.post<PageDeleteResponse>(e(endpoints.wiki.pageDelete(slug))),
     onSuccess: (_, slug) => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'page', slug] })
       queryClient.invalidateQueries({ queryKey: ['wiki', 'tags'] })
@@ -160,6 +177,7 @@ export interface PageRenameResponse {
 
 export function useRenamePage() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: {
       slug: string
@@ -168,7 +186,7 @@ export function useRenamePage() {
       redirects?: boolean
     }) =>
       requestHelpers.post<PageRenameResponse>(
-        endpoints.wiki.pageRename(data.slug),
+        e(endpoints.wiki.pageRename(data.slug)),
         {
           slug: data.newSlug,
           children: data.children !== false ? 'true' : 'false',
@@ -184,17 +202,19 @@ export function useRenamePage() {
 // Tags
 
 export function useTags() {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'tags'],
-    queryFn: () => requestHelpers.get<TagsResponse>(endpoints.wiki.tags),
+    queryFn: () => requestHelpers.get<TagsResponse>(e(endpoints.wiki.tags)),
   })
 }
 
 export function useTagPages(tag: string) {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'tag', tag],
     queryFn: () =>
-      requestHelpers.get<TagPagesResponse>(endpoints.wiki.tagPages(tag)),
+      requestHelpers.get<TagPagesResponse>(e(endpoints.wiki.tagPages(tag))),
     enabled: !!tag,
   })
 }
@@ -202,17 +222,19 @@ export function useTagPages(tag: string) {
 // Recent changes
 
 export function useChanges() {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'changes'],
-    queryFn: () => requestHelpers.get<ChangesResponse>(endpoints.wiki.changes),
+    queryFn: () => requestHelpers.get<ChangesResponse>(e(endpoints.wiki.changes)),
   })
 }
 
 export function useAddTag() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: { slug: string; tag: string }) =>
-      requestHelpers.post<TagAddResponse>(endpoints.wiki.tagAdd(data.slug), {
+      requestHelpers.post<TagAddResponse>(e(endpoints.wiki.tagAdd(data.slug)), {
         tag: data.tag,
       }),
     onSuccess: (_, variables) => {
@@ -229,10 +251,11 @@ export function useAddTag() {
 
 export function useRemoveTag() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: { slug: string; tag: string }) =>
       requestHelpers.post<TagRemoveResponse>(
-        endpoints.wiki.tagRemove(data.slug),
+        e(endpoints.wiki.tagRemove(data.slug)),
         { tag: data.tag }
       ),
     onSuccess: (_, variables) => {
@@ -250,10 +273,11 @@ export function useRemoveTag() {
 // Search
 
 export function useSearch(query: string) {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'search', query],
     queryFn: () =>
-      requestHelpers.get<SearchResponse>(endpoints.wiki.search, {
+      requestHelpers.get<SearchResponse>(e(endpoints.wiki.search), {
         params: { q: query },
       }),
     enabled: query.length > 0,
@@ -263,18 +287,20 @@ export function useSearch(query: string) {
 // Settings
 
 export function useWikiSettings() {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'settings'],
     queryFn: () =>
-      requestHelpers.get<SettingsResponse>(endpoints.wiki.settings),
+      requestHelpers.get<SettingsResponse>(e(endpoints.wiki.settings)),
   })
 }
 
 export function useSetWikiSetting() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: { name: string; value: string }) =>
-      requestHelpers.post<SettingsSetResponse>(endpoints.wiki.settingsSet, data),
+      requestHelpers.post<SettingsSetResponse>(e(endpoints.wiki.settingsSet), data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'settings'] })
       // Also invalidate info since home page setting affects sidebar URLs
@@ -292,9 +318,10 @@ interface SyncWikiResponse {
 
 export function useSyncWiki() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: () =>
-      requestHelpers.post<SyncWikiResponse>(endpoints.wiki.sync, {}),
+      requestHelpers.post<SyncWikiResponse>(e(endpoints.wiki.sync), {}),
     onSuccess: () => {
       // Invalidate all wiki data since sync updates everything
       queryClient.invalidateQueries({ queryKey: ['wiki'] })
@@ -309,9 +336,10 @@ interface DeleteWikiResponse {
 
 export function useDeleteWiki() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: () =>
-      requestHelpers.post<DeleteWikiResponse>(endpoints.wiki.delete, {}),
+      requestHelpers.post<DeleteWikiResponse>(e(endpoints.wiki.delete), {}),
     onSuccess: async () => {
       // Fetch fresh data from class-level endpoint and update cache
       const freshData = await wikisRequest.get<WikiInfoResponse>(endpoints.wiki.info)
@@ -323,18 +351,20 @@ export function useDeleteWiki() {
 // Redirects
 
 export function useRedirects() {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'redirects'],
     queryFn: () =>
-      requestHelpers.get<RedirectsResponse>(endpoints.wiki.redirects),
+      requestHelpers.get<RedirectsResponse>(e(endpoints.wiki.redirects)),
   })
 }
 
 export function useSetRedirect() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: { source: string; target: string }) =>
-      requestHelpers.post<RedirectSetResponse>(endpoints.wiki.redirectSet, data),
+      requestHelpers.post<RedirectSetResponse>(e(endpoints.wiki.redirectSet), data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'redirects'] })
     },
@@ -343,9 +373,10 @@ export function useSetRedirect() {
 
 export function useDeleteRedirect() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (source: string) =>
-      requestHelpers.post<RedirectDeleteResponse>(endpoints.wiki.redirectDelete, { source }),
+      requestHelpers.post<RedirectDeleteResponse>(e(endpoints.wiki.redirectDelete), { source }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'redirects'] })
     },
@@ -355,16 +386,18 @@ export function useDeleteRedirect() {
 // Comments
 
 export function usePageComments(slug: string) {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'comments', slug],
     queryFn: () =>
-      requestHelpers.get<CommentsResponse>(endpoints.wiki.pageComments(slug)),
+      requestHelpers.get<CommentsResponse>(e(endpoints.wiki.pageComments(slug))),
     enabled: !!slug,
   })
 }
 
 export function useCreateComment() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: { slug: string; body: string; parent?: string; files?: FileList | File[] }) => {
       const formData = new FormData()
@@ -376,7 +409,7 @@ export function useCreateComment() {
         })
       }
       return requestHelpers.post<CommentCreateResponse>(
-        endpoints.wiki.commentCreate(data.slug),
+        e(endpoints.wiki.commentCreate(data.slug)),
         formData
       )
     },
@@ -392,10 +425,11 @@ export function useCreateComment() {
 
 export function useEditComment() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: { slug: string; id: string; body: string }) =>
       requestHelpers.post<CommentEditResponse>(
-        endpoints.wiki.commentEdit(data.slug),
+        e(endpoints.wiki.commentEdit(data.slug)),
         { id: data.id, body: data.body }
       ),
     onSuccess: (_, variables) => {
@@ -406,10 +440,11 @@ export function useEditComment() {
 
 export function useDeleteComment() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: { slug: string; id: string }) =>
       requestHelpers.post<CommentDeleteResponse>(
-        endpoints.wiki.commentDelete(data.slug),
+        e(endpoints.wiki.commentDelete(data.slug)),
         { id: data.id }
       ),
     onSuccess: (_, variables) => {
@@ -424,15 +459,17 @@ export function useDeleteComment() {
 // Attachments
 
 export function useAttachments() {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'attachments'],
     queryFn: () =>
-      requestHelpers.get<AttachmentsResponse>(endpoints.wiki.attachments),
+      requestHelpers.get<AttachmentsResponse>(e(endpoints.wiki.attachments)),
   })
 }
 
 export function useUploadAttachment() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (files: FileList | File[]) => {
       const formData = new FormData()
@@ -440,7 +477,7 @@ export function useUploadAttachment() {
         formData.append('files', file)
       })
       return requestHelpers.post<AttachmentUploadResponse>(
-        endpoints.wiki.attachmentUpload,
+        e(endpoints.wiki.attachmentUpload),
         formData
       )
     },
@@ -452,10 +489,11 @@ export function useUploadAttachment() {
 
 export function useDeleteAttachment() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (id: string) =>
       requestHelpers.post<AttachmentDeleteResponse>(
-        endpoints.wiki.attachmentDelete,
+        e(endpoints.wiki.attachmentDelete),
         { id }
       ),
     onMutate: async (id: string) => {
@@ -495,18 +533,20 @@ export function useDeleteAttachment() {
 // Access Control
 
 export function useAccessRules() {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'access'],
     queryFn: () =>
-      requestHelpers.get<AccessListResponse>(endpoints.wiki.access),
+      requestHelpers.get<AccessListResponse>(e(endpoints.wiki.access)),
   })
 }
 
 export function useSetAccess() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (data: { subject: string; level: string }) =>
-      requestHelpers.post<{ success: boolean }>(endpoints.wiki.accessSet, data),
+      requestHelpers.post<{ success: boolean }>(e(endpoints.wiki.accessSet), data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'access'] })
     },
@@ -515,9 +555,10 @@ export function useSetAccess() {
 
 export function useRevokeAccess() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (subject: string) =>
-      requestHelpers.post<{ success: boolean }>(endpoints.wiki.accessRevoke, { subject }),
+      requestHelpers.post<{ success: boolean }>(e(endpoints.wiki.accessRevoke), { subject }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'access'] })
     },
@@ -583,18 +624,20 @@ interface ReplicasResponse {
 }
 
 export function useReplicas() {
+  const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'replicas'],
     queryFn: () =>
-      requestHelpers.get<ReplicasResponse>(endpoints.wiki.replicas),
+      requestHelpers.get<ReplicasResponse>(e(endpoints.wiki.replicas)),
   })
 }
 
 export function useRemoveReplica() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: (replicaId: string) =>
-      requestHelpers.post<{ ok: boolean }>(endpoints.wiki.replicaRemove, {
+      requestHelpers.post<{ ok: boolean }>(e(endpoints.wiki.replicaRemove), {
         replica: replicaId,
       }),
     onSuccess: () => {
@@ -654,9 +697,10 @@ interface UnsubscribeWikiResponse {
 
 export function useUnsubscribeWiki() {
   const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
   return useMutation({
     mutationFn: () =>
-      requestHelpers.post<UnsubscribeWikiResponse>(endpoints.wiki.unsubscribe, {}),
+      requestHelpers.post<UnsubscribeWikiResponse>(e(endpoints.wiki.unsubscribe), {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },
