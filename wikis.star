@@ -1734,6 +1734,10 @@ def action_unsubscribe(a):
         a.error(400, "Wiki ID is required")
         return
 
+    if not check_access(a, wiki_id, "manage"):
+        a.error(403, "Access denied")
+        return
+
     # Check wiki exists locally (we have a replica of it)
     wiki = mochi.db.row("select * from wikis where id=?", wiki_id)
     if not wiki:
@@ -2870,6 +2874,10 @@ def action_sync(a):
     wiki = get_wiki(a)
     if not wiki:
         a.error(404, "Wiki not found")
+        return
+
+    if not check_access(a, wiki["id"], "manage"):
+        a.error(403, "Access denied")
         return
 
     # Use target if specified, otherwise use the wiki's source
