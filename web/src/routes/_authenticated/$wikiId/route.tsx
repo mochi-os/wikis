@@ -37,10 +37,13 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
     // Use window.location.pathname since TanStack Router's location is relative to app mount
     const pathname = window.location.pathname
     const firstSegment = pathname.match(/^\/([^/]+)/)?.[1] || ''
-    // Check for entity ID (9-char fingerprint or 50-51 char full ID) or domain entity routing
+    // Check for entity ID (9-char fingerprint or 50-51 char full ID) or domain entity routing.
+    // When firstSegment === wikiId and it's not an entity ID, we're on a domain-routed page
+    // where the segment is a page slug mismatched as $wikiId (shell iframe has no meta tags).
+    const ENTITY_ID_RE = /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
     const isEntityContext = isDomainEntityRouting() ||
-      /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(firstSegment) ||
-      /^[1-9A-HJ-NP-Za-km-z]{50,51}$/.test(firstSegment)
+      ENTITY_ID_RE.test(firstSegment) ||
+      (firstSegment === wikiId && !ENTITY_ID_RE.test(wikiId))
 
     // In entity/domain context, use /-/ prefix; in app context, include app path
     const baseURL = isEntityContext
