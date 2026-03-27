@@ -452,13 +452,7 @@ def action_delete(a):
     return {"data": {"ok": True, "deleted": wiki_id}}
 
 # Info endpoint for class context - returns list of wikis
-# Also handles domain-routed entity context (wiki input injected by domain routing)
 def action_info_class(a):
-    # If wiki input is present (e.g. from domain routing), return entity info
-    wiki_id = a.input("wiki")
-    if wiki_id:
-        return action_info_entity(a)
-
     # Add fingerprint (without hyphens) to each for shorter URLs
     wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis order by name")
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"], False)) for w in wikis_raw]
