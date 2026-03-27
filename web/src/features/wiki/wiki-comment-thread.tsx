@@ -131,7 +131,7 @@ export function WikiCommentThread({
           <>
             {comment.body_markdown ? (
               <div
-                className="prose prose-sm dark:prose-invert max-w-none text-sm"
+                className="text-foreground max-w-none text-sm leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-0.5"
                 dangerouslySetInnerHTML={{ __html: comment.body_markdown }}
               />
             ) : (
