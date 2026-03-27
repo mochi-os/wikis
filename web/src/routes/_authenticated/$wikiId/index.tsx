@@ -1,5 +1,4 @@
 import { createFileRoute, Navigate } from '@tanstack/react-router'
-import { isDomainEntityRouting } from '@mochi/web'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { WikiPageContent } from '@/features/wiki/wiki-page-content'
 
@@ -13,9 +12,9 @@ function WikiHomePage() {
   const { wiki } = useWikiBaseURL()
   const { wikiId } = Route.useParams()
 
-  if (isDomainEntityRouting() && !ENTITY_ID_PATTERN.test(wikiId)) {
-    // In domain routing, TanStack Router matched $wikiId when the URL segment is actually
-    // a page slug (e.g., /install). Render the page directly at this URL.
+  if (!ENTITY_ID_PATTERN.test(wikiId)) {
+    // wikiId doesn't match a fingerprint/entity ID — it's actually a page slug
+    // (domain-routed page where the URL segment was mismatched as $wikiId)
     return <WikiPageContent wikiId={wiki.fingerprint ?? wiki.id} slug={wikiId} />
   }
 

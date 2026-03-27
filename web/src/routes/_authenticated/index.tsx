@@ -170,9 +170,8 @@ function IndexPage() {
     void router.invalidate()
   }, [router])
 
-  // If we're in entity context (URL starts with entity ID), show the wiki's home page directly
-  // Use URL-based detection since API data.entity may be stale
-  if (isEntityContext() && data.wiki) {
+  // If we're in entity context, show the wiki's home page directly
+  if ((isEntityContext() || data.entity) && data.wiki) {
     return (
       <WikiHomePage
         wikiId={data.wiki.fingerprint ?? data.wiki.id}

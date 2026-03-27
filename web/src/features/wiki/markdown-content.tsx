@@ -185,21 +185,22 @@ export function MarkdownContent({
     <>
       <div
         className={cn(
-          'prose prose-neutral dark:prose-invert max-w-none',
-          'prose-p:my-4 prose-p:leading-7',
-          'prose-headings:scroll-mt-20 prose-headings:font-semibold prose-headings:tracking-tight',
-          'prose-h2:mt-10 prose-h2:mb-3 prose-h2:text-2xl',
-          'prose-h3:mt-8 prose-h3:mb-2 prose-h3:text-xl',
-          'prose-h4:mt-6 prose-h4:mb-2 prose-h4:text-lg',
-          'prose-a:text-primary prose-a:decoration-primary/40 prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-primary/85',
-          'prose-ul:my-4 prose-ul:space-y-2 prose-ul:marker:text-muted-foreground',
-          'prose-ol:my-4 prose-ol:space-y-2 prose-ol:marker:text-muted-foreground',
-          'prose-li:my-1',
-          'prose-code:before:content-none prose-code:after:content-none',
-          'prose-code:bg-surface-2 prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.9em]',
-          'prose-pre:bg-transparent prose-pre:p-0 prose-pre:shadow-none',
-          'prose-table:border prose-th:border prose-td:border',
-          'prose-th:px-3 prose-th:py-2 prose-td:px-3 prose-td:py-2',
+          'max-w-none text-foreground',
+          '[&_p]:my-4 [&_p]:leading-7',
+          '[&_h2]:scroll-mt-20 [&_h2]:font-semibold [&_h2]:tracking-tight',
+          '[&_h3]:scroll-mt-20 [&_h3]:font-semibold [&_h3]:tracking-tight',
+          '[&_h4]:scroll-mt-20 [&_h4]:font-semibold [&_h4]:tracking-tight',
+          '[&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-2xl',
+          '[&_h3]:mt-8 [&_h3]:mb-2 [&_h3]:text-xl',
+          '[&_h4]:mt-6 [&_h4]:mb-2 [&_h4]:text-lg',
+          '[&_a]:text-primary [&_a]:decoration-primary/40 [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-primary/85',
+          '[&_ul]:my-4 [&_ul]:space-y-2 [&_ul]:list-disc [&_ul]:pl-6',
+          '[&_ol]:my-4 [&_ol]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6',
+          '[&_li]:my-1',
+          '[&_code]:bg-surface-2 [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.9em]',
+          '[&_pre]:bg-transparent [&_pre]:p-0 [&_pre]:shadow-none',
+          '[&_table]:border [&_th]:border [&_td]:border',
+          '[&_th]:px-3 [&_th]:py-2 [&_td]:px-3 [&_td]:py-2',
           className
         )}
       >
