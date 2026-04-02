@@ -23,7 +23,7 @@ import {
   SelectValue,
   TimezoneSelect,
   getErrorMessage,
-  themeLabels,
+  appearanceLabels,
   toast,
   usePageTitle,
   useTheme,
@@ -41,12 +41,12 @@ export function UserPreferences() {
   const resetPreferences = useResetPreferences()
   const { setTheme } = useTheme()
 
-  const handleChange = (key: 'theme' | 'timezone', value: string) => {
+  const handleChange = (key: 'appearance' | 'timezone', value: string) => {
     setPreference.mutate(
       { [key]: value },
       {
         onSuccess: () => {
-          if (key === 'theme') {
+          if (key === 'appearance') {
             setTheme(value === 'auto' ? 'system' : (value as 'light' | 'dark'))
           }
           toast.success('Preference updated')
@@ -118,18 +118,18 @@ export function UserPreferences() {
               <ListSkeleton variant='simple' height='h-12' count={2} />
             ) : data ? (
               <>
-                <FieldRow label='Theme' description='Appearance'>
+                <FieldRow label='Appearance' description='Light or dark mode'>
                   <div className="w-full sm:w-64">
                     <Select
-                      value={data.preferences.theme}
-                      onValueChange={(value) => handleChange('theme', value)}
+                      value={data.preferences.appearance}
+                      onValueChange={(value) => handleChange('appearance', value)}
                       disabled={setPreference.isPending}
                     >
                       <SelectTrigger className='w-full'>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(themeLabels).map(([value, label]) => (
+                        {Object.entries(appearanceLabels).map(([value, label]) => (
                           <SelectItem key={value} value={value}>
                             {label}
                           </SelectItem>
