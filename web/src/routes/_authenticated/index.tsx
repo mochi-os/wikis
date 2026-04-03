@@ -629,7 +629,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
         }
       />
       <Main>
-        <div className='mx-auto w-full max-w-6xl px-4 py-4 md:px-6 md:py-6'>
+        <div className='mx-auto w-full max-w-6xl py-4 md:px-6 md:py-6'>
           {infoError ? (
             <GeneralError
               error={infoError}
