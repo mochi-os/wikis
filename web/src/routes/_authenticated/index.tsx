@@ -318,8 +318,7 @@ function WikiHomePage({
   // Page found
   if (data && 'page' in data && typeof data.page === 'object') {
     const actionsMenu = (
-      <div className='flex items-center gap-2'>
-        <DropdownMenu>
+      <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant='ghost'
@@ -422,14 +421,13 @@ function WikiHomePage({
             )}
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
     )
 
     return (
       <>
         <PageHeader
           page={data.page}
-          actions={actionsMenu}
+          menuAction={actionsMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
@@ -588,7 +586,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       <CommonPageHeader
         title='Wikis'
         icon={<BookOpen className='size-4 md:size-5' />}
-        actions={
+        menuAction={
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
