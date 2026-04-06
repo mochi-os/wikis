@@ -207,7 +207,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
       <>
         <WikiRouteHeader
           title="Page not found"
-          actions={notFoundMenu}
+          menuAction={notFoundMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main>
@@ -221,8 +221,8 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   if (isValidResponse && 'page' in data && typeof data.page === 'object') {
     const commentCount = isValidResponse && 'comment_count' in data ? (data.comment_count ?? 0) : 0
 
-    const actionsMenu = (
-      <div className="flex items-center gap-2">
+    const actionsBar = (
+      <>
         {commentCount > 0 && (
           <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" asChild>
             <Link to="/$wikiId/$page/comments" params={{ wikiId, page: slug }}>
@@ -240,6 +240,10 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
             {isUnsubscribing ? 'Unsubscribing...' : 'Unsubscribe'}
           </Button>
         )}
+      </>
+    )
+
+    const pageMenu = (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -336,14 +340,14 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      </div>
     )
 
     return (
       <>
         <PageHeader
           page={data.page}
-          actions={actionsMenu}
+          actions={actionsBar}
+          menuAction={pageMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main className="pt-2">

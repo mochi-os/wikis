@@ -146,7 +146,7 @@ function WikiPageRoute() {
       <>
         <WikiRouteHeader
           title="Page not found"
-          actions={notFoundMenu}
+          menuAction={notFoundMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main>
@@ -160,8 +160,8 @@ function WikiPageRoute() {
   if (data && 'page' in data && typeof data.page === 'object') {
     const commentCount = data && 'comment_count' in data ? (data.comment_count ?? 0) : 0
 
-    const actionsMenu = (
-      <div className="flex items-center gap-2">
+    const actionsBar = (
+      <>
         {commentCount > 0 && (
           <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" asChild>
             <Link to="/$page/comments" params={{ page: slug }}>
@@ -179,91 +179,95 @@ function WikiPageRoute() {
             {unsubscribeWiki.isPending ? 'Unsubscribing...' : 'Unsubscribe'}
           </Button>
         )}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Page actions"
-              title="Page actions"
-            >
-              <Ellipsis className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Page</DropdownMenuLabel>
-            {permissions.edit && (
-              <DropdownMenuItem asChild>
-                <Link preload={false} to="/$page/edit" params={{ page: slug }}>
-                  <Pencil className="size-4" />
-                  Edit
-                </Link>
-              </DropdownMenuItem>
-            )}
-            {permissions.edit && (
-              <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
-                <FileEdit className="size-4" />
-                Rename
-              </DropdownMenuItem>
-            )}
+      </>
+    )
+
+    const pageMenu = (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Page actions"
+            title="Page actions"
+          >
+            <Ellipsis className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Page</DropdownMenuLabel>
+          {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link preload={false} to="/$page/history" params={{ page: slug }}>
-                <History className="size-4" />
-                History
+              <Link preload={false} to="/$page/edit" params={{ page: slug }}>
+                <Pencil className="size-4" />
+                Edit
               </Link>
             </DropdownMenuItem>
+          )}
+          {permissions.edit && (
+            <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
+              <FileEdit className="size-4" />
+              Rename
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem asChild>
+            <Link preload={false} to="/$page/history" params={{ page: slug }}>
+              <History className="size-4" />
+              History
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link preload={false} to="/$page/comments" params={{ page: slug }}>
+              <MessageSquare className="size-4" />
+              Comments
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Wiki</DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link preload={false} to="/search">
+              <Search className="size-4" />
+              Search
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link preload={false} to="/tags">
+              <Tags className="size-4" />
+              Tags
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link preload={false} to="/changes">
+              <History className="size-4" />
+              Recent changes
+            </Link>
+          </DropdownMenuItem>
+          {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link preload={false} to="/$page/comments" params={{ page: slug }}>
-                <MessageSquare className="size-4" />
-                Comments
+              <Link preload={false} to="/new">
+                <FilePlus className="size-4" />
+                New page
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>Wiki</DropdownMenuLabel>
+          )}
+          {permissions.manage && (
             <DropdownMenuItem asChild>
-              <Link preload={false} to="/search">
-                <Search className="size-4" />
-                Search
+              <Link preload={false} to="/settings">
+                <Settings className="size-4" />
+                Settings
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/tags">
-                <Tags className="size-4" />
-                Tags
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/changes">
-                <History className="size-4" />
-                Recent changes
-              </Link>
-            </DropdownMenuItem>
-            {permissions.edit && (
-              <DropdownMenuItem asChild>
-                <Link preload={false} to="/new">
-                  <FilePlus className="size-4" />
-                  New page
-                </Link>
-              </DropdownMenuItem>
-            )}
-            {permissions.manage && (
-              <DropdownMenuItem asChild>
-                <Link preload={false} to="/settings">
-                  <Settings className="size-4" />
-                  Settings
-                </Link>
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
 
     return (
       <>
         <PageHeader
           page={data.page}
-          actions={actionsMenu}
+          actions={actionsBar}
+          menuAction={pageMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main className="pt-2">
