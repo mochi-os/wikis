@@ -13,11 +13,11 @@ import {
   ListSkeleton,
   Separator,
   Skeleton,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
   isImage,
   getFileIcon,
   getErrorMessage,
@@ -337,14 +337,14 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
       )}
 
       {/* Insert attachment dialog */}
-      <Dialog open={insertDialogOpen} onOpenChange={setInsertDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Insert attachment</DialogTitle>
-            <DialogDescription>
+      <ResponsiveDialog open={insertDialogOpen} onOpenChange={setInsertDialogOpen}>
+        <ResponsiveDialogContent className="max-w-2xl">
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>Insert attachment</ResponsiveDialogTitle>
+            <ResponsiveDialogDescription>
               Select an attachment to insert into your page, or upload a new file.
-            </DialogDescription>
-          </DialogHeader>
+            </ResponsiveDialogDescription>
+          </ResponsiveDialogHeader>
 
           {/* Upload button */}
           <div className="flex items-center gap-2">
@@ -422,8 +422,8 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
               })}
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
     </div>
   )
 }

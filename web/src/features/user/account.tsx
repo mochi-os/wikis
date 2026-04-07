@@ -30,22 +30,14 @@ import {
   useTotpVerify,
 } from '@/hooks/use-account'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  ConfirmDialog,
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
   Input,
   Label,
   Skeleton,
@@ -254,6 +246,7 @@ function PasskeyRow({
   onDelete: (id: string) => void
 }) {
   const [isRenaming, setIsRenaming] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [newName, setNewName] = useState(passkey.name)
 
   const handleRename = () => {
@@ -297,28 +290,21 @@ function PasskeyRow({
           <Button variant='ghost' size='sm' onClick={() => setIsRenaming(true)}>
             <Pencil className='h-4 w-4' />
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant='ghost' size='sm'>
-                <Trash2 className='h-4 w-4' />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete passkey?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will remove "{passkey.name}" from your account. You won't
-                  be able to use it to sign in anymore.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction variant='destructive' onClick={() => onDelete(passkey.id)}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button variant='ghost' size='sm' onClick={() => setShowDeleteDialog(true)}>
+            <Trash2 className='h-4 w-4' />
+          </Button>
+          <ConfirmDialog
+            open={showDeleteDialog}
+            onOpenChange={setShowDeleteDialog}
+            title='Delete passkey?'
+            desc={`This will remove "${passkey.name}" from your account. You won't be able to use it to sign in anymore.`}
+            confirmText='Delete'
+            destructive
+            handleConfirm={() => {
+              onDelete(passkey.id)
+              setShowDeleteDialog(false)
+            }}
+          />
         </div>
       </TableCell>
     </TableRow>
@@ -387,7 +373,7 @@ function PasskeysSection() {
           <CardTitle className='text-lg'>Passkeys</CardTitle>
           <CardDescription>Sign in with biometrics or security keys</CardDescription>
         </div>
-        <Dialog open={registerDialogOpen} onOpenChange={setRegisterDialogOpen}>
+        <ResponsiveDialog open={registerDialogOpen} onOpenChange={setRegisterDialogOpen}>
           <Button
             variant='outline'
             size='sm'
@@ -396,13 +382,13 @@ function PasskeysSection() {
             Add passkey
             <Plus className='ml-2 h-4 w-4' />
           </Button>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Register passkey</DialogTitle>
-              <DialogDescription>
+          <ResponsiveDialogContent>
+            <ResponsiveDialogHeader>
+              <ResponsiveDialogTitle>Register passkey</ResponsiveDialogTitle>
+              <ResponsiveDialogDescription>
                 Use a security key, fingerprint, or face recognition.
-              </DialogDescription>
-            </DialogHeader>
+              </ResponsiveDialogDescription>
+            </ResponsiveDialogHeader>
             <div className='py-4'>
               <Label htmlFor='passkey-name'>Passkey name</Label>
               <Input
@@ -413,16 +399,16 @@ function PasskeysSection() {
                 className='mt-2'
               />
             </div>
-            <DialogFooter>
+            <ResponsiveDialogFooter>
               <Button onClick={handleRegister} disabled={isRegistering}>
                 Register
                 {isRegistering && (
                   <Loader2 className='ml-2 h-4 w-4 animate-spin' />
                 )}
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </ResponsiveDialogFooter>
+          </ResponsiveDialogContent>
+        </ResponsiveDialog>
       </CardHeader>
       <CardContent className='pt-2'>
         {error ? (
@@ -475,6 +461,7 @@ function AuthenticatorSection() {
   const verifyTotp = useTotpVerify()
   const disableTotp = useTotpDisable()
   const [setupData, setSetupData] = useState<TotpSetupResponse | null>(null)
+  const [showDisableDialog, setShowDisableDialog] = useState(false)
   const [verifyCode, setVerifyCode] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
 
@@ -570,21 +557,21 @@ function AuthenticatorSection() {
               <p className='text-muted-foreground text-xs'>Authenticator app is active</p>
             </div>
           </div>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant='destructive' size='sm'>Disable</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Disable authenticator?</AlertDialogTitle>
-                <AlertDialogDescription>This will remove the app from your account.</AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDisable}>Disable</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button variant='destructive' size='sm' onClick={() => setShowDisableDialog(true)}>
+            Disable
+          </Button>
+          <ConfirmDialog
+            open={showDisableDialog}
+            onOpenChange={setShowDisableDialog}
+            title='Disable authenticator?'
+            desc='This will remove the app from your account.'
+            confirmText='Disable'
+            destructive
+            handleConfirm={() => {
+              handleDisable()
+              setShowDisableDialog(false)
+            }}
+          />
         </div>
       ) : (
         <div className='py-6 text-center'>
@@ -603,6 +590,7 @@ function AuthenticatorSection() {
 function RecoveryCodesSection() {
   const { data, isLoading, error, refetch } = useRecoveryStatus()
   const generateCodes = useRecoveryGenerate()
+  const [showGenerateDialog, setShowGenerateDialog] = useState(false)
   const [showCodes, setShowCodes] = useState<string[] | null>(null)
 
   const handleGenerate = async () => {
@@ -658,19 +646,20 @@ function RecoveryCodesSection() {
               <p className='text-muted-foreground text-xs'>Recovery codes</p>
             </div>
           </div>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant='outline' size='sm'>{count > 0 ? 'Regenerate' : 'Generate'}</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogTitle>{count > 0 ? 'Regenerate?' : 'Generate?'}</AlertDialogTitle>
-              <AlertDialogDescription>Make sure to save the new codes.</AlertDialogDescription>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleGenerate}>Proceed</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button variant='outline' size='sm' onClick={() => setShowGenerateDialog(true)}>
+            {count > 0 ? 'Regenerate' : 'Generate'}
+          </Button>
+          <ConfirmDialog
+            open={showGenerateDialog}
+            onOpenChange={setShowGenerateDialog}
+            title={count > 0 ? 'Regenerate?' : 'Generate?'}
+            desc='Make sure to save the new codes.'
+            confirmText='Proceed'
+            handleConfirm={() => {
+              void handleGenerate()
+              setShowGenerateDialog(false)
+            }}
+          />
         </div>
       )}
     </Section>

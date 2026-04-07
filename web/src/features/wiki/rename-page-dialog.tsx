@@ -3,12 +3,12 @@ import { useNavigate } from '@tanstack/react-router'
 import { FileEdit } from 'lucide-react'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
   Input,
   Label,
   Checkbox,
@@ -85,11 +85,11 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
   }
 
   const dialogContent = (
-    <DialogContent>
+    <ResponsiveDialogContent>
       <form onSubmit={handleSubmit}>
-        <DialogHeader>
-          <DialogTitle>Rename page</DialogTitle>
-        </DialogHeader>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>Rename page</ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="newSlug">New URL</Label>
@@ -111,7 +111,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
             </Label>
           </div>
         </div>
-        <DialogFooter>
+        <ResponsiveDialogFooter>
           <Button
             type="button"
             variant="outline"
@@ -122,32 +122,32 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
           <Button type="submit" disabled={renamePage.isPending}>
             {renamePage.isPending ? 'Renaming...' : 'Rename'}
           </Button>
-        </DialogFooter>
+        </ResponsiveDialogFooter>
       </form>
-    </DialogContent>
+    </ResponsiveDialogContent>
   )
 
   // Controlled mode - no trigger, dialog controlled externally
   if (controlledOpen !== undefined) {
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
+      <ResponsiveDialog open={open} onOpenChange={setOpen}>
         {dialogContent}
-      </Dialog>
+      </ResponsiveDialog>
     )
   }
 
   // Uncontrolled mode - with trigger
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <ResponsiveDialog open={open} onOpenChange={setOpen}>
+      <ResponsiveDialogTrigger asChild>
         {trigger || (
           <Button variant="outline">
             <FileEdit className="mr-2 h-4 w-4" />
             Rename
           </Button>
         )}
-      </DialogTrigger>
+      </ResponsiveDialogTrigger>
       {dialogContent}
-    </Dialog>
+    </ResponsiveDialog>
   )
 }

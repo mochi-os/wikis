@@ -33,22 +33,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+  ConfirmDialog,
   Table,
   TableBody,
   TableCell,
@@ -189,6 +181,7 @@ function SettingsTab() {
   const [isSaving, setIsSaving] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const loadWikiSpecificSettings = useCallback(async () => {
     if (!settingsContext.baseURL) return
@@ -540,29 +533,23 @@ function SettingsTab() {
                   Permanently delete this wiki and all its contents. This cannot be undone.
                 </p>
               </div>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="outline" disabled={deletePending}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {deletePending ? 'Deleting...' : 'Delete wiki'}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the wiki
-                      and all its contents.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => void handleDelete()}>
-                      Delete wiki
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <Button variant="outline" disabled={deletePending} onClick={() => setShowDeleteDialog(true)}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                {deletePending ? 'Deleting...' : 'Delete wiki'}
+              </Button>
+              <ConfirmDialog
+                open={showDeleteDialog}
+                onOpenChange={setShowDeleteDialog}
+                title='Delete wiki?'
+                desc='This action cannot be undone. This will permanently delete the wiki and all its contents.'
+                confirmText='Delete wiki'
+                destructive
+                handleConfirm={() => {
+                  void handleDelete()
+                  setShowDeleteDialog(false)
+                }}
+                isLoading={deletePending}
+              />
             </div>
           </CardContent>
         </Card>
@@ -697,6 +684,7 @@ function ReplicasTab() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [isRemoving, setIsRemoving] = useState(false)
+  const [pendingReplica, setPendingReplica] = useState<import('@/hooks/use-wiki').Replica | null>(null)
 
   // Helper to build API URL with optional baseURL
   const apiUrl = useCallback(
@@ -813,38 +801,17 @@ function ReplicasTab() {
                     {formatTimestamp(replica.synced, 'Never')}
                   </TableCell>
                   <TableCell>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          disabled={isRemoving}
-                          aria-label={`Remove replica ${replica.name || replica.id}`}
-                          title={`Remove replica ${replica.name || replica.id}`}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Remove replica?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will stop sending updates to "{replica.name || `${replica.id.slice(0, 16)}...`}".
-                            They can replicate again if they want.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => void handleRemove(replica.id, replica.name)}
-                          >
-                            <Minus className="h-4 w-4" />
-                            Remove
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      disabled={isRemoving}
+                      aria-label={`Remove replica ${replica.name || replica.id}`}
+                      title={`Remove replica ${replica.name || replica.id}`}
+                      onClick={() => setPendingReplica(replica)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -858,6 +825,27 @@ function ReplicasTab() {
             className="py-6"
           />
         )}
+        <ConfirmDialog
+          open={pendingReplica !== null}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setPendingReplica(null)
+          }}
+          title='Remove replica?'
+          desc={`This will stop sending updates to "${pendingReplica?.name || (pendingReplica ? `${pendingReplica.id.slice(0, 16)}...` : '')}". They can replicate again if they want.`}
+          confirmText={
+            <>
+              <Minus className="h-4 w-4" />
+              Remove
+            </>
+          }
+          handleConfirm={() => {
+            if (pendingReplica) {
+              void handleRemove(pendingReplica.id, pendingReplica.name)
+              setPendingReplica(null)
+            }
+          }}
+          isLoading={isRemoving}
+        />
       </CardContent>
     </Card>
   )
@@ -871,6 +859,7 @@ function RedirectsTab() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [pendingRedirect, setPendingRedirect] = useState<import('@/types/wiki').Redirect | null>(null)
 
   // Helper to build API URL with optional baseURL
   const apiUrl = useCallback(
@@ -958,44 +947,40 @@ function RedirectsTab() {
                     {formatTimestamp(redirect.created)}
                   </TableCell>
                   <TableCell>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-destructive hover:text-destructive"
-                          disabled={isDeleting}
-                          aria-label={`Delete redirect ${redirect.source}`}
-                          title={`Delete redirect ${redirect.source}`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete redirect?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will remove the redirect from "{redirect.source}" to "
-                            {redirect.target}".
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => void handleDelete(redirect.source)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:text-destructive"
+                      disabled={isDeleting}
+                      aria-label={`Delete redirect ${redirect.source}`}
+                      title={`Delete redirect ${redirect.source}`}
+                      onClick={() => setPendingRedirect(redirect)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         )}
+        <ConfirmDialog
+          open={pendingRedirect !== null}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setPendingRedirect(null)
+          }}
+          title='Delete redirect?'
+          desc={`This will remove the redirect from "${pendingRedirect?.source ?? ''}" to "${pendingRedirect?.target ?? ''}".`}
+          confirmText='Delete'
+          destructive
+          handleConfirm={() => {
+            if (pendingRedirect) {
+              void handleDelete(pendingRedirect.source)
+              setPendingRedirect(null)
+            }
+          }}
+          isLoading={isDeleting}
+        />
       </CardContent>
     </Card>
   )
@@ -1043,21 +1028,21 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <ResponsiveDialog open={open} onOpenChange={setOpen}>
+      <ResponsiveDialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
           Add redirect
         </Button>
-      </DialogTrigger>
-      <DialogContent>
+      </ResponsiveDialogTrigger>
+      <ResponsiveDialogContent>
         <form onSubmit={(e) => void handleSubmit(e)}>
-          <DialogHeader>
-            <DialogTitle>Create redirect</DialogTitle>
-            <DialogDescription>
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>Create redirect</ResponsiveDialogTitle>
+            <ResponsiveDialogDescription>
               Create a redirect from one URL to another.
-            </DialogDescription>
-          </DialogHeader>
+            </ResponsiveDialogDescription>
+          </ResponsiveDialogHeader>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="source">Source URL</Label>
@@ -1084,17 +1069,17 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
               </p>
             </div>
           </div>
-          <DialogFooter>
+          <ResponsiveDialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={isCreating}>
               {isCreating ? 'Creating...' : <><Plus className="h-4 w-4 mr-2" />Create redirect</>}
             </Button>
-          </DialogFooter>
+          </ResponsiveDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   )
 }
 

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowRight, Plus, Trash2, Link2 } from 'lucide-react'
 import {
   Button,
+  ConfirmDialog,
   DataChip,
   Input,
   Label,
@@ -16,22 +17,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
   toast,
   getErrorMessage,
   formatTimestamp,
@@ -97,6 +89,7 @@ export function RedirectsPage() {
 }
 
 function RedirectRow({ redirect }: { redirect: Redirect }) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const deleteRedirect = useDeleteRedirect()
 
   const handleDelete = () => {
@@ -128,38 +121,29 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
         />
       </TableCell>
       <TableCell>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-destructive hover:text-destructive"
-              aria-label={`Delete redirect ${redirect.source}`}
-              title={`Delete redirect ${redirect.source}`}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete redirect?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will remove the redirect from "{redirect.source}" to "
-                {redirect.target}". Users visiting the source URL will no longer
-                be redirected.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-destructive hover:text-destructive"
+          aria-label={`Delete redirect ${redirect.source}`}
+          title={`Delete redirect ${redirect.source}`}
+          onClick={() => setShowDeleteDialog(true)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+        <ConfirmDialog
+          open={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
+          title='Delete redirect?'
+          desc={`This will remove the redirect from "${redirect.source}" to "${redirect.target}". Users visiting the source URL will no longer be redirected.`}
+          confirmText='Delete'
+          destructive
+          handleConfirm={() => {
+            handleDelete()
+            setShowDeleteDialog(false)
+          }}
+          isLoading={deleteRedirect.isPending}
+        />
       </TableCell>
     </TableRow>
   )
@@ -196,22 +180,22 @@ function AddRedirectDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <ResponsiveDialog open={open} onOpenChange={setOpen}>
+      <ResponsiveDialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
           Add Redirect
         </Button>
-      </DialogTrigger>
-      <DialogContent>
+      </ResponsiveDialogTrigger>
+      <ResponsiveDialogContent>
         <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>Create redirect</DialogTitle>
-            <DialogDescription>
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>Create redirect</ResponsiveDialogTitle>
+            <ResponsiveDialogDescription>
               Create a redirect from one URL to another. The source URL must not
               be an existing page.
-            </DialogDescription>
-          </DialogHeader>
+            </ResponsiveDialogDescription>
+          </ResponsiveDialogHeader>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="source">Source URL</Label>
@@ -238,7 +222,7 @@ function AddRedirectDialog() {
               </p>
             </div>
           </div>
-          <DialogFooter>
+          <ResponsiveDialogFooter>
             <Button
               type="button"
               variant="outline"
@@ -249,10 +233,10 @@ function AddRedirectDialog() {
             <Button type="submit" disabled={setRedirect.isPending}>
               {setRedirect.isPending ? 'Creating...' : <><Plus className="h-4 w-4 mr-2" />Create redirect</>}
             </Button>
-          </DialogFooter>
+          </ResponsiveDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   )
 }
 
