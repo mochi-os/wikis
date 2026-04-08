@@ -479,6 +479,7 @@ interface RecommendedWiki {
   name: string
   blurb: string
   fingerprint: string
+  server: string
 }
 
 interface RecommendationsResponse {
@@ -563,7 +564,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
     if (pendingWikiId === wiki.id) return
     setPendingWikiId(wiki.id)
     try {
-      await wikisRequest.post(endpoints.wiki.join, { target: wiki.id })
+      await wikisRequest.post(endpoints.wiki.join, { target: wiki.id, server: wiki.server || undefined })
       // Reload page to refresh wikis list
       window.location.reload()
     } catch (error) {
