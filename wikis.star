@@ -564,6 +564,12 @@ def action_recommendations(a):
     if type(items) not in ["list", "tuple"]:
         return {"data": {"wikis": []}}
 
+    # Get the server location from the recommendations entity so subscribers can reach the wikis
+    rec_dir = mochi.directory.get("1JYmMpQU7fxvTrwHpNpiwKCgUg3odWqX7s9t1cLswSMAro5M2P")
+    rec_server = ""
+    if rec_dir:
+        rec_server = rec_dir.get("location", "")
+
     for item in items:
         entity_id = item.get("entity", "")
         if entity_id and entity_id not in existing_ids:
@@ -572,6 +578,7 @@ def action_recommendations(a):
                 "name": item.get("name", ""),
                 "blurb": item.get("blurb", ""),
                 "fingerprint": item.get("fingerprint", ""),
+                "server": rec_server,
             })
     s.close()
     return {"data": {"wikis": recommendations}}
