@@ -12,6 +12,7 @@ interface RecommendedWiki {
   name: string
   blurb: string
   fingerprint: string
+  server: string
 }
 
 interface RecommendationsResponse {
