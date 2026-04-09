@@ -318,118 +318,117 @@ function WikiHomePage({
   // Page found
   if (data && 'page' in data && typeof data.page === 'object') {
     const actionsMenu = (
-      <div className='flex items-center gap-2'>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant='ghost'
-              size='icon'
-              aria-label='Page actions'
-              title='Page actions'
-            >
-              <Ellipsis className='size-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Page</DropdownMenuLabel>
-            {permissions.edit && (
-              <DropdownMenuItem asChild>
-                <Link preload={false} to='/$page/edit' params={{ page: homeSlug }}>
-                  <Pencil className='size-4' />
-                  Edit
-                </Link>
-              </DropdownMenuItem>
-            )}
-            {permissions.edit && (
-              <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
-                <FileEdit className='size-4' />
-                Rename
-              </DropdownMenuItem>
-            )}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant='ghost'
+            size='icon'
+            aria-label='Page actions'
+            title='Page actions'
+            className='size-11 md:size-9'
+          >
+            <Ellipsis className='size-4' />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end'>
+          <DropdownMenuLabel>Page</DropdownMenuLabel>
+          {permissions.edit && (
             <DropdownMenuItem asChild>
-              <Link preload={false} to='/$page/history' params={{ page: homeSlug }}>
-                <History className='size-4' />
-                History
+              <Link preload={false} to='/$page/edit' params={{ page: homeSlug }}>
+                <Pencil className='size-4' />
+                Edit
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>Wiki</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link preload={false} to='/search'>
-                <Search className='size-4' />
-                Search
-              </Link>
+          )}
+          {permissions.edit && (
+            <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
+              <FileEdit className='size-4' />
+              Rename
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link preload={false} to='/tags'>
-                <Tags className='size-4' />
-                Tags
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link preload={false} to='/changes'>
-                <History className='size-4' />
-                Recent changes
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <Rss className='mr-2 size-4' />
-                RSS feed
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem
-                  onSelect={() => void handleCopyRssUrl('changes')}
-                >
-                  Changes
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => void handleCopyRssUrl('comments')}
-                >
-                  Comments
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>
-                  Changes and comments
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-            {permissions.edit && (
-              <DropdownMenuItem asChild>
-                <Link preload={false} to='/new'>
-                  <FilePlus className='size-4' />
-                  New page
-                </Link>
+          )}
+          <DropdownMenuItem asChild>
+            <Link preload={false} to='/$page/history' params={{ page: homeSlug }}>
+              <History className='size-4' />
+              History
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Wiki</DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link preload={false} to='/search'>
+              <Search className='size-4' />
+              Search
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link preload={false} to='/tags'>
+              <Tags className='size-4' />
+              Tags
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link preload={false} to='/changes'>
+              <History className='size-4' />
+              Recent changes
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Rss className='mr-2 size-4' />
+              RSS feed
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem
+                onSelect={() => void handleCopyRssUrl('changes')}
+              >
+                Changes
               </DropdownMenuItem>
-            )}
-            {permissions.manage && (
-              <DropdownMenuItem asChild>
-                <Link preload={false} to='/settings'>
-                  <Settings className='size-4' />
-                  Settings
-                </Link>
+              <DropdownMenuItem
+                onSelect={() => void handleCopyRssUrl('comments')}
+              >
+                Comments
               </DropdownMenuItem>
-            )}
-            {canUnsubscribe && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onSelect={() => setUnsubscribeConfirmOpen(true)}
-                  disabled={unsubscribeWiki.isPending}
-                >
-                  {unsubscribeWiki.isPending ? 'Unsubscribing...' : 'Unsubscribe'}
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>
+                Changes and comments
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+          {permissions.edit && (
+            <DropdownMenuItem asChild>
+              <Link preload={false} to='/new'>
+                <FilePlus className='size-4' />
+                New page
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {permissions.manage && (
+            <DropdownMenuItem asChild>
+              <Link preload={false} to='/settings'>
+                <Settings className='size-4' />
+                Settings
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {canUnsubscribe && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => setUnsubscribeConfirmOpen(true)}
+                disabled={unsubscribeWiki.isPending}
+              >
+                {unsubscribeWiki.isPending ? 'Unsubscribing...' : 'Unsubscribe'}
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
 
     return (
       <>
         <PageHeader
           page={data.page}
-          actions={actionsMenu}
+          menuAction={actionsMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
@@ -589,7 +588,8 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       <CommonPageHeader
         title='Wikis'
         icon={<BookOpen className='size-4 md:size-5' />}
-        actions={
+        showSidebarTrigger
+        menuAction={
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -597,6 +597,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                 size='icon'
                 aria-label='Wiki actions'
                 title='Wiki actions'
+                className='size-11 md:size-9'
               >
                 <Ellipsis className='size-4' />
               </Button>

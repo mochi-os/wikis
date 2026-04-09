@@ -1,7 +1,7 @@
 import { type MouseEvent, useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { WikiPage } from '@/types/wiki'
-import { Button, EmptyState, formatTimestamp, Skeleton, Separator, cn } from '@mochi/web'
+import { Button, EmptyState, PageUtilityBar, formatTimestamp, Skeleton, Separator, cn } from '@mochi/web'
 import { ChevronDown, Edit, FileQuestion, ListTree } from 'lucide-react'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import { usePermissions } from '@/context/wiki-context'
@@ -65,22 +65,22 @@ function TableOfContents({
 
   if (mobile) {
     return (
-      <details
-        className={cn(
-          'bg-surface-1 group mb-4 rounded-lg border lg:hidden',
-          'sticky top-15 z-20',
-          'supports-[backdrop-filter]:bg-surface-1/90 backdrop-blur'
-        )}
+      <PageUtilityBar
+        compact
+        className='mb-4 lg:hidden'
+        contentClassName='w-full min-h-0 px-0 py-0'
       >
-        <summary className='flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2'>
-          <span className='flex items-center gap-2 text-sm font-medium'>
-            <ListTree className='text-muted-foreground size-4' />
-            On this page
-          </span>
-          <ChevronDown className='text-muted-foreground size-4 transition-transform group-open:rotate-180' />
-        </summary>
-        <div className='border-t px-2 py-2'>{content}</div>
-      </details>
+        <details className='group w-full'>
+          <summary className='flex min-h-12 cursor-pointer list-none items-center justify-between gap-2 px-4'>
+            <span className='flex items-center gap-2 text-sm font-medium'>
+              <ListTree className='text-muted-foreground size-4' />
+              On this page
+            </span>
+            <ChevronDown className='text-muted-foreground size-4 transition-transform group-open:rotate-180' />
+          </summary>
+          <div className='border-t px-4 py-2'>{content}</div>
+        </details>
+      </PageUtilityBar>
     )
   }
 

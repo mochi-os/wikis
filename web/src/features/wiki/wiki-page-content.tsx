@@ -207,7 +207,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
       <>
         <WikiRouteHeader
           title="Page not found"
-          actions={notFoundMenu}
+          menuAction={notFoundMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main>
@@ -222,24 +222,6 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     const commentCount = isValidResponse && 'comment_count' in data ? (data.comment_count ?? 0) : 0
 
     const actionsMenu = (
-      <div className="flex items-center gap-2">
-        {commentCount > 0 && (
-          <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5" asChild>
-            <Link to="/$wikiId/$page/comments" params={{ wikiId, page: slug }}>
-              <MessageSquare className="size-4" />
-              {commentCount === 1 ? '1 comment' : `${commentCount} comments`}
-            </Link>
-          </Button>
-        )}
-        {canUnsubscribe && (
-          <Button
-            variant="outline"
-            onClick={() => setUnsubscribeConfirmOpen(true)}
-            disabled={isUnsubscribing}
-          >
-            {isUnsubscribing ? 'Unsubscribing...' : 'Unsubscribe'}
-          </Button>
-        )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -247,6 +229,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
             size="icon"
             aria-label="Page actions"
             title="Page actions"
+            className="size-11 md:size-9"
           >
             <Ellipsis className="size-4" />
           </Button>
@@ -276,7 +259,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <DropdownMenuItem asChild>
             <Link preload={false} to="/$wikiId/$page/comments" params={{ wikiId, page: slug }}>
               <MessageSquare className="size-4" />
-              Comments
+              {commentCount === 1 ? '1 comment' : `${commentCount} comments`}
             </Link>
           </DropdownMenuItem>
           {permissions.edit && (
@@ -334,16 +317,27 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
               </Link>
             </DropdownMenuItem>
           )}
+          {canUnsubscribe && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => setUnsubscribeConfirmOpen(true)}
+                disabled={isUnsubscribing}
+              >
+                <Trash2 className="size-4" />
+                {isUnsubscribing ? 'Unsubscribing...' : 'Unsubscribe'}
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
-      </div>
     )
 
     return (
       <>
         <PageHeader
           page={data.page}
-          actions={actionsMenu}
+          menuAction={actionsMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         <Main className="pt-2">

@@ -140,7 +140,10 @@ function WikiLayoutInner() {
 
   return (
     <>
-      <AuthenticatedLayout sidebarData={sidebarData} />
+      <AuthenticatedLayout
+        sidebarData={sidebarData}
+        usePageHeaderForMobileNav
+      />
 
       {/* Create wiki dialog */}
       <CreateEntityDialog
