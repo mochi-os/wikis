@@ -3428,7 +3428,7 @@ def action_users_search(a):
     if not a.user:
         a.error(401, "Not logged in")
         return
-    query = a.input("query", "")
+    query = a.input("search", "")
     results = mochi.service.call("people", "users/search", query)
     return {"data": {"results": results}}
 

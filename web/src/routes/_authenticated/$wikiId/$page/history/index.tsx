@@ -71,6 +71,7 @@ function PageHistoryRoute() {
             slug={slug}
             revisions={data.revisions}
             currentVersion={currentVersion}
+            wikiId={wikiId}
           />
         </Main>
       </>

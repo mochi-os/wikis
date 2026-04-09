@@ -285,7 +285,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link preload={false} to="/changes">
+            <Link preload={false} to="/$wikiId/changes" params={{ wikiId }}>
               <History className="size-4" />
               Recent changes
             </Link>
