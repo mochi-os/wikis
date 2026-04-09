@@ -4,11 +4,11 @@ import { GeneralError, usePageTitle, Main } from '@mochi/web'
 import { ChangesList, ChangesListSkeleton } from '@/features/wiki/changes-list'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
-export const Route = createFileRoute('/_authenticated/changes')({
-  component: ChangesRoute,
+export const Route = createFileRoute('/_authenticated/$wikiId/changes')({
+  component: WikiChangesRoute,
 })
 
-function ChangesRoute() {
+function WikiChangesRoute() {
   const navigate = Route.useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   usePageTitle('Recent changes')

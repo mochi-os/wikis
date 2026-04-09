@@ -1,17 +1,20 @@
+import { Link } from '@tanstack/react-router'
 import { History, Eye, RotateCcw } from 'lucide-react'
-import { Button, EmptyState, formatTimestamp, getRouterBasepath, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/web'
+import { Button, EmptyState, formatTimestamp, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/web'
 import type { Revision } from '@/types/wiki'
 
 interface PageHistoryProps {
   slug: string
   revisions: Revision[]
   currentVersion: number
+  wikiId?: string
 }
 
 export function PageHistory({
   slug,
   revisions,
   currentVersion,
+  wikiId,
 }: PageHistoryProps) {
   return (
     <div className="space-y-6">
@@ -50,20 +53,26 @@ export function PageHistory({
             {revisions.map((revision) => (
               <TableRow key={revision.id}>
                 <TableCell className="font-mono">
-                  <a
-                    href={`${getRouterBasepath()}${slug}/history/${revision.version}`}
-                    className="text-primary hover:underline"
-                  >
-                    {revision.version}
-                  </a>
+                  {wikiId ? (
+                    <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }} className="text-primary hover:underline">
+                      {revision.version}
+                    </Link>
+                  ) : (
+                    <Link to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }} className="text-primary hover:underline">
+                      {revision.version}
+                    </Link>
+                  )}
                 </TableCell>
                 <TableCell>
-                  <a
-                    href={`${getRouterBasepath()}${slug}/history/${revision.version}`}
-                    className="text-primary hover:underline"
-                  >
-                    {revision.title}
-                  </a>
+                  {wikiId ? (
+                    <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }} className="text-primary hover:underline">
+                      {revision.title}
+                    </Link>
+                  ) : (
+                    <Link to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }} className="text-primary hover:underline">
+                      {revision.title}
+                    </Link>
+                  )}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {revision.name}
@@ -77,9 +86,15 @@ export function PageHistory({
                 <TableCell>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="icon" asChild title="View">
-                      <a href={`${getRouterBasepath()}${slug}/history/${revision.version}`}>
-                        <Eye className="h-4 w-4" />
-                      </a>
+                      {wikiId ? (
+                        <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }}>
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      ) : (
+                        <Link to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }}>
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      )}
                     </Button>
                     {revision.version !== currentVersion && (
                       <Button
@@ -88,9 +103,15 @@ export function PageHistory({
                         asChild
                         title="Revert to this version"
                       >
-                        <a href={`${getRouterBasepath()}${slug}/revert?version=${revision.version}`}>
-                          <RotateCcw className="h-4 w-4" />
-                        </a>
+                        {wikiId ? (
+                          <Link to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>
+                            <RotateCcw className="h-4 w-4" />
+                          </Link>
+                        ) : (
+                          <Link to="/$page/revert" params={{ page: slug }} search={{ version: revision.version }}>
+                            <RotateCcw className="h-4 w-4" />
+                          </Link>
+                        )}
                       </Button>
                     )}
                   </div>

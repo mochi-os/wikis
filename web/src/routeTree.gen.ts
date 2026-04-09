@@ -34,6 +34,7 @@ import { Route as AuthenticatedTagTagRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedWikiIdSettingsRouteImport } from './routes/_authenticated/$wikiId/settings'
 import { Route as AuthenticatedWikiIdNewRouteImport } from './routes/_authenticated/$wikiId/new'
+import { Route as AuthenticatedWikiIdChangesRouteImport } from './routes/_authenticated/$wikiId/changes'
 import { Route as AuthenticatedPageRevertRouteImport } from './routes/_authenticated/$page/revert'
 import { Route as AuthenticatedPageEditRouteImport } from './routes/_authenticated/$page/edit'
 import { Route as AuthenticatedPageDeleteRouteImport } from './routes/_authenticated/$page/delete'
@@ -181,6 +182,12 @@ const AuthenticatedWikiIdNewRoute = AuthenticatedWikiIdNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AuthenticatedWikiIdRouteRoute,
 } as any)
+const AuthenticatedWikiIdChangesRoute =
+  AuthenticatedWikiIdChangesRouteImport.update({
+    id: '/changes',
+    path: '/changes',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
 const AuthenticatedPageRevertRoute = AuthenticatedPageRevertRouteImport.update({
   id: '/$page/revert',
   path: '/$page/revert',
@@ -290,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/$page/delete': typeof AuthenticatedPageDeleteRoute
   '/$page/edit': typeof AuthenticatedPageEditRoute
   '/$page/revert': typeof AuthenticatedPageRevertRoute
+  '/$wikiId/changes': typeof AuthenticatedWikiIdChangesRoute
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
@@ -330,6 +338,7 @@ export interface FileRoutesByTo {
   '/$page/delete': typeof AuthenticatedPageDeleteRoute
   '/$page/edit': typeof AuthenticatedPageEditRoute
   '/$page/revert': typeof AuthenticatedPageRevertRoute
+  '/$wikiId/changes': typeof AuthenticatedWikiIdChangesRoute
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
@@ -373,6 +382,7 @@ export interface FileRoutesById {
   '/_authenticated/$page/delete': typeof AuthenticatedPageDeleteRoute
   '/_authenticated/$page/edit': typeof AuthenticatedPageEditRoute
   '/_authenticated/$page/revert': typeof AuthenticatedPageRevertRoute
+  '/_authenticated/$wikiId/changes': typeof AuthenticatedWikiIdChangesRoute
   '/_authenticated/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/_authenticated/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
@@ -416,6 +426,7 @@ export interface FileRouteTypes {
     | '/$page/delete'
     | '/$page/edit'
     | '/$page/revert'
+    | '/$wikiId/changes'
     | '/$wikiId/new'
     | '/$wikiId/settings'
     | '/errors/$error'
@@ -456,6 +467,7 @@ export interface FileRouteTypes {
     | '/$page/delete'
     | '/$page/edit'
     | '/$page/revert'
+    | '/$wikiId/changes'
     | '/$wikiId/new'
     | '/$wikiId/settings'
     | '/errors/$error'
@@ -498,6 +510,7 @@ export interface FileRouteTypes {
     | '/_authenticated/$page/delete'
     | '/_authenticated/$page/edit'
     | '/_authenticated/$page/revert'
+    | '/_authenticated/$wikiId/changes'
     | '/_authenticated/$wikiId/new'
     | '/_authenticated/$wikiId/settings'
     | '/_authenticated/errors/$error'
@@ -705,6 +718,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWikiIdNewRouteImport
       parentRoute: typeof AuthenticatedWikiIdRouteRoute
     }
+    '/_authenticated/$wikiId/changes': {
+      id: '/_authenticated/$wikiId/changes'
+      path: '/changes'
+      fullPath: '/$wikiId/changes'
+      preLoaderRoute: typeof AuthenticatedWikiIdChangesRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
     '/_authenticated/$page/revert': {
       id: '/_authenticated/$page/revert'
       path: '/$page/revert'
@@ -814,6 +834,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedWikiIdRouteRouteChildren {
+  AuthenticatedWikiIdChangesRoute: typeof AuthenticatedWikiIdChangesRoute
   AuthenticatedWikiIdNewRoute: typeof AuthenticatedWikiIdNewRoute
   AuthenticatedWikiIdSettingsRoute: typeof AuthenticatedWikiIdSettingsRoute
   AuthenticatedWikiIdIndexRoute: typeof AuthenticatedWikiIdIndexRoute
@@ -829,6 +850,7 @@ interface AuthenticatedWikiIdRouteRouteChildren {
 
 const AuthenticatedWikiIdRouteRouteChildren: AuthenticatedWikiIdRouteRouteChildren =
   {
+    AuthenticatedWikiIdChangesRoute: AuthenticatedWikiIdChangesRoute,
     AuthenticatedWikiIdNewRoute: AuthenticatedWikiIdNewRoute,
     AuthenticatedWikiIdSettingsRoute: AuthenticatedWikiIdSettingsRoute,
     AuthenticatedWikiIdIndexRoute: AuthenticatedWikiIdIndexRoute,
