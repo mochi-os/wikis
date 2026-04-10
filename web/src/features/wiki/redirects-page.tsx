@@ -34,7 +34,7 @@ import {
   AlertDialogTrigger,
   toast,
   getErrorMessage,
-  formatTimestamp,
+  useFormat,
 } from '@mochi/web'
 import { ValueLinkChip } from '@/components/value-link-chip'
 import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wiki'
@@ -97,6 +97,7 @@ export function RedirectsPage() {
 }
 
 function RedirectRow({ redirect }: { redirect: Redirect }) {
+  const { formatTimestamp } = useFormat()
   const deleteRedirect = useDeleteRedirect()
 
   const handleDelete = () => {

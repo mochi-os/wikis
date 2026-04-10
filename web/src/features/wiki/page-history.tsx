@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { History, Eye, RotateCcw } from 'lucide-react'
-import { Button, EmptyState, formatTimestamp, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/web'
+import { Button, EmptyState, useFormat, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/web'
 import type { Revision } from '@/types/wiki'
 
 interface PageHistoryProps {
@@ -16,6 +16,7 @@ export function PageHistory({
   currentVersion,
   wikiId,
 }: PageHistoryProps) {
+  const { formatTimestamp } = useFormat()
   return (
     <div className="space-y-6">
       {/* Header */}

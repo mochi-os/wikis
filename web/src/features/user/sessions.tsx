@@ -22,7 +22,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  formatTimestamp,
+  useFormat,
   getErrorMessage,
   toast,
   usePageTitle,
@@ -36,6 +36,7 @@ function SessionRow({
   session: Session
   isCurrent: boolean
 }) {
+  const { formatTimestamp } = useFormat()
   const revokeSession = useRevokeSession()
 
   const handleRevoke = () => {

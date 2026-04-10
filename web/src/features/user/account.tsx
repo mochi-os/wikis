@@ -73,7 +73,7 @@ import {
   GeneralError,
   EmptyState,
   getErrorMessage,
-  formatTimestamp,
+  useFormat,
   toast,
 } from '@mochi/web'
 
@@ -253,6 +253,7 @@ function PasskeyRow({
   onRename: (id: string, name: string) => void
   onDelete: (id: string) => void
 }) {
+  const { formatTimestamp } = useFormat()
   const [isRenaming, setIsRenaming] = useState(false)
   const [newName, setNewName] = useState(passkey.name)
 

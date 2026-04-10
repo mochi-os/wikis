@@ -1,7 +1,7 @@
 import { type MouseEvent, useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { WikiPage } from '@/types/wiki'
-import { Button, EmptyState, PageUtilityBar, formatTimestamp, Skeleton, Separator, cn } from '@mochi/web'
+import { Button, EmptyState, PageUtilityBar, useFormat, Skeleton, Separator, cn } from '@mochi/web'
 import { ChevronDown, Edit, FileQuestion, ListTree } from 'lucide-react'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import { usePermissions } from '@/context/wiki-context'
@@ -98,6 +98,7 @@ function TableOfContents({
 }
 
 export function PageView({ page, missingLinks }: PageViewProps) {
+  const { formatTimestamp } = useFormat()
   const headings = extractTocHeadings(page.content)
   const hasToc = headings.length > 0
   const currentPathWithQuery = `${window.location.pathname}${window.location.search}`

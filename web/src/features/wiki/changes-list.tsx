@@ -1,5 +1,5 @@
 import { History } from 'lucide-react'
-import { formatTimestamp, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/web'
+import { useFormat, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/web'
 import type { Change } from '@/types/wiki'
 
 interface ChangesListProps {
@@ -7,6 +7,7 @@ interface ChangesListProps {
 }
 
 export function ChangesList({ changes }: ChangesListProps) {
+  const { formatTimestamp } = useFormat()
   return (
     <div className="space-y-6">
       {/* Header */}

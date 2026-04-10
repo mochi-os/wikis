@@ -5,7 +5,7 @@ import {
   CommentTreeLayout,
   ConfirmDialog,
   IconButton,
-  formatTimestamp,
+  useFormat,
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
@@ -41,6 +41,7 @@ export function WikiCommentThread({
   onDelete,
   depth = 0,
 }: WikiCommentThreadProps) {
+  const { formatTimestamp } = useFormat()
   const [collapsed, setCollapsed] = useState(false)
   const [editing, setEditing] = useState(false)
   const [editBody, setEditBody] = useState('')

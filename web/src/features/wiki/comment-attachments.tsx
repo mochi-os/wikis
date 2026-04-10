@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Download } from 'lucide-react'
 import {
   getApiBasepath,
-  formatFileSize,
+  useFormat,
   isImage,
   getFileIcon,
   ImageLightbox,
@@ -17,6 +17,7 @@ interface CommentAttachmentsProps {
 
 export function CommentAttachments({ attachments }: CommentAttachmentsProps) {
   const [lightboxIndex, setLightboxIndex] = useState(-1)
+  const { formatFileSize } = useFormat()
 
   if (!attachments || attachments.length === 0) return null
 

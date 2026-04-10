@@ -62,7 +62,7 @@ import {
   toast,
   requestHelpers,
   getErrorMessage,
-  formatTimestamp,
+  useFormat,
 } from '@mochi/web'
 import endpoints from '@/api/endpoints'
 import { ValueLinkChip } from '@/components/value-link-chip'
@@ -688,6 +688,7 @@ function AccessTab() {
 }
 
 function ReplicasTab() {
+  const { formatTimestamp } = useFormat()
   const settingsContext = useSettingsContext()
   const wikiContextResult = useWikiContext()
   const wikiInfo = settingsContext.wiki ?? wikiContextResult?.info?.wiki
@@ -864,6 +865,7 @@ function ReplicasTab() {
 }
 
 function RedirectsTab() {
+  const { formatTimestamp } = useFormat()
   const settingsContext = useSettingsContext()
 
   // Local state for wiki-specific API calls

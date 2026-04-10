@@ -32,8 +32,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  formatFileSize,
-  formatTimestamp,
+  useFormat,
   getFileIcon,
   isImage,
   getErrorMessage,
@@ -422,6 +421,7 @@ function AttachmentGridItem({
   onDelete,
   onOpen,
 }: AttachmentItemProps) {
+  const { formatFileSize } = useFormat()
   const FileIcon = getFileIcon(attachment.type)
   const attachmentUrl = getAttachmentUrl(attachment.id)
 
@@ -499,6 +499,7 @@ function AttachmentListItem({
   onDelete,
   onOpen,
 }: AttachmentItemProps) {
+  const { formatFileSize, formatTimestamp } = useFormat()
   const FileIcon = getFileIcon(attachment.type)
   const attachmentUrl = getAttachmentUrl(attachment.id)
 

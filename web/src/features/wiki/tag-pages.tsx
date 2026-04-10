@@ -1,5 +1,5 @@
 import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react'
-import { Badge, Button, EmptyState, formatTimestamp, Separator, Skeleton } from '@mochi/web'
+import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web'
 import type { TagPage } from '@/types/wiki'
 
 interface TagPagesProps {
@@ -8,6 +8,7 @@ interface TagPagesProps {
 }
 
 export function TagPages({ tag, pages }: TagPagesProps) {
+  const { formatTimestamp } = useFormat()
   return (
     <div className="space-y-6">
       {/* Header */}

@@ -1,5 +1,5 @@
 import { Clock, ArrowLeft, RotateCcw } from 'lucide-react'
-import { Button, formatTimestamp, getRouterBasepath, Badge, Separator, Skeleton } from '@mochi/web'
+import { Button, useFormat, getRouterBasepath, Badge, Separator, Skeleton } from '@mochi/web'
 import type { RevisionDetail } from '@/types/wiki'
 import { MarkdownContent } from './markdown-content'
 
@@ -14,6 +14,7 @@ export function RevisionView({
   revision,
   currentVersion,
 }: RevisionViewProps) {
+  const { formatTimestamp } = useFormat()
   const isCurrentVersion = revision.version === currentVersion
 
   return (
