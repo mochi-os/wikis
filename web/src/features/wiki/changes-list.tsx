@@ -1,12 +1,14 @@
 import { History } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 import { useFormat, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/web'
 import type { Change } from '@/types/wiki'
 
 interface ChangesListProps {
   changes: Change[]
+  wikiId?: string
 }
 
-export function ChangesList({ changes }: ChangesListProps) {
+export function ChangesList({ changes, wikiId }: ChangesListProps) {
   const { formatTimestamp } = useFormat()
   return (
     <div className="space-y-6">
@@ -46,12 +48,23 @@ export function ChangesList({ changes }: ChangesListProps) {
             {changes.map((change) => (
               <TableRow key={change.id}>
                 <TableCell>
-                  <a
-                    href={change.slug}
-                    className="font-medium hover:underline"
-                  >
-                    {change.title}
-                  </a>
+                  {wikiId ? (
+                    <Link
+                      to="/$wikiId/$page"
+                      params={{ wikiId, page: change.slug }}
+                      className="font-medium hover:underline"
+                    >
+                      {change.title}
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/$page"
+                      params={{ page: change.slug }}
+                      className="font-medium hover:underline"
+                    >
+                      {change.title}
+                    </Link>
+                  )}
                 </TableCell>
                 <TableCell className="font-mono">{change.version}</TableCell>
                 <TableCell className="text-muted-foreground">

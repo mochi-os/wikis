@@ -10,6 +10,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId/changes')({
 
 function WikiChangesRoute() {
   const navigate = Route.useNavigate()
+  const { wikiId } = Route.useParams()
   const goBackToWikis = () => navigate({ to: '/' })
   usePageTitle('Recent changes')
   const { data, isLoading, error, refetch } = useChanges()
@@ -40,7 +41,7 @@ function WikiChangesRoute() {
     <>
       <WikiRouteHeader title="Recent changes" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
       <Main>
-        <ChangesList changes={data?.changes ?? []} />
+        <ChangesList changes={data?.changes ?? []} wikiId={wikiId} />
       </Main>
     </>
   )
