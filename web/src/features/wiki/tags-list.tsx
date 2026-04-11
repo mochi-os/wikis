@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { Tags, Tag as TagIcon } from 'lucide-react'
 import { Badge, Separator, Skeleton, EmptyState } from '@mochi/web'
 import type { Tag } from '@/types/wiki'
@@ -33,9 +34,10 @@ export function TagsList({ tags }: TagsListProps) {
       ) : (
         <div className="flex flex-wrap gap-3">
           {tags.map((tag) => (
-            <a
+            <Link
               key={tag.tag}
-              href={`tag/${tag.tag}`}
+              to="/tag/$tag"
+              params={{ tag: tag.tag }}
               className="group"
             >
               <Badge
@@ -48,7 +50,7 @@ export function TagsList({ tags }: TagsListProps) {
                   {tag.count}
                 </span>
               </Badge>
-            </a>
+            </Link>
           ))}
         </div>
       )}

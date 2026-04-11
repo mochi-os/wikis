@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { Plus, X, Tag as TagIcon } from 'lucide-react'
 import {
   Button,
@@ -77,9 +78,9 @@ export function TagManager({ slug, tags }: TagManagerProps) {
       {/* Existing tags */}
       {tags.map((tag) => (
         <Badge key={tag} variant="secondary" className={canEdit ? "group gap-1 pr-1" : ""}>
-          <a href={`tag/${tag}`} className="hover:underline">
+          <Link to="/tag/$tag" params={{ tag }} className="hover:underline">
             {tag}
-          </a>
+          </Link>
           {canEdit && (
             <button
               onClick={() => handleRemoveTag(tag)}

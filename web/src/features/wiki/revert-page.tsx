@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { RotateCcw, ArrowLeft } from 'lucide-react'
 import {
   Button,
@@ -19,10 +20,12 @@ import { useRevertPage } from '@/hooks/use-wiki'
 interface RevertPageProps {
   slug: string
   version: number
+  wikiId?: string
 }
 
-export function RevertPage({ slug, version }: RevertPageProps) {
+export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
   const revertPage = useRevertPage()
+  const navigate = useNavigate()
   const [comment, setComment] = useState(`Reverted to version ${version}`)
 
   const handleRevert = () => {
@@ -31,7 +34,11 @@ export function RevertPage({ slug, version }: RevertPageProps) {
       {
         onSuccess: () => {
           toast.success(`Reverted to version ${version}`)
-          window.location.href = slug
+          if (wikiId) {
+            void navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
+          } else {
+            void navigate({ to: '/$page', params: { page: slug } })
+          }
         },
         onError: (error) => {
           toast.error(getErrorMessage(error, 'Failed to revert page'))
@@ -68,10 +75,17 @@ export function RevertPage({ slug, version }: RevertPageProps) {
         <Separator />
         <CardFooter className="flex justify-between pt-4">
           <Button variant="outline" asChild>
-            <a href={`${slug}/history`}>
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Cancel
-            </a>
+            {wikiId ? (
+              <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Cancel
+              </Link>
+            ) : (
+              <Link to="/$page/history" params={{ page: slug }}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Cancel
+              </Link>
+            )}
           </Button>
           <Button
             variant="destructive"

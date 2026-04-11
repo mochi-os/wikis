@@ -46,7 +46,7 @@ function RevertPageRoute() {
     <>
       <WikiRouteHeader title={`Revert: ${slug}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
       <Main>
-        <RevertPage slug={slug} version={version} />
+        <RevertPage slug={slug} version={version} wikiId={wikiId} />
       </Main>
     </>
   )

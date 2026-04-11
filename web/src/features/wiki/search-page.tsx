@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from '@tanstack/react-router'
 import { Search, FileText, ArrowRight } from 'lucide-react'
 import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web'
 import { useSearch } from '@/hooks/use-wiki'
@@ -104,8 +105,9 @@ interface SearchResultItemProps {
 function SearchResultItem({ result }: SearchResultItemProps) {
   const { formatTimestamp } = useFormat()
   return (
-    <a
-      href={result.page}
+    <Link
+      to="/$page"
+      params={{ page: result.page }}
       className="hover:bg-muted/50 group flex items-start gap-4 rounded-lg border p-4 transition-colors"
     >
       <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" />
@@ -121,6 +123,6 @@ function SearchResultItem({ result }: SearchResultItemProps) {
           Updated {formatTimestamp(result.updated)}
         </p>
       </div>
-    </a>
+    </Link>
   )
 }

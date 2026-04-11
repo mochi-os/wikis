@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react'
 import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web'
 import type { TagPage } from '@/types/wiki'
@@ -23,10 +24,10 @@ export function TagPages({ tag, pages }: TagPagesProps) {
           </h1>
         </div>
         <Button variant="outline" asChild>
-          <a href="tags">
+          <Link to="/tags">
             <ArrowLeft className="mr-2 h-4 w-4" />
             All tags
-          </a>
+          </Link>
         </Button>
       </div>
 
@@ -47,9 +48,10 @@ export function TagPages({ tag, pages }: TagPagesProps) {
       ) : (
         <div className="space-y-2">
           {pages.map((page) => (
-            <a
+            <Link
               key={page.page}
-              href={page.page}
+              to="/$page"
+              params={{ page: page.page }}
               className="hover:bg-muted/50 group flex items-center gap-4 rounded-lg border p-4 transition-colors"
             >
               <FileText className="text-muted-foreground h-5 w-5 shrink-0" />
@@ -61,7 +63,7 @@ export function TagPages({ tag, pages }: TagPagesProps) {
                   Updated {formatTimestamp(page.updated)}
                 </p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       )}

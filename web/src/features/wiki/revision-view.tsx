@@ -1,5 +1,6 @@
+import { Link } from '@tanstack/react-router'
 import { Clock, ArrowLeft, RotateCcw } from 'lucide-react'
-import { Button, useFormat, getRouterBasepath, Badge, Separator, Skeleton } from '@mochi/web'
+import { Button, useFormat, Badge, Separator, Skeleton } from '@mochi/web'
 import type { RevisionDetail } from '@/types/wiki'
 import { MarkdownContent } from './markdown-content'
 
@@ -7,12 +8,14 @@ interface RevisionViewProps {
   slug: string
   revision: RevisionDetail
   currentVersion: number
+  wikiId?: string
 }
 
 export function RevisionView({
   slug,
   revision,
   currentVersion,
+  wikiId,
 }: RevisionViewProps) {
   const { formatTimestamp } = useFormat()
   const isCurrentVersion = revision.version === currentVersion
@@ -37,17 +40,31 @@ export function RevisionView({
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" asChild>
-              <a href={`${getRouterBasepath()}${slug}/history`}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to history
-              </a>
+              {wikiId ? (
+                <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to history
+                </Link>
+              ) : (
+                <Link to="/$page/history" params={{ page: slug }}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to history
+                </Link>
+              )}
             </Button>
             {!isCurrentVersion && (
               <Button variant="outline" size="sm" asChild>
-                <a href={`${getRouterBasepath()}${slug}/revert?version=${revision.version}`}>
-                  <RotateCcw className="mr-2 h-4 w-4" />
-                  Revert to this version
-                </a>
+                {wikiId ? (
+                  <Link to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Revert to this version
+                  </Link>
+                ) : (
+                  <Link to="/$page/revert" params={{ page: slug }} search={{ version: revision.version }}>
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Revert to this version
+                  </Link>
+                )}
               </Button>
             )}
           </div>
