@@ -42,6 +42,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  ConfirmDialog,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -132,10 +133,37 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
     <WikiSettingsContext.Provider value={contextValue}>
     <div className="space-y-6">
       {/* Tabs */}
-      <div className="flex gap-1 border-b">
+      <div
+        role="tablist"
+        aria-label="Wiki settings sections"
+        className="flex gap-1 border-b"
+        onKeyDown={(e) => {
+          const tabButtons = e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+          const currentIndex = Array.from(tabButtons).findIndex((btn) => btn.getAttribute('aria-selected') === 'true')
+          if (e.key === 'ArrowRight') {
+            e.preventDefault()
+            const next = tabButtons[(currentIndex + 1) % tabButtons.length]
+            next.focus(); next.click()
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault()
+            const prev = tabButtons[(currentIndex - 1 + tabButtons.length) % tabButtons.length]
+            prev.focus(); prev.click()
+          } else if (e.key === 'Home') {
+            e.preventDefault()
+            tabButtons[0].focus(); tabButtons[0].click()
+          } else if (e.key === 'End') {
+            e.preventDefault()
+            tabButtons[tabButtons.length - 1].focus(); tabButtons[tabButtons.length - 1].click()
+          }
+        }}
+      >
         {visibleTabs.map((tab) => (
           <button
             key={tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            aria-controls={`wiki-settings-${tab.id}-tabpanel`}
+            tabIndex={activeTab === tab.id ? 0 : -1}
             onClick={() => onTabChange(tab.id)}
             className={cn(
               'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
@@ -152,7 +180,11 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
       </div>
 
       {/* Tab content */}
-      <div className="pt-2">
+      <div
+        id={`wiki-settings-${activeTab}-tabpanel`}
+        role="tabpanel"
+        className="pt-2"
+      >
         {activeTab === 'settings' && <SettingsTab />}
         {activeTab === 'access' && <AccessTab />}
         {activeTab === 'redirects' && <RedirectsTab />}
@@ -189,6 +221,7 @@ function SettingsTab() {
   const [isSaving, setIsSaving] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
 
   const loadWikiSpecificSettings = useCallback(async () => {
     if (!settingsContext.baseURL) return
@@ -540,30 +573,25 @@ function SettingsTab() {
                   Permanently delete this wiki and all its contents. This cannot be undone.
                 </p>
               </div>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="outline" disabled={deletePending}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {deletePending ? 'Deleting...' : 'Delete wiki'}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the wiki
-                      and all its contents.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => void handleDelete()}>
-                      Delete wiki
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <Button
+                variant="outline"
+                disabled={deletePending}
+                onClick={() => setDeleteConfirmOpen(true)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                {deletePending ? 'Deleting...' : 'Delete wiki'}
+              </Button>
             </div>
+            <ConfirmDialog
+              open={deleteConfirmOpen}
+              onOpenChange={setDeleteConfirmOpen}
+              title="Are you absolutely sure?"
+              desc="This action cannot be undone. This will permanently delete the wiki and all its contents."
+              confirmText="Delete wiki"
+              destructive
+              isLoading={deletePending}
+              handleConfirm={() => void handleDelete()}
+            />
           </CardContent>
         </Card>
       )}

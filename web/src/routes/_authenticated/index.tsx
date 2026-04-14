@@ -148,7 +148,9 @@ export const Route = createFileRoute('/_authenticated/')({
     return info
   },
   component: IndexPage,
-  errorComponent: ({ error }) => <GeneralError error={error} />,
+  errorComponent: ({ error, reset }) => (
+    <GeneralError error={error} reset={reset} minimal mode='inline' />
+  ),
 })
 
 // Check if we're in entity context based on browser URL
@@ -781,20 +783,6 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
           )}
         </div>
       </Main>
-
-      <ConfirmDialog
-        open={!!unsubscribeId}
-        onOpenChange={(open) => { if (!open) setUnsubscribeId(null) }}
-        title="Unsubscribe"
-        desc="Are you sure you want to unsubscribe from this wiki?"
-        confirmText="Unsubscribe"
-        destructive
-        isLoading={unsubscribeMutation.isPending}
-        handleConfirm={() => {
-          const wiki = allWikis.find((w) => w.id === unsubscribeId)
-          if (wiki) unsubscribeMutation.mutate(wiki)
-        }}
-      />
 
       <ConfirmDialog
         open={!!unsubscribeId}
