@@ -277,7 +277,6 @@ const AuthenticatedWikiIdPageHistoryVersionRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedIndexRoute
   '/$wikiId': typeof AuthenticatedWikiIdRouteRouteWithChildren
   '/401': typeof errors401Route
   '/403': typeof errors403Route
@@ -292,6 +291,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/tags': typeof AuthenticatedTagsRoute
+  '/': typeof AuthenticatedIndexRoute
   '/$page/attachments': typeof AuthenticatedPageAttachmentsRoute
   '/$page/comments': typeof AuthenticatedPageCommentsRoute
   '/$page/delete': typeof AuthenticatedPageDeleteRoute
@@ -305,7 +305,7 @@ export interface FileRoutesByFullPath {
   '/user/account': typeof AuthenticatedUserAccountRoute
   '/user/preferences': typeof AuthenticatedUserPreferencesRoute
   '/user/sessions': typeof AuthenticatedUserSessionsRoute
-  '/$page/': typeof AuthenticatedPageIndexRoute
+  '/$page': typeof AuthenticatedPageIndexRoute
   '/$wikiId/': typeof AuthenticatedWikiIdIndexRoute
   '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
   '/$wikiId/$page/attachments': typeof AuthenticatedWikiIdPageAttachmentsRoute
@@ -313,10 +313,10 @@ export interface FileRoutesByFullPath {
   '/$wikiId/$page/delete': typeof AuthenticatedWikiIdPageDeleteRoute
   '/$wikiId/$page/edit': typeof AuthenticatedWikiIdPageEditRoute
   '/$wikiId/$page/revert': typeof AuthenticatedWikiIdPageRevertRoute
-  '/$page/history/': typeof AuthenticatedPageHistoryIndexRoute
-  '/$wikiId/$page/': typeof AuthenticatedWikiIdPageIndexRoute
+  '/$page/history': typeof AuthenticatedPageHistoryIndexRoute
+  '/$wikiId/$page': typeof AuthenticatedWikiIdPageIndexRoute
   '/$wikiId/$page/history/$version': typeof AuthenticatedWikiIdPageHistoryVersionRoute
-  '/$wikiId/$page/history/': typeof AuthenticatedWikiIdPageHistoryIndexRoute
+  '/$wikiId/$page/history': typeof AuthenticatedWikiIdPageHistoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/401': typeof errors401Route
@@ -406,7 +406,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/$wikiId'
     | '/401'
     | '/403'
@@ -421,6 +420,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/tags'
+    | '/'
     | '/$page/attachments'
     | '/$page/comments'
     | '/$page/delete'
@@ -434,7 +434,7 @@ export interface FileRouteTypes {
     | '/user/account'
     | '/user/preferences'
     | '/user/sessions'
-    | '/$page/'
+    | '/$page'
     | '/$wikiId/'
     | '/$page/history/$version'
     | '/$wikiId/$page/attachments'
@@ -442,10 +442,10 @@ export interface FileRouteTypes {
     | '/$wikiId/$page/delete'
     | '/$wikiId/$page/edit'
     | '/$wikiId/$page/revert'
-    | '/$page/history/'
-    | '/$wikiId/$page/'
+    | '/$page/history'
+    | '/$wikiId/$page'
     | '/$wikiId/$page/history/$version'
-    | '/$wikiId/$page/history/'
+    | '/$wikiId/$page/history'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/401'
@@ -546,7 +546,7 @@ declare module '@tanstack/react-router' {
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
-      fullPath: '/'
+      fullPath: ''
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -665,7 +665,7 @@ declare module '@tanstack/react-router' {
     '/_authenticated/$page/': {
       id: '/_authenticated/$page/'
       path: '/$page'
-      fullPath: '/$page/'
+      fullPath: '/$page'
       preLoaderRoute: typeof AuthenticatedPageIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
@@ -763,14 +763,14 @@ declare module '@tanstack/react-router' {
     '/_authenticated/$wikiId/$page/': {
       id: '/_authenticated/$wikiId/$page/'
       path: '/$page'
-      fullPath: '/$wikiId/$page/'
+      fullPath: '/$wikiId/$page'
       preLoaderRoute: typeof AuthenticatedWikiIdPageIndexRouteImport
       parentRoute: typeof AuthenticatedWikiIdRouteRoute
     }
     '/_authenticated/$page/history/': {
       id: '/_authenticated/$page/history/'
       path: '/$page/history'
-      fullPath: '/$page/history/'
+      fullPath: '/$page/history'
       preLoaderRoute: typeof AuthenticatedPageHistoryIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
@@ -819,7 +819,7 @@ declare module '@tanstack/react-router' {
     '/_authenticated/$wikiId/$page/history/': {
       id: '/_authenticated/$wikiId/$page/history/'
       path: '/$page/history'
-      fullPath: '/$wikiId/$page/history/'
+      fullPath: '/$wikiId/$page/history'
       preLoaderRoute: typeof AuthenticatedWikiIdPageHistoryIndexRouteImport
       parentRoute: typeof AuthenticatedWikiIdRouteRoute
     }
