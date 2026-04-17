@@ -20,7 +20,6 @@ import {
   Button,
   EmptyState,
   GeneralError,
-  getApiBasepath,
   ImageLightbox,
   type LightboxMedia,
   useLightboxHash,
@@ -43,7 +42,7 @@ import {
   useUploadAttachment,
   useDeleteAttachment,
 } from '@/hooks/use-wiki'
-import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
+import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import type { Attachment } from '@/types/wiki'
 
 interface AttachmentsPageProps {
@@ -55,9 +54,8 @@ type FilterType = 'all' | 'images' | 'documents'
 type SortBy = 'name' | 'date' | 'size'
 const EMPTY_ATTACHMENTS: Attachment[] = []
 
-// Build attachment URL using API basepath for correct resolution from any route
-function getAttachmentUrl(id: string): string {
-  return authenticatedUrl(`${getApiBasepath()}attachments/${id}`)
+function buildAttachmentUrl(baseURL: string, id: string): string {
+  return authenticatedUrl(`${baseURL}attachments/${id}`)
 }
 
 export function AttachmentsPage({ slug }: AttachmentsPageProps) {
@@ -74,6 +72,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
   const deleteMutation = useDeleteAttachment()
   const wikiContext = useWikiBaseURLOptional()
   const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
+  const baseURL = wikiContext?.baseURL ?? ''
 
   const attachments = data?.attachments ?? EMPTY_ATTACHMENTS
 
@@ -187,7 +186,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
   const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({
     id: a.id,
     name: a.name,
-    url: getAttachmentUrl(a.id),
+    url: buildAttachmentUrl(baseURL, a.id),
     type: 'image' as const,
   }))
 
@@ -203,7 +202,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
       openLightbox(index)
     } else {
       // Non-image: open in new tab
-      window.open(getAttachmentUrl(attachment.id), '_blank')
+      window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank')
     }
   }
 
@@ -423,7 +422,8 @@ function AttachmentGridItem({
 }: AttachmentItemProps) {
   const { formatFileSize } = useFormat()
   const FileIcon = getFileIcon(attachment.type)
-  const attachmentUrl = getAttachmentUrl(attachment.id)
+  const { baseURL } = useWikiBaseURL()
+  const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id)
 
   return (
     <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors">
@@ -501,7 +501,8 @@ function AttachmentListItem({
 }: AttachmentItemProps) {
   const { formatFileSize, formatTimestamp } = useFormat()
   const FileIcon = getFileIcon(attachment.type)
-  const attachmentUrl = getAttachmentUrl(attachment.id)
+  const { baseURL } = useWikiBaseURL()
+  const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id)
 
   return (
     <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors">

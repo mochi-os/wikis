@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Download } from 'lucide-react'
 import {
-  getApiBasepath,
   useFormat,
   isImage,
   getFileIcon,
@@ -9,6 +8,7 @@ import {
   type LightboxMedia,
   authenticatedUrl,
 } from '@mochi/web'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import type { Attachment } from '@/types/wiki'
 
 interface CommentAttachmentsProps {
@@ -18,6 +18,7 @@ interface CommentAttachmentsProps {
 export function CommentAttachments({ attachments }: CommentAttachmentsProps) {
   const [lightboxIndex, setLightboxIndex] = useState(-1)
   const { formatFileSize } = useFormat()
+  const { baseURL } = useWikiBaseURL()
 
   if (!attachments || attachments.length === 0) return null
 
@@ -27,7 +28,7 @@ export function CommentAttachments({ attachments }: CommentAttachmentsProps) {
   const lightboxMedia: LightboxMedia[] = images.map((img) => ({
     id: img.id,
     name: img.name,
-    url: authenticatedUrl(`${getApiBasepath()}attachments/${img.id}`),
+    url: authenticatedUrl(`${baseURL}attachments/${img.id}`),
     type: 'image',
   }))
 
@@ -43,7 +44,7 @@ export function CommentAttachments({ attachments }: CommentAttachmentsProps) {
               onClick={() => setLightboxIndex(i)}
             >
               <img
-                src={authenticatedUrl(`${getApiBasepath()}attachments/${img.id}/thumbnail`)}
+                src={authenticatedUrl(`${baseURL}attachments/${img.id}/thumbnail`)}
                 alt={img.name}
                 className="h-20 w-auto object-cover"
               />
@@ -58,7 +59,7 @@ export function CommentAttachments({ attachments }: CommentAttachmentsProps) {
             return (
               <a
                 key={file.id}
-                href={authenticatedUrl(`${getApiBasepath()}attachments/${file.id}`)}
+                href={authenticatedUrl(`${baseURL}attachments/${file.id}`)}
                 download={file.name}
                 className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-xs"
               >

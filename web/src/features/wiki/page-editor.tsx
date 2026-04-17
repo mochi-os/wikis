@@ -6,7 +6,6 @@ import {
   Button,
   EmptyState,
   GeneralError,
-  getApiBasepath,
   Input,
   Textarea,
   Label,
@@ -36,9 +35,8 @@ interface PageEditorProps {
   wikiId?: string
 }
 
-// Build attachment URL using API basepath
-function getAttachmentUrl(id: string): string {
-  return authenticatedUrl(`${getApiBasepath()}attachments/${id}`)
+function buildAttachmentUrl(baseURL: string, id: string): string {
+  return authenticatedUrl(`${baseURL}attachments/${id}`)
 }
 
 export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: PageEditorProps) {
@@ -406,7 +404,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                     <div className="bg-muted flex aspect-square items-center justify-center overflow-hidden rounded mb-2">
                       {isImage(attachment.type) ? (
                         <img
-                          src={`${getAttachmentUrl(attachment.id)}/thumbnail`}
+                          src={`${buildAttachmentUrl(wikiContext?.baseURL ?? '', attachment.id)}/thumbnail`}
                           alt={attachment.name}
                           className="h-full w-full object-cover"
                         />

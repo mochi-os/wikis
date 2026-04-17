@@ -3281,9 +3281,9 @@ def action_attachments(a):
 
     # For replica wikis, list attachments from both source and local entity
     source = wiki.get("source")
-    attachments = list(mochi.attachment.list(wiki["id"]) or [])
+    attachments = list(mochi.attachment.list(wiki["id"], wiki["id"]) or [])
     if source and source != wiki["id"]:
-        source_attachments = mochi.attachment.list(source) or []
+        source_attachments = mochi.attachment.list(source, wiki["id"]) or []
         existing = {a["id"]: True for a in attachments}
         for sa in source_attachments:
             if sa["id"] not in existing:

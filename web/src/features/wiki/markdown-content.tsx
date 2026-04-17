@@ -16,30 +16,30 @@ import {
   type LightboxMedia,
   useLightboxHash,
   isDomainEntityRouting,
-  getApiBasepath,
 } from '@mochi/web'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import {
   classifyWikiLink,
   extractTocHeadings,
   slugifyHeading,
   type TocHeading,
 } from './markdown-content.utils'
-function resolveAttachmentUrl(url: string): string {
+function resolveAttachmentUrl(baseURL: string, url: string): string {
   if (url.startsWith('attachments/')) {
-    return `${getApiBasepath()}${url}`
+    return `${baseURL}${url}`
   }
   if (url.startsWith('-/attachments/')) {
-    return `${getApiBasepath()}${url.slice(2)}`
+    return `${baseURL}${url.slice(2)}`
   }
   const match = url.match(/\/-\/attachments\/([^/?#]+)(\/thumbnail)?/)
   if (match) {
-    return `${getApiBasepath()}attachments/${match[1]}${match[2] || ''}`
+    return `${baseURL}attachments/${match[1]}${match[2] || ''}`
   }
   return url
 }
 
-function getFullSizeUrl(url: string): string {
-  const resolved = resolveAttachmentUrl(url)
+function getFullSizeUrl(baseURL: string, url: string): string {
+  const resolved = resolveAttachmentUrl(baseURL, url)
   return resolved.replace(/\/thumbnail$/, '')
 }
 
@@ -84,6 +84,7 @@ export function MarkdownContent({
   toc = false,
   onHeadingsChange,
 }: MarkdownContentProps) {
+  const { baseURL } = useWikiBaseURL()
   const headings = useMemo(() => extractTocHeadings(content), [content])
   const currentPathWithQuery =
     typeof window !== 'undefined'
@@ -101,19 +102,19 @@ export function MarkdownContent({
     return urls.map((url, i) => ({
       id: String(i),
       name: url.split('/').pop() || 'Image',
-      url: getFullSizeUrl(url),
+      url: getFullSizeUrl(baseURL, url),
       type: 'image' as const,
     }))
-  }, [content])
+  }, [content, baseURL])
 
   const srcToIndex = useMemo(() => {
     const map = new Map<string, number>()
     const urls = extractImageUrls(content)
     urls.forEach((url, i) => {
-      map.set(resolveAttachmentUrl(url), i)
+      map.set(resolveAttachmentUrl(baseURL, url), i)
     })
     return map
-  }, [content])
+  }, [content, baseURL])
 
   const headingFallbackCounts = new Map<string, number>()
   let headingCursor = 0
@@ -232,7 +233,7 @@ export function MarkdownContent({
               </li>
             ),
             img: ({ src, alt, node: _, ...props }) => {
-              const resolvedSrc = src ? resolveAttachmentUrl(src) : src
+              const resolvedSrc = src ? resolveAttachmentUrl(baseURL, src) : src
               const index = resolvedSrc
                 ? srcToIndex.get(resolvedSrc)
                 : undefined
@@ -326,7 +327,7 @@ export function MarkdownContent({
               const kind = classifyWikiLink(href)
 
               if (kind === 'attachment') {
-                const resolvedHref = resolveAttachmentUrl(href)
+                const resolvedHref = resolveAttachmentUrl(baseURL, href)
                 return (
                   <a href={resolvedHref} {...props}>
                     {children}
