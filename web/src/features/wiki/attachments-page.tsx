@@ -37,6 +37,7 @@ import {
   isImage,
   getErrorMessage,
   authenticatedUrl,
+  shellClipboardWrite,
 } from '@mochi/web'
 import {
   useAttachments,
@@ -160,9 +161,13 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
       ? `![${attachment.name}](${url})`
       : `[${attachment.name}](${url})`
 
-    navigator.clipboard.writeText(markdown)
-    setCopiedId(attachment.id)
-    toast.success('Copied markdown to clipboard')
+    void shellClipboardWrite(markdown).then((ok) => {
+      if (ok) {
+        setCopiedId(attachment.id)
+        toast.success('Copied markdown to clipboard')
+        setTimeout(() => setCopiedId(null), 2000)
+      }
+    })
     setTimeout(() => setCopiedId(null), 2000)
   }
 
