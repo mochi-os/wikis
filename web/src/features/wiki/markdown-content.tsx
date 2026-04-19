@@ -329,7 +329,7 @@ export function MarkdownContent({
               if (kind === 'attachment') {
                 const resolvedHref = resolveAttachmentUrl(baseURL, href)
                 return (
-                  <a href={resolvedHref} {...props}>
+                  <a href={resolvedHref} target='_blank' rel='noopener noreferrer' {...props}>
                     {children}
                   </a>
                 )

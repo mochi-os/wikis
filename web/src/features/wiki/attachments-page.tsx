@@ -18,6 +18,7 @@ import {
 import {
   toast,
   Button,
+  ConfirmDialog,
   EmptyState,
   GeneralError,
   ImageLightbox,
@@ -65,6 +66,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data, isLoading, error, refetch } = useAttachments()
@@ -161,21 +163,27 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
 
     navigator.clipboard.writeText(markdown)
     setCopiedId(attachment.id)
-    toast.success('Copied markdown to clipboard')
+    toast.success('Embed link copied')
     setTimeout(() => setCopiedId(null), 2000)
   }
 
   const handleDelete = (attachment: Attachment) => {
-    if (confirm(`Delete "${attachment.name}"? This cannot be undone.`)) {
-      deleteMutation.mutate(attachment.id, {
-        onSuccess: () => {
-          toast.success('Attachment deleted')
-        },
-        onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to delete attachment'))
-        },
-      })
-    }
+    setPendingDelete(attachment)
+  }
+
+  const confirmDelete = () => {
+    if (!pendingDelete) return
+    const attachment = pendingDelete
+    deleteMutation.mutate(attachment.id, {
+      onSuccess: () => {
+        toast.success('Attachment deleted')
+        setPendingDelete(null)
+      },
+      onError: (error) => {
+        toast.error(getErrorMessage(error, 'Failed to delete attachment'))
+        setPendingDelete(null)
+      },
+    })
   }
 
   const imageCount = attachments.filter((a) => isImage(a.type)).length
@@ -399,6 +407,17 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
         onOpenChange={(isOpen) => !isOpen && closeLightbox()}
         onIndexChange={setCurrentIndex}
       />
+
+      <ConfirmDialog
+        open={!!pendingDelete}
+        onOpenChange={(open) => { if (!open) setPendingDelete(null) }}
+        title="Delete attachment"
+        desc={pendingDelete ? `Delete "${pendingDelete.name}"? This cannot be undone.` : ''}
+        confirmText="Delete"
+        destructive
+        isLoading={deleteMutation.isPending}
+        handleConfirm={confirmDelete}
+      />
     </div>
   )
 }
@@ -463,8 +482,8 @@ function AttachmentGridItem({
           variant="secondary"
           size="icon"
           onClick={(e) => { e.stopPropagation(); onCopy(attachment) }}
-          aria-label="Copy markdown"
-          title="Copy markdown"
+          aria-label="Copy embed link"
+          title="Copy embed link"
         >
           {copiedId === attachment.id ? (
             <Check className="h-4 w-4" />
@@ -553,8 +572,8 @@ function AttachmentListItem({
           variant="ghost"
           size="icon"
           onClick={() => onCopy(attachment)}
-          aria-label="Copy markdown"
-          title="Copy markdown"
+          aria-label="Copy embed link"
+          title="Copy embed link"
         >
           {copiedId === attachment.id ? (
             <Check className="h-4 w-4" />
