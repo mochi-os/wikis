@@ -37,6 +37,7 @@ import {
   isImage,
   getErrorMessage,
   authenticatedUrl,
+  shellClipboardWrite,
 } from '@mochi/web'
 import {
   useAttachments,
@@ -161,9 +162,15 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
       ? `![${attachment.name}](${url})`
       : `[${attachment.name}](${url})`
 
-    navigator.clipboard.writeText(markdown)
-    setCopiedId(attachment.id)
-    toast.success('Embed link copied')
+    void shellClipboardWrite(markdown).then((ok) => {
+      if (ok) {
+        setCopiedId(attachment.id)
+        toast.success('Embed link copied')
+        setTimeout(() => setCopiedId(null), 2000)
+      } else {
+        toast.error('Failed to copy')
+      }
+    })
     setTimeout(() => setCopiedId(null), 2000)
   }
 
@@ -339,11 +346,10 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
 
       {/* Drop zone / Content */}
       <div
-        className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${
-          isDragging
+        className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging
             ? 'border-primary bg-primary/5'
             : 'border-transparent'
-        }`}
+          }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
