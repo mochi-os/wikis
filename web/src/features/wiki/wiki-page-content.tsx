@@ -20,6 +20,7 @@ import {
   toast,
   getErrorMessage,
   getAppPath,
+  shellClipboardWrite,
 } from '@mochi/web'
 import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Rss, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import {
@@ -107,8 +108,8 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     try {
       const { token } = await getRssToken(wikiId, mode)
       const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
-      await navigator.clipboard.writeText(url)
-      toast.success('RSS URL copied to clipboard')
+      const ok = await shellClipboardWrite(url)
+      if (ok) toast.success('RSS URL copied to clipboard')
     } catch (error) {
       toast.error(getErrorMessage(error, 'Failed to get RSS token'))
     }

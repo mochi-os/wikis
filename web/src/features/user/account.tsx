@@ -75,6 +75,7 @@ import {
   getErrorMessage,
   useFormat,
   toast,
+  shellClipboardWrite,
 } from '@mochi/web'
 
 // ============================================================================
@@ -642,8 +643,9 @@ function RecoveryCodesSection() {
           </div>
           <div className='flex gap-2'>
             <Button variant='outline' size='sm' onClick={() => {
-              navigator.clipboard.writeText(showCodes.join('\n'))
-              toast.success('Codes copied')
+              void shellClipboardWrite(showCodes.join('\n')).then((ok) => {
+                if (ok) toast.success('Codes copied')
+              })
             }}>Copy all</Button>
             <Button variant='ghost' size='sm' onClick={() => setShowCodes(null)}>Done</Button>
           </div>
