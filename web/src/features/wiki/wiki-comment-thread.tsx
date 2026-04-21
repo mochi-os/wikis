@@ -4,6 +4,7 @@ import {
   Button,
   CommentTreeLayout,
   ConfirmDialog,
+  EntityAvatar,
   IconButton,
   useFormat,
 } from '@mochi/web'
@@ -63,9 +64,12 @@ export function WikiCommentThread({
   const timeAgo = formatTimestamp(comment.created)
 
   const avatar = (
-    <div className="bg-primary text-primary-foreground z-10 flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold">
-      {(comment.name || comment.author).charAt(0).toUpperCase()}
-    </div>
+    <EntityAvatar
+      fingerprint={comment.author}
+      name={comment.name || comment.author}
+      size={20}
+      className="z-10"
+    />
   )
 
   const collapsedContent = (
