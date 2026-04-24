@@ -7,6 +7,7 @@ import {
   EntityAvatar,
   IconButton,
   useFormat,
+  getAppPath,
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
@@ -63,9 +64,13 @@ export function WikiCommentThread({
 
   const timeAgo = formatTimestamp(comment.created)
 
+  const assetUrl = (slot: string) =>
+    `${getAppPath()}/${comment.wiki}/-/comment/${comment.id}/asset/${slot}`
   const avatar = (
     <EntityAvatar
-      fingerprint={comment.author}
+      src={assetUrl('avatar')}
+      styleUrl={assetUrl('style')}
+      seed={comment.author}
       name={comment.name || comment.author}
       size={20}
       className="z-10"

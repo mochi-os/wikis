@@ -1,6 +1,6 @@
 import { History } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { EntityAvatar, useFormat, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/web'
+import { EntityAvatar, useFormat, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
 import type { Change } from '@/types/wiki'
 
 interface ChangesListProps {
@@ -70,7 +70,10 @@ export function ChangesList({ changes, wikiId }: ChangesListProps) {
                 <TableCell className="text-muted-foreground">
                   <span className="inline-flex items-center gap-2">
                     <EntityAvatar
-                      fingerprint={change.author}
+                      src={wikiId ? `${getAppPath()}/${wikiId}/-/revision/${change.id}/asset/avatar` : undefined}
+                      styleUrl={wikiId ? `${getAppPath()}/${wikiId}/-/revision/${change.id}/asset/style` : undefined}
+                      fingerprint={wikiId ? undefined : change.author}
+                      seed={change.author}
                       name={change.name}
                       size={20}
                     />

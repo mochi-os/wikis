@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { History, Eye, RotateCcw } from 'lucide-react'
-import { Button, EntityAvatar, EmptyState, useFormat, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mochi/web'
+import { Button, EntityAvatar, EmptyState, useFormat, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
 import type { Revision } from '@/types/wiki'
 
 interface PageHistoryProps {
@@ -78,7 +78,10 @@ export function PageHistory({
                 <TableCell className="text-muted-foreground">
                   <span className="inline-flex items-center gap-2">
                     <EntityAvatar
-                      fingerprint={revision.author}
+                      src={wikiId ? `${getAppPath()}/${wikiId}/-/revision/${revision.id}/asset/avatar` : undefined}
+                      styleUrl={wikiId ? `${getAppPath()}/${wikiId}/-/revision/${revision.id}/asset/style` : undefined}
+                      fingerprint={wikiId ? undefined : revision.author}
+                      seed={revision.author}
                       name={revision.name}
                       size={20}
                     />

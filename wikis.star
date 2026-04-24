@@ -285,6 +285,49 @@ def create_revision(page, title, content, author, name, version, comment):
         id, page, content, title, author, name, now, version, comment)
     return id
 
+# Stream an entity's asset from its owning service via a Mochi stream.
+# Location-transparent: mochi.remote.stream() loops back in-process when the
+# entity lives on this server, or goes over P2P otherwise. Handles both binary
+# assets (avatar/banner/favicon) and JSON assets (style/information).
+def stream_asset(a, entity_id, service, asset):
+    if not entity_id:
+        a.error(404, asset + " unavailable")
+        return None
+    s = mochi.remote.stream(entity_id, service, asset, {})
+    if not s:
+        a.error(404, asset + " unavailable")
+        return None
+    header = s.read()
+    if not header or header.get("status") != "200":
+        a.error(404, asset + " not set")
+        return None
+    a.header("Cache-Control", "private, max-age=300")
+    if "data" in header:
+        return {"data": header["data"]}
+    a.header("Content-Type", header.get("content_type", "application/octet-stream"))
+    a.write_from_stream(s)
+    return None
+
+_PERSON_ASSETS = ("avatar", "banner", "favicon", "style", "information")
+
+# Proxy a comment author's person asset from the people service.
+def action_comment_asset(a):
+    asset = a.input("asset")
+    if asset not in _PERSON_ASSETS:
+        a.error(404, "Unknown asset")
+        return
+    row = mochi.db.row("select author from comments where id=?", a.input("comment"))
+    return stream_asset(a, row["author"] if row else "", "people", asset)
+
+# Proxy a revision author's person asset from the people service.
+def action_revision_asset(a):
+    asset = a.input("asset")
+    if asset not in _PERSON_ASSETS:
+        a.error(404, "Unknown asset")
+        return
+    row = mochi.db.row("select author from revisions where id=?", a.input("revision"))
+    return stream_asset(a, row["author"] if row else "", "people", asset)
+
 # ACTIONS
 
 # Create a new wiki entity

@@ -2,7 +2,7 @@
 // Copyright Alistair Cunningham 2025-2026
 
 {
-	"version": "3.61",
+	"version": "3.63",
 	"label": "app_name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -61,6 +61,8 @@
 		":wiki/-/attachment/delete": {"function": "action_attachment_delete"},
 		":wiki/-/attachments/:id": {"feature": "attachment", "public": true},
 		":wiki/-/attachments/:id/thumbnail": {"feature": "attachment/thumbnail", "public": true},
+		":wiki/-/comment/:comment/asset/:asset": {"function": "action_comment_asset", "public": true},
+		":wiki/-/revision/:revision/asset/:asset": {"function": "action_revision_asset", "public": true},
 		":wiki/assets": {"files": "web/dist/assets", "public": true},
 		":wiki/images": {"files": "web/dist/images", "public": true},
 		":wiki/:page/assets": {"files": "web/dist/assets", "public": true},
