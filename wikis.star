@@ -3515,7 +3515,7 @@ def action_rss(a):
             mode = rss_row["mode"]
 
     if not rss_row and not check_access(a, wiki["id"], "view"):
-        a.error(403, "Not authorized")
+        a.error(403, "Not allowed")
         return
 
     wiki_name = wiki["name"]
