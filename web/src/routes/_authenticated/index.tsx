@@ -50,6 +50,7 @@ import {
 import endpoints from '@/api/endpoints'
 import { wikisRequest, getRssToken } from '@/api/request'
 import { useSidebarContext } from '@/context/sidebar-context'
+import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { usePermissions, useWikiContext } from '@/context/wiki-context'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
 import {
@@ -67,10 +68,19 @@ import {
 } from '@/features/wiki/page-view'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
+import type { WikiPermissions } from '@/types/wiki'
+
+interface InfoWiki {
+  id: string
+  name: string
+  home: string
+  fingerprint?: string
+  source?: string
+}
 
 interface InfoResponse {
   entity: boolean
-  wiki?: { id: string; name: string; home: string; fingerprint?: string }
+  wiki?: InfoWiki
   wikis?: Array<{
     id: string
     name: string
@@ -78,6 +88,7 @@ interface InfoResponse {
     source?: string
     fingerprint?: string
   }>
+  permissions?: WikiPermissions
 }
 
 interface IndexRouteData extends InfoResponse {
@@ -166,6 +177,22 @@ function isEntityContext(): boolean {
   )
 }
 
+// Compute the entity baseURL used for resolving attachment paths in markdown
+// content. Mirrors the logic in $wikiId/route.tsx but for the index route, where
+// the URL is `/` (domain entity routing) or `/<entity>/` (path-routed entity).
+function computeEntityBaseURL(): string {
+  if (isDomainEntityRouting()) return '/-/'
+  const firstSegment = window.location.pathname.match(/^\/([^/]+)/)?.[1] ?? ''
+  return firstSegment ? `/${firstSegment}/-/` : '/-/'
+}
+
+const defaultPermissions: WikiPermissions = {
+  view: false,
+  edit: false,
+  delete: false,
+  manage: false,
+}
+
 function IndexPage() {
   const data = Route.useLoaderData()
   const router = useRouter()
@@ -176,12 +203,18 @@ function IndexPage() {
   // If we're in entity context, show the wiki's home page directly
   if ((isEntityContext() || data.entity) && data.wiki) {
     return (
-      <WikiHomePage
-        wikiId={data.wiki.fingerprint ?? data.wiki.id}
-        homeSlug={data.wiki.home}
-        infoError={data.infoError}
-        onRetryInfo={retryInfo}
-      />
+      <WikiBaseURLProvider
+        baseURL={computeEntityBaseURL()}
+        wiki={data.wiki}
+        permissions={data.permissions ?? defaultPermissions}
+      >
+        <WikiHomePage
+          wikiId={data.wiki.fingerprint ?? data.wiki.id}
+          homeSlug={data.wiki.home}
+          infoError={data.infoError}
+          onRetryInfo={retryInfo}
+        />
+      </WikiBaseURLProvider>
     )
   }
 
