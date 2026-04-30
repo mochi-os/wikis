@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useNavigate } from '@tanstack/react-router'
 import { Search, Loader2, BookOpen } from 'lucide-react'
 import { Button, GeneralError, Input, toast, getErrorMessage } from '@mochi/web'
@@ -22,6 +23,7 @@ interface InlineWikiSearchProps {
 }
 
 export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchProps) {
+  const { t } = useLingui()
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [results, setResults] = useState<DirectoryEntry[]>([])
@@ -58,7 +60,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
         )
         setResults(response.results ?? [])
       } catch (error) {
-        setSearchError(new Error(getErrorMessage(error, 'Failed to search wikis')))
+        setSearchError(new Error(getErrorMessage(error, t`Failed to search wikis`)))
         setResults([])
       } finally {
         setIsLoading(false)
@@ -75,7 +77,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
       onRefresh?.()
       void navigate({ to: '/$wikiId/$page', params: { wikiId: result.fingerprint || result.id, page: result.home || 'home' } })
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to subscribe'))
+      toast.error(getErrorMessage(error, t`Failed to subscribe`))
       setPendingWikiId(null)
     }
   }
@@ -89,7 +91,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
       <div className="relative mb-4">
         <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         <Input
-          placeholder="Search for wikis..."
+          placeholder={t`Search for wikis...`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="h-10 pl-9"
@@ -116,7 +118,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
 
       {!isLoading && showResults && !searchError && results.length === 0 && (
         <p className="text-muted-foreground text-sm text-center py-4">
-          No wikis found
+          <Trans>No wikis found</Trans>
         </p>
       )}
 

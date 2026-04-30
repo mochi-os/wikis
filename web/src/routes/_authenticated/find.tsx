@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { BookOpen } from 'lucide-react'
@@ -24,6 +25,7 @@ export const Route = createFileRoute('/_authenticated/find')({
 })
 
 function FindWikisPage() {
+  const { t } = useLingui()
   const { info } = useWikiContext()
   const navigate = useNavigate()
   const joinWiki = useJoinWiki()
@@ -82,8 +84,8 @@ function FindWikisPage() {
       searchEndpoint={`${getAppPath()}/directory/search`}
       icon={BookOpen}
       iconClassName="bg-emerald-500/10 text-emerald-600"
-      title="Find wikis"
-      placeholder="Search by name, ID, fingerprint, or URL..."
+      title={t`Find wikis`}
+      placeholder={t`Search by name, ID, fingerprint, or URL...`}
       emptyMessage="No wikis found"
       recommendations={recommendations}
       isLoadingRecommendations={isLoadingRecommendations}

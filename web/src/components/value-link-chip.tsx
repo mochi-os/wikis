@@ -1,4 +1,5 @@
 import { Button, DataChip, cn } from '@mochi/web'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { ExternalLink } from 'lucide-react'
 
 interface ValueLinkChipProps {
@@ -14,6 +15,7 @@ export function ValueLinkChip({
   className,
   chipClassName,
 }: ValueLinkChipProps) {
+  const { t } = useLingui()
   const targetHref = href ?? value
 
   return (
@@ -24,10 +26,10 @@ export function ValueLinkChip({
         chipClassName={chipClassName}
         truncate='middle'
       />
-      <Button variant='ghost' size='icon' className='size-8 shrink-0' asChild aria-label='Open link in new tab' title='Open link in new tab'>
+      <Button variant='ghost' size='icon' className='size-8 shrink-0' asChild aria-label={t`Open link in new tab`} title={t`Open link in new tab`}>
         <a href={targetHref} target='_blank' rel='noopener noreferrer'>
           <ExternalLink className='h-3.5 w-3.5' />
-          <span className='sr-only'>Open link</span>
+          <span className='sr-only'><Trans>Open link</Trans></span>
         </a>
       </Button>
     </div>

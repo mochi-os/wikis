@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import {
   Upload,
@@ -61,6 +62,7 @@ function buildAttachmentUrl(baseURL: string, id: string): string {
 }
 
 export function AttachmentsPage({ slug }: AttachmentsPageProps) {
+  const { t } = useLingui()
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [filterType, setFilterType] = useState<FilterType>('all')
   const [sortBy, setSortBy] = useState<SortBy>('date')
@@ -121,7 +123,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
           toast.success(`${fileArray.length} file(s) uploaded`)
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to upload files'))
+          toast.error(getErrorMessage(error, t`Failed to upload files`))
         },
       })
     }
@@ -165,10 +167,10 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
     void shellClipboardWrite(markdown).then((ok) => {
       if (ok) {
         setCopiedId(attachment.id)
-        toast.success('Embed link copied')
+        toast.success(t`Embed link copied`)
         setTimeout(() => setCopiedId(null), 2000)
       } else {
-        toast.error('Failed to copy')
+        toast.error(t`Failed to copy`)
       }
     })
     setTimeout(() => setCopiedId(null), 2000)
@@ -183,11 +185,11 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
     const attachment = pendingDelete
     deleteMutation.mutate(attachment.id, {
       onSuccess: () => {
-        toast.success('Attachment deleted')
+        toast.success(t`Attachment deleted`)
         setPendingDelete(null)
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to delete attachment'))
+        toast.error(getErrorMessage(error, t`Failed to delete attachment`))
         setPendingDelete(null)
       },
     })
@@ -226,7 +228,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" asChild aria-label="Back to editor" title="Back to editor">
+          <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}>
             {wikiId ? (
               <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
                 <ArrowLeft className="h-4 w-4" />
@@ -238,7 +240,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
             )}
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Attachments</h1>
+            <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1>
             <p className="text-muted-foreground text-sm">
               {attachments.length} file{attachments.length !== 1 ? 's' : ''} ({imageCount} images, {documentCount} documents)
             </p>
@@ -275,7 +277,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
         <div className="relative flex-1 min-w-[200px]">
           <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
           <Input
-            placeholder="Search attachments..."
+            placeholder={t`Search attachments...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -286,8 +288,8 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
               size="icon"
               className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
               onClick={() => setSearchQuery('')}
-              aria-label="Clear search"
-              title="Clear search"
+              aria-label={t`Clear search`}
+              title={t`Clear search`}
             >
               <X className="h-3 w-3" />
             </Button>
@@ -297,12 +299,12 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
         {/* Filter */}
         <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}>
           <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Filter" />
+            <SelectValue placeholder={t`Filter`} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All files</SelectItem>
-            <SelectItem value="images">Images</SelectItem>
-            <SelectItem value="documents">Documents</SelectItem>
+            <SelectItem value="all"><Trans>All files</Trans></SelectItem>
+            <SelectItem value="images"><Trans>Images</Trans></SelectItem>
+            <SelectItem value="documents"><Trans>Documents</Trans></SelectItem>
           </SelectContent>
         </Select>
 
@@ -310,12 +312,12 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}>
           <SelectTrigger className="w-[130px]">
             <ArrowUpDown className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="Sort" />
+            <SelectValue placeholder={t`Sort`} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="date">Date</SelectItem>
-            <SelectItem value="name">Name</SelectItem>
-            <SelectItem value="size">Size</SelectItem>
+            <SelectItem value="date"><Trans>Date</Trans></SelectItem>
+            <SelectItem value="name"><Trans>Name</Trans></SelectItem>
+            <SelectItem value="size"><Trans>Size</Trans></SelectItem>
           </SelectContent>
         </Select>
 
@@ -326,8 +328,8 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
             size="icon"
             className="rounded-r-none"
             onClick={() => setViewMode('grid')}
-            aria-label="Grid view"
-            title="Grid view"
+            aria-label={t`Grid view`}
+            title={t`Grid view`}
           >
             <Grid3X3 className="h-4 w-4" />
           </Button>
@@ -336,8 +338,8 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
             size="icon"
             className="rounded-l-none"
             onClick={() => setViewMode('list')}
-            aria-label="List view"
-            title="List view"
+            aria-label={t`List view`}
+            title={t`List view`}
           >
             <List className="h-4 w-4" />
           </Button>
@@ -417,7 +419,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
       <ConfirmDialog
         open={!!pendingDelete}
         onOpenChange={(open) => { if (!open) setPendingDelete(null) }}
-        title="Delete attachment"
+        title={t`Delete attachment`}
         desc={pendingDelete ? `Delete "${pendingDelete.name}"? This cannot be undone.` : ''}
         confirmText="Delete"
         destructive
@@ -445,6 +447,7 @@ function AttachmentGridItem({
   onDelete,
   onOpen,
 }: AttachmentItemProps) {
+  const { t } = useLingui()
   const { formatFileSize } = useFormat()
   const FileIcon = getFileIcon(attachment.type)
   const { baseURL } = useWikiBaseURL()
@@ -488,8 +491,8 @@ function AttachmentGridItem({
           variant="secondary"
           size="icon"
           onClick={(e) => { e.stopPropagation(); onCopy(attachment) }}
-          aria-label="Copy embed link"
-          title="Copy embed link"
+          aria-label={t`Copy embed link`}
+          title={t`Copy embed link`}
         >
           {copiedId === attachment.id ? (
             <Check className="h-4 w-4" />
@@ -502,8 +505,8 @@ function AttachmentGridItem({
           size="icon"
           onClick={(e) => { e.stopPropagation(); onDelete(attachment) }}
           disabled={isDeleting}
-          aria-label="Delete attachment"
-          title="Delete"
+          aria-label={t`Delete attachment`}
+          title={t`Delete`}
         >
           {isDeleting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -524,6 +527,7 @@ function AttachmentListItem({
   onDelete,
   onOpen,
 }: AttachmentItemProps) {
+  const { t } = useLingui()
   const { formatFileSize, formatTimestamp } = useFormat()
   const FileIcon = getFileIcon(attachment.type)
   const { baseURL } = useWikiBaseURL()
@@ -569,8 +573,8 @@ function AttachmentListItem({
           variant="ghost"
           size="icon"
           onClick={() => onOpen(attachment)}
-          aria-label="Open attachment"
-          title="Open"
+          aria-label={t`Open attachment`}
+          title={t`Open`}
         >
           <ExternalLink className="h-4 w-4" />
         </Button>
@@ -578,8 +582,8 @@ function AttachmentListItem({
           variant="ghost"
           size="icon"
           onClick={() => onCopy(attachment)}
-          aria-label="Copy embed link"
-          title="Copy embed link"
+          aria-label={t`Copy embed link`}
+          title={t`Copy embed link`}
         >
           {copiedId === attachment.id ? (
             <Check className="h-4 w-4" />
@@ -593,8 +597,8 @@ function AttachmentListItem({
           onClick={() => onDelete(attachment)}
           disabled={isDeleting}
           className="text-muted-foreground"
-          aria-label="Delete attachment"
-          title="Delete"
+          aria-label={t`Delete attachment`}
+          title={t`Delete`}
         >
           {isDeleting ? (
             <Loader2 className="h-4 w-4 animate-spin" />

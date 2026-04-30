@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useLingui } from '@lingui/react/macro'
 import { useTags } from '@/hooks/use-wiki'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
 import { TagsList, TagsListSkeleton } from '@/features/wiki/tags-list'
@@ -9,15 +10,16 @@ export const Route = createFileRoute('/_authenticated/tags')({
 })
 
 function TagsRoute() {
+  const { t } = useLingui()
   const navigate = Route.useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
-  usePageTitle('All tags')
+  usePageTitle(t`All tags`)
   const { data, isLoading, error, refetch } = useTags()
 
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title="All tags" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={t`All tags`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
           <TagsListSkeleton />
         </Main>
@@ -28,7 +30,7 @@ function TagsRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title="All tags" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={t`All tags`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -38,7 +40,7 @@ function TagsRoute() {
 
   return (
     <>
-      <WikiRouteHeader title="All tags" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`All tags`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
       <Main>
         <TagsList tags={data?.tags ?? []} />
       </Main>

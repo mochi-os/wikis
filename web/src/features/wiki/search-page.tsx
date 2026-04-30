@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import { Search, FileText, ArrowRight } from 'lucide-react'
 import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web'
@@ -10,6 +11,7 @@ interface SearchPageProps {
 }
 
 export function SearchPage({ initialQuery = '' }: SearchPageProps) {
+  const { t } = useLingui()
   const [query, setQuery] = useState(initialQuery)
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery)
 
@@ -44,7 +46,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
       <div className="space-y-4">
         <h1 className="flex items-center gap-3 text-2xl font-bold">
           <Search className="h-6 w-6" />
-          Search Wiki
+          <Trans>Search Wiki</Trans>
         </h1>
 
         {/* Search input */}
@@ -53,7 +55,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search pages by title or content..."
+            placeholder={t`Search pages by title or content...`}
             className="pl-10"
             autoFocus
           />
@@ -66,8 +68,8 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
       {!debouncedQuery ? (
         <EmptyState
           icon={Search}
-          title="Enter a search term"
-          description="Search pages by title or content."
+          title={t`Enter a search term`}
+          description={t`Search pages by title or content.`}
           className="py-8"
         />
       ) : isLoading ? (
@@ -78,7 +80,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
         <EmptyState
           icon={FileText}
           title={`No pages found for "${debouncedQuery}"`}
-          description="Try different search terms."
+          description={t`Try different search terms.`}
           className="py-8"
         />
       ) : (

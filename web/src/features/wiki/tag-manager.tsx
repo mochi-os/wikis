@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import { Plus, X, Tag as TagIcon } from 'lucide-react'
 import {
@@ -20,6 +21,7 @@ interface TagManagerProps {
 }
 
 export function TagManager({ slug, tags }: TagManagerProps) {
+  const { t } = useLingui()
   const [newTag, setNewTag] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const addTag = useAddTag()
@@ -31,7 +33,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
     const tag = newTag.trim().toLowerCase()
     if (!tag) return
     if (tags.includes(tag)) {
-      toast.error('Tag already exists')
+      toast.error(t`Tag already exists`)
       return
     }
 
@@ -44,7 +46,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
           setIsOpen(false)
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to add tag'))
+          toast.error(getErrorMessage(error, t`Failed to add tag`))
         },
       }
     )
@@ -58,7 +60,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
           toast.success(`Tag "${tag}" removed`)
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to remove tag'))
+          toast.error(getErrorMessage(error, t`Failed to remove tag`))
         },
       }
     )
@@ -107,7 +109,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Enter tag name"
+                placeholder={t`Enter tag name`}
                 autoFocus
               />
               <div className="flex justify-end gap-2">
@@ -116,7 +118,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
                   size="sm"
                   onClick={() => setIsOpen(false)}
                 >
-                  Cancel
+                  <Trans>Cancel</Trans>
                 </Button>
                 <Button
                   size="sm"

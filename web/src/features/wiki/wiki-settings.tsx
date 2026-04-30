@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -120,6 +121,7 @@ interface WikiSettingsProps {
 }
 
 export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permissions }: WikiSettingsProps) {
+  const { t } = useLingui()
   const contextValue: WikiSettingsContextValue = {
     baseURL: baseURL ?? null,
     wiki: wiki ?? null,
@@ -135,7 +137,7 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
       {/* Tabs */}
       <div
         role="tablist"
-        aria-label="Wiki settings sections"
+        aria-label={t`Wiki settings sections`}
         className="flex gap-1 border-b"
         onKeyDown={(e) => {
           const tabButtons = e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')
@@ -199,6 +201,7 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
 const DISALLOWED_NAME_CHARS = /[<>\r\n]/
 
 function SettingsTab() {
+  const { t } = useLingui()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const settingsContext = useSettingsContext()
@@ -316,11 +319,11 @@ function SettingsTab() {
         : endpoints.wiki.rename
       await requestHelpers.post(url, { name: trimmedName })
       setCurrentName(trimmedName)
-      toast.success('Wiki renamed')
+      toast.success(t`Wiki renamed`)
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
       setIsEditingName(false)
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Failed to rename wiki'))
+      toast.error(getErrorMessage(err, t`Failed to rename wiki`))
     } finally {
       setIsRenaming(false)
     }
@@ -340,11 +343,11 @@ function SettingsTab() {
           name: 'home',
           value: homePage.trim() || 'home',
         })
-        toast.success('Settings saved')
+        toast.success(t`Settings saved`)
         setHasChanges(false)
         queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
       } catch (err) {
-        toast.error(getErrorMessage(err, 'Failed to save settings'))
+        toast.error(getErrorMessage(err, t`Failed to save settings`))
       } finally {
         setIsSaving(false)
       }
@@ -353,11 +356,11 @@ function SettingsTab() {
         { name: 'home', value: homePage.trim() || 'home' },
         {
           onSuccess: () => {
-            toast.success('Settings saved')
+            toast.success(t`Settings saved`)
             setHasChanges(false)
           },
           onError: (error) => {
-            toast.error(getErrorMessage(error, 'Failed to save settings'))
+            toast.error(getErrorMessage(error, t`Failed to save settings`))
           },
         }
       )
@@ -369,20 +372,20 @@ function SettingsTab() {
       setIsSyncing(true)
       try {
         await requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.sync}`, {})
-        toast.success('Wiki synced')
+        toast.success(t`Wiki synced`)
         queryClient.invalidateQueries({ queryKey: ['wiki'] })
       } catch (err) {
-        toast.error(getErrorMessage(err, 'Failed to sync wiki'))
+        toast.error(getErrorMessage(err, t`Failed to sync wiki`))
       } finally {
         setIsSyncing(false)
       }
     } else {
       syncWiki.mutate(undefined, {
         onSuccess: () => {
-          toast.success('Wiki synced')
+          toast.success(t`Wiki synced`)
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to sync wiki'))
+          toast.error(getErrorMessage(error, t`Failed to sync wiki`))
         },
       })
     }
@@ -393,21 +396,21 @@ function SettingsTab() {
       setIsDeleting(true)
       try {
         await requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.delete}`, {})
-        toast.success('Wiki deleted')
+        toast.success(t`Wiki deleted`)
         void navigate({ to: '/' })
       } catch (err) {
-        toast.error(getErrorMessage(err, 'Failed to delete wiki'))
+        toast.error(getErrorMessage(err, t`Failed to delete wiki`))
       } finally {
         setIsDeleting(false)
       }
     } else {
       deleteWiki.mutate(undefined, {
         onSuccess: () => {
-          toast.success('Wiki deleted')
+          toast.success(t`Wiki deleted`)
           void navigate({ to: '/' })
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to delete wiki'))
+          toast.error(getErrorMessage(error, t`Failed to delete wiki`))
         },
       })
     }
@@ -441,9 +444,9 @@ function SettingsTab() {
   return (
     <div className="space-y-6">
       {wikiInfo && (
-        <Section title="Identity" description="Unique identifiers for this wiki.">
+        <Section title={t`Identity`} description={t`Unique identifiers for this wiki.`}>
           <div className="divide-y-0">
-            <FieldRow label="Name">
+            <FieldRow label={t`Name`}>
               {isEditingName ? (
                 <div className="flex w-full flex-col gap-1">
                   <div className="flex items-center gap-2">
@@ -502,11 +505,11 @@ function SettingsTab() {
                 </div>
               )}
             </FieldRow>
-            <FieldRow label="Entity ID">
+            <FieldRow label={t`Entity ID`}>
               <DataChip value={wikiInfo.id} truncate="middle" />
             </FieldRow>
             {fingerprint && (
-              <FieldRow label="Fingerprint">
+              <FieldRow label={t`Fingerprint`}>
                 <DataChip value={fingerprint} truncate="middle" />
               </FieldRow>
             )}
@@ -516,8 +519,8 @@ function SettingsTab() {
 
       {data?.settings?.source && (
         <Section
-          title="Subscription"
-          description="This wiki is subscribed to a source wiki and receives updates from it."
+          title={t`Subscription`}
+          description={t`This wiki is subscribed to a source wiki and receives updates from it.`}
           action={
             <Button variant="outline" onClick={() => void handleSync()} disabled={syncPending}>
               <RefreshCw className={cn("mr-2 h-4 w-4", syncPending && "animate-spin")} />
@@ -526,7 +529,7 @@ function SettingsTab() {
           }
         >
           <div className="divide-y-0">
-            <FieldRow label="Source">
+            <FieldRow label={t`Source`}>
               <ValueLinkChip value={data.settings.source} />
             </FieldRow>
           </div>
@@ -535,14 +538,14 @@ function SettingsTab() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Home page</CardTitle>
+          <CardTitle><Trans>Home page</Trans></CardTitle>
           <CardDescription>
-            The page that users see when they first visit the wiki.
+            <Trans>The page that users see when they first visit the wiki.</Trans>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="home-page">Use as home</Label>
+            <Label htmlFor="home-page"><Trans>Use as home</Trans></Label>
             <Input
               id="home-page"
               value={homePage}
@@ -568,9 +571,9 @@ function SettingsTab() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Delete wiki</p>
+                <p className="font-medium"><Trans>Delete wiki</Trans></p>
                 <p className="text-sm text-muted-foreground">
-                  Permanently delete this wiki and all its contents. This cannot be undone.
+                  <Trans>Permanently delete this wiki and all its contents. This cannot be undone.</Trans>
                 </p>
               </div>
               <Button
@@ -585,7 +588,7 @@ function SettingsTab() {
             <ConfirmDialog
               open={deleteConfirmOpen}
               onOpenChange={setDeleteConfirmOpen}
-              title="Are you absolutely sure?"
+              title={t`Are you absolutely sure?`}
               desc="This action cannot be undone. This will permanently delete the wiki and all its contents."
               confirmText="Delete wiki"
               destructive
@@ -607,6 +610,7 @@ const WIKI_ACCESS_LEVELS: AccessLevel[] = [
 ]
 
 function AccessTab() {
+  const { t } = useLingui()
   const { data: groupsData } = useGroups()
   const settingsContext = useSettingsContext()
 
@@ -634,7 +638,7 @@ function AccessTab() {
       )
       setRules(response?.rules ?? [])
     } catch (err) {
-      setError(new Error(getErrorMessage(err, 'Failed to load access rules')))
+      setError(new Error(getErrorMessage(err, t`Failed to load access rules`)))
     } finally {
       setIsLoading(false)
     }
@@ -650,7 +654,7 @@ function AccessTab() {
       toast.success(`Access set for ${subjectName}`)
       void loadRules()
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Failed to set access level'))
+      toast.error(getErrorMessage(err, t`Failed to set access level`))
       throw err
     }
   }
@@ -658,20 +662,20 @@ function AccessTab() {
   const handleLevelChange = async (subject: string, level: string) => {
     try {
       await requestHelpers.post(apiUrl(endpoints.wiki.accessSet), { subject, level })
-      toast.success('Access updated')
+      toast.success(t`Access updated`)
       void loadRules()
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Failed to update access level'))
+      toast.error(getErrorMessage(err, t`Failed to update access level`))
     }
   }
 
   const handleRevoke = async (subject: string) => {
     try {
       await requestHelpers.post(apiUrl(endpoints.wiki.accessRevoke), { subject })
-      toast.success('Access removed')
+      toast.success(t`Access removed`)
       void loadRules()
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Failed to remove access'))
+      toast.error(getErrorMessage(err, t`Failed to remove access`))
     }
   }
 
@@ -682,7 +686,7 @@ function AccessTab() {
         <div className="flex justify-end">
           <Button onClick={() => setDialogOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Add
+            <Trans>Add</Trans>
           </Button>
         </div>
 
@@ -716,6 +720,7 @@ function AccessTab() {
 }
 
 function ReplicasTab() {
+  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   const settingsContext = useSettingsContext()
   const wikiContextResult = useWikiContext()
@@ -743,7 +748,7 @@ function ReplicasTab() {
       )
       setReplicas(response?.replicas ?? [])
     } catch (err) {
-      setError(new Error(getErrorMessage(err, 'Failed to load replicas')))
+      setError(new Error(getErrorMessage(err, t`Failed to load replicas`)))
     } finally {
       setIsLoading(false)
     }
@@ -762,7 +767,7 @@ function ReplicasTab() {
       toast.success(`Replica "${name || replicaId.slice(0, 12)}..." removed`)
       void loadReplicas()
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Failed to remove replica'))
+      toast.error(getErrorMessage(err, t`Failed to remove replica`))
     } finally {
       setIsRemoving(false)
     }
@@ -772,7 +777,7 @@ function ReplicasTab() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Replicas</CardTitle>
+          <CardTitle><Trans>Replicas</Trans></CardTitle>
         </CardHeader>
         <CardContent>
           <ListSkeleton variant="simple" height="h-10" count={2} />
@@ -785,7 +790,7 @@ function ReplicasTab() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Replicas</CardTitle>
+          <CardTitle><Trans>Replicas</Trans></CardTitle>
         </CardHeader>
         <CardContent>
           <GeneralError error={error} minimal mode="inline" reset={() => void loadReplicas()} />
@@ -799,13 +804,13 @@ function ReplicasTab() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Replicas</CardTitle>
+          <CardTitle><Trans>Replicas</Trans></CardTitle>
         </CardHeader>
         <CardContent>
           <EmptyState
             icon={Users}
-            title="No replicas yet"
-            description="When other wikis replicate this wiki, they will appear here."
+            title={t`No replicas yet`}
+            description={t`When other wikis replicate this wiki, they will appear here.`}
             className="py-6"
           />
         </CardContent>
@@ -816,7 +821,7 @@ function ReplicasTab() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Replicas</CardTitle>
+        <CardTitle><Trans>Replicas</Trans></CardTitle>
       </CardHeader>
       <CardContent>
         {replicas.length > 0 ? (
@@ -824,9 +829,9 @@ function ReplicasTab() {
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
-                <TableHead>Subscribed</TableHead>
-                <TableHead>Last synced</TableHead>
-                <TableHead className="w-20">Actions</TableHead>
+                <TableHead><Trans>Subscribed</Trans></TableHead>
+                <TableHead><Trans>Last synced</Trans></TableHead>
+                <TableHead className="w-20"><Trans>Actions</Trans></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -857,19 +862,19 @@ function ReplicasTab() {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Remove replica?</AlertDialogTitle>
+                          <AlertDialogTitle><Trans>Remove replica?</Trans></AlertDialogTitle>
                           <AlertDialogDescription>
                             This will stop sending updates to "{replica.name || `${replica.id.slice(0, 16)}...`}".
                             They can replicate again if they want.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => void handleRemove(replica.id, replica.name)}
                           >
                             <Minus className="h-4 w-4" />
-                            Remove
+                            <Trans>Remove</Trans>
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -882,8 +887,8 @@ function ReplicasTab() {
         ) : (
           <EmptyState
             icon={Users}
-            title="No replicas yet"
-            description="When other wikis replicate this wiki, they will appear here."
+            title={t`No replicas yet`}
+            description={t`When other wikis replicate this wiki, they will appear here.`}
             className="py-6"
           />
         )}
@@ -893,6 +898,7 @@ function ReplicasTab() {
 }
 
 function RedirectsTab() {
+  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   const settingsContext = useSettingsContext()
 
@@ -918,7 +924,7 @@ function RedirectsTab() {
       )
       setRedirects(response?.redirects ?? [])
     } catch (err) {
-      setError(new Error(getErrorMessage(err, 'Failed to load redirects')))
+      setError(new Error(getErrorMessage(err, t`Failed to load redirects`)))
     } finally {
       setIsLoading(false)
     }
@@ -935,7 +941,7 @@ function RedirectsTab() {
       toast.success(`Redirect "${source}" deleted`)
       void loadRedirects()
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Failed to delete redirect'))
+      toast.error(getErrorMessage(err, t`Failed to delete redirect`))
     } finally {
       setIsDeleting(false)
     }
@@ -945,7 +951,7 @@ function RedirectsTab() {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Redirects</CardTitle>
+          <CardTitle><Trans>Redirects</Trans></CardTitle>
           <AddRedirectDialog baseURL={settingsContext.baseURL} onSuccess={loadRedirects} />
         </div>
       </CardHeader>
@@ -957,18 +963,18 @@ function RedirectsTab() {
         ) : redirects.length === 0 ? (
           <EmptyState
             icon={CornerDownRight}
-            title="No redirects configured"
-            description="Create a redirect to forward one URL to another."
+            title={t`No redirects configured`}
+            description={t`Create a redirect to forward one URL to another.`}
             className="py-6"
           />
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Source</TableHead>
+                <TableHead><Trans>Source</Trans></TableHead>
                 <TableHead></TableHead>
-                <TableHead>Target</TableHead>
-                <TableHead>Created</TableHead>
+                <TableHead><Trans>Target</Trans></TableHead>
+                <TableHead><Trans>Created</Trans></TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -1003,19 +1009,19 @@ function RedirectsTab() {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Delete redirect?</AlertDialogTitle>
+                          <AlertDialogTitle><Trans>Delete redirect?</Trans></AlertDialogTitle>
                           <AlertDialogDescription>
                             This will remove the redirect from "{redirect.source}" to "
                             {redirect.target}".
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => void handleDelete(redirect.source)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
-                            Delete
+                            <Trans>Delete</Trans>
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -1037,6 +1043,7 @@ interface AddRedirectDialogProps {
 }
 
 function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
+  const { t } = useLingui()
   const [open, setOpen] = useState(false)
   const [source, setSource] = useState('')
   const [target, setTarget] = useState('')
@@ -1050,7 +1057,7 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
     e.preventDefault()
 
     if (!source.trim() || !target.trim()) {
-      toast.error('Both source and target are required')
+      toast.error(t`Both source and target are required`)
       return
     }
 
@@ -1060,13 +1067,13 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
         source: source.trim(),
         target: target.trim(),
       })
-      toast.success('Redirect created')
+      toast.success(t`Redirect created`)
       setSource('')
       setTarget('')
       setOpen(false)
       onSuccess()
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Failed to create redirect'))
+      toast.error(getErrorMessage(err, t`Failed to create redirect`))
     } finally {
       setIsCreating(false)
     }
@@ -1077,20 +1084,20 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add redirect
+          <Trans>Add redirect</Trans>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={(e) => void handleSubmit(e)}>
           <DialogHeader>
-            <DialogTitle>Create redirect</DialogTitle>
+            <DialogTitle><Trans>Create redirect</Trans></DialogTitle>
             <DialogDescription>
-              Create a redirect from one URL to another.
+              <Trans>Create a redirect from one URL to another.</Trans>
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="source">Source URL</Label>
+              <Label htmlFor="source"><Trans>Source URL</Trans></Label>
               <Input
                 id="source"
                 value={source}
@@ -1098,11 +1105,11 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
                 placeholder="old-page-name"
               />
               <p className="text-muted-foreground text-sm">
-                The URL that will be redirected
+                <Trans>The URL that will be redirected</Trans>
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="target">Target URL</Label>
+              <Label htmlFor="target"><Trans>Target URL</Trans></Label>
               <Input
                 id="target"
                 value={target}
@@ -1110,16 +1117,16 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
                 placeholder="new-page-name"
               />
               <p className="text-muted-foreground text-sm">
-                The existing page to redirect to
+                <Trans>The existing page to redirect to</Trans>
               </p>
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
+              <Trans>Cancel</Trans>
             </Button>
             <Button type="submit" disabled={isCreating}>
-              {isCreating ? 'Creating...' : <><Plus className="h-4 w-4 mr-2" />Create redirect</>}
+              {isCreating ? 'Creating...' : <><Plus className="h-4 w-4 mr-2" /><Trans>Create redirect</Trans></>}
             </Button>
           </DialogFooter>
         </form>

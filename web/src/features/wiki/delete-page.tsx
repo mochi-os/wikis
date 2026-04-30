@@ -1,4 +1,5 @@
 import { Trash2, ArrowLeft } from 'lucide-react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
 import {
   Button,
@@ -21,6 +22,7 @@ interface DeletePageProps {
 }
 
 export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePageProps) {
+  const { t } = useLingui()
   const deletePage = useDeletePage()
   const navigate = useNavigate()
 
@@ -35,7 +37,7 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
         }
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to delete page'))
+        toast.error(getErrorMessage(error, t`Failed to delete page`))
       },
     })
   }
@@ -46,7 +48,7 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trash2 className="h-5 w-5" />
-            Delete page
+            <Trans>Delete page</Trans>
           </CardTitle>
           <CardDescription>
             You are about to delete the page <strong>"{title}"</strong> ({slug}).
@@ -59,12 +61,12 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
             {wikiId ? (
               <Link to="/$wikiId/$page" params={{ wikiId, page: slug }}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Cancel
+                <Trans>Cancel</Trans>
               </Link>
             ) : (
               <Link to="/$page" params={{ page: slug }}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Cancel
+                <Trans>Cancel</Trans>
               </Link>
             )}
           </Button>

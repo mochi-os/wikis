@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { RotateCcw, ArrowLeft } from 'lucide-react'
 import {
@@ -24,6 +25,7 @@ interface RevertPageProps {
 }
 
 export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
+  const { t } = useLingui()
   const revertPage = useRevertPage()
   const navigate = useNavigate()
   const [comment, setComment] = useState(`Reverted to version ${version}`)
@@ -41,7 +43,7 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
           }
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to revert page'))
+          toast.error(getErrorMessage(error, t`Failed to revert page`))
         },
       }
     )
@@ -53,7 +55,7 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <RotateCcw className="h-5 w-5" />
-            Revert Page
+            <Trans>Revert Page</Trans>
           </CardTitle>
           <CardDescription>
             You are about to revert <strong>{slug}</strong> to version{' '}
@@ -63,12 +65,12 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="comment">Revert comment</Label>
+            <Label htmlFor="comment"><Trans>Revert comment</Trans></Label>
             <Input
               id="comment"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Reason for reverting"
+              placeholder={t`Reason for reverting`}
             />
           </div>
         </CardContent>
@@ -78,12 +80,12 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
             {wikiId ? (
               <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Cancel
+                <Trans>Cancel</Trans>
               </Link>
             ) : (
               <Link to="/$page/history" params={{ page: slug }}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Cancel
+                <Trans>Cancel</Trans>
               </Link>
             )}
           </Button>

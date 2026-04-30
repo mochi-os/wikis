@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Main, usePageTitle } from '@mochi/web'
 import { AttachmentsPage } from '@/features/wiki/attachments-page'
@@ -11,13 +12,14 @@ export const Route = createFileRoute('/_authenticated/$page/attachments')({
 })
 
 function AttachmentsRoute() {
+  const { t } = useLingui()
   const params = Route.useParams()
   const slug = params.page ?? ''
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   const { data: pageData } = usePage(slug)
   const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
-  usePageTitle('Attachments')
+  usePageTitle(t`Attachments`)
 
   // Register page with sidebar context for tree expansion
   const { setPage } = useSidebarContext()
@@ -28,7 +30,7 @@ function AttachmentsRoute() {
 
   return (
     <>
-      <WikiRouteHeader title="Attachments" back={{ label: 'Back to page', onFallback: goBackToPage }} />
+      <WikiRouteHeader title={t`Attachments`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
       <Main>
         <AttachmentsPage slug={slug} />
       </Main>

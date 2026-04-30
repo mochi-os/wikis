@@ -57,7 +57,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
       info = await requestHelpers.get<InfoResponse>(`${baseURL}info`)
     } catch (error) {
       // Keep wiki routes usable when info is temporarily unavailable.
-      infoError = getErrorMessage(error, 'Failed to load wiki info')
+      infoError = getErrorMessage(error, "Failed to load wiki info")
     }
 
     if (!info?.wiki) {

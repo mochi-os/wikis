@@ -1,4 +1,5 @@
 import { History } from 'lucide-react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import { EntityAvatar, useFormat, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
 import type { Change } from '@/types/wiki'
@@ -9,17 +10,18 @@ interface ChangesListProps {
 }
 
 export function ChangesList({ changes, wikiId }: ChangesListProps) {
+  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <History className="h-6 w-6" />
-        <h1 className="text-2xl font-bold">Recent changes</h1>
+        <h1 className="text-2xl font-bold"><Trans>Recent changes</Trans></h1>
       </div>
 
       <p className="text-muted-foreground">
-        Recent edits across all pages in this wiki.
+        <Trans>Recent edits across all pages in this wiki.</Trans>
       </p>
 
       <Separator />
@@ -29,19 +31,19 @@ export function ChangesList({ changes, wikiId }: ChangesListProps) {
         <div className="py-12">
           <EmptyState
             icon={History}
-            title="No changes yet"
-            description="Changes will appear here when pages are edited."
+            title={t`No changes yet`}
+            description={t`Changes will appear here when pages are edited.`}
           />
         </div>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Page</TableHead>
-              <TableHead>Version</TableHead>
-              <TableHead>Author</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Comment</TableHead>
+              <TableHead><Trans>Page</Trans></TableHead>
+              <TableHead><Trans>Version</Trans></TableHead>
+              <TableHead><Trans>Author</Trans></TableHead>
+              <TableHead><Trans>Date</Trans></TableHead>
+              <TableHead><Trans>Comment</Trans></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Tags, Tag as TagIcon } from 'lucide-react'
 import { Badge, Separator, Skeleton, EmptyState } from '@mochi/web'
 import type { Tag } from '@/types/wiki'
@@ -8,16 +9,17 @@ interface TagsListProps {
 }
 
 export function TagsList({ tags }: TagsListProps) {
+  const { t } = useLingui()
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Tags className="h-6 w-6" />
-        <h1 className="text-2xl font-bold">All tags</h1>
+        <h1 className="text-2xl font-bold"><Trans>All tags</Trans></h1>
       </div>
 
       <p className="text-muted-foreground">
-        Browse pages by tag. Click a tag to see all pages with that tag.
+        <Trans>Browse pages by tag. Click a tag to see all pages with that tag.</Trans>
       </p>
 
       <Separator />
@@ -27,8 +29,8 @@ export function TagsList({ tags }: TagsListProps) {
         <div className="py-12">
           <EmptyState
             icon={Tags}
-            title="No tags found"
-            description="Add tags to group pages in your wiki."
+            title={t`No tags found`}
+            description={t`Add tags to group pages in your wiki.`}
           />
         </div>
       ) : (

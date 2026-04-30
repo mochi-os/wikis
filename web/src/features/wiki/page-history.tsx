@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { History, Eye, RotateCcw } from 'lucide-react'
 import { Button, EntityAvatar, EmptyState, useFormat, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
 import type { Revision } from '@/types/wiki'
@@ -16,13 +17,14 @@ export function PageHistory({
   currentVersion,
   wikiId,
 }: PageHistoryProps) {
+  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <History className="h-6 w-6" />
-        <h1 className="text-2xl font-bold">History</h1>
+        <h1 className="text-2xl font-bold"><Trans>History</Trans></h1>
       </div>
 
       <p className="text-muted-foreground">
@@ -35,19 +37,19 @@ export function PageHistory({
       {revisions.length === 0 ? (
         <EmptyState
           icon={History}
-          title="No revisions found"
+          title={t`No revisions found`}
           className="py-8"
         />
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-20">Version</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Author</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Comment</TableHead>
-              <TableHead className="w-32">Actions</TableHead>
+              <TableHead className="w-20"><Trans>Version</Trans></TableHead>
+              <TableHead><Trans>Title</Trans></TableHead>
+              <TableHead><Trans>Author</Trans></TableHead>
+              <TableHead><Trans>Date</Trans></TableHead>
+              <TableHead><Trans>Comment</Trans></TableHead>
+              <TableHead className="w-32"><Trans>Actions</Trans></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -96,7 +98,7 @@ export function PageHistory({
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" asChild title="View">
+                    <Button variant="ghost" size="icon" asChild title={t`View`}>
                       {wikiId ? (
                         <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }}>
                           <Eye className="h-4 w-4" />
@@ -112,7 +114,7 @@ export function PageHistory({
                         variant="ghost"
                         size="icon"
                         asChild
-                        title="Revert to this version"
+                        title={t`Revert to this version`}
                       >
                         {wikiId ? (
                           <Link to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>

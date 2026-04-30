@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Navigate, useNavigate } from '@tanstack/react-router'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useCallback, useEffect, useState } from 'react'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
 import { Button, ConfirmDialog, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, GeneralError, usePageTitle, toast, getErrorMessage, Main } from '@mochi/web'
@@ -20,6 +21,7 @@ export const Route = createFileRoute('/_authenticated/$page/')({
 })
 
 function WikiPageRoute() {
+  const { t } = useLingui()
   const params = Route.useParams()
   const slug = params.page ?? ''
   const navigate = useNavigate()
@@ -57,12 +59,12 @@ function WikiPageRoute() {
   const handleUnsubscribe = useCallback(() => {
     unsubscribeWiki.mutate(undefined, {
       onSuccess: () => {
-        toast.success('Unsubscribed')
+        toast.success(t`Unsubscribed`)
         setUnsubscribeConfirmOpen(false)
         void navigate({ to: '/' })
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
+        toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
       },
     })
   }, [unsubscribeWiki, navigate])
@@ -104,8 +106,8 @@ function WikiPageRoute() {
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Page actions"
-            title="Page actions"
+            aria-label={t`Page actions`}
+            title={t`Page actions`}
             className="size-11 md:size-9"
           >
             <Ellipsis className="size-4" />
@@ -116,7 +118,7 @@ function WikiPageRoute() {
             <DropdownMenuItem asChild>
               <Link preload={false} to="/$page/edit" params={{ page: slug }}>
                 <FilePlus className="size-4" />
-                Create this page
+                <Trans>Create this page</Trans>
               </Link>
             </DropdownMenuItem>
           )}
@@ -124,7 +126,7 @@ function WikiPageRoute() {
             <DropdownMenuItem asChild>
               <Link preload={false} to="/new">
                 <FilePlus className="size-4" />
-                New page
+                <Trans>New page</Trans>
               </Link>
             </DropdownMenuItem>
           )}
@@ -134,7 +136,7 @@ function WikiPageRoute() {
               <DropdownMenuItem asChild>
                 <Link preload={false} to="/settings">
                   <Settings className="size-4" />
-                  Wiki settings
+                  <Trans>Wiki settings</Trans>
                 </Link>
               </DropdownMenuItem>
             </>
@@ -146,7 +148,7 @@ function WikiPageRoute() {
     return (
       <>
         <WikiRouteHeader
-          title="Page not found"
+          title={t`Page not found`}
           menuAction={notFoundMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
@@ -167,33 +169,33 @@ function WikiPageRoute() {
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Page actions"
-            title="Page actions"
+            aria-label={t`Page actions`}
+            title={t`Page actions`}
             className="size-11 md:size-9"
           >
             <Ellipsis className="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Page</DropdownMenuLabel>
+          <DropdownMenuLabel><Trans>Page</Trans></DropdownMenuLabel>
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link preload={false} to="/$page/edit" params={{ page: slug }}>
                 <Pencil className="size-4" />
-                Edit
+                <Trans>Edit</Trans>
               </Link>
             </DropdownMenuItem>
           )}
           {permissions.edit && (
             <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
               <FileEdit className="size-4" />
-              Rename
+              <Trans>Rename</Trans>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem asChild>
             <Link preload={false} to="/$page/history" params={{ page: slug }}>
               <History className="size-4" />
-              History
+              <Trans>History</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
@@ -212,30 +214,30 @@ function WikiPageRoute() {
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuLabel>Wiki</DropdownMenuLabel>
+          <DropdownMenuLabel><Trans>Wiki</Trans></DropdownMenuLabel>
           <DropdownMenuItem asChild>
             <Link preload={false} to="/search">
               <Search className="size-4" />
-              Search
+              <Trans>Search</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link preload={false} to="/tags">
               <Tags className="size-4" />
-              Tags
+              <Trans>Tags</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link preload={false} to="/changes">
               <History className="size-4" />
-              Recent changes
+              <Trans>Recent changes</Trans>
             </Link>
           </DropdownMenuItem>
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link preload={false} to="/new">
                 <FilePlus className="size-4" />
-                New page
+                <Trans>New page</Trans>
               </Link>
             </DropdownMenuItem>
           )}
@@ -243,7 +245,7 @@ function WikiPageRoute() {
             <DropdownMenuItem asChild>
               <Link preload={false} to="/settings">
                 <Settings className="size-4" />
-                Settings
+                <Trans>Settings</Trans>
               </Link>
             </DropdownMenuItem>
           )}
@@ -264,7 +266,7 @@ function WikiPageRoute() {
         <ConfirmDialog
           open={unsubscribeConfirmOpen}
           onOpenChange={setUnsubscribeConfirmOpen}
-          title="Unsubscribe"
+          title={t`Unsubscribe`}
           desc="Are you sure you want to unsubscribe from this wiki?"
           confirmText="Unsubscribe"
           destructive

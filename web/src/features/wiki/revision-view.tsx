@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { Trans } from '@lingui/react/macro'
 import { Clock, ArrowLeft, RotateCcw } from 'lucide-react'
 import { Button, useFormat, Badge, Separator, Skeleton } from '@mochi/web'
 import type { RevisionDetail } from '@/types/wiki'
@@ -31,7 +32,7 @@ export function RevisionView({
                 Version {revision.version}
               </Badge>
               {isCurrentVersion && (
-                <Badge variant="outline">Current</Badge>
+                <Badge variant="outline"><Trans>Current</Trans></Badge>
               )}
             </div>
             <h1 className="text-3xl font-bold tracking-tight">
@@ -43,12 +44,12 @@ export function RevisionView({
               {wikiId ? (
                 <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to history
+                  <Trans>Back to history</Trans>
                 </Link>
               ) : (
                 <Link to="/$page/history" params={{ page: slug }}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Back to history
+                  <Trans>Back to history</Trans>
                 </Link>
               )}
             </Button>
@@ -57,12 +58,12 @@ export function RevisionView({
                 {wikiId ? (
                   <Link to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>
                     <RotateCcw className="mr-2 h-4 w-4" />
-                    Revert to this version
+                    <Trans>Revert to this version</Trans>
                   </Link>
                 ) : (
                   <Link to="/$page/revert" params={{ page: slug }} search={{ version: revision.version }}>
                     <RotateCcw className="mr-2 h-4 w-4" />
-                    Revert to this version
+                    <Trans>Revert to this version</Trans>
                   </Link>
                 )}
               </Button>

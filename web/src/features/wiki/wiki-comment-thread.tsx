@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
 import {
   Button,
@@ -43,6 +44,7 @@ export function WikiCommentThread({
   onDelete,
   depth = 0,
 }: WikiCommentThreadProps) {
+  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   const [collapsed, setCollapsed] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -118,7 +120,7 @@ export function WikiCommentThread({
             />
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setEditing(false)}>
-                Cancel
+                <Trans>Cancel</Trans>
               </Button>
               <Button
                 size="sm"
@@ -129,7 +131,7 @@ export function WikiCommentThread({
                   setEditing(false)
                 }}
               >
-                Save
+                <Trans>Save</Trans>
               </Button>
             </div>
           </div>
@@ -157,7 +159,7 @@ export function WikiCommentThread({
               onClick={() => onStartReply(comment.id)}
             >
               <Reply className="size-3" />
-              <span>Reply</span>
+              <span><Trans>Reply</Trans></span>
             </button>
 
             {canEdit && (
@@ -170,7 +172,7 @@ export function WikiCommentThread({
                 }}
               >
                 <Pencil className="size-3" />
-                <span>Edit</span>
+                <span><Trans>Edit</Trans></span>
               </button>
             )}
 
@@ -181,7 +183,7 @@ export function WikiCommentThread({
                 onClick={() => setDeleting(true)}
               >
                 <Trash2 className="size-3" />
-                <span>Delete</span>
+                <span><Trans>Delete</Trans></span>
               </button>
             )}
           </div>
@@ -239,7 +241,7 @@ export function WikiCommentThread({
               variant='ghost'
               className='size-8'
               onClick={() => replyFileRef.current?.click()}
-              label='Attach reply files'
+              label={t`Attach reply files`}
             >
               <Paperclip className="size-4" />
             </IconButton>
@@ -248,7 +250,7 @@ export function WikiCommentThread({
               variant='ghost'
               className='size-8'
               onClick={onCancelReply}
-              label='Cancel reply'
+              label={t`Cancel reply`}
             >
               <X className="size-4" />
             </IconButton>
@@ -257,7 +259,7 @@ export function WikiCommentThread({
               className='size-8'
               disabled={!replyDraft.trim()}
               onClick={() => onSubmitReply(comment.id, replyFiles.length > 0 ? replyFiles : undefined)}
-              label='Send reply'
+              label={t`Send reply`}
             >
               <Send className="size-4" />
             </IconButton>
@@ -268,7 +270,7 @@ export function WikiCommentThread({
       <ConfirmDialog
         open={deleting}
         onOpenChange={setDeleting}
-        title="Delete comment"
+        title={t`Delete comment`}
         desc="Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
         confirmText="Delete"
         destructive={true}

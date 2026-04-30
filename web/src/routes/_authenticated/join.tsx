@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Link2, BookOpen, Search } from 'lucide-react'
 import {
@@ -23,7 +24,8 @@ export const Route = createFileRoute('/_authenticated/join')({
 })
 
 function JoinWikiPage() {
-  usePageTitle('Replicate wiki')
+  const { t } = useLingui()
+  usePageTitle(t`Replicate wiki`)
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   const [target, setTarget] = useState('')
@@ -32,16 +34,16 @@ function JoinWikiPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!target.trim()) {
-      toast.error('Wiki ID is required')
+      toast.error(t`Wiki ID is required`)
       return
     }
     joinWiki.mutate({ target: target.trim() }, {
       onSuccess: () => {
-        toast.success('Joined wiki')
+        toast.success(t`Joined wiki`)
         navigate({ to: '/' })
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to join wiki'))
+        toast.error(getErrorMessage(error, t`Failed to join wiki`))
       },
     })
   }
@@ -52,17 +54,17 @@ function JoinWikiPage() {
 
   return (
     <>
-      <WikiRouteHeader title="Replicate wiki" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`Replicate wiki`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
       <Main>
         <div className="container mx-auto max-w-lg p-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
-                Replicate wiki
+                <Trans>Replicate wiki</Trans>
               </CardTitle>
               <CardDescription>
-                Search for public wikis or enter an entity ID directly.
+                <Trans>Search for public wikis or enter an entity ID directly.</Trans>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -73,7 +75,7 @@ function JoinWikiPage() {
                   onClick={() => navigate({ to: '/find' })}
                 >
                   <Search className="h-4 w-4" />
-                  Search for wikis...
+                  <Trans>Search for wikis...</Trans>
                 </Button>
               </div>
 
@@ -83,14 +85,14 @@ function JoinWikiPage() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-card px-2 text-muted-foreground">
-                    Or enter ID directly
+                    <Trans>Or enter ID directly</Trans>
                   </span>
                 </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="target">Wiki entity ID</Label>
+                  <Label htmlFor="target"><Trans>Wiki entity ID</Trans></Label>
                   <Input
                     id="target"
                     placeholder="abc123..."
@@ -98,7 +100,7 @@ function JoinWikiPage() {
                     onChange={(e) => setTarget(e.target.value)}
                   />
                   <p className="text-muted-foreground text-sm">
-                    The entity ID of the wiki you want to replicate.
+                    <Trans>The entity ID of the wiki you want to replicate.</Trans>
                   </p>
                 </div>
                 <div className="flex gap-2 justify-end">
@@ -108,7 +110,7 @@ function JoinWikiPage() {
                     onClick={handleCancel}
                     disabled={joinWiki.isPending}
                   >
-                    Cancel
+                    <Trans>Cancel</Trans>
                   </Button>
                   <Button variant="outline" type="submit" disabled={joinWiki.isPending || !target.trim()}>
                     <Link2 className="mr-2 h-4 w-4" />

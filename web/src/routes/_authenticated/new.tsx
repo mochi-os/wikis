@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useLingui } from '@lingui/react/macro'
 import { z } from 'zod'
 import { usePageTitle, Main } from '@mochi/web'
 import { PageEditor } from '@/features/wiki/page-editor'
@@ -14,14 +15,15 @@ export const Route = createFileRoute('/_authenticated/new')({
 })
 
 function NewPageRoute() {
-  usePageTitle('New page')
+  const { t } = useLingui()
+  usePageTitle(t`New page`)
   const navigate = Route.useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   const { slug } = Route.useSearch()
 
   return (
     <>
-      <WikiRouteHeader title="New page" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`New page`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
       <Main>
         <PageEditor slug={slug ?? ''} isNew />
       </Main>

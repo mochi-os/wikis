@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import type { Passkey, TotpSetupResponse } from '@/types/account'
 import { startRegistration } from '@simplewebauthn/browser'
 import {
@@ -83,12 +84,13 @@ import {
 // ============================================================================
 
 function IdentitySection() {
+  const { t } = useLingui()
   const { data, isLoading, error, refetch } = useAccountData()
 
   return (
     <Section
-      title='Identity'
-      description='Your personal account information'
+      title={t`Identity`}
+      description={t`Your personal account information`}
     >
       {error ? (
         <GeneralError error={error} minimal mode='inline' reset={refetch} />
@@ -101,20 +103,20 @@ function IdentitySection() {
         </div>
       ) : data?.identity ? (
         <div className='divide-y-0'>
-          <FieldRow label="Name">
+          <FieldRow label={t`Name`}>
             <span className='text-foreground text-base font-semibold'>
               {data.identity.name}
             </span>
           </FieldRow>
-          <FieldRow label="Username">
+          <FieldRow label={t`Username`}>
             <span className='text-foreground text-base'>
               {data.identity.username}
             </span>
           </FieldRow>
-          <FieldRow label="Fingerprint">
+          <FieldRow label={t`Fingerprint`}>
             <DataChip value={data.identity.fingerprint} truncate='middle' />
           </FieldRow>
-          <FieldRow label="Entity ID">
+          <FieldRow label={t`Entity ID`}>
             <DataChip value={data.identity.entity} truncate='middle' />
           </FieldRow>
         </div>
@@ -128,6 +130,7 @@ function IdentitySection() {
 // ============================================================================
 
 function LoginRequirementsSection() {
+  const { t } = useLingui()
   const { data: methodsData, isLoading, error, refetch } = useMethods()
   const { data: passkeysData, error: passkeysError } = usePasskeys()
   const { data: totpData, error: totpError } = useTotpStatus()
@@ -151,18 +154,18 @@ function LoginRequirementsSection() {
 
     setMethods.mutate(newMethods, {
       onSuccess: () => {
-        toast.success('Login requirements updated')
+        toast.success(t`Login requirements updated`)
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to update login requirements'))
+        toast.error(getErrorMessage(error, t`Failed to update login requirements`))
       },
     })
   }
 
   return (
     <Section
-      title='Login requirements'
-      description='Require all selected methods to log in'
+      title={t`Login requirements`}
+      description={t`Require all selected methods to log in`}
     >
       {error ? (
         <GeneralError error={error} minimal mode='inline' reset={refetch} />
@@ -177,7 +180,7 @@ function LoginRequirementsSection() {
           <div className='flex items-center justify-between py-4 border-b border-border/40'>
             <div className='space-y-1 pr-4'>
               <Label htmlFor='method-passkey' className='text-sm font-medium'>
-                Passkey
+                <Trans>Passkey</Trans>
               </Label>
               <p className='text-muted-foreground text-xs leading-relaxed'>
                 {hasPasskey
@@ -198,7 +201,7 @@ function LoginRequirementsSection() {
           <div className='flex items-center justify-between py-4 border-b border-border/40'>
             <div className='space-y-1 pr-4'>
               <Label htmlFor='method-totp' className='text-sm font-medium'>
-                Authenticator app
+                <Trans>Authenticator app</Trans>
               </Label>
               <p className='text-muted-foreground text-xs leading-relaxed'>
                 {hasTOTP
@@ -217,10 +220,10 @@ function LoginRequirementsSection() {
           <div className='flex items-center justify-between py-4'>
             <div className='space-y-1 pr-4'>
               <Label htmlFor='method-email' className='text-sm font-medium'>
-                Email code
+                <Trans>Email code</Trans>
               </Label>
               <p className='text-muted-foreground text-xs leading-relaxed'>
-                Receive a verification code by email
+                <Trans>Receive a verification code by email</Trans>
               </p>
             </div>
             <Switch
@@ -307,16 +310,16 @@ function PasskeyRow({
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete passkey?</AlertDialogTitle>
+                <AlertDialogTitle><Trans>Delete passkey?</Trans></AlertDialogTitle>
                 <AlertDialogDescription>
                   This will remove "{passkey.name}" from your account. You won't
                   be able to use it to sign in anymore.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
                 <AlertDialogAction variant='destructive' onClick={() => onDelete(passkey.id)}>
-                  Delete
+                  <Trans>Delete</Trans>
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -328,6 +331,7 @@ function PasskeyRow({
 }
 
 function PasskeysSection() {
+  const { t } = useLingui()
   const { data, isLoading, error, refetch } = usePasskeys()
   const registerBegin = usePasskeyRegisterBegin()
   const registerFinish = usePasskeyRegisterFinish()
@@ -349,14 +353,14 @@ function PasskeysSection() {
         credential,
         name: passkeyName || 'Passkey',
       })
-      toast.success('Passkey registered')
+      toast.success(t`Passkey registered`)
       setRegisterDialogOpen(false)
       setPasskeyName('')
     } catch (error) {
       if (error instanceof Error && error.name === 'NotAllowedError') {
-        toast.error('Registration cancelled')
+        toast.error(t`Registration cancelled`)
       } else {
-        toast.error(getErrorMessage(error, 'Failed to register passkey'))
+        toast.error(getErrorMessage(error, t`Failed to register passkey`))
       }
     } finally {
       setIsRegistering(false)
@@ -367,16 +371,16 @@ function PasskeysSection() {
     renamePasskey.mutate(
       { id, name },
       {
-        onSuccess: () => toast.success('Passkey renamed'),
-        onError: (error) => toast.error(getErrorMessage(error, 'Failed to rename passkey')),
+        onSuccess: () => toast.success(t`Passkey renamed`),
+        onError: (error) => toast.error(getErrorMessage(error, t`Failed to rename passkey`)),
       }
     )
   }
 
   const handleDelete = (id: string) => {
     deletePasskey.mutate(id, {
-      onSuccess: () => toast.success('Passkey deleted'),
-      onError: (error) => toast.error(getErrorMessage(error, 'Failed to delete passkey')),
+      onSuccess: () => toast.success(t`Passkey deleted`),
+      onError: (error) => toast.error(getErrorMessage(error, t`Failed to delete passkey`)),
     })
   }
 
@@ -386,8 +390,8 @@ function PasskeysSection() {
     <Card className='shadow-md'>
       <CardHeader className='border-b/60 border-b pb-4 flex flex-row items-center justify-between'>
         <div className='space-y-1'>
-          <CardTitle className='text-lg'>Passkeys</CardTitle>
-          <CardDescription>Sign in with biometrics or security keys</CardDescription>
+          <CardTitle className='text-lg'><Trans>Passkeys</Trans></CardTitle>
+          <CardDescription><Trans>Sign in with biometrics or security keys</Trans></CardDescription>
         </div>
         <Dialog open={registerDialogOpen} onOpenChange={setRegisterDialogOpen}>
           <Button
@@ -400,16 +404,16 @@ function PasskeysSection() {
           </Button>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Register passkey</DialogTitle>
+              <DialogTitle><Trans>Register passkey</Trans></DialogTitle>
               <DialogDescription>
-                Use a security key, fingerprint, or face recognition.
+                <Trans>Use a security key, fingerprint, or face recognition.</Trans>
               </DialogDescription>
             </DialogHeader>
             <div className='py-4'>
-              <Label htmlFor='passkey-name'>Passkey name</Label>
+              <Label htmlFor='passkey-name'><Trans>Passkey name</Trans></Label>
               <Input
                 id='passkey-name'
-                placeholder='My passkey'
+                placeholder={t`My passkey`}
                 value={passkeyName}
                 onChange={(e) => setPasskeyName(e.target.value)}
                 className='mt-2'
@@ -437,16 +441,16 @@ function PasskeysSection() {
         ) : passkeys.length === 0 ? (
           <EmptyState
             icon={Key}
-            title="No passkeys registered"
+            title={t`No passkeys registered`}
             className="my-4"
           />
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Last used</TableHead>
+                <TableHead><Trans>Name</Trans></TableHead>
+                <TableHead><Trans>Created</Trans></TableHead>
+                <TableHead><Trans>Last used</Trans></TableHead>
                 <TableHead className='w-24'></TableHead>
               </TableRow>
             </TableHeader>
@@ -472,6 +476,7 @@ function PasskeysSection() {
 // ============================================================================
 
 function AuthenticatorSection() {
+  const { t } = useLingui()
   const { data, isLoading, error, refetch } = useTotpStatus()
   const setupTotp = useTotpSetup()
   const verifyTotp = useTotpVerify()
@@ -485,7 +490,7 @@ function AuthenticatorSection() {
       const result = await setupTotp.mutateAsync()
       setSetupData(result)
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to set up authenticator'))
+      toast.error(getErrorMessage(error, t`Failed to set up authenticator`))
     }
   }
 
@@ -495,14 +500,14 @@ function AuthenticatorSection() {
     try {
       const result = await verifyTotp.mutateAsync(verifyCode)
       if (result.ok) {
-        toast.success('Authenticator app enabled')
+        toast.success(t`Authenticator app enabled`)
         setSetupData(null)
         setVerifyCode('')
       } else {
-        toast.error('Invalid code')
+        toast.error(t`Invalid code`)
       }
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to verify code'))
+      toast.error(getErrorMessage(error, t`Failed to verify code`))
     } finally {
       setIsVerifying(false)
     }
@@ -510,8 +515,8 @@ function AuthenticatorSection() {
 
   const handleDisable = () => {
     disableTotp.mutate(undefined, {
-      onSuccess: () => toast.success('Authenticator app disabled'),
-      onError: (error) => toast.error(getErrorMessage(error, 'Failed to disable authenticator')),
+      onSuccess: () => toast.success(t`Authenticator app disabled`),
+      onError: (error) => toast.error(getErrorMessage(error, t`Failed to disable authenticator`)),
     })
   }
 
@@ -519,8 +524,8 @@ function AuthenticatorSection() {
 
   return (
     <Section
-      title='Authenticator App'
-      description='Use an authenticator app to generate one-time codes'
+      title={t`Authenticator App`}
+      description={t`Use an authenticator app to generate one-time codes`}
     >
       {error ? (
         <GeneralError error={error} minimal mode='inline' reset={refetch} />
@@ -557,7 +562,7 @@ function AuthenticatorSection() {
                 Verify & Enable
                 {isVerifying && <Loader2 className='ml-2 h-4 w-4 animate-spin' />}
               </Button>
-              <Button variant='ghost' onClick={() => setSetupData(null)}>Cancel</Button>
+              <Button variant='ghost' onClick={() => setSetupData(null)}><Trans>Cancel</Trans></Button>
             </div>
           </div>
         </div>
@@ -568,30 +573,30 @@ function AuthenticatorSection() {
               <Check className='h-5 w-5 text-green-600 dark:text-green-500' />
             </div>
             <div>
-              <p className='text-sm font-medium'>Status: Enabled</p>
-              <p className='text-muted-foreground text-xs'>Authenticator app is active</p>
+              <p className='text-sm font-medium'><Trans>Status: Enabled</Trans></p>
+              <p className='text-muted-foreground text-xs'><Trans>Authenticator app is active</Trans></p>
             </div>
           </div>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant='destructive' size='sm'>Disable</Button>
+              <Button variant='destructive' size='sm'><Trans>Disable</Trans></Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Disable authenticator?</AlertDialogTitle>
-                <AlertDialogDescription>This will remove the app from your account.</AlertDialogDescription>
+                <AlertDialogTitle><Trans>Disable authenticator?</Trans></AlertDialogTitle>
+                <AlertDialogDescription><Trans>This will remove the app from your account.</Trans></AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDisable}>Disable</AlertDialogAction>
+                <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
+                <AlertDialogAction onClick={handleDisable}><Trans>Disable</Trans></AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </div>
       ) : (
         <div className='py-6 text-center'>
-          <p className='text-muted-foreground mb-4 text-sm'>Add an app for additional security</p>
-          <Button onClick={handleSetup} disabled={setupTotp.isPending}>Set up authenticator</Button>
+          <p className='text-muted-foreground mb-4 text-sm'><Trans>Add an app for additional security</Trans></p>
+          <Button onClick={handleSetup} disabled={setupTotp.isPending}><Trans>Set up authenticator</Trans></Button>
         </div>
       )}
     </Section>
@@ -603,6 +608,7 @@ function AuthenticatorSection() {
 // ============================================================================
 
 function RecoveryCodesSection() {
+  const { t } = useLingui()
   const { data, isLoading, error, refetch } = useRecoveryStatus()
   const generateCodes = useRecoveryGenerate()
   const [showCodes, setShowCodes] = useState<string[] | null>(null)
@@ -612,7 +618,7 @@ function RecoveryCodesSection() {
       const result = await generateCodes.mutateAsync()
       setShowCodes(result.codes)
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to generate codes'))
+      toast.error(getErrorMessage(error, t`Failed to generate codes`))
     }
   }
 
@@ -620,8 +626,8 @@ function RecoveryCodesSection() {
 
   return (
     <Section
-      title='Recovery Codes'
-      description='Backup codes for account recovery'
+      title={t`Recovery Codes`}
+      description={t`Backup codes for account recovery`}
     >
       {error ? (
         <GeneralError error={error} minimal mode='inline' reset={refetch} />
@@ -631,8 +637,8 @@ function RecoveryCodesSection() {
         <div className='space-y-5 py-4'>
           <Alert variant='destructive' className='bg-amber-50 dark:bg-amber-950/20 border-amber-200'>
             <Shield className='h-4 w-4 text-amber-600' />
-            <AlertTitle>Save these codes</AlertTitle>
-            <AlertDescription>Each code can only be used once.</AlertDescription>
+            <AlertTitle><Trans>Save these codes</Trans></AlertTitle>
+            <AlertDescription><Trans>Each code can only be used once.</Trans></AlertDescription>
           </Alert>
           <div className='bg-muted/30 rounded-xl border p-5'>
             <div className='grid grid-cols-2 gap-3 font-mono text-sm'>
@@ -644,10 +650,10 @@ function RecoveryCodesSection() {
           <div className='flex gap-2'>
             <Button variant='outline' size='sm' onClick={() => {
               void shellClipboardWrite(showCodes.join('\n')).then((ok) => {
-                if (ok) toast.success('Codes copied')
+                if (ok) toast.success(t`Codes copied`)
               })
-            }}>Copy all</Button>
-            <Button variant='ghost' size='sm' onClick={() => setShowCodes(null)}>Done</Button>
+            }}><Trans>Copy all</Trans></Button>
+            <Button variant='ghost' size='sm' onClick={() => setShowCodes(null)}><Trans>Done</Trans></Button>
           </div>
         </div>
       ) : (
@@ -658,7 +664,7 @@ function RecoveryCodesSection() {
             </div>
             <div>
               <p className='text-sm font-medium'>{count > 0 ? `${count} remaining` : 'No codes'}</p>
-              <p className='text-muted-foreground text-xs'>Recovery codes</p>
+              <p className='text-muted-foreground text-xs'><Trans>Recovery codes</Trans></p>
             </div>
           </div>
           <AlertDialog>
@@ -667,10 +673,10 @@ function RecoveryCodesSection() {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogTitle>{count > 0 ? 'Regenerate?' : 'Generate?'}</AlertDialogTitle>
-              <AlertDialogDescription>Make sure to save the new codes.</AlertDialogDescription>
+              <AlertDialogDescription><Trans>Make sure to save the new codes.</Trans></AlertDialogDescription>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleGenerate}>Proceed</AlertDialogAction>
+                <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
+                <AlertDialogAction onClick={handleGenerate}><Trans>Proceed</Trans></AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -685,11 +691,12 @@ function RecoveryCodesSection() {
 // ============================================================================
 
 export function UserAccount() {
-  usePageTitle('Account')
+  const { t } = useLingui()
+  usePageTitle(t`Account`)
 
   return (
     <>
-      <PageHeader title="Account" icon={<User className='size-4 md:size-5' />} />
+      <PageHeader title={t`Account`} icon={<User className='size-4 md:size-5' />} />
       <Main>
         <div className='space-y-8 pb-10'>
           <IdentitySection />

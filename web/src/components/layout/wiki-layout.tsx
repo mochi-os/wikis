@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import {
@@ -36,6 +37,7 @@ function getEntityIdFromPath(pathname: string): string | null {
 }
 
 function WikiLayoutInner() {
+  const { t } = useLingui()
   const {
     createDialogOpen,
     openCreateDialog,
@@ -66,14 +68,14 @@ function WikiLayoutInner() {
         { name: values.name, privacy: values.privacy },
         {
           onSuccess: (data) => {
-            toast.success('Wiki created')
+            toast.success(t`Wiki created`)
             closeCreateDialog()
             const wikiId = data.fingerprint ?? data.id
             navigate({ to: '/$wikiId/$page', params: { wikiId, page: data.home } })
             resolve()
           },
           onError: (error) => {
-            toast.error(getErrorMessage(error, 'Failed to create wiki'))
+            toast.error(getErrorMessage(error, t`Failed to create wiki`))
             reject(error)
           },
         }
@@ -150,7 +152,7 @@ function WikiLayoutInner() {
         open={createDialogOpen}
         onOpenChange={(open) => { if (!open) closeCreateDialog() }}
         icon={BookOpen}
-        title="Create wiki"
+        title={t`Create wiki`}
         entityLabel="Wiki"
         showPrivacyToggle
         privacyLabel="Allow anyone to search for wiki"

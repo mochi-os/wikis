@@ -1,4 +1,5 @@
 import { Loader2, RotateCcw, Sliders } from 'lucide-react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,7 +36,8 @@ import {
 } from '@/hooks/use-preferences'
 
 export function UserPreferences() {
-  usePageTitle('Preferences')
+  const { t } = useLingui()
+  usePageTitle(t`Preferences`)
   const { data, isLoading, error, refetch } = usePreferencesData()
   const setPreference = useSetPreference()
   const resetPreferences = useResetPreferences()
@@ -49,10 +51,10 @@ export function UserPreferences() {
           if (key === 'appearance') {
             setTheme(value === 'auto' ? 'system' : (value as 'light' | 'dark'))
           }
-          toast.success('Preference updated')
+          toast.success(t`Preference updated`)
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to update preference'))
+          toast.error(getErrorMessage(error, t`Failed to update preference`))
         },
       }
     )
@@ -61,22 +63,22 @@ export function UserPreferences() {
   const handleReset = () => {
     resetPreferences.mutate(undefined, {
       onSuccess: () => {
-        toast.success('Preferences reset to defaults')
+        toast.success(t`Preferences reset to defaults`)
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to reset preferences'))
+        toast.error(getErrorMessage(error, t`Failed to reset preferences`))
       },
     })
   }
 
   return (
     <>
-      <PageHeader title="Preferences" icon={<Sliders className='size-4 md:size-5' />} />
+      <PageHeader title={t`Preferences`} icon={<Sliders className='size-4 md:size-5' />} />
 
       <Main className="space-y-8">
         <Section
-          title="General"
-          description="Manage your display settings and preferences"
+          title={t`General`}
+          description={t`Manage your display settings and preferences`}
           action={
             !error && <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -96,15 +98,15 @@ export function UserPreferences() {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Reset preferences?</AlertDialogTitle>
+                  <AlertDialogTitle><Trans>Reset preferences?</Trans></AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will reset all preferences to their default values.
+                    <Trans>This will reset all preferences to their default values.</Trans>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
                   <AlertDialogAction onClick={handleReset}>
-                    Reset
+                    <Trans>Reset</Trans>
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -118,7 +120,7 @@ export function UserPreferences() {
               <ListSkeleton variant='simple' height='h-12' count={2} />
             ) : data ? (
               <>
-                <FieldRow label='Appearance' description='Light or dark mode'>
+                <FieldRow label={t`Appearance`} description={t`Light or dark mode`}>
                   <div className="w-full sm:w-64">
                     <Select
                       value={data.preferences.appearance}
@@ -140,8 +142,8 @@ export function UserPreferences() {
                 </FieldRow>
 
                 <FieldRow
-                  label='Time zone'
-                  description='Used for displaying dates and times'
+                  label={t`Time zone`}
+                  description={t`Used for displaying dates and times`}
                 >
                   <div className="w-full sm:w-64">
                     <TimezoneSelect

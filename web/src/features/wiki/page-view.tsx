@@ -1,4 +1,5 @@
 import { type MouseEvent, useEffect, useState } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import type { WikiPage } from '@/types/wiki'
 import { Button, EmptyState, PageUtilityBar, useFormat, Skeleton, Separator, cn } from '@mochi/web'
@@ -41,8 +42,9 @@ function TableOfContents({
   currentPathWithQuery: string
   mobile?: boolean
 }) {
+  const { t } = useLingui()
   const content = (
-    <nav aria-label='Table of contents' className='space-y-1'>
+    <nav aria-label={t`Table of contents`} className='space-y-1'>
       {headings.map((heading) => (
         <a
           key={heading.id}
@@ -74,7 +76,7 @@ function TableOfContents({
           <summary className='flex min-h-12 cursor-pointer list-none items-center justify-between gap-2 px-4'>
             <span className='flex items-center gap-2 text-sm font-medium'>
               <ListTree className='text-muted-foreground size-4' />
-              On this page
+              <Trans>On this page</Trans>
             </span>
             <ChevronDown className='text-muted-foreground size-4 transition-transform group-open:rotate-180' />
           </summary>
@@ -89,7 +91,7 @@ function TableOfContents({
       <div className='bg-surface-1 sticky top-20 rounded-lg border p-3'>
         <p className='mb-2 flex items-center gap-2 text-sm font-semibold'>
           <ListTree className='text-muted-foreground size-4' />
-          On this page
+          <Trans>On this page</Trans>
         </p>
         {content}
       </div>
@@ -266,6 +268,7 @@ interface PageNotFoundProps {
 }
 
 export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
+  const { t } = useLingui()
   // Get permissions from WikiContext (entity context) or WikiBaseURLContext ($wikiId context)
   const wikiContextPermissions = usePermissions()
   const wikiBaseURLContext = useWikiBaseURLOptional()
@@ -278,7 +281,7 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
   return (
     <EmptyState
       icon={FileQuestion}
-      title='Page not found'
+      title={t`Page not found`}
       description={`The page "${slug}" does not exist yet.`}
     >
       {permissions.edit && (
@@ -286,12 +289,12 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
           {wikiId ? (
             <Link to='/$wikiId/$page/edit' params={{ wikiId, page: slug }}>
               <Edit className='mr-2 h-4 w-4' />
-              Create this page
+              <Trans>Create this page</Trans>
             </Link>
           ) : (
             <Link to='/$page/edit' params={{ page: slug }}>
               <Edit className='mr-2 h-4 w-4' />
-              Create this page
+              <Trans>Create this page</Trans>
             </Link>
           )}
         </Button>

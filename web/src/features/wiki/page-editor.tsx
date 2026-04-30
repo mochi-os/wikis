@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus } from 'lucide-react'
 import {
@@ -40,6 +41,7 @@ function buildAttachmentUrl(baseURL: string, id: string): string {
 }
 
 export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: PageEditorProps) {
+  const { t } = useLingui()
   const navigate = useNavigate()
   const editPage = useEditPage()
   const createPage = useCreatePage()
@@ -122,7 +124,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           toast.success(`${files.length} file(s) uploaded`)
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to upload files'))
+          toast.error(getErrorMessage(error, t`Failed to upload files`))
         },
       })
     }
@@ -130,13 +132,13 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
   const handleSave = async () => {
     if (!title.trim()) {
-      toast.error('Title is required')
+      toast.error(t`Title is required`)
       return
     }
 
     if (isNew) {
       if (!newSlug.trim()) {
-        toast.error('Page URL is required')
+        toast.error(t`Page URL is required`)
         return
       }
 
@@ -144,7 +146,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
         { slug: newSlug.trim(), title: title.trim(), content },
         {
           onSuccess: (data) => {
-            toast.success('Page created')
+            toast.success(t`Page created`)
             if (wikiId) {
               navigate({ to: '/$wikiId/$page', params: { wikiId, page: data.slug } })
             } else {
@@ -152,7 +154,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             }
           },
           onError: (error) => {
-            toast.error(getErrorMessage(error, 'Failed to create page'))
+            toast.error(getErrorMessage(error, t`Failed to create page`))
           },
         }
       )
@@ -161,7 +163,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
         { slug, title: title.trim(), content, comment: comment.trim() },
         {
           onSuccess: () => {
-            toast.success('Page saved')
+            toast.success(t`Page saved`)
             if (wikiId) {
               navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
             } else {
@@ -169,7 +171,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             }
           },
           onError: (error) => {
-            toast.error(getErrorMessage(error, 'Failed to save page'))
+            toast.error(getErrorMessage(error, t`Failed to save page`))
           },
         }
       )
@@ -202,12 +204,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             {showPreview ? (
               <>
                 <Edit2 className="mr-2 h-4 w-4" />
-                Edit
+                <Trans>Edit</Trans>
               </>
             ) : (
               <>
                 <Eye className="mr-2 h-4 w-4" />
-                Preview
+                <Trans>Preview</Trans>
               </>
             )}
           </Button>
@@ -217,36 +219,36 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             onClick={handleOpenInsertDialog}
           >
             <ImagePlus className="mr-2 h-4 w-4" />
-            Insert
+            <Trans>Insert</Trans>
           </Button>
           <Button variant="outline" size="sm" asChild>
             {wikiId ? (
               <Link to="/$wikiId/$page/attachments" params={{ wikiId, page: slug }}>
                 <Image className="mr-2 h-4 w-4" />
-                Attachments
+                <Trans>Attachments</Trans>
               </Link>
             ) : (
               <Link to="/$page/attachments" params={{ page: slug }}>
                 <Image className="mr-2 h-4 w-4" />
-                Attachments
+                <Trans>Attachments</Trans>
               </Link>
             )}
           </Button>
           <Button variant="outline" size="sm" onClick={handleCancel}>
             <X className="mr-2 h-4 w-4" />
-            Cancel
+            <Trans>Cancel</Trans>
           </Button>
           {!isNew && permissions.delete && (
             <Button variant="outline" size="sm" asChild>
               {wikiId ? (
                 <Link to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete page
+                  <Trans>Delete page</Trans>
                 </Link>
               ) : (
                 <Link to="/$page/delete" params={{ page: slug }}>
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete page
+                  <Trans>Delete page</Trans>
                 </Link>
               )}
             </Button>
@@ -281,7 +283,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           {/* Slug (only for new pages) */}
           {isNew && (
             <div className="space-y-2">
-              <Label htmlFor="slug">Page URL</Label>
+              <Label htmlFor="slug"><Trans>Page URL</Trans></Label>
               <Input
                 id="slug"
                 value={newSlug}
@@ -297,24 +299,24 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
           {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title"><Trans>Title</Trans></Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Page title"
+              placeholder={t`Page title`}
             />
           </div>
 
           {/* Content */}
           <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
+            <Label htmlFor="content"><Trans>Content</Trans></Label>
             <Textarea
               ref={textareaRef}
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your content here using Markdown..."
+              placeholder={t`Write your content here using Markdown...`}
               className="min-h-[400px] font-mono"
             />
           </div>
@@ -327,7 +329,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                 id="comment"
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Briefly describe your changes"
+                placeholder={t`Briefly describe your changes`}
               />
             </div>
           )}
@@ -338,9 +340,9 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
       <Dialog open={insertDialogOpen} onOpenChange={setInsertDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Insert attachment</DialogTitle>
+            <DialogTitle><Trans>Insert attachment</Trans></DialogTitle>
             <DialogDescription>
-              Select an attachment to insert into your page, or upload a new file.
+              <Trans>Select an attachment to insert into your page, or upload a new file.</Trans>
             </DialogDescription>
           </DialogHeader>
 
@@ -386,8 +388,8 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           ) : attachments.length === 0 ? (
             <EmptyState
               icon={Image}
-              title="No attachments yet"
-              description="Upload a file to get started."
+              title={t`No attachments yet`}
+              description={t`Upload a file to get started.`}
               className="py-8"
             />
           ) : (

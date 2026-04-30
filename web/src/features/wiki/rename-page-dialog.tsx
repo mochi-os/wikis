@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useNavigate } from '@tanstack/react-router'
 import { FileEdit } from 'lucide-react'
 import {
@@ -27,6 +28,7 @@ interface RenamePageDialogProps {
 }
 
 export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: controlledOpen, onOpenChange }: RenamePageDialogProps) {
+  const { t } = useLingui()
   const navigate = useNavigate()
   const [internalOpen, setInternalOpen] = useState(false)
   const open = controlledOpen ?? internalOpen
@@ -45,11 +47,11 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newSlug.trim()) {
-      toast.error('New URL is required')
+      toast.error(t`New URL is required`)
       return
     }
     if (newSlug === slug) {
-      toast.error('New URL must be different from current URL')
+      toast.error(t`New URL must be different from current URL`)
       return
     }
 
@@ -78,7 +80,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
           }
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to rename page'))
+          toast.error(getErrorMessage(error, t`Failed to rename page`))
         },
       }
     )
@@ -88,11 +90,11 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
     <DialogContent>
       <form onSubmit={handleSubmit}>
         <DialogHeader>
-          <DialogTitle>Rename page</DialogTitle>
+          <DialogTitle><Trans>Rename page</Trans></DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="newSlug">New URL</Label>
+            <Label htmlFor="newSlug"><Trans>New URL</Trans></Label>
             <Input
               id="newSlug"
               value={newSlug}
@@ -107,7 +109,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
               onCheckedChange={(checked) => setCreateRedirects(checked === true)}
             />
             <Label htmlFor="createRedirects" className="font-normal">
-              Create redirect from old URL
+              <Trans>Create redirect from old URL</Trans>
             </Label>
           </div>
         </div>
@@ -117,7 +119,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
             variant="outline"
             onClick={() => setOpen(false)}
           >
-            Cancel
+            <Trans>Cancel</Trans>
           </Button>
           <Button type="submit" disabled={renamePage.isPending}>
             {renamePage.isPending ? 'Renaming...' : 'Rename'}
@@ -143,7 +145,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
         {trigger || (
           <Button variant="outline">
             <FileEdit className="mr-2 h-4 w-4" />
-            Rename
+            <Trans>Rename</Trans>
           </Button>
         )}
       </DialogTrigger>

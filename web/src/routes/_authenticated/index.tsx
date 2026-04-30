@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Trans } from '@lingui/react/macro'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createFileRoute,
@@ -117,7 +118,7 @@ export const Route = createFileRoute('/_authenticated/')({
       return {
         entity: false,
         wikis: [],
-        infoError: getErrorMessage(error, 'Failed to load wikis'),
+        infoError: getErrorMessage(error, "Failed to load wikis"),
       }
     }
 
@@ -279,12 +280,12 @@ function WikiHomePage({
   const handleUnsubscribe = useCallback(() => {
     unsubscribeWiki.mutate(undefined, {
       onSuccess: () => {
-        toast.success('Unsubscribed')
+        toast.success("Unsubscribed")
         setUnsubscribeConfirmOpen(false)
         void navigate({ to: '/' })
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
+        toast.error(getErrorMessage(error, "Failed to unsubscribe"))
       },
     })
   }, [unsubscribeWiki, navigate])
@@ -299,9 +300,9 @@ function WikiHomePage({
       const { token } = await getRssToken(wikiId, mode)
       const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       const ok = await shellClipboardWrite(url)
-      if (ok) toast.success('RSS URL copied to clipboard')
+      if (ok) toast.success("RSS URL copied to clipboard")
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to get RSS token'))
+      toast.error(getErrorMessage(error, "Failed to get RSS token"))
     }
   }
 
@@ -340,7 +341,7 @@ function WikiHomePage({
     return (
       <>
         <WikiRouteHeader
-          title='Page not found'
+          title={"Page not found"}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
@@ -359,73 +360,73 @@ function WikiHomePage({
           <Button
             variant='ghost'
             size='icon'
-            aria-label='Page actions'
-            title='Page actions'
+            aria-label={"Page actions"}
+            title={"Page actions"}
             className='size-11 md:size-9'
           >
             <Ellipsis className='size-4' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
-          <DropdownMenuLabel>Page</DropdownMenuLabel>
+          <DropdownMenuLabel><Trans>Page</Trans></DropdownMenuLabel>
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link preload={false} to='/$page/edit' params={{ page: homeSlug }}>
                 <Pencil className='size-4' />
-                Edit
+                <Trans>Edit</Trans>
               </Link>
             </DropdownMenuItem>
           )}
           {permissions.edit && (
             <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
               <FileEdit className='size-4' />
-              Rename
+              <Trans>Rename</Trans>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem asChild>
             <Link preload={false} to='/$page/history' params={{ page: homeSlug }}>
               <History className='size-4' />
-              History
+              <Trans>History</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuLabel>Wiki</DropdownMenuLabel>
+          <DropdownMenuLabel><Trans>Wiki</Trans></DropdownMenuLabel>
           <DropdownMenuItem asChild>
             <Link preload={false} to='/search'>
               <Search className='size-4' />
-              Search
+              <Trans>Search</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link preload={false} to='/tags'>
               <Tags className='size-4' />
-              Tags
+              <Trans>Tags</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link preload={false} to='/changes'>
               <History className='size-4' />
-              Recent changes
+              <Trans>Recent changes</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <Rss className='mr-2 size-4' />
-              RSS feed
+              <Trans>RSS feed</Trans>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
               <DropdownMenuItem
                 onSelect={() => void handleCopyRssUrl('changes')}
               >
-                Changes
+                <Trans>Changes</Trans>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => void handleCopyRssUrl('comments')}
               >
-                Comments
+                <Trans>Comments</Trans>
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>
-                Changes and comments
+                <Trans>Changes and comments</Trans>
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
@@ -433,7 +434,7 @@ function WikiHomePage({
             <DropdownMenuItem asChild>
               <Link preload={false} to='/new'>
                 <FilePlus className='size-4' />
-                New page
+                <Trans>New page</Trans>
               </Link>
             </DropdownMenuItem>
           )}
@@ -441,7 +442,7 @@ function WikiHomePage({
             <DropdownMenuItem asChild>
               <Link preload={false} to='/settings'>
                 <Settings className='size-4' />
-                Settings
+                <Trans>Settings</Trans>
               </Link>
             </DropdownMenuItem>
           )}
@@ -479,7 +480,7 @@ function WikiHomePage({
         <ConfirmDialog
           open={unsubscribeConfirmOpen}
           onOpenChange={setUnsubscribeConfirmOpen}
-          title='Unsubscribe'
+          title={"Unsubscribe"}
           desc='Are you sure you want to unsubscribe from this wiki?'
           confirmText='Unsubscribe'
           destructive
@@ -524,7 +525,7 @@ interface RecommendationsResponse {
 }
 
 function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
-  usePageTitle('Wikis')
+  usePageTitle("Wikis")
   const { openCreateDialog } = useSidebarContext()
   const queryClient = useQueryClient()
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
@@ -539,7 +540,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       window.location.reload()
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
+      toast.error(getErrorMessage(error, "Failed to unsubscribe"))
     },
   })
 
@@ -549,9 +550,9 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       const { token } = await getRssToken('*', mode)
       const url = `${window.location.origin}${getAppPath()}/-/rss?token=${token}`
       const ok = await shellClipboardWrite(url)
-      if (ok) toast.success('RSS URL copied to clipboard')
+      if (ok) toast.success("RSS URL copied to clipboard")
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to get RSS token'))
+      toast.error(getErrorMessage(error, "Failed to get RSS token"))
     }
   }
 
@@ -605,7 +606,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       // Reload page to refresh wikis list
       window.location.reload()
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to subscribe'))
+      toast.error(getErrorMessage(error, "Failed to subscribe"))
       setPendingWikiId(null)
     }
   }
@@ -622,7 +623,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
   return (
     <>
       <CommonPageHeader
-        title='Wikis'
+        title={"Wikis"}
         icon={<BookOpen className='size-4 md:size-5' />}
         showSidebarTrigger
         menuAction={
@@ -631,8 +632,8 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
               <Button
                 variant='ghost'
                 size='icon'
-                aria-label='Wiki actions'
-                title='Wiki actions'
+                aria-label={"Wiki actions"}
+                title={"Wiki actions"}
                 className='size-11 md:size-9'
               >
                 <Ellipsis className='size-4' />
@@ -642,23 +643,23 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
                   <Rss className='mr-2 size-4' />
-                  RSS feed
+                  <Trans>RSS feed</Trans>
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem
                     onSelect={() => void handleCopyRssUrl('changes')}
                   >
-                    Changes
+                    <Trans>Changes</Trans>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onSelect={() => void handleCopyRssUrl('comments')}
                   >
-                    Comments
+                    <Trans>Comments</Trans>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onSelect={() => void handleCopyRssUrl('all')}
                   >
-                    Changes and comments
+                    <Trans>Changes and comments</Trans>
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
@@ -681,7 +682,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
             <div className='bg-muted/10 mx-auto flex max-w-2xl flex-col items-center rounded-2xl border p-6 text-center md:p-8'>
               <BookOpen className='text-muted-foreground mx-auto mb-3 h-10 w-10 opacity-70' />
               <p className='mb-1 text-base font-semibold'>
-                Start your first wiki
+                <Trans>Start your first wiki</Trans>
               </p>
               <p className='text-muted-foreground mb-5 max-w-md text-sm'>
                 Search for a wiki to subscribe, or create one to publish your
@@ -696,7 +697,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                 className='mt-4'
               >
                 <Plus className='mr-2 h-4 w-4' />
-                Create wiki
+                <Trans>Create wiki</Trans>
               </Button>
 
               {!isRecommendationsError &&
@@ -706,7 +707,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                     <hr className='my-6 w-full max-w-md border-t' />
                     <div className='w-full max-w-md text-left'>
                       <p className='text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase'>
-                        Recommended wikis
+                        <Trans>Recommended wikis</Trans>
                       </p>
                       <div className='divide-border overflow-hidden rounded-xl border'>
                         {recommendations
@@ -790,8 +791,8 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                               <Button
                                 variant='ghost'
                                 size='icon'
-                                aria-label='Subscribed wiki actions'
-                                title='Subscribed wiki actions'
+                                aria-label={"Subscribed wiki actions"}
+                                title={"Subscribed wiki actions"}
                               >
                                 <Ellipsis className='size-4' />
                               </Button>
@@ -821,7 +822,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       <ConfirmDialog
         open={!!unsubscribeId}
         onOpenChange={(open) => { if (!open) setUnsubscribeId(null) }}
-        title="Unsubscribe"
+        title={"Unsubscribe"}
         desc="Are you sure you want to unsubscribe from this wiki?"
         confirmText="Unsubscribe"
         destructive

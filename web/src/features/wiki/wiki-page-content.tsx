@@ -1,4 +1,5 @@
 import { Link, Navigate, useNavigate } from '@tanstack/react-router'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -45,6 +46,7 @@ interface WikiPageContentProps {
 // Shared page content component used by both the $wikiId/$page route and
 // the $wikiId index route (for domain routing where $wikiId is a page slug).
 export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
+  const { t } = useLingui()
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   const { baseURL, wiki, permissions } = useWikiBaseURL()
@@ -58,11 +60,11 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     setIsUnsubscribing(true)
     try {
       await requestHelpers.post(`${baseURL}unsubscribe`, {})
-      toast.success('Unsubscribed')
+      toast.success(t`Unsubscribed`)
       setUnsubscribeConfirmOpen(false)
       void navigate({ to: '/' })
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to unsubscribe'))
+      toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
       setIsUnsubscribing(false)
     }
   }, [baseURL, navigate])
@@ -109,9 +111,9 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
       const { token } = await getRssToken(wikiId, mode)
       const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       const ok = await shellClipboardWrite(url)
-      if (ok) toast.success('RSS URL copied to clipboard')
+      if (ok) toast.success(t`RSS URL copied to clipboard`)
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to get RSS token'))
+      toast.error(getErrorMessage(error, t`Failed to get RSS token`))
     }
   }
 
@@ -148,7 +150,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
           <div className="text-destructive">
-            <p>Error: Received invalid response from server.</p>
+            <p><Trans>Error: Received invalid response from server.</Trans></p>
             <p className="text-muted-foreground mt-2 text-sm">
               Request URL: {baseURL}{slug}
             </p>
@@ -166,8 +168,8 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Page actions"
-            title="Page actions"
+            aria-label={t`Page actions`}
+            title={t`Page actions`}
           >
             <Ellipsis className="size-4" />
           </Button>
@@ -177,7 +179,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
             <DropdownMenuItem asChild>
               <Link preload={false} to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
                 <FilePlus className="size-4" />
-                Create this page
+                <Trans>Create this page</Trans>
               </Link>
             </DropdownMenuItem>
           )}
@@ -185,7 +187,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
             <DropdownMenuItem asChild>
               <Link preload={false} to="/$wikiId/new" params={{ wikiId }}>
                 <FilePlus className="size-4" />
-                New page
+                <Trans>New page</Trans>
               </Link>
             </DropdownMenuItem>
           )}
@@ -195,7 +197,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
               <DropdownMenuItem asChild>
                 <Link preload={false} to="/$wikiId/settings" params={{ wikiId }}>
                   <Settings className="size-4" />
-                  Wiki settings
+                  <Trans>Wiki settings</Trans>
                 </Link>
               </DropdownMenuItem>
             </>
@@ -207,7 +209,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     return (
       <>
         <WikiRouteHeader
-          title="Page not found"
+          title={t`Page not found`}
           menuAction={notFoundMenu}
           back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
         />
@@ -228,33 +230,33 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Page actions"
-            title="Page actions"
+            aria-label={t`Page actions`}
+            title={t`Page actions`}
             className="size-11 md:size-9"
           >
             <Ellipsis className="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Page</DropdownMenuLabel>
+          <DropdownMenuLabel><Trans>Page</Trans></DropdownMenuLabel>
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link preload={false} to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
                 <Pencil className="size-4" />
-                Edit
+                <Trans>Edit</Trans>
               </Link>
             </DropdownMenuItem>
           )}
           {permissions.edit && (
             <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
               <FileEdit className="size-4" />
-              Rename
+              <Trans>Rename</Trans>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem asChild>
             <Link preload={false} to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
               <History className="size-4" />
-              History
+              <Trans>History</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
@@ -267,46 +269,46 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
             <DropdownMenuItem asChild>
               <Link preload={false} to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
                 <Trash2 className="size-4" />
-                Delete
+                <Trans>Delete</Trans>
               </Link>
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuLabel>Wiki</DropdownMenuLabel>
+          <DropdownMenuLabel><Trans>Wiki</Trans></DropdownMenuLabel>
           <DropdownMenuItem asChild>
             <Link preload={false} to="/search">
               <Search className="size-4" />
-              Search
+              <Trans>Search</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link preload={false} to="/tags">
               <Tags className="size-4" />
-              Tags
+              <Trans>Tags</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link preload={false} to="/$wikiId/changes" params={{ wikiId }}>
               <History className="size-4" />
-              Recent changes
+              <Trans>Recent changes</Trans>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <Rss className="mr-2 size-4" />
-              RSS feed
+              <Trans>RSS feed</Trans>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('changes')}>Changes</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('comments')}>Comments</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>Changes and comments</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('changes')}><Trans>Changes</Trans></DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('comments')}><Trans>Comments</Trans></DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}><Trans>Changes and comments</Trans></DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
           {permissions.edit && (
             <DropdownMenuItem asChild>
               <Link preload={false} to="/$wikiId/new" params={{ wikiId }}>
                 <FilePlus className="size-4" />
-                New page
+                <Trans>New page</Trans>
               </Link>
             </DropdownMenuItem>
           )}
@@ -314,7 +316,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
             <DropdownMenuItem asChild>
               <Link preload={false} to="/$wikiId/settings" params={{ wikiId }}>
                 <Settings className="size-4" />
-                Settings
+                <Trans>Settings</Trans>
               </Link>
             </DropdownMenuItem>
           )}
@@ -347,7 +349,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <ConfirmDialog
           open={unsubscribeConfirmOpen}
           onOpenChange={setUnsubscribeConfirmOpen}
-          title="Unsubscribe"
+          title={t`Unsubscribe`}
           desc="Are you sure you want to unsubscribe from this wiki?"
           confirmText="Unsubscribe"
           destructive

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { MessageSquare } from 'lucide-react'
 import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage } from '@mochi/web'
 import {
@@ -18,6 +19,7 @@ interface PageCommentsProps {
 }
 
 export function PageComments({ slug, currentUserId, isOwner, canComment }: PageCommentsProps) {
+  const { t } = useLingui()
   const { data, isLoading, error, refetch } = usePageComments(slug)
   const createComment = useCreateComment()
   const editComment = useEditComment()
@@ -81,13 +83,13 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
   return (
     <div className="space-y-4">
       {canComment && (
-        <CommentForm onSubmit={handleCreate} placeholder="Write a comment..." />
+        <CommentForm onSubmit={handleCreate} placeholder={t`Write a comment...`} />
       )}
       {comments.length === 0 ? (
         <EmptyState
           icon={MessageSquare}
-          title="No comments yet"
-          description="Be the first to comment on this page."
+          title={t`No comments yet`}
+          description={t`Be the first to comment on this page.`}
         />
       ) : (
         <div className="space-y-1">

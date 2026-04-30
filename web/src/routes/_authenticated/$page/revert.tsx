@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Trans } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { z } from 'zod'
 import { usePageTitle, Main } from '@mochi/web'
@@ -35,7 +36,7 @@ function RevertPageRoute() {
       <>
         <WikiRouteHeader title={`Revert: ${slug}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
         <Main>
-          <div className="text-destructive">Invalid version number</div>
+          <div className="text-destructive"><Trans>Invalid version number</Trans></div>
         </Main>
       </>
     )

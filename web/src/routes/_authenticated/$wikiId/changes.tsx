@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useLingui } from '@lingui/react/macro'
 import { useChanges } from '@/hooks/use-wiki'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
 import { ChangesList, ChangesListSkeleton } from '@/features/wiki/changes-list'
@@ -9,16 +10,17 @@ export const Route = createFileRoute('/_authenticated/$wikiId/changes')({
 })
 
 function WikiChangesRoute() {
+  const { t } = useLingui()
   const navigate = Route.useNavigate()
   const { wikiId } = Route.useParams()
   const goBackToWikis = () => navigate({ to: '/' })
-  usePageTitle('Recent changes')
+  usePageTitle(t`Recent changes`)
   const { data, isLoading, error, refetch } = useChanges()
 
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title="Recent changes" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={t`Recent changes`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
           <ChangesListSkeleton />
         </Main>
@@ -29,7 +31,7 @@ function WikiChangesRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title="Recent changes" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={t`Recent changes`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -39,7 +41,7 @@ function WikiChangesRoute() {
 
   return (
     <>
-      <WikiRouteHeader title="Recent changes" back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`Recent changes`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
       <Main>
         <ChangesList changes={data?.changes ?? []} wikiId={wikiId} />
       </Main>

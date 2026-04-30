@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { ArrowRight, Plus, Trash2, Link2 } from 'lucide-react'
 import {
   Button,
@@ -41,6 +42,7 @@ import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wik
 import type { Redirect } from '@/types/wiki'
 
 export function RedirectsPage() {
+  const { t } = useLingui()
   const { data, isLoading, error, refetch } = useRedirects()
 
   if (isLoading) {
@@ -59,7 +61,7 @@ export function RedirectsPage() {
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link2 className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">Redirects</h1>
+          <h1 className="text-2xl font-bold"><Trans>Redirects</Trans></h1>
         </div>
         <AddRedirectDialog />
       </div>
@@ -70,19 +72,19 @@ export function RedirectsPage() {
       {!data?.redirects || data.redirects.length === 0 ? (
         <EmptyState
           icon={Link2}
-          title="No redirects configured"
-          description="Create a redirect to forward one URL to another."
+          title={t`No redirects configured`}
+          description={t`Create a redirect to forward one URL to another.`}
           className="py-8"
         />
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Source</TableHead>
+              <TableHead><Trans>Source</Trans></TableHead>
               <TableHead></TableHead>
-              <TableHead>Target</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="w-20">Actions</TableHead>
+              <TableHead><Trans>Target</Trans></TableHead>
+              <TableHead><Trans>Created</Trans></TableHead>
+              <TableHead className="w-20"><Trans>Actions</Trans></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -97,6 +99,7 @@ export function RedirectsPage() {
 }
 
 function RedirectRow({ redirect }: { redirect: Redirect }) {
+  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   const deleteRedirect = useDeleteRedirect()
 
@@ -106,7 +109,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
         toast.success(`Redirect "${redirect.source}" deleted`)
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, 'Failed to delete redirect'))
+        toast.error(getErrorMessage(error, t`Failed to delete redirect`))
       },
     })
   }
@@ -143,7 +146,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete redirect?</AlertDialogTitle>
+              <AlertDialogTitle><Trans>Delete redirect?</Trans></AlertDialogTitle>
               <AlertDialogDescription>
                 This will remove the redirect from "{redirect.source}" to "
                 {redirect.target}". Users visiting the source URL will no longer
@@ -151,12 +154,12 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDelete}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                Delete
+                <Trans>Delete</Trans>
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -167,6 +170,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
 }
 
 function AddRedirectDialog() {
+  const { t } = useLingui()
   const [open, setOpen] = useState(false)
   const [source, setSource] = useState('')
   const [target, setTarget] = useState('')
@@ -176,7 +180,7 @@ function AddRedirectDialog() {
     e.preventDefault()
 
     if (!source.trim() || !target.trim()) {
-      toast.error('Both source and target are required')
+      toast.error(t`Both source and target are required`)
       return
     }
 
@@ -184,13 +188,13 @@ function AddRedirectDialog() {
       { source: source.trim(), target: target.trim() },
       {
         onSuccess: () => {
-          toast.success('Redirect created')
+          toast.success(t`Redirect created`)
           setSource('')
           setTarget('')
           setOpen(false)
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, 'Failed to create redirect'))
+          toast.error(getErrorMessage(error, t`Failed to create redirect`))
         },
       }
     )
@@ -201,13 +205,13 @@ function AddRedirectDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add Redirect
+          <Trans>Add Redirect</Trans>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Create redirect</DialogTitle>
+            <DialogTitle><Trans>Create redirect</Trans></DialogTitle>
             <DialogDescription>
               Create a redirect from one URL to another. The source URL must not
               be an existing page.
@@ -215,7 +219,7 @@ function AddRedirectDialog() {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="source">Source URL</Label>
+              <Label htmlFor="source"><Trans>Source URL</Trans></Label>
               <Input
                 id="source"
                 value={source}
@@ -227,7 +231,7 @@ function AddRedirectDialog() {
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="target">Target URL</Label>
+              <Label htmlFor="target"><Trans>Target URL</Trans></Label>
               <Input
                 id="target"
                 value={target}
@@ -245,10 +249,10 @@ function AddRedirectDialog() {
               variant="outline"
               onClick={() => setOpen(false)}
             >
-              Cancel
+              <Trans>Cancel</Trans>
             </Button>
             <Button type="submit" disabled={setRedirect.isPending}>
-              {setRedirect.isPending ? 'Creating...' : <><Plus className="h-4 w-4 mr-2" />Create redirect</>}
+              {setRedirect.isPending ? 'Creating...' : <><Plus className="h-4 w-4 mr-2" /><Trans>Create redirect</Trans></>}
             </Button>
           </DialogFooter>
         </form>
