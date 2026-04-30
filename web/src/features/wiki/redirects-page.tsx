@@ -134,7 +134,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
             <Button
               variant="ghost"
               size="icon"
-              className="text-destructive hover:text-destructive"
+              className="text-muted-foreground"
               aria-label={`Delete redirect ${redirect.source}`}
               title={`Delete redirect ${redirect.source}`}
             >

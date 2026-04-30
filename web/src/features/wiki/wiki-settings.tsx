@@ -993,7 +993,7 @@ function RedirectsTab() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-destructive hover:text-destructive"
+                          className="text-muted-foreground"
                           disabled={isDeleting}
                           aria-label={`Delete redirect ${redirect.source}`}
                           title={`Delete redirect ${redirect.source}`}

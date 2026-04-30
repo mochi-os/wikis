@@ -592,7 +592,7 @@ function AttachmentListItem({
           size="icon"
           onClick={() => onDelete(attachment)}
           disabled={isDeleting}
-          className="text-destructive hover:text-destructive"
+          className="text-muted-foreground"
           aria-label="Delete attachment"
           title="Delete"
         >
