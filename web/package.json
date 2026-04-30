@@ -10,9 +10,12 @@
     "preview": "vite preview",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "knip": "pnpm -C ../../.. exec knip --workspace apps/wikis/web"
+    "knip": "pnpm -C ../../.. exec knip --workspace apps/wikis/web",
+    "i18n:extract": "lingui extract"
   },
   "dependencies": {
+    "@lingui/core": "^5.5.0",
+    "@lingui/react": "^5.5.0",
     "@mochi/web": "workspace:*",
     "@simplewebauthn/browser": "^13.1.0",
     "@tailwindcss/vite": "^4.1.14",
@@ -37,6 +40,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
+    "@lingui/cli": "^5.5.0",
+    "@lingui/swc-plugin": "^5.5.0",
+    "@lingui/vite-plugin": "^5.5.0",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/eslint-plugin-query": "^5.91.0",
     "@tanstack/react-query-devtools": "^5.90.2",
