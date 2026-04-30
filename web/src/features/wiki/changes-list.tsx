@@ -75,7 +75,7 @@ export function ChangesList({ changes, wikiId }: ChangesListProps) {
                       fingerprint={wikiId ? undefined : change.author}
                       seed={change.author}
                       name={change.name}
-                      size={20}
+                      size="xs"
                     />
                     {change.name}
                   </span>

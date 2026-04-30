@@ -83,7 +83,7 @@ export function PageHistory({
                       fingerprint={wikiId ? undefined : revision.author}
                       seed={revision.author}
                       name={revision.name}
-                      size={20}
+                      size="xs"
                     />
                     {revision.name}
                   </span>
