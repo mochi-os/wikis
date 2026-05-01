@@ -38,8 +38,7 @@ import {
   isImage,
   getErrorMessage,
   authenticatedUrl,
-  shellClipboardWrite,
-} from '@mochi/web'
+  shellClipboardWrite, naturalCompare,} from '@mochi/web'
 import {
   useAttachments,
   useUploadAttachment,
@@ -102,7 +101,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
     result.sort((a, b) => {
       switch (sortBy) {
         case 'name':
-          return a.name.localeCompare(b.name)
+          return naturalCompare(a.name, b.name)
         case 'date':
           return b.created - a.created
         case 'size':

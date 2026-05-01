@@ -9,8 +9,7 @@ import {
   type NavItem,
   toast,
   CreateEntityDialog,
-  type CreateEntityValues,
-} from '@mochi/web'
+  type CreateEntityValues, naturalCompare,} from '@mochi/web'
 import {
   BookOpen,
   Library,
@@ -90,7 +89,7 @@ function WikiLayoutInner() {
 
     // Build wiki items sorted alphabetically
     const wikiItems: NavItem[] = [...(info?.wikis || [])]
-      .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+      .sort((a, b) => naturalCompare(a.name, b.name))
       .map((wiki) => ({
         title: wiki.name,
         url: `/${wiki.fingerprint ?? wiki.id}/${wiki.home}` as const,

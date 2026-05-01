@@ -31,8 +31,7 @@ import {
   getAppPath,
   toast,
   usePageTitle,
-  shellClipboardWrite,
-} from '@mochi/web'
+  shellClipboardWrite, naturalCompare,} from '@mochi/web'
 import {
   BookOpen,
   Ellipsis,
@@ -570,7 +569,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       fingerprint: w.fingerprint,
       home: w.home,
     })),
-  ].sort((a, b) => a.name.localeCompare(b.name))
+  ].sort((a, b) => naturalCompare(a.name, b.name))
 
   const hasWikis = allWikis.length > 0
 
