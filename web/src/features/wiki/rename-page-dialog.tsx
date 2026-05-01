@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useNavigate } from '@tanstack/react-router'
 import { FileEdit } from 'lucide-react'
 import {
@@ -28,6 +28,7 @@ interface RenamePageDialogProps {
 }
 
 export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: controlledOpen, onOpenChange }: RenamePageDialogProps) {
+  const { t } = useLingui()
   const navigate = useNavigate()
   const [internalOpen, setInternalOpen] = useState(false)
   const open = controlledOpen ?? internalOpen
@@ -46,11 +47,11 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newSlug.trim()) {
-      toast.error("New URL is required")
+      toast.error(t`New URL is required`)
       return
     }
     if (newSlug === slug) {
-      toast.error("New URL must be different from current URL")
+      toast.error(t`New URL must be different from current URL`)
       return
     }
 
@@ -79,7 +80,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
           }
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, "Failed to rename page"))
+          toast.error(getErrorMessage(error, t`Failed to rename page`))
         },
       }
     )

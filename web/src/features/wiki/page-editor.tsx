@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus } from 'lucide-react'
 import {
@@ -41,6 +41,7 @@ function buildAttachmentUrl(baseURL: string, id: string): string {
 }
 
 export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: PageEditorProps) {
+  const { t } = useLingui()
   const navigate = useNavigate()
   const editPage = useEditPage()
   const createPage = useCreatePage()
@@ -123,7 +124,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           toast.success(`${files.length} file(s) uploaded`)
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, "Failed to upload files"))
+          toast.error(getErrorMessage(error, t`Failed to upload files`))
         },
       })
     }
@@ -131,13 +132,13 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
   const handleSave = async () => {
     if (!title.trim()) {
-      toast.error("Title is required")
+      toast.error(t`Title is required`)
       return
     }
 
     if (isNew) {
       if (!newSlug.trim()) {
-        toast.error("Page URL is required")
+        toast.error(t`Page URL is required`)
         return
       }
 
@@ -145,7 +146,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
         { slug: newSlug.trim(), title: title.trim(), content },
         {
           onSuccess: (data) => {
-            toast.success("Page created")
+            toast.success(t`Page created`)
             if (wikiId) {
               navigate({ to: '/$wikiId/$page', params: { wikiId, page: data.slug } })
             } else {
@@ -153,7 +154,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             }
           },
           onError: (error) => {
-            toast.error(getErrorMessage(error, "Failed to create page"))
+            toast.error(getErrorMessage(error, t`Failed to create page`))
           },
         }
       )
@@ -162,7 +163,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
         { slug, title: title.trim(), content, comment: comment.trim() },
         {
           onSuccess: () => {
-            toast.success("Page saved")
+            toast.success(t`Page saved`)
             if (wikiId) {
               navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
             } else {
@@ -170,7 +171,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             }
           },
           onError: (error) => {
-            toast.error(getErrorMessage(error, "Failed to save page"))
+            toast.error(getErrorMessage(error, t`Failed to save page`))
           },
         }
       )

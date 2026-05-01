@@ -1,5 +1,5 @@
 import { Link, Navigate, useNavigate } from '@tanstack/react-router'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -46,6 +46,7 @@ interface WikiPageContentProps {
 // Shared page content component used by both the $wikiId/$page route and
 // the $wikiId index route (for domain routing where $wikiId is a page slug).
 export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
+  const { t } = useLingui()
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   const { baseURL, wiki, permissions } = useWikiBaseURL()
@@ -59,11 +60,11 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     setIsUnsubscribing(true)
     try {
       await requestHelpers.post(`${baseURL}unsubscribe`, {})
-      toast.success("Unsubscribed")
+      toast.success(t`Unsubscribed`)
       setUnsubscribeConfirmOpen(false)
       void navigate({ to: '/' })
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to unsubscribe"))
+      toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
       setIsUnsubscribing(false)
     }
   }, [baseURL, navigate])
@@ -110,9 +111,9 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
       const { token } = await getRssToken(wikiId, mode)
       const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       const ok = await shellClipboardWrite(url)
-      if (ok) toast.success("RSS URL copied to clipboard")
+      if (ok) toast.success(t`RSS URL copied to clipboard`)
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to get RSS token"))
+      toast.error(getErrorMessage(error, t`Failed to get RSS token`))
     }
   }
 

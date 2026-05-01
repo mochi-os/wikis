@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useNavigate } from '@tanstack/react-router'
 import { Search, Loader2, BookOpen } from 'lucide-react'
 import { Button, GeneralError, Input, toast, getErrorMessage } from '@mochi/web'
@@ -23,6 +23,7 @@ interface InlineWikiSearchProps {
 }
 
 export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchProps) {
+  const { t } = useLingui()
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [results, setResults] = useState<DirectoryEntry[]>([])
@@ -59,7 +60,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
         )
         setResults(response.results ?? [])
       } catch (error) {
-        setSearchError(new Error(getErrorMessage(error, "Failed to search wikis")))
+        setSearchError(new Error(getErrorMessage(error, t`Failed to search wikis`)))
         setResults([])
       } finally {
         setIsLoading(false)
@@ -76,7 +77,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
       onRefresh?.()
       void navigate({ to: '/$wikiId/$page', params: { wikiId: result.fingerprint || result.id, page: result.home || 'home' } })
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to subscribe"))
+      toast.error(getErrorMessage(error, t`Failed to subscribe`))
       setPendingWikiId(null)
     }
   }

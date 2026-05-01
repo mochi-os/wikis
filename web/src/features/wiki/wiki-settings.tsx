@@ -1042,6 +1042,7 @@ interface AddRedirectDialogProps {
 }
 
 function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
+  const { t } = useLingui()
   const [open, setOpen] = useState(false)
   const [source, setSource] = useState('')
   const [target, setTarget] = useState('')
@@ -1055,7 +1056,7 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
     e.preventDefault()
 
     if (!source.trim() || !target.trim()) {
-      toast.error("Both source and target are required")
+      toast.error(t`Both source and target are required`)
       return
     }
 
@@ -1065,13 +1066,13 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
         source: source.trim(),
         target: target.trim(),
       })
-      toast.success("Redirect created")
+      toast.success(t`Redirect created`)
       setSource('')
       setTarget('')
       setOpen(false)
       onSuccess()
     } catch (err) {
-      toast.error(getErrorMessage(err, "Failed to create redirect"))
+      toast.error(getErrorMessage(err, t`Failed to create redirect`))
     } finally {
       setIsCreating(false)
     }

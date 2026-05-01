@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo } from 'react'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import {
   Upload,
@@ -62,6 +62,7 @@ function buildAttachmentUrl(baseURL: string, id: string): string {
 }
 
 export function AttachmentsPage({ slug }: AttachmentsPageProps) {
+  const { t } = useLingui()
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [filterType, setFilterType] = useState<FilterType>('all')
   const [sortBy, setSortBy] = useState<SortBy>('date')
@@ -122,7 +123,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
           toast.success(`${fileArray.length} file(s) uploaded`)
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, "Failed to upload files"))
+          toast.error(getErrorMessage(error, t`Failed to upload files`))
         },
       })
     }
@@ -166,10 +167,10 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
     void shellClipboardWrite(markdown).then((ok) => {
       if (ok) {
         setCopiedId(attachment.id)
-        toast.success("Embed link copied")
+        toast.success(t`Embed link copied`)
         setTimeout(() => setCopiedId(null), 2000)
       } else {
-        toast.error("Failed to copy")
+        toast.error(t`Failed to copy`)
       }
     })
     setTimeout(() => setCopiedId(null), 2000)
@@ -184,11 +185,11 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
     const attachment = pendingDelete
     deleteMutation.mutate(attachment.id, {
       onSuccess: () => {
-        toast.success("Attachment deleted")
+        toast.success(t`Attachment deleted`)
         setPendingDelete(null)
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, "Failed to delete attachment"))
+        toast.error(getErrorMessage(error, t`Failed to delete attachment`))
         setPendingDelete(null)
       },
     })

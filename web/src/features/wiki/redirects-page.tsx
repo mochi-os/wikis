@@ -99,6 +99,7 @@ export function RedirectsPage() {
 }
 
 function RedirectRow({ redirect }: { redirect: Redirect }) {
+  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   const deleteRedirect = useDeleteRedirect()
 
@@ -108,7 +109,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
         toast.success(`Redirect "${redirect.source}" deleted`)
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, "Failed to delete redirect"))
+        toast.error(getErrorMessage(error, t`Failed to delete redirect`))
       },
     })
   }
