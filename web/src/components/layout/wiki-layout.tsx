@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import {
@@ -36,6 +37,7 @@ function getEntityIdFromPath(pathname: string): string | null {
 }
 
 function WikiLayoutInner() {
+  const { t } = useLingui()
   const {
     createDialogOpen,
     openCreateDialog,
@@ -66,14 +68,14 @@ function WikiLayoutInner() {
         { name: values.name, privacy: values.privacy },
         {
           onSuccess: (data) => {
-            toast.success("Wiki created")
+            toast.success(t`Wiki created`)
             closeCreateDialog()
             const wikiId = data.fingerprint ?? data.id
             navigate({ to: '/$wikiId/$page', params: { wikiId, page: data.home } })
             resolve()
           },
           onError: (error) => {
-            toast.error(getErrorMessage(error, "Failed to create wiki"))
+            toast.error(getErrorMessage(error, t`Failed to create wiki`))
             reject(error)
           },
         }
@@ -102,7 +104,7 @@ function WikiLayoutInner() {
     const standaloneWikiUrl = info?.wiki?.fingerprint ?? info?.wiki?.id ?? urlEntityId
     const standaloneWikiHome = info?.wiki?.home || 'home'
     const standaloneWikiItem = isInWiki && !currentWikiInList && standaloneWikiUrl ? {
-      title: wikiName || 'Wiki',
+      title: wikiName || t`Wiki`,
       url: `/${standaloneWikiUrl}/${standaloneWikiHome}` as const,
       icon: BookOpen,
       isActive: true,
@@ -110,7 +112,7 @@ function WikiLayoutInner() {
 
     // "All wikis" is now a simple link without submenu
     const allWikisItem = {
-      title: "All wikis",
+      title: t`All wikis`,
       onClick: handleAllWikisClick,
       icon: Library,
       isActive: location.pathname === '/',
@@ -129,14 +131,14 @@ function WikiLayoutInner() {
         title: '',
         separator: true,
         items: [
-          { title: "Find wikis", icon: Search, url: '/find' },
-          { title: "Create wiki", icon: Plus, onClick: openCreateDialog },
+          { title: t`Find wikis`, icon: Search, url: '/find' },
+          { title: t`Create wiki`, icon: Plus, onClick: openCreateDialog },
         ],
       },
     ]
 
     return { navGroups: groups }
-  }, [isInWiki, wikiName, info, urlEntityId, handleAllWikisClick, openCreateDialog, location.pathname])
+  }, [isInWiki, wikiName, info, urlEntityId, handleAllWikisClick, openCreateDialog, location.pathname, t])
 
   return (
     <>
@@ -150,10 +152,10 @@ function WikiLayoutInner() {
         open={createDialogOpen}
         onOpenChange={(open) => { if (!open) closeCreateDialog() }}
         icon={BookOpen}
-        title={"Create wiki"}
-        entityLabel="Wiki"
+        title={t`Create wiki`}
+        entityLabel={t`Wiki`}
         showPrivacyToggle
-        privacyLabel="Allow anyone to search for wiki"
+        privacyLabel={t`Allow anyone to search for wiki`}
         onSubmit={handleCreateWiki}
         isPending={createWiki.isPending}
         hideTrigger
