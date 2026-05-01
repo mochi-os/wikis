@@ -109,7 +109,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={"Enter tag name"}
+                placeholder={t`Enter tag name`}
                 autoFocus
               />
               <div className="flex justify-end gap-2">

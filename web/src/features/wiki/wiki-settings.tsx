@@ -121,6 +121,7 @@ interface WikiSettingsProps {
 }
 
 export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permissions }: WikiSettingsProps) {
+  const { t } = useLingui()
   const contextValue: WikiSettingsContextValue = {
     baseURL: baseURL ?? null,
     wiki: wiki ?? null,
@@ -128,7 +129,7 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
   }
 
   // Hide Replicas tab for replica wikis (they don't have replicas of their own)
-  const visibleTabs = wiki?.source ? tabs.filter(t => t.id !== 'replicas') : tabs
+  const visibleTabs = wiki?.source ? tabs.filter(tab => tab.id !== 'replicas') : tabs
 
   return (
     <WikiSettingsContext.Provider value={contextValue}>
@@ -136,7 +137,7 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
       {/* Tabs */}
       <div
         role="tablist"
-        aria-label={"Wiki settings sections"}
+        aria-label={t`Wiki settings sections`}
         className="flex gap-1 border-b"
         onKeyDown={(e) => {
           const tabButtons = e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')

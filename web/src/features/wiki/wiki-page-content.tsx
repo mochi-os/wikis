@@ -168,8 +168,8 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <Button
             variant="ghost"
             size="icon"
-            aria-label={"Page actions"}
-            title={"Page actions"}
+            aria-label={t`Page actions`}
+            title={t`Page actions`}
           >
             <Ellipsis className="size-4" />
           </Button>
@@ -209,7 +209,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     return (
       <>
         <WikiRouteHeader
-          title={"Page not found"}
+          title={t`Page not found`}
           menuAction={notFoundMenu}
           back={{ label: "Back to wikis", onFallback: goBackToWikis }}
         />
@@ -230,8 +230,8 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <Button
             variant="ghost"
             size="icon"
-            aria-label={"Page actions"}
-            title={"Page actions"}
+            aria-label={t`Page actions`}
+            title={t`Page actions`}
             className="size-11 md:size-9"
           >
             <Ellipsis className="size-4" />
@@ -349,7 +349,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <ConfirmDialog
           open={unsubscribeConfirmOpen}
           onOpenChange={setUnsubscribeConfirmOpen}
-          title={"Unsubscribe"}
+          title={t`Unsubscribe`}
           desc="Are you sure you want to unsubscribe from this wiki?"
           confirmText="Unsubscribe"
           destructive

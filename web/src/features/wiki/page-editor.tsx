@@ -304,7 +304,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={"Page title"}
+              placeholder={t`Page title`}
             />
           </div>
 
@@ -316,7 +316,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder={"Write your content here using Markdown..."}
+              placeholder={t`Write your content here using Markdown...`}
               className="min-h-[400px] font-mono"
             />
           </div>
@@ -329,7 +329,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                 id="comment"
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder={"Briefly describe your changes"}
+                placeholder={t`Briefly describe your changes`}
               />
             </div>
           )}
@@ -388,7 +388,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           ) : attachments.length === 0 ? (
             <EmptyState
               icon={Image}
-              title={"No attachments yet"}
+              title={t`No attachments yet`}
               description={"Upload a file to get started."}
               className="py-8"
             />

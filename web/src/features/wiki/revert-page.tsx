@@ -70,7 +70,7 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
               id="comment"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder={"Reason for reverting"}
+              placeholder={t`Reason for reverting`}
             />
           </div>
         </CardContent>
