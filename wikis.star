@@ -1218,7 +1218,7 @@ def action_page_rename(a):
             # Check child's new slug doesn't exist
             child_existing = mochi.db.row("select 1 from pages where wiki=? and page=? and deleted=0", wiki["id"], child_new_slug)
             if child_existing:
-                a.error(400, "A page with slug '" + child_new_slug + "' already exists")
+                a.error_label(400, "errors.page_with_slug_already_exists", slug=child_new_slug)
                 return
             pages_to_rename.append({"page": child, "old_slug": child["page"], "new_slug": child_new_slug})
 
@@ -1671,7 +1671,7 @@ def action_settings_set(a):
                 return
         mochi.db.execute("update wikis set home=? where id=?", value, wiki["id"])
     else:
-        a.error(400, "Unknown setting: " + name)
+        a.error_label(400, "errors.unknown_setting", name=name)
         return
 
     # Send setting/set event
