@@ -46,9 +46,9 @@ export function TagsList({ tags }: TagsListProps) {
                 variant="secondary"
                 className="cursor-pointer px-3 py-1.5 text-sm transition-colors group-hover:bg-primary group-hover:text-primary-foreground"
               >
-                <TagIcon className="mr-1.5 h-3.5 w-3.5" />
+                <TagIcon className="me-1.5 h-3.5 w-3.5" />
                 {tag.tag}
-                <span className="bg-background/20 ml-2 rounded-full px-1.5 py-0.5 text-xs">
+                <span className="bg-background/20 ms-2 rounded-full px-1.5 py-0.5 text-xs">
                   {tag.count}
                 </span>
               </Badge>

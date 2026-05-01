@@ -411,7 +411,7 @@ function WikiHomePage({
           </DropdownMenuItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              <Rss className='mr-2 size-4' />
+              <Rss className='me-2 size-4' />
               <Trans>RSS feed</Trans>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -642,7 +642,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
             <DropdownMenuContent align='end'>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
-                  <Rss className='mr-2 size-4' />
+                  <Rss className='me-2 size-4' />
                   <Trans>RSS feed</Trans>
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
@@ -696,7 +696,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                 onClick={openCreateDialog}
                 className='mt-4'
               >
-                <Plus className='mr-2 h-4 w-4' />
+                <Plus className='me-2 h-4 w-4' />
                 <Trans>Create wiki</Trans>
               </Button>
 
@@ -705,7 +705,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                   .length > 0 && (
                   <>
                     <hr className='my-6 w-full max-w-md border-t' />
-                    <div className='w-full max-w-md text-left'>
+                    <div className='w-full max-w-md text-start'>
                       <p className='text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase'>
                         <Trans>Recommended wikis</Trans>
                       </p>

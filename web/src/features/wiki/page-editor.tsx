@@ -203,12 +203,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           >
             {showPreview ? (
               <>
-                <Edit2 className="mr-2 h-4 w-4" />
+                <Edit2 className="me-2 h-4 w-4" />
                 <Trans>Edit</Trans>
               </>
             ) : (
               <>
-                <Eye className="mr-2 h-4 w-4" />
+                <Eye className="me-2 h-4 w-4" />
                 <Trans>Preview</Trans>
               </>
             )}
@@ -218,36 +218,36 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             size="sm"
             onClick={handleOpenInsertDialog}
           >
-            <ImagePlus className="mr-2 h-4 w-4" />
+            <ImagePlus className="me-2 h-4 w-4" />
             <Trans>Insert</Trans>
           </Button>
           <Button variant="outline" size="sm" asChild>
             {wikiId ? (
               <Link to="/$wikiId/$page/attachments" params={{ wikiId, page: slug }}>
-                <Image className="mr-2 h-4 w-4" />
+                <Image className="me-2 h-4 w-4" />
                 <Trans>Attachments</Trans>
               </Link>
             ) : (
               <Link to="/$page/attachments" params={{ page: slug }}>
-                <Image className="mr-2 h-4 w-4" />
+                <Image className="me-2 h-4 w-4" />
                 <Trans>Attachments</Trans>
               </Link>
             )}
           </Button>
           <Button variant="outline" size="sm" onClick={handleCancel}>
-            <X className="mr-2 h-4 w-4" />
+            <X className="me-2 h-4 w-4" />
             <Trans>Cancel</Trans>
           </Button>
           {!isNew && permissions.delete && (
             <Button variant="outline" size="sm" asChild>
               {wikiId ? (
                 <Link to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <Trash2 className="me-2 h-4 w-4" />
                   <Trans>Delete page</Trans>
                 </Link>
               ) : (
                 <Link to="/$page/delete" params={{ page: slug }}>
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <Trash2 className="me-2 h-4 w-4" />
                   <Trans>Delete page</Trans>
                 </Link>
               )}
@@ -256,12 +256,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           <Button size="sm" onClick={handleSave} disabled={isPending}>
             {isNew ? (
               <>
-                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+                {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
                 {isPending ? "Creating..." : "Create page"}
               </>
             ) : (
               <>
-                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Save className="me-2 h-4 w-4" />}
                 {isPending ? "Saving..." : "Save"}
               </>
             )}
@@ -366,9 +366,9 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
               disabled={uploadMutation.isPending}
             >
               {uploadMutation.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="me-2 h-4 w-4 animate-spin" />
               ) : (
-                <ImagePlus className="mr-2 h-4 w-4" />
+                <ImagePlus className="me-2 h-4 w-4" />
               )}
               Upload new
             </Button>
@@ -401,7 +401,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                     key={attachment.id}
                     type="button"
                     onClick={() => insertMarkdown(attachment)}
-                    className="group rounded-lg border p-2 text-left hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="group rounded-lg border p-2 text-start hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <div className="bg-muted flex aspect-square items-center justify-center overflow-hidden rounded mb-2">
                       {isImage(attachment.type) ? (

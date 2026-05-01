@@ -60,12 +60,12 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
           <Button variant="outline" asChild>
             {wikiId ? (
               <Link to="/$wikiId/$page" params={{ wikiId, page: slug }}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
                 <Trans>Cancel</Trans>
               </Link>
             ) : (
               <Link to="/$page" params={{ page: slug }}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
                 <Trans>Cancel</Trans>
               </Link>
             )}
@@ -75,7 +75,7 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
             onClick={handleDelete}
             disabled={deletePage.isPending}
           >
-            <Trash2 className="mr-2 h-4 w-4" />
+            <Trash2 className="me-2 h-4 w-4" />
             {deletePage.isPending ? "Deleting..." : "Delete"}
           </Button>
         </CardFooter>

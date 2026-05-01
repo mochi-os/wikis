@@ -55,8 +55,8 @@ function TableOfContents({
             'text-muted-foreground hover:text-foreground block truncate rounded-md px-2 py-1 text-sm transition-colors',
             activeHeadingId === heading.id &&
               'text-foreground bg-primary/10 font-medium',
-            heading.level === 3 && 'pl-5',
-            heading.level === 4 && 'pl-8'
+            heading.level === 3 && 'ps-5',
+            heading.level === 4 && 'ps-8'
           )}
         >
           {heading.text}
@@ -287,12 +287,12 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
         <Button asChild>
           {wikiId ? (
             <Link to='/$wikiId/$page/edit' params={{ wikiId, page: slug }}>
-              <Edit className='mr-2 h-4 w-4' />
+              <Edit className='me-2 h-4 w-4' />
               <Trans>Create this page</Trans>
             </Link>
           ) : (
             <Link to='/$page/edit' params={{ page: slug }}>
-              <Edit className='mr-2 h-4 w-4' />
+              <Edit className='me-2 h-4 w-4' />
               <Trans>Create this page</Trans>
             </Link>
           )}

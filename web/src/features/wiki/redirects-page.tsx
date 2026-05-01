@@ -120,7 +120,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
         <ValueLinkChip value={redirect.source} />
       </TableCell>
       <TableCell>
-        <ArrowRight className="text-muted-foreground h-4 w-4" />
+        <ArrowRight className="text-muted-foreground h-4 w-4 rtl:rotate-180" />
       </TableCell>
       <TableCell>
         <ValueLinkChip value={redirect.target} />
@@ -204,7 +204,7 @@ function AddRedirectDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="me-2 h-4 w-4" />
           <Trans>Add Redirect</Trans>
         </Button>
       </DialogTrigger>
@@ -252,7 +252,7 @@ function AddRedirectDialog() {
               <Trans>Cancel</Trans>
             </Button>
             <Button type="submit" disabled={setRedirect.isPending}>
-              {setRedirect.isPending ? 'Creating...' : <><Plus className="h-4 w-4 mr-2" /><Trans>Create redirect</Trans></>}
+              {setRedirect.isPending ? 'Creating...' : <><Plus className="h-4 w-4 me-2" /><Trans>Create redirect</Trans></>}
             </Button>
           </DialogFooter>
         </form>

@@ -79,12 +79,12 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
           <Button variant="outline" asChild>
             {wikiId ? (
               <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
                 <Trans>Cancel</Trans>
               </Link>
             ) : (
               <Link to="/$page/history" params={{ page: slug }}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
                 <Trans>Cancel</Trans>
               </Link>
             )}
@@ -94,7 +94,7 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
             onClick={handleRevert}
             disabled={revertPage.isPending}
           >
-            <RotateCcw className="mr-2 h-4 w-4" />
+            <RotateCcw className="me-2 h-4 w-4" />
             {revertPage.isPending ? "Reverting..." : "Revert"}
           </Button>
         </CardFooter>

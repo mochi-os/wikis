@@ -86,7 +86,7 @@ export function WikiCommentThread({
       <span className="text-muted-foreground">{timeAgo}</span>
       <button
         onClick={() => setCollapsed(false)}
-        className="text-primary ml-2 flex cursor-pointer items-center gap-1 hover:underline"
+        className="text-primary ms-2 flex cursor-pointer items-center gap-1 hover:underline"
       >
         {totalDescendants > 0 ? (
           <span>{totalDescendants === 1 ? '1 reply' : `+${totalDescendants} more replies`}</span>
@@ -139,7 +139,7 @@ export function WikiCommentThread({
           <>
             {comment.body_markdown ? (
               <div
-                className="text-foreground max-w-none text-sm leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-0.5"
+                className="text-foreground max-w-none text-sm leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:ps-6 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:ps-6 [&_li]:my-0.5"
                 dangerouslySetInnerHTML={{ __html: comment.body_markdown }}
               />
             ) : (
@@ -221,7 +221,7 @@ export function WikiCommentThread({
                   )}
                   <Paperclip className="text-muted-foreground size-3 shrink-0" />
                   <span className="max-w-40 truncate">{file.name}</span>
-                  <button type="button" onClick={() => setReplyFiles((prev) => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-foreground ml-0.5">
+                  <button type="button" onClick={() => setReplyFiles((prev) => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-foreground ms-0.5">
                     <X className="size-3.5" />
                   </button>
                 </div>

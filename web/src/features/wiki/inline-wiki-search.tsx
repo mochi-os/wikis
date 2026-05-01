@@ -94,7 +94,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
           placeholder={t`Search for wikis...`}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-10 pl-9"
+          className="h-10 ps-9"
           autoFocus
         />
       </div>
@@ -138,7 +138,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
                       <BookOpen className="h-4 w-4 text-emerald-600" />
                     </div>
-                    <div className="flex min-w-0 flex-1 flex-col text-left">
+                    <div className="flex min-w-0 flex-1 flex-col text-start">
                       <span className="truncate text-sm font-medium">{wiki.name}</span>
                       {wiki.fingerprint && (
                         <span className="text-muted-foreground truncate text-xs">

@@ -24,7 +24,7 @@ import {
   SelectValue,
   TimezoneSelect,
   getErrorMessage,
-  appearanceLabels,
+  useAppearanceLabels,
   toast,
   usePageTitle,
   useTheme,
@@ -37,6 +37,7 @@ import {
 
 export function UserPreferences() {
   const { t } = useLingui()
+  const appearanceLabels = useAppearanceLabels()
   usePageTitle(t`Preferences`)
   const { data, isLoading, error, refetch } = usePreferencesData()
   const setPreference = useSetPreference()
@@ -89,9 +90,9 @@ export function UserPreferences() {
                   className="text-muted-foreground hover:text-foreground"
                 >
                   {resetPreferences.isPending ? (
-                    <Loader2 className='mr-2 h-3.5 w-3.5 animate-spin' />
+                    <Loader2 className='me-2 h-3.5 w-3.5 animate-spin' />
                   ) : (
-                    <RotateCcw className='mr-2 h-3.5 w-3.5' />
+                    <RotateCcw className='me-2 h-3.5 w-3.5' />
                   )}
                   Reset to Defaults
                 </Button>

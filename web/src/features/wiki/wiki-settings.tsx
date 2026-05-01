@@ -523,7 +523,7 @@ function SettingsTab() {
           description={t`This wiki is subscribed to a source wiki and receives updates from it.`}
           action={
             <Button variant="outline" onClick={() => void handleSync()} disabled={syncPending}>
-              <RefreshCw className={cn("mr-2 h-4 w-4", syncPending && "animate-spin")} />
+              <RefreshCw className={cn("me-2 h-4 w-4", syncPending && "animate-spin")} />
               {syncPending ? t`Syncing...` : t`Sync now`}
             </Button>
           }
@@ -558,7 +558,7 @@ function SettingsTab() {
           </div>
           <div className="flex justify-end">
             <Button onClick={() => void handleSave()} disabled={!hasChanges || savePending}>
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="me-2 h-4 w-4" />
               {savePending ? t`Saving...` : t`Save changes`}
             </Button>
           </div>
@@ -581,7 +581,7 @@ function SettingsTab() {
                 disabled={deletePending}
                 onClick={() => setDeleteConfirmOpen(true)}
               >
-                <Trash2 className="mr-2 h-4 w-4" />
+                <Trash2 className="me-2 h-4 w-4" />
                 {deletePending ? t`Deleting...` : t`Delete wiki`}
               </Button>
             </div>
@@ -685,7 +685,7 @@ function AccessTab() {
         {/* Add access button - right aligned */}
         <div className="flex justify-end">
           <Button onClick={() => setDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4 me-2" />
             <Trans>Add</Trans>
           </Button>
         </div>
@@ -985,7 +985,7 @@ function RedirectsTab() {
                     <ValueLinkChip value={redirect.source} />
                   </TableCell>
                   <TableCell>
-                    <ArrowRight className="text-muted-foreground h-4 w-4" />
+                    <ArrowRight className="text-muted-foreground h-4 w-4 rtl:rotate-180" />
                   </TableCell>
                   <TableCell>
                     <ValueLinkChip value={redirect.target} />
@@ -1083,7 +1083,7 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="me-2 h-4 w-4" />
           <Trans>Add redirect</Trans>
         </Button>
       </DialogTrigger>
@@ -1126,7 +1126,7 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
               <Trans>Cancel</Trans>
             </Button>
             <Button type="submit" disabled={isCreating}>
-              {isCreating ? 'Creating...' : <><Plus className="h-4 w-4 mr-2" /><Trans>Create redirect</Trans></>}
+              {isCreating ? 'Creating...' : <><Plus className="h-4 w-4 me-2" /><Trans>Create redirect</Trans></>}
             </Button>
           </DialogFooter>
         </form>

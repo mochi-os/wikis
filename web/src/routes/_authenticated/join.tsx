@@ -113,7 +113,7 @@ function JoinWikiPage() {
                     <Trans>Cancel</Trans>
                   </Button>
                   <Button variant="outline" type="submit" disabled={joinWiki.isPending || !target.trim()}>
-                    <Link2 className="mr-2 h-4 w-4" />
+                    <Link2 className="me-2 h-4 w-4" />
                     {joinWiki.isPending ? t`Replicating...` : t`Replicate wiki`}
                   </Button>
                 </div>

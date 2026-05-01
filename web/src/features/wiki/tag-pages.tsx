@@ -20,14 +20,14 @@ export function TagPages({ tag, pages }: TagPagesProps) {
           <TagIcon className="h-6 w-6" />
           <h1 className="text-2xl font-bold">
             Pages tagged{' '}
-            <Badge variant="secondary" className="ml-1 text-lg">
+            <Badge variant="secondary" className="ms-1 text-lg">
               {tag}
             </Badge>
           </h1>
         </div>
         <Button variant="outline" asChild>
           <Link to="/tags">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
             <Trans>All tags</Trans>
           </Link>
         </Button>

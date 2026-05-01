@@ -178,7 +178,7 @@ function LoginRequirementsSection() {
       ) : (
         <div className='space-y-0 divide-y-0'>
           <div className='flex items-center justify-between py-4 border-b border-border/40'>
-            <div className='space-y-1 pr-4'>
+            <div className='space-y-1 pe-4'>
               <Label htmlFor='method-passkey' className='text-sm font-medium'>
                 <Trans>Passkey</Trans>
               </Label>
@@ -198,7 +198,7 @@ function LoginRequirementsSection() {
           </div>
 
           <div className='flex items-center justify-between py-4 border-b border-border/40'>
-            <div className='space-y-1 pr-4'>
+            <div className='space-y-1 pe-4'>
               <Label htmlFor='method-totp' className='text-sm font-medium'>
                 <Trans>Authenticator app</Trans>
               </Label>
@@ -216,7 +216,7 @@ function LoginRequirementsSection() {
           </div>
 
           <div className='flex items-center justify-between py-4'>
-            <div className='space-y-1 pr-4'>
+            <div className='space-y-1 pe-4'>
               <Label htmlFor='method-email' className='text-sm font-medium'>
                 <Trans>Email code</Trans>
               </Label>
@@ -295,7 +295,7 @@ function PasskeyRow({
       <TableCell className='text-muted-foreground text-sm'>
         {formatTimestamp(passkey.last_used, 'Never')}
       </TableCell>
-      <TableCell className='text-right'>
+      <TableCell className='text-end'>
         <div className='flex justify-end gap-1'>
           <Button variant='ghost' size='sm' onClick={() => setIsRenaming(true)}>
             <Pencil className='h-4 w-4' />
@@ -398,7 +398,7 @@ function PasskeysSection() {
             onClick={() => setRegisterDialogOpen(true)}
           >
             Add passkey
-            <Plus className='ml-2 h-4 w-4' />
+            <Plus className='ms-2 h-4 w-4' />
           </Button>
           <DialogContent>
             <DialogHeader>
@@ -421,7 +421,7 @@ function PasskeysSection() {
               <Button onClick={handleRegister} disabled={isRegistering}>
                 Register
                 {isRegistering && (
-                  <Loader2 className='ml-2 h-4 w-4 animate-spin' />
+                  <Loader2 className='ms-2 h-4 w-4 animate-spin' />
                 )}
               </Button>
             </DialogFooter>
@@ -558,7 +558,7 @@ function AuthenticatorSection() {
                 disabled={isVerifying || !verifyCode}
               >
                 Verify & Enable
-                {isVerifying && <Loader2 className='ml-2 h-4 w-4 animate-spin' />}
+                {isVerifying && <Loader2 className='ms-2 h-4 w-4 animate-spin' />}
               </Button>
               <Button variant='ghost' onClick={() => setSetupData(null)}><Trans>Cancel</Trans></Button>
             </div>

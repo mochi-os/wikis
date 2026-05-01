@@ -144,7 +144,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="outline">
-            <FileEdit className="mr-2 h-4 w-4" />
+            <FileEdit className="me-2 h-4 w-4" />
             <Trans>Rename</Trans>
           </Button>
         )}

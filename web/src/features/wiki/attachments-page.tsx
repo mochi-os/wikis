@@ -230,11 +230,11 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
           <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}>
             {wikiId ? (
               <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
               </Link>
             ) : (
               <Link to="/$page/edit" params={{ page: slug }}>
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
               </Link>
             )}
           </Button>
@@ -259,9 +259,9 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
             disabled={uploadMutation.isPending}
           >
             {uploadMutation.isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="me-2 h-4 w-4 animate-spin" />
             ) : (
-              <Upload className="mr-2 h-4 w-4" />
+              <Upload className="me-2 h-4 w-4" />
             )}
             Upload files
           </Button>
@@ -279,7 +279,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
             placeholder={t`Search attachments...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="ps-9"
           />
           {searchQuery && (
             <Button
@@ -310,7 +310,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
         {/* Sort */}
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}>
           <SelectTrigger className="w-[130px]">
-            <ArrowUpDown className="mr-2 h-4 w-4" />
+            <ArrowUpDown className="me-2 h-4 w-4" />
             <SelectValue placeholder={t`Sort`} />
           </SelectTrigger>
           <SelectContent>
@@ -325,7 +325,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
           <Button
             variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
             size="icon"
-            className="rounded-r-none"
+            className="rounded-e-none"
             onClick={() => setViewMode('grid')}
             aria-label={t`Grid view`}
             title={t`Grid view`}
@@ -335,7 +335,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
           <Button
             variant={viewMode === 'list' ? 'secondary' : 'ghost'}
             size="icon"
-            className="rounded-l-none"
+            className="rounded-s-none"
             onClick={() => setViewMode('list')}
             aria-label={t`List view`}
             title={t`List view`}

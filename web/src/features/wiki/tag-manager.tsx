@@ -79,14 +79,14 @@ export function TagManager({ slug, tags }: TagManagerProps) {
 
       {/* Existing tags */}
       {tags.map((tag) => (
-        <Badge key={tag} variant="secondary" className={canEdit ? "group gap-1 pr-1" : ""}>
+        <Badge key={tag} variant="secondary" className={canEdit ? "group gap-1 pe-1" : ""}>
           <Link to="/tag/$tag" params={{ tag }} className="hover:underline">
             {tag}
           </Link>
           {canEdit && (
             <button
               onClick={() => handleRemoveTag(tag)}
-              className="text-muted-foreground hover:text-foreground ml-1 rounded-full p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+              className="text-muted-foreground hover:text-foreground ms-1 rounded-full p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
               disabled={removeTag.isPending}
             >
               <X className="h-3 w-3" />

@@ -56,7 +56,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t`Search pages by title or content...`}
-            className="pl-10"
+            className="ps-10"
             autoFocus
           />
         </div>
@@ -116,7 +116,7 @@ function SearchResultItem({ result }: SearchResultItemProps) {
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold group-hover:underline">{result.title}</h3>
-          <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+          <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" />
         </div>
         <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
           {result.excerpt}...

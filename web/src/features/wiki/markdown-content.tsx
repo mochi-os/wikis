@@ -148,7 +148,7 @@ export function MarkdownContent({
                 ? `${currentPathWithQuery}#${id}`
                 : `#${id}`
             }
-            className='text-muted-foreground hover:text-foreground ml-2 inline-flex opacity-0 transition-opacity group-hover:opacity-100'
+            className='text-muted-foreground hover:text-foreground ms-2 inline-flex opacity-0 transition-opacity group-hover:opacity-100'
             aria-label={`Link to ${headingText}`}
           >
             <Hash className='size-3.5' />
@@ -195,8 +195,8 @@ export function MarkdownContent({
           '[&_h3]:mt-8 [&_h3]:mb-2 [&_h3]:text-xl',
           '[&_h4]:mt-6 [&_h4]:mb-2 [&_h4]:text-lg',
           '[&_a]:text-primary [&_a]:decoration-primary/40 [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-primary/85',
-          '[&_ul]:my-4 [&_ul]:space-y-2 [&_ul]:list-disc [&_ul]:pl-6',
-          '[&_ol]:my-4 [&_ol]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6',
+          '[&_ul]:my-4 [&_ul]:space-y-2 [&_ul]:list-disc [&_ul]:ps-6',
+          '[&_ol]:my-4 [&_ol]:space-y-2 [&_ol]:list-decimal [&_ol]:ps-6',
           '[&_li]:my-1',
           '[&_code]:bg-surface-2 [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.9em]',
           '[&_pre]:bg-transparent [&_pre]:p-0 [&_pre]:shadow-none',
@@ -228,7 +228,7 @@ export function MarkdownContent({
               </ol>
             ),
             li: ({ children, ...props }) => (
-              <li className='pl-1' {...props}>
+              <li className='ps-1' {...props}>
                 {children}
               </li>
             ),

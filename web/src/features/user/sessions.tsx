@@ -59,7 +59,7 @@ function SessionRow({
           <span className='font-medium'>
             {session.agent || 'Unknown device'}
             {isCurrent && (
-              <span className='text-muted-foreground ml-2 text-xs'>
+              <span className='text-muted-foreground ms-2 text-xs'>
                 (current)
               </span>
             )}
@@ -72,7 +72,7 @@ function SessionRow({
       <TableCell className='text-muted-foreground text-sm'>
         {formatTimestamp(session.accessed, 'Never')}
       </TableCell>
-      <TableCell className='text-right'>
+      <TableCell className='text-end'>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
