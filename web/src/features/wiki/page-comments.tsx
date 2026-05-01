@@ -9,6 +9,7 @@ import {
 } from '@/hooks/use-wiki'
 import { CommentForm } from './comment-form'
 import { WikiCommentThread } from './wiki-comment-thread'
+import { t } from '@lingui/core/macro'
 
 interface PageCommentsProps {
   slug: string
@@ -81,13 +82,13 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
   return (
     <div className="space-y-4">
       {canComment && (
-        <CommentForm onSubmit={handleCreate} placeholder={"Write a comment..."} />
+        <CommentForm onSubmit={handleCreate} placeholder={t`Write a comment...`} />
       )}
       {comments.length === 0 ? (
         <EmptyState
           icon={MessageSquare}
-          title={"No comments yet"}
-          description={"Be the first to comment on this page."}
+          title={t`No comments yet`}
+          description={t`Be the first to comment on this page.`}
         />
       ) : (
         <div className="space-y-1">

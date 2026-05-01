@@ -5,6 +5,7 @@ import { Search, FileText, ArrowRight } from 'lucide-react'
 import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web'
 import { useSearch } from '@/hooks/use-wiki'
 import type { SearchResult } from '@/types/wiki'
+import { t } from '@lingui/core/macro'
 
 interface SearchPageProps {
   initialQuery?: string
@@ -54,7 +55,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={"Search pages by title or content..."}
+            placeholder={t`Search pages by title or content...`}
             className="pl-10"
             autoFocus
           />
@@ -67,8 +68,8 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
       {!debouncedQuery ? (
         <EmptyState
           icon={Search}
-          title={"Enter a search term"}
-          description={"Search pages by title or content."}
+          title={t`Enter a search term`}
+          description={t`Search pages by title or content.`}
           className="py-8"
         />
       ) : isLoading ? (
@@ -79,7 +80,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
         <EmptyState
           icon={FileText}
           title={`No pages found for "${debouncedQuery}"`}
-          description={"Try different search terms."}
+          description={t`Try different search terms.`}
           className="py-8"
         />
       ) : (

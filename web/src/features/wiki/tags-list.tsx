@@ -3,6 +3,7 @@ import { Trans } from '@lingui/react/macro'
 import { Tags, Tag as TagIcon } from 'lucide-react'
 import { Badge, Separator, Skeleton, EmptyState } from '@mochi/web'
 import type { Tag } from '@/types/wiki'
+import { t } from '@lingui/core/macro'
 
 interface TagsListProps {
   tags: Tag[]
@@ -28,8 +29,8 @@ export function TagsList({ tags }: TagsListProps) {
         <div className="py-12">
           <EmptyState
             icon={Tags}
-            title={"No tags found"}
-            description={"Add tags to group pages in your wiki."}
+            title={t`No tags found`}
+            description={t`Add tags to group pages in your wiki.`}
           />
         </div>
       ) : (

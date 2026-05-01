@@ -350,8 +350,8 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           open={unsubscribeConfirmOpen}
           onOpenChange={setUnsubscribeConfirmOpen}
           title={t`Unsubscribe`}
-          desc="Are you sure you want to unsubscribe from this wiki?"
-          confirmText="Unsubscribe"
+          desc={t`Are you sure you want to unsubscribe from this wiki?`}
+          confirmText={t`Unsubscribe`}
           destructive
           isLoading={isUnsubscribing}
           handleConfirm={() => void handleUnsubscribe()}

@@ -389,7 +389,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             <EmptyState
               icon={Image}
               title={t`No attachments yet`}
-              description={"Upload a file to get started."}
+              description={t`Upload a file to get started.`}
               className="py-8"
             />
           ) : (

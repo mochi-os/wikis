@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { Trans } from '@lingui/react/macro'
 import { Button, IconButton, useImageObjectUrls } from '@mochi/web'
 import { Paperclip, Send, X } from 'lucide-react'
+import { t } from '@lingui/core/macro'
 
 interface CommentFormProps {
   onSubmit: (body: string, files?: File[]) => void
@@ -89,7 +90,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
           variant='ghost'
           className='size-8'
           onClick={() => fileInputRef.current?.click()}
-          label={"Attach files"}
+          label={t`Attach files`}
         >
           <Paperclip className="size-4" />
         </IconButton>
@@ -103,7 +104,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
           className='size-8'
           disabled={!body.trim()}
           onClick={handleSubmit}
-          label={"Send comment"}
+          label={t`Send comment`}
         >
           <Send className="size-4" />
         </IconButton>

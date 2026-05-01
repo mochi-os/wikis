@@ -69,6 +69,7 @@ import {
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 import type { WikiPermissions } from '@/types/wiki'
+import { t } from '@lingui/core/macro'
 
 interface InfoWiki {
   id: string
@@ -279,7 +280,7 @@ function WikiHomePage({
   const handleUnsubscribe = useCallback(() => {
     unsubscribeWiki.mutate(undefined, {
       onSuccess: () => {
-        toast.success("Unsubscribed")
+        toast.success(t`Unsubscribed`)
         setUnsubscribeConfirmOpen(false)
         void navigate({ to: '/' })
       },
@@ -299,7 +300,7 @@ function WikiHomePage({
       const { token } = await getRssToken(wikiId, mode)
       const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       const ok = await shellClipboardWrite(url)
-      if (ok) toast.success("RSS URL copied to clipboard")
+      if (ok) toast.success(t`RSS URL copied to clipboard`)
     } catch (error) {
       toast.error(getErrorMessage(error, "Failed to get RSS token"))
     }
@@ -340,7 +341,7 @@ function WikiHomePage({
     return (
       <>
         <WikiRouteHeader
-          title={"Page not found"}
+          title={t`Page not found`}
           back={{ label: "Back to wikis", onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
@@ -359,8 +360,8 @@ function WikiHomePage({
           <Button
             variant='ghost'
             size='icon'
-            aria-label={"Page actions"}
-            title={"Page actions"}
+            aria-label={t`Page actions`}
+            title={t`Page actions`}
             className='size-11 md:size-9'
           >
             <Ellipsis className='size-4' />
@@ -479,7 +480,7 @@ function WikiHomePage({
         <ConfirmDialog
           open={unsubscribeConfirmOpen}
           onOpenChange={setUnsubscribeConfirmOpen}
-          title={"Unsubscribe"}
+          title={t`Unsubscribe`}
           desc='Are you sure you want to unsubscribe from this wiki?'
           confirmText='Unsubscribe'
           destructive
@@ -549,7 +550,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       const { token } = await getRssToken('*', mode)
       const url = `${window.location.origin}${getAppPath()}/-/rss?token=${token}`
       const ok = await shellClipboardWrite(url)
-      if (ok) toast.success("RSS URL copied to clipboard")
+      if (ok) toast.success(t`RSS URL copied to clipboard`)
     } catch (error) {
       toast.error(getErrorMessage(error, "Failed to get RSS token"))
     }
@@ -622,7 +623,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
   return (
     <>
       <CommonPageHeader
-        title={"Wikis"}
+        title={t`Wikis`}
         icon={<BookOpen className='size-4 md:size-5' />}
         showSidebarTrigger
         menuAction={
@@ -631,8 +632,8 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
               <Button
                 variant='ghost'
                 size='icon'
-                aria-label={"Wiki actions"}
-                title={"Wiki actions"}
+                aria-label={t`Wiki actions`}
+                title={t`Wiki actions`}
                 className='size-11 md:size-9'
               >
                 <Ellipsis className='size-4' />
@@ -790,8 +791,8 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                               <Button
                                 variant='ghost'
                                 size='icon'
-                                aria-label={"Subscribed wiki actions"}
-                                title={"Subscribed wiki actions"}
+                                aria-label={t`Subscribed wiki actions`}
+                                title={t`Subscribed wiki actions`}
                               >
                                 <Ellipsis className='size-4' />
                               </Button>
@@ -820,9 +821,9 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       <ConfirmDialog
         open={!!unsubscribeId}
         onOpenChange={(open) => { if (!open) setUnsubscribeId(null) }}
-        title={"Unsubscribe"}
-        desc="Are you sure you want to unsubscribe from this wiki?"
-        confirmText="Unsubscribe"
+        title={t`Unsubscribe`}
+        desc={t`Are you sure you want to unsubscribe from this wiki?`}
+        confirmText={t`Unsubscribe`}
         destructive
         isLoading={unsubscribeMutation.isPending}
         handleConfirm={() => {

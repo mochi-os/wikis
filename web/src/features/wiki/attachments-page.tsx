@@ -419,7 +419,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
         onOpenChange={(open) => { if (!open) setPendingDelete(null) }}
         title={t`Delete attachment`}
         desc={pendingDelete ? `Delete "${pendingDelete.name}"? This cannot be undone.` : ''}
-        confirmText="Delete"
+        confirmText={t`Delete`}
         destructive
         isLoading={deleteMutation.isPending}
         handleConfirm={confirmDelete}

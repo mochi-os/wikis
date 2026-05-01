@@ -589,8 +589,8 @@ function SettingsTab() {
               open={deleteConfirmOpen}
               onOpenChange={setDeleteConfirmOpen}
               title={t`Are you absolutely sure?`}
-              desc="This action cannot be undone. This will permanently delete the wiki and all its contents."
-              confirmText="Delete wiki"
+              desc={t`This action cannot be undone. This will permanently delete the wiki and all its contents.`}
+              confirmText={t`Delete wiki`}
               destructive
               isLoading={deletePending}
               handleConfirm={() => void handleDelete()}

@@ -3,6 +3,7 @@ import { Trans } from '@lingui/react/macro'
 import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react'
 import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web'
 import type { TagPage } from '@/types/wiki'
+import { t } from '@lingui/core/macro'
 
 interface TagPagesProps {
   tag: string
@@ -42,8 +43,8 @@ export function TagPages({ tag, pages }: TagPagesProps) {
       {pages.length === 0 ? (
         <EmptyState
           icon={TagIcon}
-          title={"No pages found with this tag"}
-          description={"Try a different tag."}
+          title={t`No pages found with this tag`}
+          description={t`Try a different tag.`}
           className="py-8"
         />
       ) : (

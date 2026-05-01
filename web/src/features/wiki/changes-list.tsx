@@ -3,6 +3,7 @@ import { Trans } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import { EntityAvatar, useFormat, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
 import type { Change } from '@/types/wiki'
+import { t } from '@lingui/core/macro'
 
 interface ChangesListProps {
   changes: Change[]
@@ -30,8 +31,8 @@ export function ChangesList({ changes, wikiId }: ChangesListProps) {
         <div className="py-12">
           <EmptyState
             icon={History}
-            title={"No changes yet"}
-            description={"Changes will appear here when pages are edited."}
+            title={t`No changes yet`}
+            description={t`Changes will appear here when pages are edited.`}
           />
         </div>
       ) : (

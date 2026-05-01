@@ -3,6 +3,7 @@ import { Trans } from '@lingui/react/macro'
 import { History, Eye, RotateCcw } from 'lucide-react'
 import { Button, EntityAvatar, EmptyState, useFormat, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
 import type { Revision } from '@/types/wiki'
+import { t } from '@lingui/core/macro'
 
 interface PageHistoryProps {
   slug: string
@@ -36,7 +37,7 @@ export function PageHistory({
       {revisions.length === 0 ? (
         <EmptyState
           icon={History}
-          title={"No revisions found"}
+          title={t`No revisions found`}
           className="py-8"
         />
       ) : (
@@ -97,7 +98,7 @@ export function PageHistory({
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" asChild title={"View"}>
+                    <Button variant="ghost" size="icon" asChild title={t`View`}>
                       {wikiId ? (
                         <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }}>
                           <Eye className="h-4 w-4" />
@@ -113,7 +114,7 @@ export function PageHistory({
                         variant="ghost"
                         size="icon"
                         asChild
-                        title={"Revert to this version"}
+                        title={t`Revert to this version`}
                       >
                         {wikiId ? (
                           <Link to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>

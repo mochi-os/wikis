@@ -9,6 +9,7 @@ import { usePermissions } from '@/context/wiki-context'
 import { MarkdownContent } from './markdown-content'
 import { extractTocHeadings, type TocHeading } from './markdown-content.utils'
 import { TagManager } from './tag-manager'
+import { t } from '@lingui/core/macro'
 
 interface PageViewProps {
   page: WikiPage
@@ -43,7 +44,7 @@ function TableOfContents({
   mobile?: boolean
 }) {
   const content = (
-    <nav aria-label={"Table of contents"} className='space-y-1'>
+    <nav aria-label={t`Table of contents`} className='space-y-1'>
       {headings.map((heading) => (
         <a
           key={heading.id}
@@ -279,7 +280,7 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
   return (
     <EmptyState
       icon={FileQuestion}
-      title={"Page not found"}
+      title={t`Page not found`}
       description={`The page "${slug}" does not exist yet.`}
     >
       {permissions.edit && (

@@ -12,6 +12,7 @@ import {
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
+import { t } from '@lingui/core/macro'
 
 interface WikiCommentThreadProps {
   comment: WikiComment
@@ -240,7 +241,7 @@ export function WikiCommentThread({
               variant='ghost'
               className='size-8'
               onClick={() => replyFileRef.current?.click()}
-              label={"Attach reply files"}
+              label={t`Attach reply files`}
             >
               <Paperclip className="size-4" />
             </IconButton>
@@ -249,7 +250,7 @@ export function WikiCommentThread({
               variant='ghost'
               className='size-8'
               onClick={onCancelReply}
-              label={"Cancel reply"}
+              label={t`Cancel reply`}
             >
               <X className="size-4" />
             </IconButton>
@@ -258,7 +259,7 @@ export function WikiCommentThread({
               className='size-8'
               disabled={!replyDraft.trim()}
               onClick={() => onSubmitReply(comment.id, replyFiles.length > 0 ? replyFiles : undefined)}
-              label={"Send reply"}
+              label={t`Send reply`}
             >
               <Send className="size-4" />
             </IconButton>
@@ -269,9 +270,9 @@ export function WikiCommentThread({
       <ConfirmDialog
         open={deleting}
         onOpenChange={setDeleting}
-        title={"Delete comment"}
-        desc="Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
-        confirmText="Delete"
+        title={t`Delete comment`}
+        desc={t`Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone.`}
+        confirmText={t`Delete`}
         destructive={true}
         handleConfirm={() => {
           onDelete?.(comment.id)
