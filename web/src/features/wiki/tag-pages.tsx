@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react'
 import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web'
 import type { TagPage } from '@/types/wiki'
@@ -10,7 +10,6 @@ interface TagPagesProps {
 }
 
 export function TagPages({ tag, pages }: TagPagesProps) {
-  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   return (
     <div className="space-y-6">
@@ -43,8 +42,8 @@ export function TagPages({ tag, pages }: TagPagesProps) {
       {pages.length === 0 ? (
         <EmptyState
           icon={TagIcon}
-          title={t`No pages found with this tag`}
-          description={t`Try a different tag.`}
+          title={"No pages found with this tag"}
+          description={"Try a different tag."}
           className="py-8"
         />
       ) : (

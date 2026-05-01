@@ -1,5 +1,5 @@
 import { History } from 'lucide-react'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import { EntityAvatar, useFormat, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
 import type { Change } from '@/types/wiki'
@@ -10,7 +10,6 @@ interface ChangesListProps {
 }
 
 export function ChangesList({ changes, wikiId }: ChangesListProps) {
-  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   return (
     <div className="space-y-6">
@@ -31,8 +30,8 @@ export function ChangesList({ changes, wikiId }: ChangesListProps) {
         <div className="py-12">
           <EmptyState
             icon={History}
-            title={t`No changes yet`}
-            description={t`Changes will appear here when pages are edited.`}
+            title={"No changes yet"}
+            description={"Changes will appear here when pages are edited."}
           />
         </div>
       ) : (

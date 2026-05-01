@@ -79,7 +79,7 @@ function WikiPageRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <PageViewSkeleton />
         </Main>
@@ -90,7 +90,7 @@ function WikiPageRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -150,7 +150,7 @@ function WikiPageRoute() {
         <WikiRouteHeader
           title={t`Page not found`}
           menuAction={notFoundMenu}
-          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
         />
         <Main>
           <PageNotFound slug={slug} />
@@ -210,7 +210,7 @@ function WikiPageRoute() {
               disabled={unsubscribeWiki.isPending}
             >
               <Trash2 className="size-4" />
-              {unsubscribeWiki.isPending ? 'Unsubscribing...' : 'Unsubscribe'}
+              {unsubscribeWiki.isPending ? t`Unsubscribing...` : t`Unsubscribe`}
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
@@ -258,7 +258,7 @@ function WikiPageRoute() {
         <PageHeader
           page={data.page}
           menuAction={actionsMenu}
-          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
         />
         <Main className="pt-2">
           <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />

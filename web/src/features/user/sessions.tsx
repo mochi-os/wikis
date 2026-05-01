@@ -37,17 +37,16 @@ function SessionRow({
   session: Session
   isCurrent: boolean
 }) {
-  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   const revokeSession = useRevokeSession()
 
   const handleRevoke = () => {
     revokeSession.mutate(session.code, {
       onSuccess: () => {
-        toast.success(t`Session revoked`)
+        toast.success("Session revoked")
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, t`Failed to revoke session`))
+        toast.error(getErrorMessage(error, "Failed to revoke session"))
       },
     })
   }

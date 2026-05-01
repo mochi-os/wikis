@@ -31,7 +31,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
   loader: async ({ params }): Promise<WikiRouteData> => {
     const wikiId = params.wikiId
     if (!wikiId) {
-      throw new Error('Wiki ID is required')
+      throw new Error("Wiki ID is required")
     }
 
     // Use window.location.pathname since TanStack Router's location is relative to app mount

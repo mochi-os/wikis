@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useLingui } from '@lingui/react/macro'
 import { useTagPages } from '@/hooks/use-wiki'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
 import { TagPages, TagPagesSkeleton } from '@/features/wiki/tag-pages'
@@ -9,6 +10,7 @@ export const Route = createFileRoute('/_authenticated/tag/$tag')({
 })
 
 function TagPagesRoute() {
+  const { t } = useLingui()
   const navigate = Route.useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   const params = Route.useParams()
@@ -19,7 +21,7 @@ function TagPagesRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={`Tag: ${tag}`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <TagPagesSkeleton />
         </Main>
@@ -30,7 +32,7 @@ function TagPagesRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={`Tag: ${tag}`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -40,7 +42,7 @@ function TagPagesRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={`Tag: ${tag}`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <TagPages tag={tag} pages={data?.pages ?? []} />
       </Main>

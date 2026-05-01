@@ -15,7 +15,7 @@ function RedirectsRoute() {
   usePageTitle(t`Redirects`)
   return (
     <>
-      <WikiRouteHeader title={t`Redirects`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`Redirects`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <RedirectsPage />
       </Main>

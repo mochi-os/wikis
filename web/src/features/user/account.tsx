@@ -184,8 +184,7 @@ function LoginRequirementsSection() {
               </Label>
               <p className='text-muted-foreground text-xs leading-relaxed'>
                 {hasPasskey
-                  ? 'Use a registered passkey to sign in'
-                  : 'Register a passkey below to enable'}
+                  ? t`Use a registered passkey to sign in` : t`Register a passkey below to enable`}
               </p>
             </div>
             <Switch
@@ -205,8 +204,7 @@ function LoginRequirementsSection() {
               </Label>
               <p className='text-muted-foreground text-xs leading-relaxed'>
                 {hasTOTP
-                  ? 'Use an authenticator app code to sign in'
-                  : 'Set up an authenticator below to enable'}
+                  ? t`Use an authenticator app code to sign in` : t`Set up an authenticator below to enable`}
               </p>
             </div>
             <Switch
@@ -669,10 +667,10 @@ function RecoveryCodesSection() {
           </div>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant='outline' size='sm'>{count > 0 ? 'Regenerate' : 'Generate'}</Button>
+              <Button variant='outline' size='sm'>{count > 0 ? t`Regenerate` : t`Generate`}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
-              <AlertDialogTitle>{count > 0 ? 'Regenerate?' : 'Generate?'}</AlertDialogTitle>
+              <AlertDialogTitle>{count > 0 ? t`Regenerate?` : t`Generate?`}</AlertDialogTitle>
               <AlertDialogDescription><Trans>Make sure to save the new codes.</Trans></AlertDialogDescription>
               <AlertDialogFooter>
                 <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>

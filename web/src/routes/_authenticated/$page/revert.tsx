@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { z } from 'zod'
 import { usePageTitle, Main } from '@mochi/web'
@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/$page/revert')({
 })
 
 function RevertPageRoute() {
+  const { t } = useLingui()
   const params = Route.useParams()
   const { version } = Route.useSearch()
   const slug = params.page ?? ''
@@ -34,7 +35,7 @@ function RevertPageRoute() {
   if (!version || version < 1) {
     return (
       <>
-        <WikiRouteHeader title={`Revert: ${slug}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`Revert: ${slug}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <div className="text-destructive"><Trans>Invalid version number</Trans></div>
         </Main>
@@ -44,7 +45,7 @@ function RevertPageRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={`Revert: ${slug}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+      <WikiRouteHeader title={`Revert: ${slug}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
       <Main>
         <RevertPage slug={slug} version={version} />
       </Main>

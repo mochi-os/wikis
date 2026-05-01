@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Button, IconButton, useImageObjectUrls } from '@mochi/web'
 import { Paperclip, Send, X } from 'lucide-react'
 
@@ -11,7 +11,6 @@ interface CommentFormProps {
 }
 
 export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: CommentFormProps) {
-  const { t } = useLingui()
   const [body, setBody] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const filePreviewUrls = useImageObjectUrls(files)
@@ -90,7 +89,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
           variant='ghost'
           className='size-8'
           onClick={() => fileInputRef.current?.click()}
-          label={t`Attach files`}
+          label={"Attach files"}
         >
           <Paperclip className="size-4" />
         </IconButton>
@@ -104,7 +103,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
           className='size-8'
           disabled={!body.trim()}
           onClick={handleSubmit}
-          label={t`Send comment`}
+          label={"Send comment"}
         >
           <Send className="size-4" />
         </IconButton>

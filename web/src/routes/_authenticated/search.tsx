@@ -23,7 +23,7 @@ function SearchRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={t`Search`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`Search`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <SearchPage initialQuery={q} />
       </Main>

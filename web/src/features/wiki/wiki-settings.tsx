@@ -88,10 +88,10 @@ interface Tab {
 }
 
 const tabs: Tab[] = [
-  { id: 'settings', label: 'Settings', icon: <Settings className="h-4 w-4" /> },
-  { id: 'redirects', label: 'Redirects', icon: <CornerDownRight className="h-4 w-4" /> },
-  { id: 'access', label: 'Access', icon: <Shield className="h-4 w-4" /> },
-  { id: 'replicas', label: 'Replicas', icon: <Users className="h-4 w-4" /> },
+  { id: 'settings', label: "Settings", icon: <Settings className="h-4 w-4" /> },
+  { id: 'redirects', label: "Redirects", icon: <CornerDownRight className="h-4 w-4" /> },
+  { id: 'access', label: "Access", icon: <Shield className="h-4 w-4" /> },
+  { id: 'replicas', label: "Replicas", icon: <Users className="h-4 w-4" /> },
 ]
 
 // Context for wiki-specific settings when accessed via /$wikiId/settings route
@@ -121,7 +121,6 @@ interface WikiSettingsProps {
 }
 
 export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permissions }: WikiSettingsProps) {
-  const { t } = useLingui()
   const contextValue: WikiSettingsContextValue = {
     baseURL: baseURL ?? null,
     wiki: wiki ?? null,
@@ -137,7 +136,7 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
       {/* Tabs */}
       <div
         role="tablist"
-        aria-label={t`Wiki settings sections`}
+        aria-label={"Wiki settings sections"}
         className="flex gap-1 border-b"
         onKeyDown={(e) => {
           const tabButtons = e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')
@@ -524,7 +523,7 @@ function SettingsTab() {
           action={
             <Button variant="outline" onClick={() => void handleSync()} disabled={syncPending}>
               <RefreshCw className={cn("mr-2 h-4 w-4", syncPending && "animate-spin")} />
-              {syncPending ? 'Syncing...' : 'Sync now'}
+              {syncPending ? t`Syncing...` : t`Sync now`}
             </Button>
           }
         >
@@ -559,7 +558,7 @@ function SettingsTab() {
           <div className="flex justify-end">
             <Button onClick={() => void handleSave()} disabled={!hasChanges || savePending}>
               <Save className="mr-2 h-4 w-4" />
-              {savePending ? 'Saving...' : 'Save changes'}
+              {savePending ? t`Saving...` : t`Save changes`}
             </Button>
           </div>
         </CardContent>
@@ -582,7 +581,7 @@ function SettingsTab() {
                 onClick={() => setDeleteConfirmOpen(true)}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                {deletePending ? 'Deleting...' : 'Delete wiki'}
+                {deletePending ? t`Deleting...` : t`Delete wiki`}
               </Button>
             </div>
             <ConfirmDialog
@@ -604,9 +603,9 @@ function SettingsTab() {
 
 // Wiki access levels (hierarchical: edit > view > none)
 const WIKI_ACCESS_LEVELS: AccessLevel[] = [
-  { value: 'edit', label: 'Edit and view' },
-  { value: 'view', label: 'View only' },
-  { value: 'none', label: 'No access' },
+  { value: 'edit', label: "Edit and view" },
+  { value: 'view', label: "View only" },
+  { value: 'none', label: "No access" },
 ]
 
 function AccessTab() {
@@ -1043,7 +1042,6 @@ interface AddRedirectDialogProps {
 }
 
 function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
-  const { t } = useLingui()
   const [open, setOpen] = useState(false)
   const [source, setSource] = useState('')
   const [target, setTarget] = useState('')
@@ -1057,7 +1055,7 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
     e.preventDefault()
 
     if (!source.trim() || !target.trim()) {
-      toast.error(t`Both source and target are required`)
+      toast.error("Both source and target are required")
       return
     }
 
@@ -1067,13 +1065,13 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
         source: source.trim(),
         target: target.trim(),
       })
-      toast.success(t`Redirect created`)
+      toast.success("Redirect created")
       setSource('')
       setTarget('')
       setOpen(false)
       onSuccess()
     } catch (err) {
-      toast.error(getErrorMessage(err, t`Failed to create redirect`))
+      toast.error(getErrorMessage(err, "Failed to create redirect"))
     } finally {
       setIsCreating(false)
     }

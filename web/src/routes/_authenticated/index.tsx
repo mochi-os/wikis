@@ -248,7 +248,7 @@ function WikiHomePage({
   const pageTitle =
     data && 'page' in data && typeof data.page === 'object' && data.page?.title
       ? data.page.title
-      : 'Home'
+      : "Home"
   usePageTitle(pageTitle)
 
   // Register page with sidebar context for tree expansion
@@ -311,7 +311,7 @@ function WikiHomePage({
       <>
         <WikiRouteHeader
           title={pageTitle}
-          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main>
@@ -326,7 +326,7 @@ function WikiHomePage({
       <>
         <WikiRouteHeader
           title={pageTitle}
-          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main>
@@ -342,7 +342,7 @@ function WikiHomePage({
       <>
         <WikiRouteHeader
           title={"Page not found"}
-          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main>
@@ -453,7 +453,7 @@ function WikiHomePage({
                 onSelect={() => setUnsubscribeConfirmOpen(true)}
                 disabled={unsubscribeWiki.isPending}
               >
-                {unsubscribeWiki.isPending ? 'Unsubscribing...' : 'Unsubscribe'}
+                {unsubscribeWiki.isPending ? "Unsubscribing..." : "Unsubscribe"}
               </DropdownMenuItem>
             </>
           )}
@@ -466,7 +466,7 @@ function WikiHomePage({
         <PageHeader
           page={data.page}
           menuAction={actionsMenu}
-          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main className='pt-2'>
@@ -803,8 +803,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                                 disabled={unsubscribeMutation.isPending && unsubscribeId === wiki.id}
                               >
                                 {unsubscribeMutation.isPending && unsubscribeId === wiki.id
-                                  ? 'Unsubscribing...'
-                                  : 'Unsubscribe'}
+                                  ? "Unsubscribing..." : "Unsubscribe"}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>

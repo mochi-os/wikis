@@ -54,7 +54,7 @@ function JoinWikiPage() {
 
   return (
     <>
-      <WikiRouteHeader title={t`Replicate wiki`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`Replicate wiki`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <div className="container mx-auto max-w-lg p-6">
           <Card>
@@ -114,7 +114,7 @@ function JoinWikiPage() {
                   </Button>
                   <Button variant="outline" type="submit" disabled={joinWiki.isPending || !target.trim()}>
                     <Link2 className="mr-2 h-4 w-4" />
-                    {joinWiki.isPending ? 'Replicating...' : 'Replicate wiki'}
+                    {joinWiki.isPending ? t`Replicating...` : t`Replicate wiki`}
                   </Button>
                 </div>
               </form>

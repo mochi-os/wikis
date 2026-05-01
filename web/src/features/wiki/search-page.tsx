@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import { Search, FileText, ArrowRight } from 'lucide-react'
 import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web'
@@ -11,7 +11,6 @@ interface SearchPageProps {
 }
 
 export function SearchPage({ initialQuery = '' }: SearchPageProps) {
-  const { t } = useLingui()
   const [query, setQuery] = useState(initialQuery)
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery)
 
@@ -55,7 +54,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={t`Search pages by title or content...`}
+            placeholder={"Search pages by title or content..."}
             className="pl-10"
             autoFocus
           />
@@ -68,8 +67,8 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
       {!debouncedQuery ? (
         <EmptyState
           icon={Search}
-          title={t`Enter a search term`}
-          description={t`Search pages by title or content.`}
+          title={"Enter a search term"}
+          description={"Search pages by title or content."}
           className="py-8"
         />
       ) : isLoading ? (
@@ -80,7 +79,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
         <EmptyState
           icon={FileText}
           title={`No pages found for "${debouncedQuery}"`}
-          description={t`Try different search terms.`}
+          description={"Try different search terms."}
           className="py-8"
         />
       ) : (

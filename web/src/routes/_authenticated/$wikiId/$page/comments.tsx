@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { usePageTitle, useAuthStore, requestHelpers, Main } from '@mochi/web'
@@ -13,6 +14,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId/$page/comments')({
 })
 
 function CommentsRoute() {
+  const { t } = useLingui()
   const { wikiId, page: slug } = Route.useParams()
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
@@ -43,7 +45,7 @@ function CommentsRoute() {
     <>
       <WikiRouteHeader
         title={`${pageTitle} - Comments`}
-        back={{ label: 'Back to page', onFallback: goBackToPage }}
+        back={{ label: t`Back to page`, onFallback: goBackToPage }}
       />
       <Main>
         <PageComments

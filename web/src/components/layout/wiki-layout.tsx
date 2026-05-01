@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react'
-import { useLingui } from '@lingui/react/macro'
 import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import {
@@ -37,7 +36,6 @@ function getEntityIdFromPath(pathname: string): string | null {
 }
 
 function WikiLayoutInner() {
-  const { t } = useLingui()
   const {
     createDialogOpen,
     openCreateDialog,
@@ -68,14 +66,14 @@ function WikiLayoutInner() {
         { name: values.name, privacy: values.privacy },
         {
           onSuccess: (data) => {
-            toast.success(t`Wiki created`)
+            toast.success("Wiki created")
             closeCreateDialog()
             const wikiId = data.fingerprint ?? data.id
             navigate({ to: '/$wikiId/$page', params: { wikiId, page: data.home } })
             resolve()
           },
           onError: (error) => {
-            toast.error(getErrorMessage(error, t`Failed to create wiki`))
+            toast.error(getErrorMessage(error, "Failed to create wiki"))
             reject(error)
           },
         }
@@ -112,7 +110,7 @@ function WikiLayoutInner() {
 
     // "All wikis" is now a simple link without submenu
     const allWikisItem = {
-      title: 'All wikis',
+      title: "All wikis",
       onClick: handleAllWikisClick,
       icon: Library,
       isActive: location.pathname === '/',
@@ -131,8 +129,8 @@ function WikiLayoutInner() {
         title: '',
         separator: true,
         items: [
-          { title: 'Find wikis', icon: Search, url: '/find' },
-          { title: 'Create wiki', icon: Plus, onClick: openCreateDialog },
+          { title: "Find wikis", icon: Search, url: '/find' },
+          { title: "Create wiki", icon: Plus, onClick: openCreateDialog },
         ],
       },
     ]
@@ -152,7 +150,7 @@ function WikiLayoutInner() {
         open={createDialogOpen}
         onOpenChange={(open) => { if (!open) closeCreateDialog() }}
         icon={BookOpen}
-        title={t`Create wiki`}
+        title={"Create wiki"}
         entityLabel="Wiki"
         showPrivacyToggle
         privacyLabel="Allow anyone to search for wiki"

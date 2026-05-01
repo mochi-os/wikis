@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { RotateCcw, ArrowLeft } from 'lucide-react'
 import {
@@ -25,7 +25,6 @@ interface RevertPageProps {
 }
 
 export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
-  const { t } = useLingui()
   const revertPage = useRevertPage()
   const navigate = useNavigate()
   const [comment, setComment] = useState(`Reverted to version ${version}`)
@@ -43,7 +42,7 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
           }
         },
         onError: (error) => {
-          toast.error(getErrorMessage(error, t`Failed to revert page`))
+          toast.error(getErrorMessage(error, "Failed to revert page"))
         },
       }
     )
@@ -70,7 +69,7 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
               id="comment"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder={t`Reason for reverting`}
+              placeholder={"Reason for reverting"}
             />
           </div>
         </CardContent>
@@ -95,7 +94,7 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
             disabled={revertPage.isPending}
           >
             <RotateCcw className="mr-2 h-4 w-4" />
-            {revertPage.isPending ? 'Reverting...' : 'Revert'}
+            {revertPage.isPending ? "Reverting..." : "Revert"}
           </Button>
         </CardFooter>
       </Card>

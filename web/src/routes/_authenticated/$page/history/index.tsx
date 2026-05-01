@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePage, usePageHistory } from '@/hooks/use-wiki'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
@@ -11,6 +12,7 @@ export const Route = createFileRoute('/_authenticated/$page/history/')({
 })
 
 function PageHistoryRoute() {
+  const { t } = useLingui()
   const params = Route.useParams()
   const slug = params.page ?? ''
   const navigate = useNavigate()
@@ -30,7 +32,7 @@ function PageHistoryRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <PageHistorySkeleton />
         </Main>
@@ -41,7 +43,7 @@ function PageHistoryRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -55,7 +57,7 @@ function PageHistoryRoute() {
 
     return (
       <>
-        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <PageHistory
             slug={slug}

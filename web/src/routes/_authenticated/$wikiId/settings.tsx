@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useLingui } from '@lingui/react/macro'
 import { usePageTitle, Main } from '@mochi/web'
 import { WikiSettings, type WikiSettingsTabId } from '@/features/wiki/wiki-settings'
 import { WikiProvider } from '@/context/wiki-context'
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId/settings')({
 })
 
 function WikiSettingsRoute() {
+  const { t } = useLingui()
   const { tab } = Route.useSearch()
   const navigate = Route.useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
@@ -32,7 +34,7 @@ function WikiSettingsRoute() {
   usePageTitle(`${wikiName} settings`)
   return (
     <>
-      <WikiRouteHeader title={`${wikiName} settings`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={`${wikiName} settings`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <WikiProvider>
           <WikiSettings

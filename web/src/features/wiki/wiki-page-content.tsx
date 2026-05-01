@@ -1,5 +1,5 @@
 import { Link, Navigate, useNavigate } from '@tanstack/react-router'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -46,7 +46,6 @@ interface WikiPageContentProps {
 // Shared page content component used by both the $wikiId/$page route and
 // the $wikiId index route (for domain routing where $wikiId is a page slug).
 export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
-  const { t } = useLingui()
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   const { baseURL, wiki, permissions } = useWikiBaseURL()
@@ -60,11 +59,11 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     setIsUnsubscribing(true)
     try {
       await requestHelpers.post(`${baseURL}unsubscribe`, {})
-      toast.success(t`Unsubscribed`)
+      toast.success("Unsubscribed")
       setUnsubscribeConfirmOpen(false)
       void navigate({ to: '/' })
     } catch (error) {
-      toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
+      toast.error(getErrorMessage(error, "Failed to unsubscribe"))
       setIsUnsubscribing(false)
     }
   }, [baseURL, navigate])
@@ -111,9 +110,9 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
       const { token } = await getRssToken(wikiId, mode)
       const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       const ok = await shellClipboardWrite(url)
-      if (ok) toast.success(t`RSS URL copied to clipboard`)
+      if (ok) toast.success("RSS URL copied to clipboard")
     } catch (error) {
-      toast.error(getErrorMessage(error, t`Failed to get RSS token`))
+      toast.error(getErrorMessage(error, "Failed to get RSS token"))
     }
   }
 
@@ -124,7 +123,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: "Back to wikis", onFallback: goBackToWikis }} />
         <Main>
           <PageViewSkeleton />
         </Main>
@@ -135,7 +134,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   if (pageError) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: "Back to wikis", onFallback: goBackToWikis }} />
         <Main>
           <GeneralError error={pageError} minimal mode="inline" reset={refetch} />
         </Main>
@@ -147,7 +146,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   if (data && !isValidResponse) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: "Back to wikis", onFallback: goBackToWikis }} />
         <Main>
           <div className="text-destructive">
             <p><Trans>Error: Received invalid response from server.</Trans></p>
@@ -168,8 +167,8 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <Button
             variant="ghost"
             size="icon"
-            aria-label={t`Page actions`}
-            title={t`Page actions`}
+            aria-label={"Page actions"}
+            title={"Page actions"}
           >
             <Ellipsis className="size-4" />
           </Button>
@@ -209,9 +208,9 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     return (
       <>
         <WikiRouteHeader
-          title={t`Page not found`}
+          title={"Page not found"}
           menuAction={notFoundMenu}
-          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
         />
         <Main>
           <PageNotFound slug={slug} wikiId={wikiId} />
@@ -230,8 +229,8 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <Button
             variant="ghost"
             size="icon"
-            aria-label={t`Page actions`}
-            title={t`Page actions`}
+            aria-label={"Page actions"}
+            title={"Page actions"}
             className="size-11 md:size-9"
           >
             <Ellipsis className="size-4" />
@@ -328,7 +327,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
                 disabled={isUnsubscribing}
               >
                 <Trash2 className="size-4" />
-                {isUnsubscribing ? 'Unsubscribing...' : 'Unsubscribe'}
+                {isUnsubscribing ? "Unsubscribing..." : "Unsubscribe"}
               </DropdownMenuItem>
             </>
           )}
@@ -341,7 +340,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <PageHeader
           page={data.page}
           menuAction={actionsMenu}
-          back={{ label: 'Back to wikis', onFallback: goBackToWikis }}
+          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
         />
         <Main className="pt-2">
           <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
@@ -349,7 +348,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <ConfirmDialog
           open={unsubscribeConfirmOpen}
           onOpenChange={setUnsubscribeConfirmOpen}
-          title={t`Unsubscribe`}
+          title={"Unsubscribe"}
           desc="Are you sure you want to unsubscribe from this wiki?"
           confirmText="Unsubscribe"
           destructive

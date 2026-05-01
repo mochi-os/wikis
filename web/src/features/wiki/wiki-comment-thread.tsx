@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
 import {
   Button,
@@ -44,7 +44,6 @@ export function WikiCommentThread({
   onDelete,
   depth = 0,
 }: WikiCommentThreadProps) {
-  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   const [collapsed, setCollapsed] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -241,7 +240,7 @@ export function WikiCommentThread({
               variant='ghost'
               className='size-8'
               onClick={() => replyFileRef.current?.click()}
-              label={t`Attach reply files`}
+              label={"Attach reply files"}
             >
               <Paperclip className="size-4" />
             </IconButton>
@@ -250,7 +249,7 @@ export function WikiCommentThread({
               variant='ghost'
               className='size-8'
               onClick={onCancelReply}
-              label={t`Cancel reply`}
+              label={"Cancel reply"}
             >
               <X className="size-4" />
             </IconButton>
@@ -259,7 +258,7 @@ export function WikiCommentThread({
               className='size-8'
               disabled={!replyDraft.trim()}
               onClick={() => onSubmitReply(comment.id, replyFiles.length > 0 ? replyFiles : undefined)}
-              label={t`Send reply`}
+              label={"Send reply"}
             >
               <Send className="size-4" />
             </IconButton>
@@ -270,7 +269,7 @@ export function WikiCommentThread({
       <ConfirmDialog
         open={deleting}
         onOpenChange={setDeleting}
-        title={t`Delete comment`}
+        title={"Delete comment"}
         desc="Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
         confirmText="Delete"
         destructive={true}

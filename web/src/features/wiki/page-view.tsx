@@ -1,5 +1,5 @@
 import { type MouseEvent, useEffect, useState } from 'react'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import type { WikiPage } from '@/types/wiki'
 import { Button, EmptyState, PageUtilityBar, useFormat, Skeleton, Separator, cn } from '@mochi/web'
@@ -42,9 +42,8 @@ function TableOfContents({
   currentPathWithQuery: string
   mobile?: boolean
 }) {
-  const { t } = useLingui()
   const content = (
-    <nav aria-label={t`Table of contents`} className='space-y-1'>
+    <nav aria-label={"Table of contents"} className='space-y-1'>
       {headings.map((heading) => (
         <a
           key={heading.id}
@@ -268,7 +267,6 @@ interface PageNotFoundProps {
 }
 
 export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
-  const { t } = useLingui()
   // Get permissions from WikiContext (entity context) or WikiBaseURLContext ($wikiId context)
   const wikiContextPermissions = usePermissions()
   const wikiBaseURLContext = useWikiBaseURLOptional()
@@ -281,7 +279,7 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
   return (
     <EmptyState
       icon={FileQuestion}
-      title={t`Page not found`}
+      title={"Page not found"}
       description={`The page "${slug}" does not exist yet.`}
     >
       {permissions.edit && (

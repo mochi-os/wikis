@@ -19,7 +19,7 @@ function TagsRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={t`All tags`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={t`All tags`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <TagsListSkeleton />
         </Main>
@@ -30,7 +30,7 @@ function TagsRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={t`All tags`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={t`All tags`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -40,7 +40,7 @@ function TagsRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={t`All tags`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`All tags`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <TagsList tags={data?.tags ?? []} />
       </Main>

@@ -1,5 +1,5 @@
 import { Trash2, ArrowLeft } from 'lucide-react'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
 import {
   Button,
@@ -22,7 +22,6 @@ interface DeletePageProps {
 }
 
 export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePageProps) {
-  const { t } = useLingui()
   const deletePage = useDeletePage()
   const navigate = useNavigate()
 
@@ -37,7 +36,7 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
         }
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, t`Failed to delete page`))
+        toast.error(getErrorMessage(error, "Failed to delete page"))
       },
     })
   }
@@ -76,7 +75,7 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
             disabled={deletePage.isPending}
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            {deletePage.isPending ? 'Deleting...' : 'Delete'}
+            {deletePage.isPending ? "Deleting..." : "Delete"}
           </Button>
         </CardFooter>
       </Card>

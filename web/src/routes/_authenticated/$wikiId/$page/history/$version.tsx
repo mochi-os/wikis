@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePageRevision } from '@/hooks/use-wiki'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
@@ -11,6 +12,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId/$page/history/$ver
 })
 
 function RevisionViewRoute() {
+  const { t } = useLingui()
   const { wikiId, page: slug, version: versionParam } = Route.useParams()
   const version = parseInt(versionParam, 10)
   const navigate = useNavigate()
@@ -29,7 +31,7 @@ function RevisionViewRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <RevisionViewSkeleton />
         </Main>
@@ -40,7 +42,7 @@ function RevisionViewRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -51,7 +53,7 @@ function RevisionViewRoute() {
   if (data) {
     return (
       <>
-        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <RevisionView
             slug={slug}

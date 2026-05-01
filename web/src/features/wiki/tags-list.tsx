@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { Tags, Tag as TagIcon } from 'lucide-react'
 import { Badge, Separator, Skeleton, EmptyState } from '@mochi/web'
 import type { Tag } from '@/types/wiki'
@@ -9,7 +9,6 @@ interface TagsListProps {
 }
 
 export function TagsList({ tags }: TagsListProps) {
-  const { t } = useLingui()
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -29,8 +28,8 @@ export function TagsList({ tags }: TagsListProps) {
         <div className="py-12">
           <EmptyState
             icon={Tags}
-            title={t`No tags found`}
-            description={t`Add tags to group pages in your wiki.`}
+            title={"No tags found"}
+            description={"Add tags to group pages in your wiki."}
           />
         </div>
       ) : (

@@ -19,7 +19,7 @@ function ChangesRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={t`Recent changes`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={t`Recent changes`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <ChangesListSkeleton />
         </Main>
@@ -30,7 +30,7 @@ function ChangesRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={t`Recent changes`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={t`Recent changes`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -40,7 +40,7 @@ function ChangesRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={t`Recent changes`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`Recent changes`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <ChangesList changes={data?.changes ?? []} />
       </Main>

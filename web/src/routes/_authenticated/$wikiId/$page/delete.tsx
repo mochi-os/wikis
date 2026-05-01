@@ -46,7 +46,7 @@ function DeletePageRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
         <Main>
           <div className="flex items-center justify-center py-12">
             <Skeleton className="h-64 w-full max-w-md" />
@@ -59,7 +59,7 @@ function DeletePageRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -71,7 +71,7 @@ function DeletePageRoute() {
   if (data && 'error' in data && data.error === 'not_found') {
     return (
       <>
-        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
         <Main>
           <EmptyState
             icon={FileX}
@@ -87,7 +87,7 @@ function DeletePageRoute() {
   if (data && 'page' in data && typeof data.page === 'object') {
     return (
       <>
-        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: 'Back to page', onFallback: goBackToPage }} />
+        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
         <Main>
           <DeletePage wikiId={wikiId} slug={slug} title={data.page.title} homePage={wiki.home} />
         </Main>

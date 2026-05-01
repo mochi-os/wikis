@@ -23,7 +23,7 @@ function NewPageRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={t`New page`} back={{ label: 'Back to wikis', onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`New page`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <PageEditor slug={slug ?? ''} isNew />
       </Main>
