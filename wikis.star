@@ -337,7 +337,7 @@ def action_create(a):
         return
 
     name = a.input("name")
-    if not name or not mochi.valid(name, "name"):
+    if not name or not mochi.text.valid(name, "name"):
         a.error_label(400, "errors.invalid_name")
         return
     if len(name) > 100:
@@ -497,7 +497,7 @@ def action_delete(a):
 # Info endpoint for class context - returns list of wikis
 def action_info_class(a):
     # Add fingerprint (without hyphens) to each for shorter URLs
-    wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis order by name")
+    wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis")
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"], False)) for w in wikis_raw]
     return {"data": {"entity": False, "wikis": wikis}}
 
@@ -514,14 +514,14 @@ def action_directory_search(a):
     results = []
 
     # Check if search term is an entity ID
-    if mochi.valid(search, "entity"):
+    if mochi.text.valid(search, "entity"):
         entry = mochi.directory.get(search)
         if entry and entry.get("class") == "wiki":
             results.append(entry)
 
     # Check if search term is a fingerprint (with or without hyphens)
     fingerprint = search.replace("-", "")
-    if mochi.valid(fingerprint, "fingerprint"):
+    if mochi.text.valid(fingerprint, "fingerprint"):
         matches = mochi.directory.search("wiki", "", False, fingerprint=fingerprint)
         for entry in matches:
             found = False
@@ -546,7 +546,7 @@ def action_directory_search(a):
                 wiki_id = wiki_id.split("#")[0]
 
             # Try as entity ID first
-            if mochi.valid(wiki_id, "entity"):
+            if mochi.text.valid(wiki_id, "entity"):
                 entry = mochi.directory.get(wiki_id)
                 if entry and entry.get("class") == "wiki":
                     found = False
@@ -557,7 +557,7 @@ def action_directory_search(a):
                     if not found:
                         results.append(entry)
             # Try as fingerprint
-            elif mochi.valid(wiki_id, "fingerprint"):
+            elif mochi.text.valid(wiki_id, "fingerprint"):
                 matches = mochi.directory.search("wiki", "", False, fingerprint=wiki_id.replace("-", ""))
                 for entry in matches:
                     found = False
@@ -658,7 +658,7 @@ def action_info_entity(a):
 
     # Also include all wikis for sidebar display
     # Add fingerprint (without hyphens) to each for shorter URLs
-    wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis order by name")
+    wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis")
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"], False)) for w in wikis_raw]
 
     return {"data": {"entity": True, "wiki": wiki, "wikis": wikis, "permissions": permissions, "fingerprint": fp}}
@@ -1698,7 +1698,7 @@ def action_rename(a):
         return
 
     name = a.input("name")
-    if not name or not mochi.valid(name, "name"):
+    if not name or not mochi.text.valid(name, "name"):
         a.error_label(400, "errors.invalid_name")
         return
 
@@ -1734,7 +1734,7 @@ def action_replicas(a):
     if wiki.get("source"):
         return {"data": {"replicas": []}}
 
-    replicas = mochi.db.rows("select id, name, subscribed, seen, synced from replicas where wiki=? order by name", wiki["id"])
+    replicas = mochi.db.rows("select id, name, subscribed, seen, synced from replicas where wiki=?", wiki["id"])
 
     # Look up current names from directory to avoid stale names
     for r in replicas:
@@ -1862,7 +1862,7 @@ def action_access_list(a):
                 group = mochi.group.get(group_id)
                 if group:
                     rule["name"] = group.get("name", group_id)
-            elif mochi.valid(subject, "entity"):
+            elif mochi.text.valid(subject, "entity"):
                 # Try directory first (for user identities), then local entities
                 entry = mochi.directory.get(subject)
                 if entry:
@@ -2972,7 +2972,7 @@ def page_comments(wiki_id, page_slug, parent_id, depth):
         return []
     comments = mochi.db.rows("select * from comments where wiki=? and page=? and parent=? and deleted=0 order by created desc", wiki_id, page_slug, parent_id)
     for i in range(len(comments)):
-        comments[i]["body_markdown"] = mochi.markdown.render(comments[i]["body"])
+        comments[i]["body_markdown"] = mochi.text.markdown(comments[i]["body"])
         comments[i]["children"] = page_comments(wiki_id, page_slug, comments[i]["id"], depth + 1)
         comments[i]["attachments"] = mochi.attachment.list(comments[i]["id"], wiki_id) or []
     return comments
