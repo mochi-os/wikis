@@ -1,5 +1,6 @@
 import { Link, Navigate, useNavigate } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
+import { plural } from '@lingui/core/macro'
 import { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -262,7 +263,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <DropdownMenuItem asChild>
             <Link preload={false} to="/$wikiId/$page/comments" params={{ wikiId, page: slug }}>
               <MessageSquare className="size-4" />
-              {commentCount === 1 ? '1 comment' : `${commentCount} comments`}
+              {plural(commentCount, { one: '1 comment', other: '# comments' })}
             </Link>
           </DropdownMenuItem>
           {permissions.edit && (
