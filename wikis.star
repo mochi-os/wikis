@@ -2794,7 +2794,7 @@ def event_attachment_fetch(e):
 
     # Send success status, then file data
     e.write({"status": "200"})
-    bytes_written = e.stream.write_from_file(path)
+    bytes_written = e.write.file(path)
     mochi.log.debug("attachment/fetch sent %s bytes", bytes_written)
 
 # P2P event: attachment/add — store remote attachment metadata (files pulled on demand)
