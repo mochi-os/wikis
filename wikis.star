@@ -2636,7 +2636,7 @@ def event_attachment_upload_request(e):
     notify = [r["id"] for r in replicas]
 
     # Stream directly to attachment storage (no temp file needed)
-    attachment = mochi.attachment.create_from_stream(wiki, name, e.stream, content_type, "", "", notify)
+    attachment = mochi.attachment.create.stream(wiki, name, e.stream, content_type, "", "", notify)
 
     if not attachment:
         e.write({"status": "500", "error": "Failed to create attachment"})
@@ -2730,7 +2730,7 @@ def event_attachment_create(e):
     notify = [r["id"] for r in replicas]
 
     # Stream directly to attachment storage with the original ID (no temp file needed)
-    attachment = mochi.attachment.create_from_stream(wiki, name, stream, content_type, "", "", notify, attachment_id)
+    attachment = mochi.attachment.create.stream(wiki, name, stream, content_type, "", "", notify, attachment_id)
 
     if attachment:
         mochi.log.debug("Created attachment %s from replica %s", attachment_id, replica)
