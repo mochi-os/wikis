@@ -367,7 +367,7 @@ def action_create(a):
         mochi.access.allow("+", resource, "edit", creator)
     mochi.access.allow(creator, resource, "*", creator)
 
-    fingerprint = mochi.entity.fingerprint(entity, False)
+    fingerprint = mochi.entity.fingerprint(entity)
     return {"data": {"id": entity, "name": name, "home": "home", "fingerprint": fingerprint}}
 
 # Join an existing remote wiki by creating a local copy
@@ -430,7 +430,7 @@ def action_join(a):
         {"name": name}
     )
 
-    fingerprint = mochi.entity.fingerprint(entity, False)
+    fingerprint = mochi.entity.fingerprint(entity)
     return {"data": {"id": entity, "name": name, "source": source, "fingerprint": fingerprint, "home": dump.get("home") or "home", "message": "Wiki joined successfully"}}
 
 # Delete a wiki and all its data
@@ -498,7 +498,7 @@ def action_delete(a):
 def action_info_class(a):
     # Add fingerprint (without hyphens) to each for shorter URLs
     wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis")
-    wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"], False)) for w in wikis_raw]
+    wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
     return {"data": {"entity": False, "wikis": wikis}}
 
 # Search directory for remote wikis
@@ -650,8 +650,8 @@ def action_info_entity(a):
         permissions = {"view": True, "edit": False, "delete": False, "manage": False}
 
     # Get fingerprint - with hyphens for display, without for URLs
-    fp = mochi.entity.fingerprint(wiki["id"], True)
-    fp_url = mochi.entity.fingerprint(wiki["id"], False)
+    fp_url = mochi.entity.fingerprint(wiki["id"])
+    fp = fp_url[:3] + "-" + fp_url[3:6] + "-" + fp_url[6:]
 
     # Add fingerprint to wiki object for URL generation
     wiki = dict(wiki, fingerprint=fp_url)
@@ -659,7 +659,7 @@ def action_info_entity(a):
     # Also include all wikis for sidebar display
     # Add fingerprint (without hyphens) to each for shorter URLs
     wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis")
-    wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"], False)) for w in wikis_raw]
+    wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
 
     return {"data": {"entity": True, "wiki": wiki, "wikis": wikis, "permissions": permissions, "fingerprint": fp}}
 
