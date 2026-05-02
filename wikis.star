@@ -314,7 +314,7 @@ _PERSON_ASSETS = ("avatar", "banner", "favicon", "style", "information")
 def action_comment_asset(a):
     asset = a.input("asset")
     if asset not in _PERSON_ASSETS:
-        a.error_label(404, "errors.unknown_asset")
+        a.error.label(404, "errors.unknown_asset")
         return
     row = mochi.db.row("select author from comments where id=?", a.input("comment"))
     return stream_asset(a, row["author"] if row else "", "people", asset)
@@ -323,7 +323,7 @@ def action_comment_asset(a):
 def action_revision_asset(a):
     asset = a.input("asset")
     if asset not in _PERSON_ASSETS:
-        a.error_label(404, "errors.unknown_asset")
+        a.error.label(404, "errors.unknown_asset")
         return
     row = mochi.db.row("select author from revisions where id=?", a.input("revision"))
     return stream_asset(a, row["author"] if row else "", "people", asset)
@@ -333,26 +333,26 @@ def action_revision_asset(a):
 # Create a new wiki entity
 def action_create(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     name = a.input("name")
     if not name or not mochi.text.valid(name, "name"):
-        a.error_label(400, "errors.invalid_name")
+        a.error.label(400, "errors.invalid_name")
         return
     if len(name) > 100:
-        a.error_label(400, "errors.name_too_long_max_100_characters")
+        a.error.label(400, "errors.name_too_long_max_100_characters")
         return
 
     privacy = a.input("privacy") or "public"
     if privacy not in ["public", "private"]:
-        a.error_label(400, "errors.invalid_privacy_setting")
+        a.error.label(400, "errors.invalid_privacy_setting")
         return
 
     # Create entity for the wiki (returns entity ID string)
     entity = mochi.entity.create("wiki", name, privacy, "")
     if not entity:
-        a.error_label(500, "errors.failed_to_create_wiki_entity")
+        a.error.label(500, "errors.failed_to_create_wiki_entity")
         return
 
     # Register wiki in the database
@@ -373,20 +373,20 @@ def action_create(a):
 # Join an existing remote wiki by creating a local copy
 def action_join(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     # Get the remote wiki entity ID and optional server
     source = a.input("target")
     server = a.input("server")
     if not source:
-        a.error_label(400, "errors.target_wiki_entity_id_is_required")
+        a.error.label(400, "errors.target_wiki_entity_id_is_required")
         return
 
     # Check if we already have a wiki tracking this source
     existing = mochi.db.row("select * from wikis where source=?", source)
     if existing:
-        a.error_label(400, "errors.already_joined_this_wiki")
+        a.error.label(400, "errors.already_joined_this_wiki")
         return
 
     # Connect to specified server, or use directory lookup
@@ -397,7 +397,7 @@ def action_join(a):
     # Sync data from the remote wiki first to get the name
     dump = mochi.remote.request(source, "wikis", "sync", {}, peer)
     if dump.get("error") or dump.get("status") != "200":
-        a.error_label(500, "errors.failed_to_sync_from_remote_wiki")
+        a.error.label(500, "errors.failed_to_sync_from_remote_wiki")
         return
 
     # Get the wiki name from the sync response
@@ -406,7 +406,7 @@ def action_join(a):
     # Create a new local entity for this wiki (private so it's not added to directory)
     entity = mochi.entity.create("wiki", name, "private", "")
     if not entity:
-        a.error_label(500, "errors.failed_to_create_wiki_entity")
+        a.error.label(500, "errors.failed_to_create_wiki_entity")
         return
 
     # Register wiki in the database with source and server tracking
@@ -436,16 +436,16 @@ def action_join(a):
 # Delete a wiki and all its data
 def action_delete(a):
     if not a.user:
-        a.error_label(401, "errors.authentication_required")
+        a.error.label(401, "errors.authentication_required")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     wiki_id = wiki["id"]
@@ -504,7 +504,7 @@ def action_info_class(a):
 # Search directory for remote wikis
 def action_directory_search(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     search = a.input("search", "").strip()
@@ -630,11 +630,11 @@ def action_recommendations(a):
 def action_info_entity(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     # Build permissions object (manage grants all permissions)
@@ -667,16 +667,16 @@ def action_info_entity(a):
 def action_page(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("page")
     if not slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
 
     page = get_page(wiki["id"], slug)
@@ -712,28 +712,28 @@ def action_page(a):
 # Edit a page (create or update)
 def action_page_edit(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("page")
     if not slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
     if len(slug) > 100:
-        a.error_label(400, "errors.page_url_too_long_max_100_characters")
+        a.error.label(400, "errors.page_url_too_long_max_100_characters")
         return
     for c in slug.elems():
         if not (c.isalnum() or c in "-_"):
-            a.error_label(400, "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders")
+            a.error.label(400, "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders")
             return
 
     title = a.input("title")
@@ -741,20 +741,20 @@ def action_page_edit(a):
     comment = a.input("comment", "")
 
     if not title:
-        a.error_label(400, "errors.title_is_required")
+        a.error.label(400, "errors.title_is_required")
         return
     if len(title) > 255:
-        a.error_label(400, "errors.title_too_long_max_255_characters")
+        a.error.label(400, "errors.title_too_long_max_255_characters")
         return
 
     if content == None:
         content = ""
     if len(content) > 1000000:
-        a.error_label(400, "errors.content_too_long_max_1mb")
+        a.error.label(400, "errors.content_too_long_max_1mb")
         return
 
     if len(comment) > 500:
-        a.error_label(400, "errors.comment_too_long_max_500_characters")
+        a.error.label(400, "errors.comment_too_long_max_500_characters")
         return
 
     author = a.user.identity.id
@@ -847,16 +847,16 @@ def action_page_edit(a):
 # Create a new page (returns page slug for redirect)
 def action_new(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("slug")
@@ -864,31 +864,31 @@ def action_new(a):
     content = a.input("content", "")
 
     if not slug:
-        a.error_label(400, "errors.slug_is_required")
+        a.error.label(400, "errors.slug_is_required")
         return
     if len(slug) > 100:
-        a.error_label(400, "errors.page_url_too_long_max_100_characters")
+        a.error.label(400, "errors.page_url_too_long_max_100_characters")
         return
     # Validate slug characters (alphanumeric, hyphens, underscores)
     for c in slug.elems():
         if not (c.isalnum() or c in "-_"):
-            a.error_label(400, "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders")
+            a.error.label(400, "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders")
             return
 
     if not title:
-        a.error_label(400, "errors.title_is_required")
+        a.error.label(400, "errors.title_is_required")
         return
     if len(title) > 255:
-        a.error_label(400, "errors.title_too_long_max_255_characters")
+        a.error.label(400, "errors.title_too_long_max_255_characters")
         return
 
     if len(content) > 1000000:
-        a.error_label(400, "errors.content_too_long_max_1mb")
+        a.error.label(400, "errors.content_too_long_max_1mb")
         return
 
     # Check if slug is reserved
     if slug.startswith("-"):
-        a.error_label(400, "errors.page_names_starting_with_are_reserved")
+        a.error.label(400, "errors.page_names_starting_with_are_reserved")
         return
 
     author = a.user.identity.id
@@ -898,7 +898,7 @@ def action_new(a):
     # Check if page already exists
     existing = mochi.db.row("select id, deleted, version from pages where wiki=? and page=?", wiki["id"], slug)
     if existing and not existing["deleted"]:
-        a.error_label(409, "errors.page_already_exists")
+        a.error.label(409, "errors.page_already_exists")
         return
 
     # Create or restore the page
@@ -944,21 +944,21 @@ def action_new(a):
 def action_page_history(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("page")
     if not slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
 
     page = mochi.db.row("select * from pages where wiki=? and page=?", wiki["id"], slug)
     if not page:
-        a.error_label(404, "errors.page_not_found")
+        a.error.label(404, "errors.page_not_found")
         return
 
     revisions = mochi.db.rows("select id, title, author, name, created, version, comment from revisions where page=? order by version desc", page["id"])
@@ -978,32 +978,32 @@ def action_page_history(a):
 def action_page_revision(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("page")
     version = a.input("version")
 
     if not slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
 
     if not version:
-        a.error_label(400, "errors.missing_version_parameter")
+        a.error.label(400, "errors.missing_version_parameter")
         return
 
     page = mochi.db.row("select * from pages where wiki=? and page=?", wiki["id"], slug)
     if not page:
-        a.error_label(404, "errors.page_not_found")
+        a.error.label(404, "errors.page_not_found")
         return
 
     revision = mochi.db.row("select * from revisions where page=? and version=?", page["id"], int(version))
     if not revision:
-        a.error_label(404, "errors.revision_not_found")
+        a.error.label(404, "errors.revision_not_found")
         return
 
     # Resolve author name
@@ -1028,16 +1028,16 @@ def action_page_revision(a):
 # Revert to a previous revision
 def action_page_revert(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("page")
@@ -1045,23 +1045,23 @@ def action_page_revert(a):
     comment = a.input("comment", "")
 
     if not slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
 
     if not version:
-        a.error_label(400, "errors.version_is_required")
+        a.error.label(400, "errors.version_is_required")
         return
 
     source = wiki.get("source")
 
     page = mochi.db.row("select * from pages where wiki=? and page=?", wiki["id"], slug)
     if not page:
-        a.error_label(404, "errors.page_not_found")
+        a.error.label(404, "errors.page_not_found")
         return
 
     revision = mochi.db.row("select * from revisions where page=? and version=?", page["id"], int(version))
     if not revision:
-        a.error_label(404, "errors.revision_not_found")
+        a.error.label(404, "errors.revision_not_found")
         return
 
     # Create new version with content from old revision
@@ -1101,28 +1101,28 @@ def action_page_revert(a):
 # Delete a page (soft delete)
 def action_page_delete(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "delete"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("page")
     if not slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
 
     source = wiki.get("source")
 
     page = mochi.db.row("select * from pages where wiki=? and page=? and deleted=0", wiki["id"], slug)
     if not page:
-        a.error_label(404, "errors.page_not_found")
+        a.error.label(404, "errors.page_not_found")
         return
 
     now = mochi.time.now()
@@ -1149,16 +1149,16 @@ def action_page_delete(a):
 # Rename a page (and optionally child pages)
 def action_page_rename(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     old_slug = a.input("page")
@@ -1167,28 +1167,28 @@ def action_page_rename(a):
     create_redirects = a.input("redirects", "false") == "true"
 
     if not old_slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
 
     if not new_slug:
-        a.error_label(400, "errors.new_slug_is_required")
+        a.error.label(400, "errors.new_slug_is_required")
         return
 
     # Validate new slug
     if len(new_slug) > 100:
-        a.error_label(400, "errors.page_url_too_long_max_100_characters")
+        a.error.label(400, "errors.page_url_too_long_max_100_characters")
         return
     for c in new_slug.elems():
         if not (c.isalnum() or c in "-_"):
-            a.error_label(400, "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders")
+            a.error.label(400, "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders")
             return
     if new_slug.startswith("-"):
-        a.error_label(400, "errors.page_names_starting_with_are_reserved")
+        a.error.label(400, "errors.page_names_starting_with_are_reserved")
         return
 
     # Can't rename to itself
     if old_slug == new_slug:
-        a.error_label(400, "errors.new_slug_is_the_same_as_the_old_slug")
+        a.error.label(400, "errors.new_slug_is_the_same_as_the_old_slug")
         return
 
     source = wiki.get("source")
@@ -1199,13 +1199,13 @@ def action_page_rename(a):
     # Get the page to rename
     page = mochi.db.row("select * from pages where wiki=? and page=? and deleted=0", wiki["id"], old_slug)
     if not page:
-        a.error_label(404, "errors.page_not_found")
+        a.error.label(404, "errors.page_not_found")
         return
 
     # Check new slug doesn't already exist
     existing = mochi.db.row("select 1 from pages where wiki=? and page=? and deleted=0", wiki["id"], new_slug)
     if existing:
-        a.error_label(400, "errors.a_page_with_this_slug_already_exists")
+        a.error.label(400, "errors.a_page_with_this_slug_already_exists")
         return
 
     # Build list of pages to rename (main page + children if requested)
@@ -1218,7 +1218,7 @@ def action_page_rename(a):
             # Check child's new slug doesn't exist
             child_existing = mochi.db.row("select 1 from pages where wiki=? and page=? and deleted=0", wiki["id"], child_new_slug)
             if child_existing:
-                a.error_label(400, "errors.page_with_slug_already_exists", slug=child_new_slug)
+                a.error.label(400, "errors.page_with_slug_already_exists", slug=child_new_slug)
                 return
             pages_to_rename.append({"page": child, "old_slug": child["page"], "new_slug": child_new_slug})
 
@@ -1310,46 +1310,46 @@ def action_page_rename(a):
 # Add a tag to a page
 def action_tag_add(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("page")
     tag = a.input("tag")
 
     if not slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
 
     if not tag:
-        a.error_label(400, "errors.tag_is_required")
+        a.error.label(400, "errors.tag_is_required")
         return
 
     # Normalize tag (lowercase, trim)
     tag = tag.lower().strip()
     if not tag:
-        a.error_label(400, "errors.tag_is_required")
+        a.error.label(400, "errors.tag_is_required")
         return
     if len(tag) > 50:
-        a.error_label(400, "errors.tag_too_long_max_50_characters")
+        a.error.label(400, "errors.tag_too_long_max_50_characters")
         return
     # Only allow alphanumeric, hyphens, and underscores
     for c in tag.elems():
         if not (c.isalnum() or c in "-_"):
-            a.error_label(400, "errors.tags_can_only_contain_letters_numbers_hyphens_and_underscore")
+            a.error.label(400, "errors.tags_can_only_contain_letters_numbers_hyphens_and_underscore")
             return
 
     page = mochi.db.row("select id from pages where wiki=? and page=? and deleted=0", wiki["id"], slug)
     if not page:
-        a.error_label(404, "errors.page_not_found")
+        a.error.label(404, "errors.page_not_found")
         return
 
     # Check if tag already exists
@@ -1375,34 +1375,34 @@ def action_tag_add(a):
 # Remove a tag from a page
 def action_tag_remove(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("page")
     tag = a.input("tag")
 
     if not slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
 
     if not tag:
-        a.error_label(400, "errors.tag_is_required")
+        a.error.label(400, "errors.tag_is_required")
         return
 
     tag = tag.lower().strip()
 
     page = mochi.db.row("select id from pages where wiki=? and page=? and deleted=0", wiki["id"], slug)
     if not page:
-        a.error_label(404, "errors.page_not_found")
+        a.error.label(404, "errors.page_not_found")
         return
 
     mochi.db.execute("delete from tags where page=? and tag=?", page["id"], tag)
@@ -1424,11 +1424,11 @@ def action_tag_remove(a):
 def action_tags(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     tags = mochi.db.rows("""
@@ -1445,17 +1445,17 @@ def action_tags(a):
 def action_tag_pages(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     tag = a.input("tag")
 
     if not tag:
-        a.error_label(400, "errors.missing_tag_parameter")
+        a.error.label(400, "errors.missing_tag_parameter")
         return
 
     tag = tag.lower().strip()
@@ -1474,11 +1474,11 @@ def action_tag_pages(a):
 def action_changes(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     # Get recent revisions with page info
@@ -1506,27 +1506,27 @@ def action_changes(a):
 # Create or update a redirect
 def action_redirect_set(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     source = a.input("source")
     target = a.input("target")
 
     if not source:
-        a.error_label(400, "errors.source_is_required")
+        a.error.label(400, "errors.source_is_required")
         return
 
     if not target:
-        a.error_label(400, "errors.target_is_required")
+        a.error.label(400, "errors.target_is_required")
         return
 
     # Normalize slugs
@@ -1534,31 +1534,31 @@ def action_redirect_set(a):
     target = target.lower().strip()
 
     if len(source) > 100:
-        a.error_label(400, "errors.source_too_long_max_100_characters")
+        a.error.label(400, "errors.source_too_long_max_100_characters")
         return
     if len(target) > 100:
-        a.error_label(400, "errors.target_too_long_max_100_characters")
+        a.error.label(400, "errors.target_too_long_max_100_characters")
         return
 
     if source == target:
-        a.error_label(400, "errors.source_and_target_cannot_be_the_same")
+        a.error.label(400, "errors.source_and_target_cannot_be_the_same")
         return
 
     # Check if source is a reserved path
     if source.startswith("-"):
-        a.error_label(400, "errors.cannot_redirect_reserved_paths")
+        a.error.label(400, "errors.cannot_redirect_reserved_paths")
         return
 
     # Check if target page exists
     targetpage = mochi.db.row("select id from pages where wiki=? and page=? and deleted=0", wiki["id"], target)
     if not targetpage:
-        a.error_label(400, "errors.target_page_does_not_exist")
+        a.error.label(400, "errors.target_page_does_not_exist")
         return
 
     # Check if source conflicts with an existing page
     sourcepage = mochi.db.row("select id from pages where wiki=? and page=? and deleted=0", wiki["id"], source)
     if sourcepage:
-        a.error_label(400, "errors.cannot_redirect_a_page_with_this_slug_already_exists")
+        a.error.label(400, "errors.cannot_redirect_a_page_with_this_slug_already_exists")
         return
 
     now = mochi.time.now()
@@ -1576,22 +1576,22 @@ def action_redirect_set(a):
 # Delete a redirect
 def action_redirect_delete(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     source = a.input("source")
 
     if not source:
-        a.error_label(400, "errors.source_is_required")
+        a.error.label(400, "errors.source_is_required")
         return
 
     source = source.lower().strip()
@@ -1608,11 +1608,11 @@ def action_redirect_delete(a):
 def action_redirects(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     redirects = mochi.db.rows("select source, target, created from redirects where wiki=? order by source", wiki["id"])
@@ -1622,11 +1622,11 @@ def action_redirects(a):
 def action_settings(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     return {"data": {"settings": {"home": wiki["home"], "source": wiki.get("source", "")}}}
@@ -1634,44 +1634,44 @@ def action_settings(a):
 # Update a wiki setting
 def action_settings_set(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     name = a.input("name")
     value = a.input("value")
 
     if not name:
-        a.error_label(400, "errors.setting_name_is_required")
+        a.error.label(400, "errors.setting_name_is_required")
         return
 
     if value == None:
-        a.error_label(400, "errors.setting_value_is_required")
+        a.error.label(400, "errors.setting_value_is_required")
         return
 
     # Only allow known settings
     if name == "home":
         if not value:
-            a.error_label(400, "errors.home_page_is_required")
+            a.error.label(400, "errors.home_page_is_required")
             return
         if len(value) > 100:
-            a.error_label(400, "errors.home_page_slug_too_long_max_100_characters")
+            a.error.label(400, "errors.home_page_slug_too_long_max_100_characters")
             return
         for c in value.elems():
             if not (c.isalnum() or c in "-_/"):
-                a.error_label(400, "errors.home_page_can_only_contain_letters_numbers_hyphens_underscor")
+                a.error.label(400, "errors.home_page_can_only_contain_letters_numbers_hyphens_underscor")
                 return
         mochi.db.execute("update wikis set home=? where id=?", value, wiki["id"])
     else:
-        a.error_label(400, "errors.unknown_setting", name=name)
+        a.error.label(400, "errors.unknown_setting", name=name)
         return
 
     # Send setting/set event
@@ -1685,25 +1685,25 @@ def action_settings_set(a):
 # Rename a wiki
 def action_rename(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     name = a.input("name")
     if not name or not mochi.text.valid(name, "name"):
-        a.error_label(400, "errors.invalid_name")
+        a.error.label(400, "errors.invalid_name")
         return
 
     if len(name) > 100:
-        a.error_label(400, "errors.name_is_too_long_max_100_characters")
+        a.error.label(400, "errors.name_is_too_long_max_100_characters")
         return
 
     # Update entity (handles directory, network publishing)
@@ -1723,11 +1723,11 @@ def action_rename(a):
 def action_replicas(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     # Only source wikis have replicas
@@ -1747,21 +1747,21 @@ def action_replicas(a):
 # Remove a replica
 def action_replica_remove(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     replica_id = a.input("replica")
     if not replica_id:
-        a.error_label(400, "errors.replica_id_is_required")
+        a.error.label(400, "errors.replica_id_is_required")
         return
 
     mochi.db.execute("delete from replicas where wiki=? and id=?", wiki["id"], replica_id)
@@ -1776,27 +1776,27 @@ def action_replica_remove(a):
 # Unsubscribe from a wiki (replica action - removes the local replica)
 def action_unsubscribe(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki_id = a.input("wiki")
     if not wiki_id:
-        a.error_label(400, "errors.wiki_id_is_required")
+        a.error.label(400, "errors.wiki_id_is_required")
         return
 
     if not check_access(a, wiki_id, "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     # Check wiki exists locally (we have a replica of it)
     wiki = mochi.db.row("select * from wikis where id=?", wiki_id)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     # Cannot unsubscribe from own wiki
     if wiki["source"] == "":
-        a.error_label(400, "errors.cannot_unsubscribe_from_your_own_wiki")
+        a.error.label(400, "errors.cannot_unsubscribe_from_your_own_wiki")
         return
 
     # Delete all local data for this wiki
@@ -1827,11 +1827,11 @@ def action_unsubscribe(a):
 def action_access_list(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     # Get owner - if we own this entity, use current user's info
@@ -1880,34 +1880,34 @@ def action_access_list(a):
 # This revokes any existing rules for the subject first, then sets the new level.
 def action_access_set(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     subject = a.input("subject")
     level = a.input("level")
 
     if not subject:
-        a.error_label(400, "errors.subject_is_required")
+        a.error.label(400, "errors.subject_is_required")
         return
     if len(subject) > 255:
-        a.error_label(400, "errors.subject_too_long")
+        a.error.label(400, "errors.subject_too_long")
         return
 
     if not level:
-        a.error_label(400, "errors.level_is_required")
+        a.error.label(400, "errors.level_is_required")
         return
 
     if level not in ["view", "edit", "none"]:
-        a.error_label(400, "errors.invalid_level")
+        a.error.label(400, "errors.invalid_level")
         return
 
     resource = "wiki/" + wiki["id"]
@@ -1931,25 +1931,25 @@ def action_access_set(a):
 # Revoke all access from a subject (remove from access list entirely)
 def action_access_revoke(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     subject = a.input("subject")
 
     if not subject:
-        a.error_label(400, "errors.subject_is_required")
+        a.error.label(400, "errors.subject_is_required")
         return
     if len(subject) > 255:
-        a.error_label(400, "errors.subject_too_long")
+        a.error.label(400, "errors.subject_too_long")
         return
 
     resource = "wiki/" + wiki["id"]
@@ -1964,11 +1964,11 @@ def action_access_revoke(a):
 def action_search(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     query = a.input("q", "")
@@ -2893,18 +2893,18 @@ def import_sync_dump(wiki, dump):
 # Subscribe to a wiki - request to be added to their replicas list
 def action_subscribe(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     # Get target wiki entity to subscribe to
     target = a.input("target")
     if not target:
-        a.error_label(400, "errors.target_wiki_entity_is_required")
+        a.error.label(400, "errors.target_wiki_entity_is_required")
         return
 
     # Send replicate request to target
@@ -2918,22 +2918,22 @@ def action_subscribe(a):
 # Request sync from upstream wiki
 def action_sync(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "manage"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     # Use target if specified, otherwise use the wiki's source
     target = a.input("target") or wiki.get("source")
     if not target:
-        a.error_label(400, "errors.no_upstream_wiki_to_sync_from")
+        a.error.label(400, "errors.no_upstream_wiki_to_sync_from")
         return
 
     # Use stored server for the wiki, or accept override
@@ -2942,18 +2942,18 @@ def action_sync(a):
     if server:
         peer = mochi.remote.peer(server)
         if not peer:
-            a.error_label(502, "errors.unable_to_connect_to_server")
+            a.error.label(502, "errors.unable_to_connect_to_server")
             return
 
     # Request sync from target
     dump = mochi.remote.request(target, "wikis", "sync", {}, peer)
     if dump.get("error") or not dump:
-        a.error_label(500, "errors.failed_to_receive_sync_data")
+        a.error.label(500, "errors.failed_to_receive_sync_data")
         return
 
     # Import the dump (includes attachments with remote entity reference)
     if not import_sync_dump(wiki["id"], dump):
-        a.error_label(500, "errors.failed_to_import_sync_data")
+        a.error.label(500, "errors.failed_to_import_sync_data")
         return
 
     # Subscribe to the source wiki for future updates
@@ -2997,16 +2997,16 @@ def delete_comment_tree(comment_id, wiki_id):
 def action_page_comments(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("page")
     if not slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
 
     comments = page_comments(wiki["id"], slug, "", 0)
@@ -3016,35 +3016,35 @@ def action_page_comments(a):
 # Create a comment on a page
 def action_comment_create(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     slug = a.input("page")
     if not slug:
-        a.error_label(400, "errors.missing_page_parameter")
+        a.error.label(400, "errors.missing_page_parameter")
         return
 
     body = a.input("body")
     if not body:
-        a.error_label(400, "errors.comment_body_is_required")
+        a.error.label(400, "errors.comment_body_is_required")
         return
     if len(body) > 100000:
-        a.error_label(400, "errors.comment_too_long_max_100_000_characters")
+        a.error.label(400, "errors.comment_too_long_max_100_000_characters")
         return
 
     parent = a.input("parent") or ""
     if parent:
         if not mochi.db.exists("select 1 from comments where id=? and wiki=? and deleted=0", parent, wiki["id"]):
-            a.error_label(404, "errors.parent_comment_not_found")
+            a.error.label(404, "errors.parent_comment_not_found")
             return
 
     now = mochi.time.now()
@@ -3089,39 +3089,39 @@ def action_comment_create(a):
 # Edit a comment
 def action_comment_edit(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     id = a.input("id")
     if not id:
-        a.error_label(400, "errors.comment_id_is_required")
+        a.error.label(400, "errors.comment_id_is_required")
         return
 
     comment = mochi.db.row("select * from comments where id=? and wiki=? and deleted=0", id, wiki["id"])
     if not comment:
-        a.error_label(404, "errors.comment_not_found")
+        a.error.label(404, "errors.comment_not_found")
         return
 
     # Only the author can edit their own comment
     if comment["author"] != a.user.identity.id:
-        a.error_label(403, "errors.you_can_only_edit_your_own_comments")
+        a.error.label(403, "errors.you_can_only_edit_your_own_comments")
         return
 
     body = a.input("body")
     if not body:
-        a.error_label(400, "errors.comment_body_is_required")
+        a.error.label(400, "errors.comment_body_is_required")
         return
     if len(body) > 100000:
-        a.error_label(400, "errors.comment_too_long_max_100_000_characters")
+        a.error.label(400, "errors.comment_too_long_max_100_000_characters")
         return
 
     now = mochi.time.now()
@@ -3149,32 +3149,32 @@ def action_comment_edit(a):
 # Delete a comment
 def action_comment_delete(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     id = a.input("id")
     if not id:
-        a.error_label(400, "errors.comment_id_is_required")
+        a.error.label(400, "errors.comment_id_is_required")
         return
 
     comment = mochi.db.row("select * from comments where id=? and wiki=? and deleted=0", id, wiki["id"])
     if not comment:
-        a.error_label(404, "errors.comment_not_found")
+        a.error.label(404, "errors.comment_not_found")
         return
 
     # Only the author or wiki owner can delete
     is_owner = bool(mochi.entity.get(wiki["id"]))
     if comment["author"] != a.user.identity.id and not is_owner:
-        a.error_label(403, "errors.you_can_only_delete_your_own_comments")
+        a.error.label(403, "errors.you_can_only_delete_your_own_comments")
         return
 
     delete_comment_tree(id, wiki["id"])
@@ -3315,11 +3315,11 @@ def event_comment_delete(e):
 def action_attachments(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     # For replica wikis, list attachments from both source and local entity
@@ -3336,16 +3336,16 @@ def action_attachments(a):
 # Upload an attachment
 def action_attachment_upload(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "edit"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     # If this is a replica wiki, save locally then notify source asynchronously
@@ -3354,7 +3354,7 @@ def action_attachment_upload(a):
         # Save attachment locally first (immediately available)
         attachments = mochi.attachment.save(wiki["id"], "files", [], [], [])
         if not attachments:
-            a.error_label(400, "errors.no_files_uploaded")
+            a.error.label(400, "errors.no_files_uploaded")
             return
 
         # Notify source wiki asynchronously for each attachment
@@ -3378,7 +3378,7 @@ def action_attachment_upload(a):
     attachments = mochi.attachment.save(wiki["id"], "files", [], [], [])
 
     if not attachments:
-        a.error_label(400, "errors.no_files_uploaded")
+        a.error.label(400, "errors.no_files_uploaded")
         return
 
     # Broadcast attachment metadata to replicas (files pulled on demand)
@@ -3393,28 +3393,28 @@ def action_attachment_upload(a):
 # Delete an attachment
 def action_attachment_delete(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
 
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     if not check_access(a, wiki["id"], "delete"):
-        a.error_label(403, "errors.access_denied")
+        a.error.label(403, "errors.access_denied")
         return
 
     id = a.input("id")
     if not id:
-        a.error_label(400, "errors.attachment_id_is_required")
+        a.error.label(400, "errors.attachment_id_is_required")
         return
 
     source = wiki.get("source")
 
     # Delete locally (no push notification — metadata piggybacked)
     if not mochi.attachment.delete(id, []):
-        a.error_label(404, "errors.attachment_not_found")
+        a.error.label(404, "errors.attachment_not_found")
         return
 
     # Source broadcasts removal to replicas
@@ -3469,7 +3469,7 @@ def action_attachment_delete(a):
 # Proxy user search to people app
 def action_users_search(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
     query = a.input("search", "")
     results = mochi.service.call("people", "users/search", query)
@@ -3478,7 +3478,7 @@ def action_users_search(a):
 # Proxy groups list to people app
 def action_groups(a):
     if not a.user:
-        a.error_label(401, "errors.not_logged_in")
+        a.error.label(401, "errors.not_logged_in")
         return
     groups = mochi.service.call("people", "groups/list")
     return {"data": {"groups": groups}}
@@ -3498,16 +3498,16 @@ def escape_xml(s):
 # Generate or retrieve an RSS token for an entity and mode
 def action_rss_token(a):
     if not a.user:
-        a.error_label(401, "errors.authentication_required")
+        a.error.label(401, "errors.authentication_required")
         return
 
     entity = a.input("entity")
     mode = a.input("mode")
     if not entity or not mode:
-        a.error_label(400, "errors.missing_entity_or_mode")
+        a.error.label(400, "errors.missing_entity_or_mode")
         return
     if mode != "changes" and mode != "comments" and mode != "all":
-        a.error_label(400, "errors.mode_must_be_changes_comments_or_all")
+        a.error.label(400, "errors.mode_must_be_changes_comments_or_all")
         return
 
     if entity == "*":
@@ -3522,7 +3522,7 @@ def action_rss_token(a):
                     wiki = w
                     break
         if not wiki:
-            a.error_label(404, "errors.wiki_not_found")
+            a.error.label(404, "errors.wiki_not_found")
             return
         wiki_id = wiki["id"]
 
@@ -3534,7 +3534,7 @@ def action_rss_token(a):
     # Create new token
     token = mochi.token.create("rss", ["rss"])
     if not token:
-        a.error_label(500, "errors.failed_to_create_token")
+        a.error.label(500, "errors.failed_to_create_token")
         return
 
     now = mochi.time.now()
@@ -3545,7 +3545,7 @@ def action_rss_token(a):
 def action_rss(a):
     wiki = get_wiki(a)
     if not wiki:
-        a.error_label(404, "errors.wiki_not_found")
+        a.error.label(404, "errors.wiki_not_found")
         return
 
     # Look up mode from token (token also authenticates for private wikis)
@@ -3558,7 +3558,7 @@ def action_rss(a):
             mode = rss_row["mode"]
 
     if not rss_row and not check_access(a, wiki["id"], "view"):
-        a.error_label(403, "errors.not_allowed")
+        a.error.label(403, "errors.not_allowed")
         return
 
     wiki_name = wiki["name"]
@@ -3636,7 +3636,7 @@ def action_rss_all(a):
             mode = rss_row["mode"]
 
     if not rss_row and not a.user:
-        a.error_label(401, "errors.authentication_required")
+        a.error.label(401, "errors.authentication_required")
         return
 
     a.header("Content-Type", "application/rss+xml; charset=utf-8")
