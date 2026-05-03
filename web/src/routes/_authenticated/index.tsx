@@ -118,7 +118,7 @@ export const Route = createFileRoute('/_authenticated/')({
       return {
         entity: false,
         wikis: [],
-        infoError: getErrorMessage(error, "Failed to load wikis"),
+        infoError: getErrorMessage(error, t`Failed to load wikis`),
       }
     }
 
@@ -285,7 +285,7 @@ function WikiHomePage({
         void navigate({ to: '/' })
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, "Failed to unsubscribe"))
+        toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
       },
     })
   }, [unsubscribeWiki, navigate])
@@ -302,7 +302,7 @@ function WikiHomePage({
       const ok = await shellClipboardWrite(url)
       if (ok) toast.success(t`RSS URL copied to clipboard`)
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to get RSS token"))
+      toast.error(getErrorMessage(error, t`Failed to get RSS token`))
     }
   }
 
@@ -540,7 +540,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       window.location.reload()
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to unsubscribe"))
+      toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
     },
   })
 
@@ -552,7 +552,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       const ok = await shellClipboardWrite(url)
       if (ok) toast.success(t`RSS URL copied to clipboard`)
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to get RSS token"))
+      toast.error(getErrorMessage(error, t`Failed to get RSS token`))
     }
   }
 
@@ -606,7 +606,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       // Reload page to refresh wikis list
       window.location.reload()
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to subscribe"))
+      toast.error(getErrorMessage(error, t`Failed to subscribe`))
       setPendingWikiId(null)
     }
   }

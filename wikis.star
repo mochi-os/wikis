@@ -341,7 +341,7 @@ def action_create(a):
         a.error.label(400, "errors.invalid_name")
         return
     if len(name) > 100:
-        a.error.label(400, "errors.name_too_long_max_100_characters")
+        a.error.label(400, "errors.name_too_long")
         return
 
     privacy = a.input("privacy") or "public"
@@ -729,7 +729,7 @@ def action_page_edit(a):
         a.error.label(400, "errors.missing_page_parameter")
         return
     if len(slug) > 100:
-        a.error.label(400, "errors.page_url_too_long_max_100_characters")
+        a.error.label(400, "errors.url_too_long")
         return
     for c in slug.elems():
         if not (c.isalnum() or c in "-_"):
@@ -867,7 +867,7 @@ def action_new(a):
         a.error.label(400, "errors.slug_is_required")
         return
     if len(slug) > 100:
-        a.error.label(400, "errors.page_url_too_long_max_100_characters")
+        a.error.label(400, "errors.url_too_long")
         return
     # Validate slug characters (alphanumeric, hyphens, underscores)
     for c in slug.elems():
@@ -1176,7 +1176,7 @@ def action_page_rename(a):
 
     # Validate new slug
     if len(new_slug) > 100:
-        a.error.label(400, "errors.page_url_too_long_max_100_characters")
+        a.error.label(400, "errors.url_too_long")
         return
     for c in new_slug.elems():
         if not (c.isalnum() or c in "-_"):
@@ -1188,7 +1188,7 @@ def action_page_rename(a):
 
     # Can't rename to itself
     if old_slug == new_slug:
-        a.error.label(400, "errors.new_slug_is_the_same_as_the_old_slug")
+        a.error.label(400, "errors.slug_unchanged")
         return
 
     source = wiki.get("source")
@@ -1344,7 +1344,7 @@ def action_tag_add(a):
     # Only allow alphanumeric, hyphens, and underscores
     for c in tag.elems():
         if not (c.isalnum() or c in "-_"):
-            a.error.label(400, "errors.tags_can_only_contain_letters_numbers_hyphens_and_underscore")
+            a.error.label(400, "errors.invalid_tag")
             return
 
     page = mochi.db.row("select id from pages where wiki=? and page=? and deleted=0", wiki["id"], slug)
@@ -1534,14 +1534,14 @@ def action_redirect_set(a):
     target = target.lower().strip()
 
     if len(source) > 100:
-        a.error.label(400, "errors.source_too_long_max_100_characters")
+        a.error.label(400, "errors.source_too_long")
         return
     if len(target) > 100:
         a.error.label(400, "errors.target_too_long_max_100_characters")
         return
 
     if source == target:
-        a.error.label(400, "errors.source_and_target_cannot_be_the_same")
+        a.error.label(400, "errors.source_target_same")
         return
 
     # Check if source is a reserved path
@@ -1667,7 +1667,7 @@ def action_settings_set(a):
             return
         for c in value.elems():
             if not (c.isalnum() or c in "-_/"):
-                a.error.label(400, "errors.home_page_can_only_contain_letters_numbers_hyphens_underscor")
+                a.error.label(400, "errors.invalid_home_page")
                 return
         mochi.db.execute("update wikis set home=? where id=?", value, wiki["id"])
     else:
@@ -1796,7 +1796,7 @@ def action_unsubscribe(a):
 
     # Cannot unsubscribe from own wiki
     if wiki["source"] == "":
-        a.error.label(400, "errors.cannot_unsubscribe_from_your_own_wiki")
+        a.error.label(400, "errors.cannot_unsubscribe_own_wiki")
         return
 
     # Delete all local data for this wiki
@@ -2933,7 +2933,7 @@ def action_sync(a):
     # Use target if specified, otherwise use the wiki's source
     target = a.input("target") or wiki.get("source")
     if not target:
-        a.error.label(400, "errors.no_upstream_wiki_to_sync_from")
+        a.error.label(400, "errors.no_upstream_wiki")
         return
 
     # Use stored server for the wiki, or accept override
@@ -3174,7 +3174,7 @@ def action_comment_delete(a):
     # Only the author or wiki owner can delete
     is_owner = bool(mochi.entity.get(wiki["id"]))
     if comment["author"] != a.user.identity.id and not is_owner:
-        a.error.label(403, "errors.you_can_only_delete_your_own_comments")
+        a.error.label(403, "errors.cannot_delete_others_comment")
         return
 
     delete_comment_tree(id, wiki["id"])

@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
+import { t } from '@lingui/core/macro'
 import { requestHelpers, GeneralError, getErrorMessage, isDomainEntityRouting } from '@mochi/web'
 import type { WikiPermissions } from '@/types/wiki'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
@@ -31,7 +32,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
   loader: async ({ params }): Promise<WikiRouteData> => {
     const wikiId = params.wikiId
     if (!wikiId) {
-      throw new Error("Wiki ID is required")
+      throw new Error(t`Wiki ID is required`)
     }
 
     // Use window.location.pathname since TanStack Router's location is relative to app mount
@@ -57,7 +58,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
       info = await requestHelpers.get<InfoResponse>(`${baseURL}info`)
     } catch (error) {
       // Keep wiki routes usable when info is temporarily unavailable.
-      infoError = getErrorMessage(error, "Failed to load wiki info")
+      infoError = getErrorMessage(error, t`Failed to load wiki info`)
     }
 
     if (!info?.wiki) {
@@ -66,7 +67,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
         wiki: { id: wikiId, name: wikiId, home: 'home', fingerprint: wikiId },
         permissions: { view: false, edit: false, delete: false, manage: false },
         fingerprint: wikiId,
-        infoError: infoError ?? 'Wiki not found',
+        infoError: infoError ?? t`Wiki not found`,
       }
     }
 
