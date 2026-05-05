@@ -4,7 +4,6 @@ import pluginQuery from '@tanstack/eslint-plugin-query'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig } from 'eslint/config'
-import i18nConfig from '@mochi/web/eslint-i18n-config'
 import tseslint from 'typescript-eslint'
 
 export default defineConfig(
@@ -74,9 +73,5 @@ export default defineConfig(
     rules: {
       'react-refresh/only-export-components': 'off',
     },
-  },
-  {
-    files: ['**/*.{ts,tsx}'],
-    ...i18nConfig,
   }
 )
