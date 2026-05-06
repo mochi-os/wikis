@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { usePageHistory } from '@/hooks/use-wiki'
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId/$page/history/')({
 })
 
 function PageHistoryRoute() {
+  const { t } = useLingui()
   const { wikiId, page: slug } = Route.useParams()
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
@@ -27,7 +29,7 @@ function PageHistoryRoute() {
     enabled: !!slug,
   })
   const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
-  usePageTitle(`History: ${pageTitle}`)
+  usePageTitle(t`History: ${pageTitle}`)
   const { data, isLoading, error, refetch } = usePageHistory(slug)
 
   // Register page with sidebar context for tree expansion
@@ -40,7 +42,7 @@ function PageHistoryRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <PageHistorySkeleton />
         </Main>
@@ -51,7 +53,7 @@ function PageHistoryRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -65,7 +67,7 @@ function PageHistoryRoute() {
 
     return (
       <>
-        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <PageHistory
             slug={slug}

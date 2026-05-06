@@ -23,7 +23,7 @@ function RevertPageRoute() {
   const slug = params.page ?? ''
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
-  usePageTitle(`Revert: ${slug}`)
+  usePageTitle(t`Revert: ${slug}`)
 
   // Register page with sidebar context for tree expansion
   const { setPage } = useSidebarContext()
@@ -35,7 +35,7 @@ function RevertPageRoute() {
   if (!version || version < 1) {
     return (
       <>
-        <WikiRouteHeader title={`Revert: ${slug}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`Revert: ${slug}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <div className="text-destructive"><Trans>Invalid version number</Trans></div>
         </Main>
@@ -45,7 +45,7 @@ function RevertPageRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={`Revert: ${slug}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+      <WikiRouteHeader title={t`Revert: ${slug}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
       <Main>
         <RevertPage slug={slug} version={version} />
       </Main>

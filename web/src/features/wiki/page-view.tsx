@@ -253,8 +253,10 @@ export function PageView({ page, missingLinks }: PageViewProps) {
             v{page.version}
           </span>
           <time dateTime={new Date(page.updated * 1000).toISOString()}>
-            Updated{' '}
-            {formatTimestamp(page.updated)}
+            <Trans>
+              Updated{' '}
+              {formatTimestamp(page.updated)}
+            </Trans>
           </time>
         </div>
       </footer>
@@ -281,7 +283,7 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
     <EmptyState
       icon={FileQuestion}
       title={t`Page not found`}
-      description={`The page "${slug}" does not exist yet.`}
+      description={t`The page "${slug}" does not exist yet.`}
     >
       {permissions.edit && (
         <Button asChild>

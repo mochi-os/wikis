@@ -57,20 +57,20 @@ function SessionRow({
       <TableCell>
         <div className='flex flex-col'>
           <span className='font-medium'>
-            {session.agent || 'Unknown device'}
+            {session.agent || t`Unknown device`}
             {isCurrent && (
               <span className='text-muted-foreground ms-2 text-xs'>
-                (current)
+                <Trans>(current)</Trans>
               </span>
             )}
           </span>
         </div>
       </TableCell>
       <TableCell className='text-muted-foreground text-sm'>
-        {formatTimestamp(session.created, 'Never')}
+        {formatTimestamp(session.created, t`Never`)}
       </TableCell>
       <TableCell className='text-muted-foreground text-sm'>
-        {formatTimestamp(session.accessed, 'Never')}
+        {formatTimestamp(session.accessed, t`Never`)}
       </TableCell>
       <TableCell className='text-end'>
         <AlertDialog>
@@ -92,8 +92,10 @@ function SessionRow({
             <AlertDialogHeader>
               <AlertDialogTitle><Trans>Revoke session?</Trans></AlertDialogTitle>
               <AlertDialogDescription>
-                This will sign out this session. If this is your current
-                session, you will need to sign in again.
+                <Trans>
+                  This will sign out this session. If this is your current
+                  session, you will need to sign in again.
+                </Trans>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

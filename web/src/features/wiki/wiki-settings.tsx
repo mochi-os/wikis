@@ -87,12 +87,15 @@ interface Tab {
   icon: React.ReactNode
 }
 
-const tabs: Tab[] = [
-  { id: 'settings', label: "Settings", icon: <Settings className="h-4 w-4" /> },
-  { id: 'redirects', label: "Redirects", icon: <CornerDownRight className="h-4 w-4" /> },
-  { id: 'access', label: "Access", icon: <Shield className="h-4 w-4" /> },
-  { id: 'replicas', label: "Replicas", icon: <Users className="h-4 w-4" /> },
-]
+function useTabs(): Tab[] {
+  const { t } = useLingui()
+  return useMemo(() => [
+    { id: 'settings' as const, label: t`Settings`, icon: <Settings className="h-4 w-4" /> },
+    { id: 'redirects' as const, label: t`Redirects`, icon: <CornerDownRight className="h-4 w-4" /> },
+    { id: 'access' as const, label: t`Access`, icon: <Shield className="h-4 w-4" /> },
+    { id: 'replicas' as const, label: t`Replicas`, icon: <Users className="h-4 w-4" /> },
+  ], [t])
+}
 
 // Context for wiki-specific settings when accessed via /$wikiId/settings route
 interface WikiSettingsContextValue {
@@ -122,6 +125,7 @@ interface WikiSettingsProps {
 
 export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permissions }: WikiSettingsProps) {
   const { t } = useLingui()
+  const tabs = useTabs()
   const contextValue: WikiSettingsContextValue = {
     baseURL: baseURL ?? null,
     wiki: wiki ?? null,
@@ -283,9 +287,9 @@ function SettingsTab() {
   }, [wikiInfo?.name])
 
   const validateName = (n: string): string | null => {
-    if (!n.trim()) return 'Wiki name is required'
-    if (n.length > 100) return 'Name must be 100 characters or less'
-    if (DISALLOWED_NAME_CHARS.test(n)) return 'Name cannot contain < or > characters'
+    if (!n.trim()) return t`Wiki name is required`
+    if (n.length > 100) return t`Name must be 100 characters or less`
+    if (DISALLOWED_NAME_CHARS.test(n)) return t`Name cannot contain < or > characters`
     return null
   }
 
@@ -550,10 +554,10 @@ function SettingsTab() {
               id="home-page"
               value={homePage}
               onChange={(e) => handleHomePageChange(e.target.value)}
-              placeholder="home"
+              placeholder={t`home`}
             />
             <p className="text-muted-foreground text-sm">
-              Example: "home", "welcome", "index"
+              <Trans>Example: "home", "welcome", "index"</Trans>
             </p>
           </div>
           <div className="flex justify-end">
@@ -603,14 +607,18 @@ function SettingsTab() {
 }
 
 // Wiki access levels (hierarchical: edit > view > none)
-const WIKI_ACCESS_LEVELS: AccessLevel[] = [
-  { value: 'edit', label: "Edit and view" },
-  { value: 'view', label: "View only" },
-  { value: 'none', label: "No access" },
-]
+function useWikiAccessLevels(): AccessLevel[] {
+  const { t } = useLingui()
+  return useMemo(() => [
+    { value: 'edit', label: t`Edit and view` },
+    { value: 'view', label: t`View only` },
+    { value: 'none', label: t`No access` },
+  ], [t])
+}
 
 function AccessTab() {
   const { t } = useLingui()
+  const accessLevels = useWikiAccessLevels()
   const { data: groupsData } = useGroups()
   const settingsContext = useSettingsContext()
 
@@ -642,7 +650,7 @@ function AccessTab() {
     } finally {
       setIsLoading(false)
     }
-  }, [apiUrl])
+  }, [apiUrl, t])
 
   useEffect(() => {
     void loadRules()
@@ -651,7 +659,7 @@ function AccessTab() {
   const handleAdd = async (subject: string, subjectName: string, level: string) => {
     try {
       await requestHelpers.post(apiUrl(endpoints.wiki.accessSet), { subject, level })
-      toast.success(`Access set for ${subjectName}`)
+      toast.success(t`Access set for ${subjectName}`)
       void loadRules()
     } catch (err) {
       toast.error(getErrorMessage(err, t`Failed to set access level`))
@@ -694,7 +702,7 @@ function AccessTab() {
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           onAdd={handleAdd}
-          levels={WIKI_ACCESS_LEVELS}
+          levels={accessLevels}
           defaultLevel="edit"
           userSearchResults={userSearchData?.results ?? []}
           userSearchLoading={userSearchLoading}
@@ -707,7 +715,7 @@ function AccessTab() {
         ) : (
           <AccessList
             rules={rules}
-            levels={WIKI_ACCESS_LEVELS}
+            levels={accessLevels}
             onLevelChange={handleLevelChange}
             onRevoke={handleRevoke}
             isLoading={isLoading}
@@ -752,7 +760,7 @@ function ReplicasTab() {
     } finally {
       setIsLoading(false)
     }
-  }, [apiUrl])
+  }, [apiUrl, t])
 
   useEffect(() => {
     void loadReplicas()
@@ -764,7 +772,7 @@ function ReplicasTab() {
       await requestHelpers.post(apiUrl(endpoints.wiki.replicaRemove), {
         replica: replicaId,
       })
-      toast.success(`Replica "${name || replicaId.slice(0, 12)}..." removed`)
+      toast.success(t`Replica "${name || `${replicaId.slice(0, 12)}...`}" removed`)
       void loadReplicas()
     } catch (err) {
       toast.error(getErrorMessage(err, t`Failed to remove replica`))
@@ -844,7 +852,7 @@ function ReplicasTab() {
                     {formatTimestamp(replica.subscribed)}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {formatTimestamp(replica.synced, 'Never')}
+                    {formatTimestamp(replica.synced, t`Never`)}
                   </TableCell>
                   <TableCell>
                     <AlertDialog>
@@ -854,8 +862,8 @@ function ReplicasTab() {
                           size="icon"
                           className="h-8 w-8"
                           disabled={isRemoving}
-                          aria-label={`Remove replica ${replica.name || replica.id}`}
-                          title={`Remove replica ${replica.name || replica.id}`}
+                          aria-label={t`Remove replica ${replica.name || replica.id}`}
+                          title={t`Remove replica ${replica.name || replica.id}`}
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -864,8 +872,10 @@ function ReplicasTab() {
                         <AlertDialogHeader>
                           <AlertDialogTitle><Trans>Remove replica?</Trans></AlertDialogTitle>
                           <AlertDialogDescription>
-                            This will stop sending updates to "{replica.name || `${replica.id.slice(0, 16)}...`}".
-                            They can replicate again if they want.
+                            <Trans>
+                              This will stop sending updates to "{replica.name || `${replica.id.slice(0, 16)}...`}".
+                              They can replicate again if they want.
+                            </Trans>
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -928,7 +938,7 @@ function RedirectsTab() {
     } finally {
       setIsLoading(false)
     }
-  }, [apiUrl])
+  }, [apiUrl, t])
 
   useEffect(() => {
     void loadRedirects()
@@ -938,7 +948,7 @@ function RedirectsTab() {
     setIsDeleting(true)
     try {
       await requestHelpers.post(apiUrl(endpoints.wiki.redirectDelete), { source })
-      toast.success(`Redirect "${source}" deleted`)
+      toast.success(t`Redirect "${source}" deleted`)
       void loadRedirects()
     } catch (err) {
       toast.error(getErrorMessage(err, t`Failed to delete redirect`))
@@ -1001,8 +1011,8 @@ function RedirectsTab() {
                           size="icon"
                           className="text-muted-foreground"
                           disabled={isDeleting}
-                          aria-label={`Delete redirect ${redirect.source}`}
-                          title={`Delete redirect ${redirect.source}`}
+                          aria-label={t`Delete redirect ${redirect.source}`}
+                          title={t`Delete redirect ${redirect.source}`}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -1011,8 +1021,10 @@ function RedirectsTab() {
                         <AlertDialogHeader>
                           <AlertDialogTitle><Trans>Delete redirect?</Trans></AlertDialogTitle>
                           <AlertDialogDescription>
-                            This will remove the redirect from "{redirect.source}" to "
-                            {redirect.target}".
+                            <Trans>
+                              This will remove the redirect from "{redirect.source}" to "
+                              {redirect.target}".
+                            </Trans>
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -1102,7 +1114,7 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
                 id="source"
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
-                placeholder="old-page-name"
+                placeholder={t`old-page-name`}
               />
               <p className="text-muted-foreground text-sm">
                 <Trans>The URL that will be redirected</Trans>
@@ -1114,7 +1126,7 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
                 id="target"
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
-                placeholder="new-page-name"
+                placeholder={t`new-page-name`}
               />
               <p className="text-muted-foreground text-sm">
                 <Trans>The existing page to redirect to</Trans>
@@ -1126,7 +1138,7 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
               <Trans>Cancel</Trans>
             </Button>
             <Button type="submit" disabled={isCreating}>
-              {isCreating ? 'Creating...' : <><Plus className="h-4 w-4 me-2" /><Trans>Create redirect</Trans></>}
+              {isCreating ? t`Creating...` : <><Plus className="h-4 w-4 me-2" /><Trans>Create redirect</Trans></>}
             </Button>
           </DialogFooter>
         </form>

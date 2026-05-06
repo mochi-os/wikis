@@ -94,7 +94,7 @@ export function UserPreferences() {
                   ) : (
                     <RotateCcw className='me-2 h-3.5 w-3.5' />
                   )}
-                  Reset to Defaults
+                  <Trans>Reset to defaults</Trans>
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>

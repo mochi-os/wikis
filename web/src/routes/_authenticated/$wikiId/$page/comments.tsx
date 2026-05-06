@@ -32,7 +32,7 @@ function CommentsRoute() {
     pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title
       ? pageData.page.title
       : slug
-  usePageTitle(`${pageTitle} - Comments`)
+  usePageTitle(t`${pageTitle} - Comments`)
 
   // Register page with sidebar context for tree expansion
   const { setPage } = useSidebarContext()
@@ -44,7 +44,7 @@ function CommentsRoute() {
   return (
     <>
       <WikiRouteHeader
-        title={`${pageTitle} - Comments`}
+        title={t`${pageTitle} - Comments`}
         back={{ label: t`Back to page`, onFallback: goBackToPage }}
       />
       <Main>

@@ -19,7 +19,7 @@ function PageHistoryRoute() {
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   const { data: pageData } = usePage(slug)
   const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
-  usePageTitle(`History: ${pageTitle}`)
+  usePageTitle(t`History: ${pageTitle}`)
   const { data, isLoading, error, refetch } = usePageHistory(slug)
 
   // Register page with sidebar context for tree expansion
@@ -32,7 +32,7 @@ function PageHistoryRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <PageHistorySkeleton />
         </Main>
@@ -43,7 +43,7 @@ function PageHistoryRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -57,7 +57,7 @@ function PageHistoryRoute() {
 
     return (
       <>
-        <WikiRouteHeader title={`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <PageHistory
             slug={slug}

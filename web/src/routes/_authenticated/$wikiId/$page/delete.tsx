@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -21,6 +22,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId/$page/delete')({
 })
 
 function DeletePageRoute() {
+  const { t } = useLingui()
   const { wikiId, page: slug } = Route.useParams()
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
@@ -34,7 +36,7 @@ function DeletePageRoute() {
     enabled: !!slug,
   })
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
-  usePageTitle(`Delete: ${pageTitle}`)
+  usePageTitle(t`Delete: ${pageTitle}`)
 
   // Register page with sidebar context for tree expansion
   const { setPage } = useSidebarContext()
@@ -46,7 +48,7 @@ function DeletePageRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`Delete: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <div className="flex items-center justify-center py-12">
             <Skeleton className="h-64 w-full max-w-md" />
@@ -59,7 +61,7 @@ function DeletePageRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`Delete: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -71,11 +73,11 @@ function DeletePageRoute() {
   if (data && 'error' in data && data.error === 'not_found') {
     return (
       <>
-        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`Delete: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <EmptyState
             icon={FileX}
-            title={`Page "${slug}" does not exist`}
+            title={t`Page "${slug}" does not exist`}
             className="py-12"
           />
         </Main>
@@ -87,7 +89,7 @@ function DeletePageRoute() {
   if (data && 'page' in data && typeof data.page === 'object') {
     return (
       <>
-        <WikiRouteHeader title={`Delete: ${pageTitle}`} back={{ label: "Back to page", onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`Delete: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <DeletePage wikiId={wikiId} slug={slug} title={data.page.title} homePage={wiki.home} />
         </Main>

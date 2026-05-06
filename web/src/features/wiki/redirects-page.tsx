@@ -106,7 +106,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
   const handleDelete = () => {
     deleteRedirect.mutate(redirect.source, {
       onSuccess: () => {
-        toast.success(`Redirect "${redirect.source}" deleted`)
+        toast.success(t`Redirect "${redirect.source}" deleted`)
       },
       onError: (error) => {
         toast.error(getErrorMessage(error, t`Failed to delete redirect`))
@@ -138,8 +138,8 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
               variant="ghost"
               size="icon"
               className="text-muted-foreground"
-              aria-label={`Delete redirect ${redirect.source}`}
-              title={`Delete redirect ${redirect.source}`}
+              aria-label={t`Delete redirect ${redirect.source}`}
+              title={t`Delete redirect ${redirect.source}`}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -148,9 +148,11 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
             <AlertDialogHeader>
               <AlertDialogTitle><Trans>Delete redirect?</Trans></AlertDialogTitle>
               <AlertDialogDescription>
-                This will remove the redirect from "{redirect.source}" to "
-                {redirect.target}". Users visiting the source URL will no longer
-                be redirected.
+                <Trans>
+                  This will remove the redirect from "{redirect.source}" to "
+                  {redirect.target}". Users visiting the source URL will no longer
+                  be redirected.
+                </Trans>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -205,7 +207,7 @@ function AddRedirectDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="me-2 h-4 w-4" />
-          <Trans>Add Redirect</Trans>
+          <Trans>Add redirect</Trans>
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -213,8 +215,10 @@ function AddRedirectDialog() {
           <DialogHeader>
             <DialogTitle><Trans>Create redirect</Trans></DialogTitle>
             <DialogDescription>
-              Create a redirect from one URL to another. The source URL must not
-              be an existing page.
+              <Trans>
+                Create a redirect from one URL to another. The source URL must not
+                be an existing page.
+              </Trans>
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -224,10 +228,10 @@ function AddRedirectDialog() {
                 id="source"
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
-                placeholder="old-page-name"
+                placeholder={t`old-page-name`}
               />
               <p className="text-muted-foreground text-sm">
-                The URL that will be redirected (e.g., "old-page")
+                <Trans>The URL that will be redirected (e.g., "old-page")</Trans>
               </p>
             </div>
             <div className="space-y-2">
@@ -236,10 +240,10 @@ function AddRedirectDialog() {
                 id="target"
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
-                placeholder="new-page-name"
+                placeholder={t`new-page-name`}
               />
               <p className="text-muted-foreground text-sm">
-                The existing page to redirect to (e.g., "new-page")
+                <Trans>The existing page to redirect to (e.g., "new-page")</Trans>
               </p>
             </div>
           </div>
@@ -252,7 +256,7 @@ function AddRedirectDialog() {
               <Trans>Cancel</Trans>
             </Button>
             <Button type="submit" disabled={setRedirect.isPending}>
-              {setRedirect.isPending ? 'Creating...' : <><Plus className="h-4 w-4 me-2" /><Trans>Create redirect</Trans></>}
+              {setRedirect.isPending ? t`Creating...` : <><Plus className="h-4 w-4 me-2" /><Trans>Create redirect</Trans></>}
             </Button>
           </DialogFooter>
         </form>

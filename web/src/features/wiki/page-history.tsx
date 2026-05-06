@@ -28,7 +28,9 @@ export function PageHistory({
       </div>
 
       <p className="text-muted-foreground">
-        Viewing history for <strong>{slug}</strong>, current version {currentVersion}
+        <Trans>
+          Viewing history for <strong>{slug}</strong>, current version {currentVersion}
+        </Trans>
       </p>
 
       <Separator />

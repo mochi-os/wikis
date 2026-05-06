@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus } from 'lucide-react'
@@ -121,7 +122,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
     if (files.length > 0) {
       uploadMutation.mutate(Array.from(files), {
         onSuccess: () => {
-          toast.success(`${files.length} file(s) uploaded`)
+          toast.success(plural(files.length, { one: '# file uploaded', other: '# files uploaded' }))
         },
         onError: (error) => {
           toast.error(getErrorMessage(error, t`Failed to upload files`))
@@ -193,7 +194,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">
-          {isNew ? 'Create new page' : `Editing: ${page?.title ?? slug}`}
+          {isNew ? t`Create new page` : t`Editing: ${page?.title ?? slug}`}
         </h1>
         <div className="flex gap-2">
           <Button
@@ -257,12 +258,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             {isNew ? (
               <>
                 {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
-                {isPending ? "Creating..." : "Create page"}
+                {isPending ? t`Creating...` : t`Create page`}
               </>
             ) : (
               <>
                 {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Save className="me-2 h-4 w-4" />}
-                {isPending ? "Saving..." : "Save"}
+                {isPending ? t`Saving...` : t`Save`}
               </>
             )}
           </Button>
@@ -274,8 +275,8 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
       {showPreview ? (
         /* Preview mode */
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">{title || 'Untitled'}</h2>
-          <MarkdownContent content={content || '*No content*'} />
+          <h2 className="text-xl font-semibold">{title || t`Untitled`}</h2>
+          <MarkdownContent content={content || t`*No content*`} />
         </div>
       ) : (
         /* Edit mode */
@@ -288,11 +289,13 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                 id="slug"
                 value={newSlug}
                 onChange={(e) => setNewSlug(e.target.value)}
-                placeholder="my-page-name"
+                placeholder={t`my-page-name`}
               />
               <p className="text-muted-foreground text-sm">
-                This will be the path for the page. Use lower case letters,
-                numbers, and hyphens.
+                <Trans>
+                  This will be the path for the page. Use lower case letters,
+                  numbers, and hyphens.
+                </Trans>
               </p>
             </div>
           )}
@@ -324,7 +327,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           {/* Comment (only for edits) */}
           {!isNew && (
             <div className="space-y-2">
-              <Label htmlFor="comment">Edit summary (optional)</Label>
+              <Label htmlFor="comment"><Trans>Edit summary (optional)</Trans></Label>
               <Input
                 id="comment"
                 value={comment}
@@ -370,7 +373,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
               ) : (
                 <ImagePlus className="me-2 h-4 w-4" />
               )}
-              Upload new
+              <Trans>Upload new</Trans>
             </Button>
           </div>
 

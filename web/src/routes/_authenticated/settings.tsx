@@ -29,11 +29,11 @@ function WikiSettingsRoute() {
   }
 
   const { info } = useWikiContext()
-  const wikiName = info?.wiki?.name || 'Wiki'
-  usePageTitle(`${wikiName} settings`)
+  const wikiName = info?.wiki?.name || t`Wiki`
+  usePageTitle(t`${wikiName} settings`)
   return (
     <>
-      <WikiRouteHeader title={`${wikiName} settings`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`${wikiName} settings`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <WikiProvider>
           <WikiSettings activeTab={tab ?? 'settings'} onTabChange={setActiveTab} />

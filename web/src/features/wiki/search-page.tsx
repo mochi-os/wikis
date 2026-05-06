@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
+import { plural, t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import { Search, FileText, ArrowRight } from 'lucide-react'
 import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web'
 import { useSearch } from '@/hooks/use-wiki'
 import type { SearchResult } from '@/types/wiki'
-import { t } from '@lingui/core/macro'
 
 interface SearchPageProps {
   initialQuery?: string
@@ -79,15 +79,14 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
       ) : results.length === 0 ? (
         <EmptyState
           icon={FileText}
-          title={`No pages found for "${debouncedQuery}"`}
+          title={t`No pages found for "${debouncedQuery}"`}
           description={t`Try different search terms.`}
           className="py-8"
         />
       ) : (
         <div className="space-y-4">
           <p className="text-muted-foreground text-sm">
-            Found {results.length} result
-            {results.length !== 1 ? 's' : ''} for "{debouncedQuery}"
+            <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans>
           </p>
           <div className="space-y-2">
             {results.map((result) => (
@@ -122,7 +121,7 @@ function SearchResultItem({ result }: SearchResultItemProps) {
           {result.excerpt}...
         </p>
         <p className="text-muted-foreground mt-2 text-xs">
-          Updated {formatTimestamp(result.updated)}
+          <Trans>Updated {formatTimestamp(result.updated)}</Trans>
         </p>
       </div>
     </Link>

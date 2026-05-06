@@ -68,7 +68,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
     }
 
     void search()
-  }, [debouncedQuery, retryTick])
+  }, [debouncedQuery, retryTick, t])
 
   const handleSubscribe = async (wiki: DirectoryEntry) => {
     setPendingWikiId(wiki.id)
@@ -155,7 +155,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
                     {isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      'Subscribe'
+                      <Trans>Subscribe</Trans>
                     )}
                   </Button>
                 </div>

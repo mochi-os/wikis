@@ -41,7 +41,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
       { slug, tag },
       {
         onSuccess: () => {
-          toast.success(`Tag "${tag}" added`)
+          toast.success(t`Tag "${tag}" added`)
           setNewTag('')
           setIsOpen(false)
         },
@@ -57,7 +57,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
       { slug, tag },
       {
         onSuccess: () => {
-          toast.success(`Tag "${tag}" removed`)
+          toast.success(t`Tag "${tag}" removed`)
         },
         onError: (error) => {
           toast.error(getErrorMessage(error, t`Failed to remove tag`))
@@ -125,7 +125,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
                   onClick={handleAddTag}
                   disabled={!newTag.trim() || addTag.isPending}
                 >
-                  {addTag.isPending ? 'Adding...' : 'Add'}
+                  {addTag.isPending ? t`Adding...` : t`Add`}
                 </Button>
               </div>
             </div>

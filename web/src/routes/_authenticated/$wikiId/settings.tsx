@@ -30,11 +30,11 @@ function WikiSettingsRoute() {
     void navigate({ search: { tab: newTab }, replace: true })
   }
 
-  const wikiName = wiki?.name || 'Wiki'
-  usePageTitle(`${wikiName} settings`)
+  const wikiName = wiki?.name || t`Wiki`
+  usePageTitle(t`${wikiName} settings`)
   return (
     <>
-      <WikiRouteHeader title={`${wikiName} settings`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`${wikiName} settings`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <WikiProvider>
           <WikiSettings

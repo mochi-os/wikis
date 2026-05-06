@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo } from 'react'
+import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import {
@@ -119,7 +120,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
     if (fileArray.length > 0) {
       uploadMutation.mutate(fileArray, {
         onSuccess: () => {
-          toast.success(`${fileArray.length} file(s) uploaded`)
+          toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' }))
         },
         onError: (error) => {
           toast.error(getErrorMessage(error, t`Failed to upload files`))
@@ -241,7 +242,9 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
           <div>
             <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1>
             <p className="text-muted-foreground text-sm">
-              {attachments.length} file{attachments.length !== 1 ? 's' : ''} ({imageCount} images, {documentCount} documents)
+              <Trans>
+                {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })})
+              </Trans>
             </p>
           </div>
         </div>
@@ -263,7 +266,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
             ) : (
               <Upload className="me-2 h-4 w-4" />
             )}
-            Upload files
+            <Trans>Upload files</Trans>
           </Button>
         </div>
       </div>
@@ -366,12 +369,12 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
             icon={attachments.length === 0 ? Image : Search}
             title={
               attachments.length === 0
-                ? "No attachments yet" : "No attachments match your search"
+                ? t`No attachments yet` : t`No attachments match your search`
             }
             description={
               attachments.length === 0
-                ? 'Drag and drop files here, or click "Upload files" to get started.'
-                : 'Try a different search term or filter.'
+                ? t`Drag and drop files here, or click "Upload files" to get started.`
+                : t`Try a different search term or filter.`
             }
             className="h-[400px]"
           />
@@ -418,7 +421,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
         open={!!pendingDelete}
         onOpenChange={(open) => { if (!open) setPendingDelete(null) }}
         title={t`Delete attachment`}
-        desc={pendingDelete ? `Delete "${pendingDelete.name}"? This cannot be undone.` : ''}
+        desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''}
         confirmText={t`Delete`}
         destructive
         isLoading={deleteMutation.isPending}

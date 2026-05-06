@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { plural, t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
 import { Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
 import {
@@ -12,7 +13,6 @@ import {
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
-import { t } from '@lingui/core/macro'
 
 interface WikiCommentThreadProps {
   comment: WikiComment
@@ -89,9 +89,9 @@ export function WikiCommentThread({
         className="text-primary ms-2 flex cursor-pointer items-center gap-1 hover:underline"
       >
         {totalDescendants > 0 ? (
-          <span>{totalDescendants === 1 ? '1 reply' : `+${totalDescendants} more replies`}</span>
+          <span>{plural(totalDescendants, { one: '# reply', other: '+# more replies' })}</span>
         ) : (
-          <span className="text-muted-foreground italic">(expand)</span>
+          <span className="text-muted-foreground italic"><Trans>(expand)</Trans></span>
         )}
       </button>
     </div>
@@ -105,7 +105,7 @@ export function WikiCommentThread({
           <span className="text-muted-foreground">&middot;</span>
           <span className="text-muted-foreground">{timeAgo}</span>
           {comment.edited > 0 && (
-            <span className="text-muted-foreground italic">(edited)</span>
+            <span className="text-muted-foreground italic"><Trans>(edited)</Trans></span>
           )}
         </div>
 
@@ -193,7 +193,7 @@ export function WikiCommentThread({
       {isReplying && (
         <div className="mt-2 space-y-2 border-t pt-2">
           <textarea
-            placeholder={`Reply to ${comment.name || comment.author}...`}
+            placeholder={t`Reply to ${comment.name || comment.author}...`}
             value={replyDraft}
             onChange={(e) => onReplyDraftChange(e.target.value)}
             onKeyDown={(e) => {

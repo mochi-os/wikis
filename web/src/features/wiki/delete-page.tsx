@@ -29,7 +29,7 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
   const handleDelete = () => {
     deletePage.mutate(slug, {
       onSuccess: () => {
-        toast.success(`Page "${title}" deleted`)
+        toast.success(t`Page "${title}" deleted`)
         if (wikiId) {
           navigate({ to: '/$wikiId/$page', params: { wikiId, page: homePage } })
         } else {
@@ -51,8 +51,10 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
             <Trans>Delete page</Trans>
           </CardTitle>
           <CardDescription>
-            You are about to delete the page <strong>"{title}"</strong> ({slug}).
-            This action can be undone by restoring from history.
+            <Trans>
+              You are about to delete the page <strong>"{title}"</strong> ({slug}).
+              This action can be undone by restoring from history.
+            </Trans>
           </CardDescription>
         </CardHeader>
         <Separator />
@@ -76,7 +78,7 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
             disabled={deletePage.isPending}
           >
             <Trash2 className="me-2 h-4 w-4" />
-            {deletePage.isPending ? "Deleting..." : "Delete"}
+            {deletePage.isPending ? t`Deleting...` : t`Delete`}
           </Button>
         </CardFooter>
       </Card>

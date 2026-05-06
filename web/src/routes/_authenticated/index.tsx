@@ -248,7 +248,7 @@ function WikiHomePage({
   const pageTitle =
     data && 'page' in data && typeof data.page === 'object' && data.page?.title
       ? data.page.title
-      : "Home"
+      : t`Home`
   usePageTitle(pageTitle)
 
   // Register page with sidebar context for tree expansion
@@ -311,7 +311,7 @@ function WikiHomePage({
       <>
         <WikiRouteHeader
           title={pageTitle}
-          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main>
@@ -326,7 +326,7 @@ function WikiHomePage({
       <>
         <WikiRouteHeader
           title={pageTitle}
-          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main>
@@ -342,7 +342,7 @@ function WikiHomePage({
       <>
         <WikiRouteHeader
           title={t`Page not found`}
-          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main>
@@ -453,7 +453,7 @@ function WikiHomePage({
                 onSelect={() => setUnsubscribeConfirmOpen(true)}
                 disabled={unsubscribeWiki.isPending}
               >
-                {unsubscribeWiki.isPending ? "Unsubscribing..." : "Unsubscribe"}
+                {unsubscribeWiki.isPending ? t`Unsubscribing...` : t`Unsubscribe`}
               </DropdownMenuItem>
             </>
           )}
@@ -466,7 +466,7 @@ function WikiHomePage({
         <PageHeader
           page={data.page}
           menuAction={actionsMenu}
-          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main className='pt-2'>
@@ -481,8 +481,8 @@ function WikiHomePage({
           open={unsubscribeConfirmOpen}
           onOpenChange={setUnsubscribeConfirmOpen}
           title={t`Unsubscribe`}
-          desc='Are you sure you want to unsubscribe from this wiki?'
-          confirmText='Unsubscribe'
+          desc={t`Are you sure you want to unsubscribe from this wiki?`}
+          confirmText={t`Unsubscribe`}
           destructive
           isLoading={unsubscribeWiki.isPending}
           handleConfirm={handleUnsubscribe}
@@ -525,7 +525,7 @@ interface RecommendationsResponse {
 }
 
 function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
-  usePageTitle("Wikis")
+  usePageTitle(t`Wikis`)
   const { openCreateDialog } = useSidebarContext()
   const queryClient = useQueryClient()
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
@@ -685,8 +685,10 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                 <Trans>Start your first wiki</Trans>
               </p>
               <p className='text-muted-foreground mb-5 max-w-md text-sm'>
-                Search for a wiki to subscribe, or create one to publish your
-                own documentation.
+                <Trans>
+                  Search for a wiki to subscribe, or create one to publish your
+                  own documentation.
+                </Trans>
               </p>
               <div className='w-full max-w-md'>
                 <InlineWikiSearch subscribedIds={subscribedWikiIds} />
@@ -745,7 +747,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                                   {isPending ? (
                                     <Loader2 className='h-4 w-4 animate-spin' />
                                   ) : (
-                                    'Subscribe'
+                                    <Trans>Subscribe</Trans>
                                   )}
                                 </Button>
                               </div>
@@ -771,7 +773,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                     }}
                     className='focus-visible:ring-ring absolute inset-0 rounded-xl focus-visible:ring-2 focus-visible:ring-offset-2'
                   >
-                    <span className='sr-only'>Open {wiki.name}</span>
+                    <span className='sr-only'><Trans>Open {wiki.name}</Trans></span>
                   </Link>
 
                   <CardHeader className='space-y-3 pb-2'>
@@ -803,7 +805,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                                 disabled={unsubscribeMutation.isPending && unsubscribeId === wiki.id}
                               >
                                 {unsubscribeMutation.isPending && unsubscribeId === wiki.id
-                                  ? "Unsubscribing..." : "Unsubscribe"}
+                                  ? t`Unsubscribing...` : t`Unsubscribe`}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>

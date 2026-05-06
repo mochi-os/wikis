@@ -5,6 +5,7 @@ import {
   useEffect,
   useMemo,
 } from 'react'
+import { useLingui } from '@lingui/react/macro'
 import { ExternalLink, Hash } from 'lucide-react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -84,6 +85,7 @@ export function MarkdownContent({
   toc = false,
   onHeadingsChange,
 }: MarkdownContentProps) {
+  const { t } = useLingui()
   const { baseURL } = useWikiBaseURL()
   const headings = useMemo(() => extractTocHeadings(content), [content])
   const currentPathWithQuery =
@@ -101,11 +103,11 @@ export function MarkdownContent({
     const urls = extractImageUrls(content)
     return urls.map((url, i) => ({
       id: String(i),
-      name: url.split('/').pop() || 'Image',
+      name: url.split('/').pop() || t`Image`,
       url: getFullSizeUrl(baseURL, url),
       type: 'image' as const,
     }))
-  }, [content, baseURL])
+  }, [content, baseURL, t])
 
   const srcToIndex = useMemo(() => {
     const map = new Map<string, number>()
@@ -149,7 +151,7 @@ export function MarkdownContent({
                 : `#${id}`
             }
             className='text-muted-foreground hover:text-foreground ms-2 inline-flex opacity-0 transition-opacity group-hover:opacity-100'
-            aria-label={`Link to ${headingText}`}
+            aria-label={t`Link to ${headingText}`}
           >
             <Hash className='size-3.5' />
           </a>
@@ -208,8 +210,11 @@ export function MarkdownContent({
         <Markdown
           remarkPlugins={[remarkGfm]}
           components={{
+            // eslint-disable-next-line lingui/no-unlocalized-strings -- Tailwind utility classes
             h2: renderHeading(2, 'group flex items-center'),
+            // eslint-disable-next-line lingui/no-unlocalized-strings -- Tailwind utility classes
             h3: renderHeading(3, 'group flex items-center'),
+            // eslint-disable-next-line lingui/no-unlocalized-strings -- Tailwind utility classes
             h4: renderHeading(4, 'group flex items-center'),
             ul: ({ children, ...props }) => (
               <ul

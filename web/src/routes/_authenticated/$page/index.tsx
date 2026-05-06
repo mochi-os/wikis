@@ -68,7 +68,7 @@ function WikiPageRoute() {
         toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
       },
     })
-  }, [unsubscribeWiki, navigate])
+  }, [unsubscribeWiki, navigate, t])
 
   // Can unsubscribe if viewing a subscribed wiki (has source)
   const canUnsubscribe = !!info?.wiki?.source

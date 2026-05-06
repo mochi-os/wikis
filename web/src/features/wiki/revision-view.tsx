@@ -29,7 +29,7 @@ export function RevisionView({
           <div>
             <div className="mb-2 flex items-center gap-2">
               <Badge variant={isCurrentVersion ? 'default' : 'secondary'}>
-                Version {revision.version}
+                <Trans>Version {revision.version}</Trans>
               </Badge>
               {isCurrentVersion && (
                 <Badge variant="outline"><Trans>Current</Trans></Badge>

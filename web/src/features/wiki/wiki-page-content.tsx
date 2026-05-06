@@ -68,7 +68,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
       toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
       setIsUnsubscribing(false)
     }
-  }, [baseURL, navigate])
+  }, [baseURL, navigate, t])
 
   const shouldRedirect = !slug
 
@@ -83,7 +83,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   // Handle case where API returns non-JSON (e.g., HTML error page)
   const isValidResponse = data && typeof data === 'object'
   const pageTitle = shouldRedirect
-    ? (wiki.name ?? 'Wiki')
+    ? (wiki.name ?? t`Wiki`)
     : isValidResponse && 'page' in data && typeof data.page === 'object' && data.page?.title
       ? data.page.title
       : slug
@@ -125,7 +125,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: "Back to wikis", onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <PageViewSkeleton />
         </Main>
@@ -136,7 +136,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   if (pageError) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: "Back to wikis", onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <GeneralError error={pageError} minimal mode="inline" reset={refetch} />
         </Main>
@@ -148,12 +148,12 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   if (data && !isValidResponse) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: "Back to wikis", onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <div className="text-destructive">
             <p><Trans>Error: Received invalid response from server.</Trans></p>
             <p className="text-muted-foreground mt-2 text-sm">
-              Request URL: {baseURL}{slug}
+              <Trans>Request URL: {baseURL}{slug}</Trans>
             </p>
           </div>
         </Main>
@@ -212,7 +212,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <WikiRouteHeader
           title={t`Page not found`}
           menuAction={notFoundMenu}
-          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
         />
         <Main>
           <PageNotFound slug={slug} wikiId={wikiId} />
@@ -329,7 +329,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
                 disabled={isUnsubscribing}
               >
                 <Trash2 className="size-4" />
-                {isUnsubscribing ? "Unsubscribing..." : "Unsubscribe"}
+                {isUnsubscribing ? t`Unsubscribing...` : t`Unsubscribe`}
               </DropdownMenuItem>
             </>
           )}
@@ -342,7 +342,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <PageHeader
           page={data.page}
           menuAction={actionsMenu}
-          back={{ label: "Back to wikis", onFallback: goBackToWikis }}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
         />
         <Main className="pt-2">
           <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />

@@ -123,7 +123,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
             <Trans>Cancel</Trans>
           </Button>
           <Button type="submit" disabled={renamePage.isPending}>
-            {renamePage.isPending ? "Renaming..." : "Rename"}
+            {renamePage.isPending ? t`Renaming...` : t`Rename`}
           </Button>
         </DialogFooter>
       </form>

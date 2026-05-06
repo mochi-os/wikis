@@ -15,13 +15,13 @@ function TagPagesRoute() {
   const goBackToWikis = () => navigate({ to: '/' })
   const params = Route.useParams()
   const tag = params.tag
-  usePageTitle(`Tag: ${tag}`)
+  usePageTitle(t`Tag: ${tag}`)
   const { data, isLoading, error, refetch } = useTagPages(tag)
 
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={t`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <TagPagesSkeleton />
         </Main>
@@ -32,7 +32,7 @@ function TagPagesRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={t`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -42,7 +42,7 @@ function TagPagesRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+      <WikiRouteHeader title={t`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
         <TagPages tag={tag} pages={data?.pages ?? []} />
       </Main>

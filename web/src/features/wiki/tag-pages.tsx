@@ -1,9 +1,9 @@
 import { Link } from '@tanstack/react-router'
+import { plural, t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
 import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react'
 import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web'
 import type { TagPage } from '@/types/wiki'
-import { t } from '@lingui/core/macro'
 
 interface TagPagesProps {
   tag: string
@@ -19,10 +19,12 @@ export function TagPages({ tag, pages }: TagPagesProps) {
         <div className="flex items-center gap-3">
           <TagIcon className="h-6 w-6" />
           <h1 className="text-2xl font-bold">
-            Pages tagged{' '}
-            <Badge variant="secondary" className="ms-1 text-lg">
-              {tag}
-            </Badge>
+            <Trans>
+              Pages tagged{' '}
+              <Badge variant="secondary" className="ms-1 text-lg">
+                {tag}
+              </Badge>
+            </Trans>
           </h1>
         </div>
         <Button variant="outline" asChild>
@@ -34,7 +36,7 @@ export function TagPages({ tag, pages }: TagPagesProps) {
       </div>
 
       <p className="text-muted-foreground">
-        {pages.length} page{pages.length !== 1 ? 's' : ''} with this tag.
+        <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans>
       </p>
 
       <Separator />
@@ -62,7 +64,7 @@ export function TagPages({ tag, pages }: TagPagesProps) {
                   {page.title}
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Updated {formatTimestamp(page.updated)}
+                  <Trans>Updated {formatTimestamp(page.updated)}</Trans>
                 </p>
               </div>
             </Link>

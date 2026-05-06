@@ -28,14 +28,14 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
   const { t } = useLingui()
   const revertPage = useRevertPage()
   const navigate = useNavigate()
-  const [comment, setComment] = useState(`Reverted to version ${version}`)
+  const [comment, setComment] = useState(t`Reverted to version ${version}`)
 
   const handleRevert = () => {
     revertPage.mutate(
       { slug, version, comment },
       {
         onSuccess: () => {
-          toast.success(`Reverted to version ${version}`)
+          toast.success(t`Reverted to version ${version}`)
           if (wikiId) {
             void navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
           } else {
@@ -58,9 +58,11 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
             <Trans>Revert Page</Trans>
           </CardTitle>
           <CardDescription>
-            You are about to revert <strong>{slug}</strong> to version{' '}
-            <strong>{version}</strong>. This will create a new revision with the
-            content from version {version}.
+            <Trans>
+              You are about to revert <strong>{slug}</strong> to version{' '}
+              <strong>{version}</strong>. This will create a new revision with the
+              content from version {version}.
+            </Trans>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -95,7 +97,7 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
             disabled={revertPage.isPending}
           >
             <RotateCcw className="me-2 h-4 w-4" />
-            {revertPage.isPending ? "Reverting..." : "Revert"}
+            {revertPage.isPending ? t`Reverting...` : t`Revert`}
           </Button>
         </CardFooter>
       </Card>

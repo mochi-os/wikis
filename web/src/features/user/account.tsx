@@ -255,6 +255,7 @@ function PasskeyRow({
   onRename: (id: string, name: string) => void
   onDelete: (id: string) => void
 }) {
+  const { t } = useLingui()
   const { formatTimestamp } = useFormat()
   const [isRenaming, setIsRenaming] = useState(false)
   const [newName, setNewName] = useState(passkey.name)
@@ -293,7 +294,7 @@ function PasskeyRow({
         {formatTimestamp(passkey.created)}
       </TableCell>
       <TableCell className='text-muted-foreground text-sm'>
-        {formatTimestamp(passkey.last_used, 'Never')}
+        {formatTimestamp(passkey.last_used, t`Never`)}
       </TableCell>
       <TableCell className='text-end'>
         <div className='flex justify-end gap-1'>
@@ -310,8 +311,10 @@ function PasskeyRow({
               <AlertDialogHeader>
                 <AlertDialogTitle><Trans>Delete passkey?</Trans></AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will remove "{passkey.name}" from your account. You won't
-                  be able to use it to sign in anymore.
+                  <Trans>
+                    This will remove "{passkey.name}" from your account. You won't
+                    be able to use it to sign in anymore.
+                  </Trans>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -349,7 +352,7 @@ function PasskeysSection() {
       await registerFinish.mutateAsync({
         ceremony: beginResult.ceremony,
         credential,
-        name: passkeyName || 'Passkey',
+        name: passkeyName || t`Passkey`,
       })
       toast.success(t`Passkey registered`)
       setRegisterDialogOpen(false)
@@ -397,7 +400,7 @@ function PasskeysSection() {
             size='sm'
             onClick={() => setRegisterDialogOpen(true)}
           >
-            Add passkey
+            <Trans>Add passkey</Trans>
             <Plus className='ms-2 h-4 w-4' />
           </Button>
           <DialogContent>
@@ -419,7 +422,7 @@ function PasskeysSection() {
             </div>
             <DialogFooter>
               <Button onClick={handleRegister} disabled={isRegistering}>
-                Register
+                <Trans>Register</Trans>
                 {isRegistering && (
                   <Loader2 className='ms-2 h-4 w-4 animate-spin' />
                 )}
@@ -534,17 +537,17 @@ function AuthenticatorSection() {
       ) : setupData ? (
         <div className='space-y-6 py-4'>
           <div className='space-y-3'>
-            <p className='text-sm font-medium'>1. Scan QR Code</p>
+            <p className='text-sm font-medium'><Trans>1. Scan QR code</Trans></p>
             <div className='flex justify-center rounded-xl border-2 bg-white p-6 shadow-sm'>
               <QRCodeSVG value={setupData.url} size={200} />
             </div>
           </div>
           <div className='space-y-2.5'>
-            <Label className='text-sm font-medium'>2. Manual Entry</Label>
+            <Label className='text-sm font-medium'><Trans>2. Manual entry</Trans></Label>
             <DataChip value={setupData.secret} chipClassName='flex-1' />
           </div>
           <div className='border-t pt-6 space-y-4'>
-            <p className='text-sm font-medium'>3. Verify Code</p>
+            <p className='text-sm font-medium'><Trans>3. Verify code</Trans></p>
             <div className='flex items-center gap-3'>
               <Input
                 placeholder='000000'
@@ -557,7 +560,7 @@ function AuthenticatorSection() {
                 onClick={handleVerify}
                 disabled={isVerifying || !verifyCode}
               >
-                Verify & Enable
+                <Trans>Verify & enable</Trans>
                 {isVerifying && <Loader2 className='ms-2 h-4 w-4 animate-spin' />}
               </Button>
               <Button variant='ghost' onClick={() => setSetupData(null)}><Trans>Cancel</Trans></Button>
@@ -661,7 +664,7 @@ function RecoveryCodesSection() {
               <RefreshCw className='h-5 w-5 text-primary' />
             </div>
             <div>
-              <p className='text-sm font-medium'>{count > 0 ? `${count} remaining` : 'No codes'}</p>
+              <p className='text-sm font-medium'>{count > 0 ? t`${count} remaining` : t`No codes`}</p>
               <p className='text-muted-foreground text-xs'><Trans>Recovery codes</Trans></p>
             </div>
           </div>
