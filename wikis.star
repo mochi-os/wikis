@@ -3720,8 +3720,8 @@ def opengraph_wiki(params):
 
     # Default values
     og = {
-        "title": "Wiki",
-        "description": "A wiki on Mochi",
+        "title": mochi.app.label("opengraph.fallback.title"),
+        "description": mochi.app.label("opengraph.fallback.description"),
         "type": "website"
     }
 
@@ -3734,7 +3734,7 @@ def opengraph_wiki(params):
         return og
 
     og["title"] = wiki["name"]
-    og["description"] = wiki["name"] + " - Wiki"
+    og["description"] = mochi.app.label("opengraph.wiki.description", name=wiki["name"])
 
     # If specific page requested, use page content
     if page_slug:
