@@ -1,0 +1,2815 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-08 12:06+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ka\n"
+
+#: src/features/user/sessions.tsx:63
+msgid "(current)"
+msgstr "(მიმდინარე)"
+
+#: src/features/wiki/wiki-comment-thread.tsx:108
+msgid "(edited)"
+msgstr "(რედაქტირებულია)"
+
+#: src/features/wiki/wiki-comment-thread.tsx:94
+msgid "(expand)"
+msgstr "(გაშლა)"
+
+#. placeholder {0}: fileArray.length
+#. placeholder {0}: files.length
+#: src/features/wiki/attachments-page.tsx:123
+#: src/features/wiki/page-editor.tsx:125
+msgid "{0, plural, one {# file uploaded} other {# files uploaded}}"
+msgstr "{0, plural, other {# კატეგორია}}"
+
+#. placeholder {0}: attachments.length
+#: src/features/wiki/attachments-page.tsx:246
+msgid "{0, plural, one {# file} other {# files}}"
+msgstr "{0, plural, other {# ფაილი ატვირთულია}}"
+
+#. placeholder {0}: pages.length
+#: src/features/wiki/tag-pages.tsx:39
+msgid "{0, plural, one {# page} other {# pages}}"
+msgstr "{0, plural, other {# ფაილი}}"
+
+#. placeholder {0}: results.length
+#: src/features/wiki/search-page.tsx:89
+msgid "{0, plural, one {# result} other {# results}}"
+msgstr "{0, plural, other {# პოსტი}}"
+
+#. placeholder {0}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, ArrowLeft, X, Image, ExternalLink, } from 'lucide-react' import { toast, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare,} from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' interface AttachmentsPageProps { slug: string } type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage({ slug }: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length > 0) { uploadMutation.mutate(fileArray, { onSuccess: () => { toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to upload files`)) }, }) } } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}> {wikiId ? ( <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> ) : ( <Link to="/$page/edit" params={{ page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> )} </Button> <div> <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> </div> </div> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.md" /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
+#. placeholder {1}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, ArrowLeft, X, Image, ExternalLink, } from 'lucide-react' import { toast, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare,} from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' interface AttachmentsPageProps { slug: string } type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage({ slug }: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length > 0) { uploadMutation.mutate(fileArray, { onSuccess: () => { toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to upload files`)) }, }) } } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}> {wikiId ? ( <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> ) : ( <Link to="/$page/edit" params={{ page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> )} </Button> <div> <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> </div> </div> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.md" /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
+#. placeholder {2}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, ArrowLeft, X, Image, ExternalLink, } from 'lucide-react' import { toast, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare,} from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' interface AttachmentsPageProps { slug: string } type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage({ slug }: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length > 0) { uploadMutation.mutate(fileArray, { onSuccess: () => { toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to upload files`)) }, }) } } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}> {wikiId ? ( <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> ) : ( <Link to="/$page/edit" params={{ page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> )} </Button> <div> <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> </div> </div> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.md" /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
+#: src/features/wiki/attachments-page.tsx:245
+msgid "{0} ({1}, {2})"
+msgstr "{0} (განვითარება)"
+
+#. placeholder {0}: import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-muted/50 group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
+#: src/features/wiki/tag-pages.tsx:39
+msgid "{0} with this tag."
+msgstr "{0} v{1} დაინსტალირდა."
+
+#: src/features/wiki/wiki-page-content.tsx:266
+#: src/routes/_authenticated/$page/index.tsx:205
+msgid "{commentCount, plural, one {1 comment} other {# comments}}"
+msgstr "{colorName}-ს არ აქვს არცერთი ფიგურა აღებული"
+
+#: src/features/user/account.tsx:667
+msgid "{count} remaining"
+msgstr "{count} ფიგურა"
+
+#: src/features/wiki/attachments-page.tsx:246
+msgid "{documentCount, plural, one {# document} other {# documents}}"
+msgstr "{d, plural, other {# დღე}}"
+
+#: src/features/wiki/attachments-page.tsx:246
+msgid "{imageCount, plural, one {# image} other {# images}}"
+msgstr "{h}სთ {m}წთ {s}წმ"
+
+#: src/features/wiki/rename-page-dialog.tsx:71
+msgid "{linksUpdated, plural, one {, updated 1 link} other {, updated # links}}"
+msgstr "{imageCount, plural, other {# სურათი}}"
+
+#: src/routes/_authenticated/$page/comments.tsx:29
+#: src/routes/_authenticated/$page/comments.tsx:41
+#: src/routes/_authenticated/$wikiId/$page/comments.tsx:35
+#: src/routes/_authenticated/$wikiId/$page/comments.tsx:47
+msgid "{pageTitle} - Comments"
+msgstr "{opponentName}-ის სვლა"
+
+#: src/features/wiki/rename-page-dialog.tsx:69
+msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
+msgstr "{price} წელიწადში"
+
+#: src/features/wiki/wiki-comment-thread.tsx:92
+msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
+msgstr "{totalDescendants, plural, other {# პასუხი}}"
+
+#: src/routes/_authenticated/$wikiId/settings.tsx:34
+#: src/routes/_authenticated/$wikiId/settings.tsx:37
+#: src/routes/_authenticated/settings.tsx:33
+#: src/routes/_authenticated/settings.tsx:36
+msgid "{wikiName} settings"
+msgstr "{value, plural, other {# ქულა}}"
+
+#: src/features/wiki/page-editor.tsx:279
+msgid "*No content*"
+msgstr "*შიგთავსი არ არის*"
+
+#: src/features/user/account.tsx:540
+msgid "1. Scan QR code"
+msgstr "1. დაასკანირეთ QR კოდი"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:39
+msgid "12 hours"
+msgstr "12 საათი"
+
+#: src/features/user/account.tsx:546
+msgid "2. Manual entry"
+msgstr "2. ხელით შეტანა"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:38
+msgid "24 hours"
+msgstr "24 საათი"
+
+#: src/features/user/account.tsx:550
+msgid "3. Verify code"
+msgstr "3. შეამოწმეთ კოდი"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:48
+msgid "Absolute (date and time)"
+msgstr "აბსოლუტური (თარიღი და დრო)"
+
+#: src/features/wiki/wiki-settings.tsx:95
+msgid "Access"
+msgstr "წვდომა"
+
+#: ../../../lib/web/src/features/errors/forbidden.tsx:12
+msgid "Access Forbidden"
+msgstr "წვდომა აკრძალულია"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:188
+msgid "Access level"
+msgstr "წვდომის დონე"
+
+#: src/features/wiki/wiki-settings.tsx:683
+msgid "Access removed"
+msgstr "წვდომა წაიშალა"
+
+#: src/features/wiki/wiki-settings.tsx:662
+msgid "Access set for {subjectName}"
+msgstr "წვდომა დაყენებულია {subjectName}-სთვის"
+
+#: src/features/wiki/wiki-settings.tsx:673
+msgid "Access updated"
+msgstr "წვდომა განახლდა"
+
+#: src/features/user/account.tsx:696
+#: src/features/user/account.tsx:700
+msgid "Account"
+msgstr "ანგარიში"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:208
+msgid "Account added"
+msgstr "ანგარიში დაემატა"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:224
+msgid "Account removed"
+msgstr "ანგარიში წაშლილია"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:123
+msgid "Account type"
+msgstr "ანგარიშის ტიპი"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:234
+msgid "Account verified"
+msgstr "ანგარიში დადასტურებულია"
+
+#: src/features/wiki/page-history.tsx:54
+#: src/features/wiki/redirects-page.tsx:87
+#: src/features/wiki/wiki-settings.tsx:842
+msgid "Actions"
+msgstr "მოქმედებები"
+
+#: src/features/wiki/tag-manager.tsx:128
+#: src/features/wiki/wiki-settings.tsx:697
+msgid "Add"
+msgstr "დამატება"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:117
+msgid "Add a new account"
+msgstr "ახალი ანგარიშის დამატება"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:145
+msgid "Add access"
+msgstr "წვდომის დამატება"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:116
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:280
+msgid "Add account"
+msgstr "ანგარიშის დამატება"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:289
+msgid "Add an account to receive notifications and use services."
+msgstr "დაამატეთ ანგარიში შეტყობინებების მისაღებად და სერვისების გამოსაყენებლად."
+
+#: src/features/user/account.tsx:599
+msgid "Add an app for additional security"
+msgstr "დაამატეთ აპი დამატებითი უსაფრთხოებისთვის"
+
+#: ../../../lib/web/src/features/accounts/account-picker.tsx:98
+msgid "Add new account"
+msgstr "ახალი ანგარიშის დამატება"
+
+#: src/features/user/account.tsx:403
+msgid "Add passkey"
+msgstr "passkey-ის დამატება"
+
+#: src/features/wiki/redirects-page.tsx:210
+#: src/features/wiki/wiki-settings.tsx:1099
+msgid "Add redirect"
+msgstr "გადამისამართების დამატება"
+
+#: ../../../lib/web/src/components/post-tags.tsx:119
+msgid "Add tag..."
+msgstr "ტეგის დამატება..."
+
+#: src/features/wiki/tags-list.tsx:33
+msgid "Add tags to group pages in your wiki."
+msgstr "დაამატეთ ტეგები გვერდების დასაჯგუფებლად თქვენს wiki-ში."
+
+#: ../../../lib/web/src/components/layout/team-switcher.tsx:80
+msgid "Add team/app"
+msgstr "გუნდის/აპის დამატება"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:159
+msgid "Add to existing notifications"
+msgstr "არსებულ შეტყობინებებში დამატება"
+
+#: ../../../lib/web/src/components/view-tabs.tsx:57
+msgid "Add view"
+msgstr "ხედის დამატება"
+
+#: src/features/wiki/tag-manager.tsx:128
+msgid "Adding..."
+msgstr "დამატება..."
+
+#: ../../../lib/web/src/components/config-drawer.tsx:62
+msgid "Adjust the appearance and layout to suit your preferences."
+msgstr "მოარგეთ გარემო და განლაგება თქვენს უპირატესობებს."
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx:38
+msgid "AI"
+msgstr "AI"
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:159
+msgid "All"
+msgstr "ყველა"
+
+#: src/features/wiki/attachments-page.tsx:307
+msgid "All files"
+msgstr "ყველა ფაილი"
+
+#: src/features/wiki/tag-pages.tsx:33
+#: src/features/wiki/tags-list.tsx:18
+#: src/routes/_authenticated/tags.tsx:16
+#: src/routes/_authenticated/tags.tsx:22
+#: src/routes/_authenticated/tags.tsx:33
+#: src/routes/_authenticated/tags.tsx:43
+msgid "All tags"
+msgstr "ყველა ტეგი"
+
+#: src/components/layout/wiki-layout.tsx:114
+msgid "All wikis"
+msgstr "ყველა wiki"
+
+#: src/components/layout/wiki-layout.tsx:157
+msgid "Allow anyone to search for wiki"
+msgstr "ნებისმიერს wiki-ის ძიების ნება დართე"
+
+#: src/features/user/preferences.tsx:124
+msgid "Appearance"
+msgstr "გარემო"
+
+#: src/features/wiki/wiki-settings.tsx:595
+msgid "Are you absolutely sure?"
+msgstr "ნამდვილად დარწმუნებული ხართ?"
+
+#: src/features/wiki/wiki-comment-thread.tsx:274
+msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
+msgstr "დარწმუნებული ხართ, რომ გსურთ ამ კომენტარის წაშლა? ეს ასევე წაშლის ყველა პასუხს. მოქმედება შეუქცევადია."
+
+#: ../../../lib/web/src/components/sign-out-dialog.tsx:24
+msgid "Are you sure you want to log out? You will need to log in again to access your account."
+msgstr "დარწმუნებული ხართ, რომ გსურთ გასვლა? ანგარიშზე წვდომისთვის ხელახლა შესვლა მოგიწევთ."
+
+#: src/features/wiki/wiki-page-content.tsx:354
+#: src/routes/_authenticated/$page/index.tsx:271
+#: src/routes/_authenticated/index.tsx:484
+#: src/routes/_authenticated/index.tsx:827
+msgid "Are you sure you want to unsubscribe from this wiki?"
+msgstr "დარწმუნებული ხართ, რომ გსურთ ამ wiki-დან გამოწერის გაუქმება?"
+
+#: ../../../lib/web/src/components/data-table/column-header.tsx:56
+msgid "Asc"
+msgstr "ზრდადი"
+
+#: src/features/wiki/comment-form.tsx:93
+msgid "Attach files"
+msgstr "ფაილების მიმაგრება"
+
+#: src/features/wiki/wiki-comment-thread.tsx:244
+msgid "Attach reply files"
+msgstr "პასუხის ფაილების მიმაგრება"
+
+#: src/features/wiki/attachments-page.tsx:188
+msgid "Attachment deleted"
+msgstr "დანართი წაშლილია"
+
+#: src/features/wiki/attachments-page.tsx:243
+#: src/features/wiki/page-editor.tsx:229
+#: src/features/wiki/page-editor.tsx:234
+#: src/routes/_authenticated/$page/attachments.tsx:22
+#: src/routes/_authenticated/$page/attachments.tsx:33
+#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:31
+#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:42
+msgid "Attachments"
+msgstr "დანართები"
+
+#: src/features/user/account.tsx:203
+msgid "Authenticator app"
+msgstr "Authenticator აპი"
+
+#: src/features/user/account.tsx:528
+msgid "Authenticator App"
+msgstr "Authenticator აპი"
+
+#: src/features/user/account.tsx:519
+msgid "Authenticator app disabled"
+msgstr "Authenticator აპი გათიშულია"
+
+#: src/features/user/account.tsx:504
+msgid "Authenticator app enabled"
+msgstr "Authenticator აპი ჩართულია"
+
+#: src/features/user/account.tsx:578
+msgid "Authenticator app is active"
+msgstr "Authenticator აპი აქტიურია"
+
+#: src/features/wiki/changes-list.tsx:44
+#: src/features/wiki/page-history.tsx:51
+msgid "Author"
+msgstr "ავტორი"
+
+#: ../../../lib/web/src/components/place-picker.tsx:152
+msgid "Back"
+msgstr "უკან"
+
+#: src/features/wiki/attachments-page.tsx:231
+#: src/features/wiki/attachments-page.tsx:231
+msgid "Back to editor"
+msgstr "უკან რედაქტორში"
+
+#: src/features/wiki/revision-view.tsx:47
+#: src/features/wiki/revision-view.tsx:52
+msgid "Back to history"
+msgstr "უკან ისტორიაში"
+
+#: ../../../lib/web/src/features/errors/forbidden.tsx:21
+#: ../../../lib/web/src/features/errors/not-found-error.tsx:21
+#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:21
+msgid "Back to Home"
+msgstr "მთავარზე დაბრუნება"
+
+#: src/routes/_authenticated/$page/attachments.tsx:33
+#: src/routes/_authenticated/$page/comments.tsx:42
+#: src/routes/_authenticated/$page/delete.tsx:38
+#: src/routes/_authenticated/$page/delete.tsx:51
+#: src/routes/_authenticated/$page/delete.tsx:63
+#: src/routes/_authenticated/$page/delete.tsx:79
+#: src/routes/_authenticated/$page/edit.tsx:43
+#: src/routes/_authenticated/$page/edit.tsx:54
+#: src/routes/_authenticated/$page/edit.tsx:66
+#: src/routes/_authenticated/$page/edit.tsx:78
+#: src/routes/_authenticated/$page/history/$version.tsx:35
+#: src/routes/_authenticated/$page/history/$version.tsx:46
+#: src/routes/_authenticated/$page/history/$version.tsx:57
+#: src/routes/_authenticated/$page/history/index.tsx:35
+#: src/routes/_authenticated/$page/history/index.tsx:46
+#: src/routes/_authenticated/$page/history/index.tsx:60
+#: src/routes/_authenticated/$page/revert.tsx:38
+#: src/routes/_authenticated/$page/revert.tsx:48
+#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:42
+#: src/routes/_authenticated/$wikiId/$page/comments.tsx:48
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:51
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:64
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:76
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:92
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:52
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:63
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:75
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:87
+#: src/routes/_authenticated/$wikiId/$page/history/$version.tsx:34
+#: src/routes/_authenticated/$wikiId/$page/history/$version.tsx:45
+#: src/routes/_authenticated/$wikiId/$page/history/$version.tsx:56
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:45
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:56
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:70
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:39
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:49
+msgid "Back to page"
+msgstr "უკან გვერდზე"
+
+#: src/features/wiki/wiki-page-content.tsx:128
+#: src/features/wiki/wiki-page-content.tsx:139
+#: src/features/wiki/wiki-page-content.tsx:151
+#: src/features/wiki/wiki-page-content.tsx:215
+#: src/features/wiki/wiki-page-content.tsx:345
+#: src/routes/_authenticated/$page/index.tsx:83
+#: src/routes/_authenticated/$page/index.tsx:94
+#: src/routes/_authenticated/$page/index.tsx:154
+#: src/routes/_authenticated/$page/index.tsx:262
+#: src/routes/_authenticated/$wikiId/changes.tsx:23
+#: src/routes/_authenticated/$wikiId/changes.tsx:34
+#: src/routes/_authenticated/$wikiId/changes.tsx:44
+#: src/routes/_authenticated/$wikiId/new.tsx:26
+#: src/routes/_authenticated/$wikiId/settings.tsx:37
+#: src/routes/_authenticated/changes.tsx:22
+#: src/routes/_authenticated/changes.tsx:33
+#: src/routes/_authenticated/changes.tsx:43
+#: src/routes/_authenticated/index.tsx:314
+#: src/routes/_authenticated/index.tsx:329
+#: src/routes/_authenticated/index.tsx:345
+#: src/routes/_authenticated/index.tsx:469
+#: src/routes/_authenticated/join.tsx:57
+#: src/routes/_authenticated/new.tsx:26
+#: src/routes/_authenticated/redirects.tsx:18
+#: src/routes/_authenticated/search.tsx:26
+#: src/routes/_authenticated/settings.tsx:36
+#: src/routes/_authenticated/tag/$tag.tsx:24
+#: src/routes/_authenticated/tag/$tag.tsx:35
+#: src/routes/_authenticated/tag/$tag.tsx:45
+#: src/routes/_authenticated/tags.tsx:22
+#: src/routes/_authenticated/tags.tsx:33
+#: src/routes/_authenticated/tags.tsx:43
+msgid "Back to wikis"
+msgstr "უკან wiki-ებში"
+
+#: src/features/user/account.tsx:631
+msgid "Backup codes for account recovery"
+msgstr "სარეზერვო კოდები ანგარიშის აღდგენისთვის"
+
+#: src/features/wiki/page-comments.tsx:91
+msgid "Be the first to comment on this page."
+msgstr "იყავით პირველი ვინც დააკომენტარებს ამ გვერდს."
+
+#: ../../../lib/web/src/components/post-tags.tsx:160
+msgid "Boost interest"
+msgstr "ინტერესის გაძლიერება"
+
+#: src/features/wiki/redirects-page.tsx:185
+#: src/features/wiki/wiki-settings.tsx:1072
+msgid "Both source and target are required"
+msgstr "წყაროც და სამიზნეც აუცილებელია"
+
+#: src/features/wiki/page-editor.tsx:335
+msgid "Briefly describe your changes"
+msgstr "მოკლედ აღწერეთ თქვენი ცვლილებები"
+
+#: src/features/wiki/tags-list.tsx:22
+msgid "Browse pages by tag. Click a tag to see all pages with that tag."
+msgstr "გვერდების ტეგით დათვალიერება. დააწკაპუნეთ ტეგზე მისი ყველა გვერდის სანახავად."
+
+#: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:64
+#: ../../../lib/web/src/components/travelling-picker.tsx:292
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:245
+#: ../../../lib/web/src/features/access/access-dialog.tsx:325
+#: ../../../lib/web/src/features/access/access-list.tsx:255
+#: ../../../lib/web/src/features/accounts/account-add.tsx:185
+#: ../../../lib/web/src/features/accounts/account-verify.tsx:86
+#: src/features/user/account.tsx:321
+#: src/features/user/account.tsx:566
+#: src/features/user/account.tsx:591
+#: src/features/user/account.tsx:679
+#: src/features/user/preferences.tsx:108
+#: src/features/user/sessions.tsx:102
+#: src/features/wiki/comment-form.tsx:99
+#: src/features/wiki/delete-page.tsx:66
+#: src/features/wiki/delete-page.tsx:71
+#: src/features/wiki/page-editor.tsx:240
+#: src/features/wiki/redirects-page.tsx:159
+#: src/features/wiki/redirects-page.tsx:256
+#: src/features/wiki/rename-page-dialog.tsx:123
+#: src/features/wiki/revert-page.tsx:85
+#: src/features/wiki/revert-page.tsx:90
+#: src/features/wiki/tag-manager.tsx:121
+#: src/features/wiki/wiki-comment-thread.tsx:123
+#: src/features/wiki/wiki-settings.tsx:882
+#: src/features/wiki/wiki-settings.tsx:1031
+#: src/features/wiki/wiki-settings.tsx:1138
+#: src/routes/_authenticated/join.tsx:113
+msgid "Cancel"
+msgstr "გაუქმება"
+
+#: src/features/wiki/wiki-comment-thread.tsx:253
+msgid "Cancel reply"
+msgstr "პასუხის გაუქმება"
+
+#: ../../../lib/web/src/components/notification-category-button.tsx:131
+msgid "Category for this notification"
+msgstr "ამ შეტყობინების კატეგორია"
+
+#: ../../../lib/web/src/components/notification-category-button.tsx:115
+msgid "Change notification category"
+msgstr "შეტყობინების კატეგორიის შეცვლა"
+
+#: src/features/wiki/wiki-page-content.tsx:303
+#: src/routes/_authenticated/index.tsx:421
+#: src/routes/_authenticated/index.tsx:652
+msgid "Changes"
+msgstr "ცვლილებები"
+
+#: src/features/wiki/wiki-page-content.tsx:305
+#: src/routes/_authenticated/index.tsx:429
+#: src/routes/_authenticated/index.tsx:662
+msgid "Changes and comments"
+msgstr "ცვლილებები და კომენტარები"
+
+#: src/features/wiki/changes-list.tsx:35
+msgid "Changes will appear here when pages are edited."
+msgstr "ცვლილებები აქ გამოჩნდება გვერდების რედაქტირებისას."
+
+#: ../../../lib/web/src/components/config-drawer.tsx:315
+msgid "Choose between default expanded, compact icon-only, or full layout mode"
+msgstr "აირჩიეთ ნაგულისხმევად გაშლილ, კომპაქტურ მხოლოდ-ხატულით ან სრულ განლაგების რეჟიმს შორის"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:257
+msgid "Choose between inset, floating, or standard sidebar layout"
+msgstr "აირჩიეთ inset, floating ან სტანდარტულ გვერდითა პანელის განლაგებას შორის"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:358
+msgid "Choose between left-to-right or right-to-left site direction"
+msgstr "აირჩიეთ მარცხნიდან-მარჯვნივ ან მარჯვნიდან-მარცხნივ საიტის მიმართულება"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:213
+msgid "Choose between system preference, light mode, or dark mode"
+msgstr "აირჩიეთ სისტემის უპირატესობას, ღია რეჟიმს ან ბნელ რეჟიმს შორის"
+
+#: ../../../lib/web/src/components/language-picker.tsx:167
+msgid "Choose language"
+msgstr "აირჩიეთ ენა"
+
+#: ../../../lib/web/src/components/colour-picker.tsx:304
+msgid "Clear"
+msgstr "გასუფთავება"
+
+#: ../../../lib/web/src/components/filter-bar.tsx:64
+msgid "Clear all"
+msgstr "ყველაფრის გასუფთავება"
+
+#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:137
+msgid "Clear filters"
+msgstr "ფილტრების გასუფთავება"
+
+#: src/features/wiki/attachments-page.tsx:293
+#: src/features/wiki/attachments-page.tsx:294
+msgid "Clear search"
+msgstr "ძიების გასუფთავება"
+
+#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:164
+#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:168
+msgid "Clear selection"
+msgstr "არჩევის გასუფთავება"
+
+#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:165
+msgid "Clear selection (Escape)"
+msgstr "არჩევის გასუფთავება (Escape)"
+
+#: ../../../lib/web/src/components/ui/dialog.tsx:75
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:318
+#: ../../../lib/web/src/components/ui/sheet.tsx:76
+msgid "Close"
+msgstr "დახურვა"
+
+#: ../../../lib/web/src/components/layout/app-sidebar.tsx:97
+msgid "Close navigation"
+msgstr "ნავიგაციის დახურვა"
+
+#: ../../../lib/web/src/components/layout/right-panel.tsx:254
+msgid "Close Panel"
+msgstr "პანელის დახურვა"
+
+#: ../../../lib/web/src/components/header-search.tsx:51
+msgid "Close search"
+msgstr "ძიების დახურვა"
+
+#: src/features/user/account.tsx:654
+msgid "Codes copied"
+msgstr "კოდები დაკოპირდა"
+
+#: ../../../lib/web/src/components/layout/app-sidebar.tsx:35
+msgid "Collapse sidebar"
+msgstr "გვერდითა პანელის შეკვრა"
+
+#: ../../../lib/web/src/components/coming-soon.tsx:9
+msgid "Coming Soon!"
+msgstr "მალე!"
+
+#: src/features/wiki/changes-list.tsx:46
+#: src/features/wiki/page-history.tsx:53
+msgid "Comment"
+msgstr "კომენტარი"
+
+#: src/features/wiki/wiki-page-content.tsx:304
+#: src/routes/_authenticated/index.tsx:426
+#: src/routes/_authenticated/index.tsx:657
+msgid "Comments"
+msgstr "კომენტარები"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:302
+msgid "Compact"
+msgstr "კომპაქტური"
+
+#: ../../../lib/web/src/components/place-picker.tsx:155
+#: ../../../lib/web/src/components/travelling-picker.tsx:299
+msgid "Confirm"
+msgstr "დადასტურება"
+
+#: src/features/wiki/page-editor.tsx:316
+msgid "Content"
+msgstr "შიგთავსი"
+
+#: ../../../lib/web/src/lib/query-client.ts:78
+msgid "Content not modified"
+msgstr "შიგთავსი არ შეცვლილა"
+
+#: ../../../lib/web/src/components/layout/right-panel.tsx:145
+msgid "Contextual information and details."
+msgstr "კონტექსტური ინფორმაცია და დეტალები."
+
+#: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:72
+msgid "Continue"
+msgstr "გაგრძელება"
+
+#: ../../../lib/web/src/components/ui/copy-button.tsx:60
+msgid "Copy"
+msgstr "კოპირება"
+
+#: src/features/user/account.tsx:656
+msgid "Copy all"
+msgstr "ყველაფრის კოპირება"
+
+#: src/features/wiki/attachments-page.tsx:495
+#: src/features/wiki/attachments-page.tsx:496
+#: src/features/wiki/attachments-page.tsx:586
+#: src/features/wiki/attachments-page.tsx:587
+msgid "Copy embed link"
+msgstr "embed ბმულის კოპირება"
+
+#: src/features/wiki/wiki-settings.tsx:1107
+msgid "Create a redirect from one URL to another."
+msgstr "გადამისამართების შექმნა ერთი URL-დან მეორეზე."
+
+#: src/features/wiki/redirects-page.tsx:218
+msgid "Create a redirect from one URL to another. The source URL must not be an existing page."
+msgstr "გადამისამართების შექმნა ერთი URL-დან მეორეზე. წყაროს URL არ უნდა იყოს არსებული გვერდი."
+
+#: src/features/wiki/redirects-page.tsx:76
+#: src/features/wiki/wiki-settings.tsx:977
+msgid "Create a redirect to forward one URL to another."
+msgstr "გადამისამართების შექმნა ერთი URL-დან მეორეზე გადასაგზავნად."
+
+#: src/features/wiki/page-editor.tsx:197
+msgid "Create new page"
+msgstr "ახალი გვერდის შექმნა"
+
+#: src/features/wiki/page-editor.tsx:261
+msgid "Create page"
+msgstr "გვერდის შექმნა"
+
+#: src/features/wiki/redirects-page.tsx:216
+#: src/features/wiki/redirects-page.tsx:259
+#: src/features/wiki/wiki-settings.tsx:1105
+#: src/features/wiki/wiki-settings.tsx:1141
+msgid "Create redirect"
+msgstr "გადამისამართების შექმნა"
+
+#: src/features/wiki/rename-page-dialog.tsx:113
+msgid "Create redirect from old URL"
+msgstr "გადამისამართების შექმნა ძველი URL-დან"
+
+#: src/features/wiki/page-view.tsx:293
+#: src/features/wiki/page-view.tsx:298
+#: src/features/wiki/wiki-page-content.tsx:183
+#: src/routes/_authenticated/$page/index.tsx:122
+msgid "Create this page"
+msgstr "ამ გვერდის შექმნა"
+
+#: src/components/layout/wiki-layout.tsx:134
+#: src/components/layout/wiki-layout.tsx:154
+#: src/routes/_authenticated/index.tsx:702
+msgid "Create wiki"
+msgstr "wiki-ის შექმნა"
+
+#: src/features/user/account.tsx:453
+#: src/features/user/sessions.tsx:145
+#: src/features/wiki/redirects-page.tsx:86
+#: src/features/wiki/wiki-settings.tsx:987
+msgid "Created"
+msgstr "შექმნილია"
+
+#: src/features/wiki/page-editor.tsx:261
+#: src/features/wiki/redirects-page.tsx:259
+#: src/features/wiki/wiki-settings.tsx:1141
+msgid "Creating..."
+msgstr "იქმნება..."
+
+#: src/features/wiki/revision-view.tsx:35
+msgid "Current"
+msgstr "მიმდინარე"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:205
+#: ../../../lib/web/src/lib/preference-utils.ts:17
+msgid "Dark"
+msgstr "ბნელი"
+
+#: ../../../lib/web/src/components/layout/nav-user.tsx:88
+#: ../../../lib/web/src/components/layout/nav-user.tsx:151
+#: ../../../lib/web/src/components/layout/nav-user.tsx:202
+#: ../../../lib/web/src/components/profile-dropdown.tsx:84
+#: ../../../lib/web/src/components/profile-dropdown.tsx:120
+msgid "Dark mode"
+msgstr "ბნელი რეჟიმი"
+
+#: src/features/wiki/attachments-page.tsx:320
+#: src/features/wiki/changes-list.tsx:45
+#: src/features/wiki/page-history.tsx:52
+msgid "Date"
+msgstr "თარიღი"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:297
+msgid "Default"
+msgstr "ნაგულისხმევი"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:169
+msgid "Default AI account"
+msgstr "ნაგულისხმევი AI ანგარიში"
+
+#: src/features/user/account.tsx:323
+#: src/features/wiki/attachments-page.tsx:425
+#: src/features/wiki/attachments-page.tsx:510
+#: src/features/wiki/attachments-page.tsx:602
+#: src/features/wiki/delete-page.tsx:81
+#: src/features/wiki/redirects-page.tsx:164
+#: src/features/wiki/wiki-comment-thread.tsx:186
+#: src/features/wiki/wiki-comment-thread.tsx:275
+#: src/features/wiki/wiki-page-content.tsx:273
+#: src/features/wiki/wiki-settings.tsx:1036
+msgid "Delete"
+msgstr "წაშლა"
+
+#. placeholder {0}: pendingDelete.name
+#: src/features/wiki/attachments-page.tsx:424
+msgid "Delete \"{0}\"? This cannot be undone."
+msgstr "„{0}“-ის წაშლა? ეს შეუქცევადია."
+
+#: src/features/wiki/attachments-page.tsx:423
+#: src/features/wiki/attachments-page.tsx:509
+#: src/features/wiki/attachments-page.tsx:601
+msgid "Delete attachment"
+msgstr "დანართის წაშლა"
+
+#: src/features/wiki/wiki-comment-thread.tsx:273
+msgid "Delete comment"
+msgstr "კომენტარის წაშლა"
+
+#: src/features/wiki/delete-page.tsx:51
+#: src/features/wiki/page-editor.tsx:247
+#: src/features/wiki/page-editor.tsx:252
+msgid "Delete page"
+msgstr "გვერდის წაშლა"
+
+#: src/features/user/account.tsx:312
+msgid "Delete passkey?"
+msgstr "passkey-ის წაშლა?"
+
+#. placeholder {0}: redirect.source
+#: src/features/wiki/redirects-page.tsx:141
+#: src/features/wiki/redirects-page.tsx:142
+#: src/features/wiki/wiki-settings.tsx:1014
+#: src/features/wiki/wiki-settings.tsx:1015
+msgid "Delete redirect {0}"
+msgstr "გადამისამართების წაშლა {0}"
+
+#: src/features/wiki/redirects-page.tsx:149
+#: src/features/wiki/wiki-settings.tsx:1022
+msgid "Delete redirect?"
+msgstr "გადამისამართების წაშლა?"
+
+#: src/features/wiki/wiki-settings.tsx:578
+#: src/features/wiki/wiki-settings.tsx:589
+#: src/features/wiki/wiki-settings.tsx:597
+msgid "Delete wiki"
+msgstr "wiki-ის წაშლა"
+
+#: src/routes/_authenticated/$page/delete.tsx:26
+#: src/routes/_authenticated/$page/delete.tsx:38
+#: src/routes/_authenticated/$page/delete.tsx:51
+#: src/routes/_authenticated/$page/delete.tsx:63
+#: src/routes/_authenticated/$page/delete.tsx:79
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:39
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:51
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:64
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:76
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:92
+msgid "Delete: {pageTitle}"
+msgstr "წაშლა: {pageTitle}"
+
+#: src/features/wiki/delete-page.tsx:81
+#: src/features/wiki/wiki-settings.tsx:589
+msgid "Deleting..."
+msgstr "იშლება..."
+
+#: ../../../lib/web/src/components/data-table/column-header.tsx:60
+msgid "Desc"
+msgstr "კლებადი"
+
+#: ../../../lib/web/src/components/layout/right-panel.tsx:144
+msgid "Details Panel"
+msgstr "დეტალების პანელი"
+
+#: ../../../lib/web/src/components/language-picker.tsx:145
+#: ../../../lib/web/src/components/timezone-select.tsx:43
+#: ../../../lib/web/src/components/timezone-select.tsx:80
+#: ../../../lib/web/src/lib/preference-utils.ts:25
+#: ../../../lib/web/src/lib/preference-utils.ts:37
+#: ../../../lib/web/src/lib/preference-utils.ts:55
+#: ../../../lib/web/src/lib/preference-utils.ts:69
+#: ../../../lib/web/src/lib/preference-utils.ts:81
+msgid "Detect from web browser"
+msgstr "ვებ ბრაუზერიდან აღმოჩენა"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:327
+msgid "Direction"
+msgstr "მიმართულება"
+
+#: src/features/user/account.tsx:583
+#: src/features/user/account.tsx:592
+msgid "Disable"
+msgstr "გათიშვა"
+
+#: src/features/user/account.tsx:587
+msgid "Disable authenticator?"
+msgstr "Authenticator-ის გათიშვა?"
+
+#: ../../../lib/web/src/components/ui/sidebar.tsx:235
+msgid "Displays the mobile sidebar."
+msgstr "აჩვენებს მობილურის გვერდით პანელს."
+
+#: src/features/wiki/attachments-page.tsx:309
+msgid "Documents"
+msgstr "დოკუმენტები"
+
+#: src/features/user/account.tsx:657
+msgid "Done"
+msgstr "მზადაა"
+
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:312
+msgid "Download"
+msgstr "ჩამოტვირთვა"
+
+#: src/features/wiki/attachments-page.tsx:376
+msgid "Drag and drop files here, or click \"Upload files\" to get started."
+msgstr "ჩავლებით მოათავსეთ ფაილები აქ, ან დააწკაპუნეთ „ფაილების ატვირთვა“ დასაწყებად."
+
+#: src/features/user/account.tsx:642
+msgid "Each code can only be used once."
+msgstr "თითოეული კოდი გამოიყენება მხოლოდ ერთხელ."
+
+#: src/features/wiki/page-editor.tsx:208
+#: src/features/wiki/wiki-comment-thread.tsx:175
+#: src/features/wiki/wiki-page-content.tsx:247
+#: src/routes/_authenticated/$page/index.tsx:186
+#: src/routes/_authenticated/index.tsx:376
+msgid "Edit"
+msgstr "რედაქტირება"
+
+#: src/features/wiki/wiki-settings.tsx:613
+msgid "Edit and view"
+msgstr "რედაქტირება და ნახვა"
+
+#: src/features/wiki/page-editor.tsx:330
+msgid "Edit summary (optional)"
+msgstr "რეზიუმეს რედაქტირება (არასავალდებულო)"
+
+#: src/routes/_authenticated/$page/edit.tsx:31
+#: src/routes/_authenticated/$page/edit.tsx:43
+#: src/routes/_authenticated/$page/edit.tsx:54
+#: src/routes/_authenticated/$page/edit.tsx:66
+#: src/routes/_authenticated/$page/edit.tsx:78
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:40
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:52
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:63
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:75
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:87
+msgid "Edit: {pageTitle}"
+msgstr "რედაქტირება: {pageTitle}"
+
+#. placeholder {0}: page?.title ?? slug
+#: src/features/wiki/page-editor.tsx:197
+msgid "Editing: {0}"
+msgstr "რედაქტირება: {0}"
+
+#: src/features/user/account.tsx:221
+msgid "Email code"
+msgstr "ელფოსტის კოდი"
+
+#: src/features/wiki/attachments-page.tsx:170
+msgid "Embed link copied"
+msgstr "ჩასართავი ბმული დაკოპირდა"
+
+#: src/features/wiki/search-page.tsx:71
+msgid "Enter a search term"
+msgstr "შეიყვანეთ საძიებო ტერმინი"
+
+#: src/features/wiki/tag-manager.tsx:112
+msgid "Enter tag name"
+msgstr "შეიყვანეთ ტეგის სახელი"
+
+#: src/features/user/account.tsx:119
+#: src/features/wiki/wiki-settings.tsx:512
+msgid "Entity ID"
+msgstr "ერთეულის ID"
+
+#: src/features/wiki/wiki-page-content.tsx:154
+msgid "Error: Received invalid response from server."
+msgstr "შეცდომა: სერვერიდან მიღებულია არასწორი პასუხი."
+
+#: src/features/wiki/wiki-settings.tsx:560
+msgid "Example: \"home\", \"welcome\", \"index\""
+msgstr "მაგალითი: „home“, „welcome“, „index“"
+
+#: ../../../lib/web/src/components/layout/app-sidebar.tsx:35
+msgid "Expand sidebar"
+msgstr "გვერდითი პანელის გაშლა"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:217
+msgid "Failed to add account"
+msgstr "ანგარიშის დამატება ვერ მოხერხდა"
+
+#: src/features/wiki/tag-manager.tsx:49
+msgid "Failed to add tag"
+msgstr "ტეგის დამატება ვერ მოხერხდა"
+
+#: src/features/wiki/attachments-page.tsx:173
+msgid "Failed to copy"
+msgstr "კოპირება ვერ მოხერხდა"
+
+#: src/features/wiki/page-editor.tsx:158
+msgid "Failed to create page"
+msgstr "გვერდის შექმნა ვერ მოხერხდა"
+
+#: src/features/wiki/redirects-page.tsx:199
+#: src/features/wiki/wiki-settings.tsx:1088
+msgid "Failed to create redirect"
+msgstr "გადამისამართების შექმნა ვერ მოხერხდა"
+
+#: src/components/layout/wiki-layout.tsx:77
+msgid "Failed to create wiki"
+msgstr "ვიკის შექმნა ვერ მოხერხდა"
+
+#: src/features/wiki/attachments-page.tsx:192
+msgid "Failed to delete attachment"
+msgstr "დანართის წაშლა ვერ მოხერხდა"
+
+#: src/features/wiki/delete-page.tsx:40
+msgid "Failed to delete page"
+msgstr "გვერდის წაშლა ვერ მოხერხდა"
+
+#: src/features/user/account.tsx:384
+msgid "Failed to delete passkey"
+msgstr "passkey-ის წაშლა ვერ მოხერხდა"
+
+#: src/features/wiki/redirects-page.tsx:112
+#: src/features/wiki/wiki-settings.tsx:954
+msgid "Failed to delete redirect"
+msgstr "გადამისამართების წაშლა ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:406
+#: src/features/wiki/wiki-settings.tsx:417
+msgid "Failed to delete wiki"
+msgstr "ვიკის წაშლა ვერ მოხერხდა"
+
+#: src/features/user/account.tsx:520
+msgid "Failed to disable authenticator"
+msgstr "ავთენტიფიკატორის გათიშვა ვერ მოხერხდა"
+
+#: src/features/user/account.tsx:622
+msgid "Failed to generate codes"
+msgstr "კოდების გენერირება ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-page-content.tsx:117
+#: src/routes/_authenticated/index.tsx:305
+#: src/routes/_authenticated/index.tsx:555
+msgid "Failed to get RSS token"
+msgstr "RSS ტოკენის მიღება ვერ მოხერხდა"
+
+#: src/routes/_authenticated/join.tsx:46
+msgid "Failed to join wiki"
+msgstr "ვიკიში გაწევრიანება ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:649
+msgid "Failed to load access rules"
+msgstr "წვდომის წესების ჩატვირთვა ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:937
+msgid "Failed to load redirects"
+msgstr "გადამისამართებების ჩატვირთვა ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:759
+msgid "Failed to load replicas"
+msgstr "რეპლიკების ჩატვირთვა ვერ მოხერხდა"
+
+#: src/routes/_authenticated/$wikiId/route.tsx:61
+msgid "Failed to load wiki info"
+msgstr "ვიკის ინფორმაციის ჩატვირთვა ვერ მოხერხდა"
+
+#: src/routes/_authenticated/index.tsx:121
+msgid "Failed to load wikis"
+msgstr "ვიკების ჩატვირთვა ვერ მოხერხდა"
+
+#: src/features/user/account.tsx:364
+msgid "Failed to register passkey"
+msgstr "passkey-ის რეგისტრაცია ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:686
+msgid "Failed to remove access"
+msgstr "წვდომის წაშლა ვერ მოხერხდა"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:226
+msgid "Failed to remove account"
+msgstr "ანგარიშის წაშლა ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:778
+msgid "Failed to remove replica"
+msgstr "რეპლიკის წაშლა ვერ მოხერხდა"
+
+#: src/features/wiki/tag-manager.tsx:63
+msgid "Failed to remove tag"
+msgstr "ტეგის წაშლა ვერ მოხერხდა"
+
+#: src/features/wiki/rename-page-dialog.tsx:84
+msgid "Failed to rename page"
+msgstr "გვერდის გადარქმევა ვერ მოხერხდა"
+
+#: src/features/user/account.tsx:376
+msgid "Failed to rename passkey"
+msgstr "passkey-ის გადარქმევა ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:330
+msgid "Failed to rename wiki"
+msgstr "ვიკის გადარქმევა ვერ მოხერხდა"
+
+#: src/features/user/preferences.tsx:70
+msgid "Failed to reset preferences"
+msgstr "პარამეტრების გადატვირთვა ვერ მოხერხდა"
+
+#: src/features/wiki/revert-page.tsx:46
+msgid "Failed to revert page"
+msgstr "გვერდის დაბრუნება ვერ მოხერხდა"
+
+#: src/features/user/sessions.tsx:50
+msgid "Failed to revoke session"
+msgstr "სესიის გაუქმება ვერ მოხერხდა"
+
+#: src/features/wiki/page-editor.tsx:175
+msgid "Failed to save page"
+msgstr "გვერდის შენახვა ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:354
+#: src/features/wiki/wiki-settings.tsx:367
+msgid "Failed to save settings"
+msgstr "პარამეტრების შენახვა ვერ მოხერხდა"
+
+#: src/features/wiki/inline-wiki-search.tsx:63
+msgid "Failed to search wikis"
+msgstr "ვიკების ძიება ვერ მოხერხდა"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:249
+msgid "Failed to send verification code"
+msgstr "დადასტურების კოდის გაგზავნა ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:665
+msgid "Failed to set access level"
+msgstr "წვდომის დონის დაყენება ვერ მოხერხდა"
+
+#: src/features/user/account.tsx:494
+msgid "Failed to set up authenticator"
+msgstr "ავთენტიფიკატორის დაყენება ვერ მოხერხდა"
+
+#: src/features/wiki/inline-wiki-search.tsx:80
+#: src/routes/_authenticated/index.tsx:609
+msgid "Failed to subscribe"
+msgstr "გამოწერა ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:382
+#: src/features/wiki/wiki-settings.tsx:392
+msgid "Failed to sync wiki"
+msgstr "ვიკის სინქრონიზაცია ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-page-content.tsx:68
+#: src/routes/_authenticated/$page/index.tsx:68
+#: src/routes/_authenticated/index.tsx:288
+#: src/routes/_authenticated/index.tsx:543
+msgid "Failed to unsubscribe"
+msgstr "გამოწერის გაუქმება ვერ მოხერხდა"
+
+#: src/features/wiki/wiki-settings.tsx:676
+msgid "Failed to update access level"
+msgstr "წვდომის დონის განახლება ვერ მოხერხდა"
+
+#: ../../../lib/web/src/components/notification-category-button.tsx:104
+msgid "Failed to update category"
+msgstr "კატეგორიის განახლება ვერ მოხერხდა"
+
+#: src/features/user/account.tsx:160
+msgid "Failed to update login requirements"
+msgstr "შესვლის მოთხოვნების განახლება ვერ მოხერხდა"
+
+#: src/features/user/preferences.tsx:58
+msgid "Failed to update preference"
+msgstr "პარამეტრის განახლება ვერ მოხერხდა"
+
+#: src/features/wiki/attachments-page.tsx:126
+#: src/features/wiki/page-editor.tsx:128
+msgid "Failed to upload files"
+msgstr "ფაილების ატვირთვა ვერ მოხერხდა"
+
+#: src/features/user/account.tsx:511
+msgid "Failed to verify code"
+msgstr "კოდის დადასტურება ვერ მოხერხდა"
+
+#: src/features/wiki/attachments-page.tsx:304
+msgid "Filter"
+msgstr "ფილტრი"
+
+#: src/components/layout/wiki-layout.tsx:133
+#: src/routes/_authenticated/find.tsx:87
+msgid "Find wikis"
+msgstr "ვიკების ძიება"
+
+#: src/features/user/account.tsx:116
+#: src/features/wiki/wiki-settings.tsx:516
+msgid "Fingerprint"
+msgstr "ანაბეჭდი"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:244
+msgid "Floating"
+msgstr "მცურავი"
+
+#. placeholder {0}: import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string } export function SearchPage({ initialQuery = '' }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Update URL when debounced query changes useEffect(() => { if (debouncedQuery !== initialQuery) { const params = new URLSearchParams(window.location.search) if (debouncedQuery) { params.set('q', debouncedQuery) } else { params.delete('q') } const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname window.history.replaceState({}, '', newUrl) } }, [debouncedQuery, initialQuery]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Header */} <div className="space-y-4"> <h1 className="flex items-center gap-3 text-2xl font-bold"> <Search className="h-6 w-6" /> <Trans>Search Wiki</Trans> </h1> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult } function SearchResultItem({ result }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link to="/$page" params={{ page: result.page }} className="hover:bg-muted/50 group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
+#: src/features/wiki/search-page.tsx:89
+msgid "Found {0} for \"{debouncedQuery}\""
+msgstr "ნაპოვნია {0} „{debouncedQuery}“-ისთვის"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:60
+msgid "Friday"
+msgstr "პარასკევი"
+
+#: ../../../lib/web/src/components/travelling-picker.tsx:149
+msgid "From"
+msgstr "ვისგან"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:307
+msgid "Full layout"
+msgstr "სრული განლაგება"
+
+#: src/features/user/preferences.tsx:81
+msgid "General"
+msgstr "ზოგადი"
+
+#: src/features/user/account.tsx:673
+msgid "Generate"
+msgstr "გენერირება"
+
+#: src/features/user/account.tsx:676
+msgid "Generate?"
+msgstr "გენერირება?"
+
+#: ../../../lib/web/src/features/errors/forbidden.tsx:19
+#: ../../../lib/web/src/features/errors/not-found-error.tsx:19
+#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:19
+msgid "Go Back"
+msgstr "უკან დაბრუნება"
+
+#: ../../../lib/web/src/components/data-table/pagination.tsx:75
+msgid "Go to first page"
+msgstr "პირველ გვერდზე გადასვლა"
+
+#: ../../../lib/web/src/components/data-table/pagination.tsx:121
+msgid "Go to last page"
+msgstr "ბოლო გვერდზე გადასვლა"
+
+#: ../../../lib/web/src/components/data-table/pagination.tsx:112
+msgid "Go to next page"
+msgstr "შემდეგ გვერდზე გადასვლა"
+
+#: ../../../lib/web/src/components/data-table/pagination.tsx:84
+msgid "Go to previous page"
+msgstr "წინა გვერდზე გადასვლა"
+
+#: src/features/wiki/attachments-page.tsx:333
+#: src/features/wiki/attachments-page.tsx:334
+msgid "Grid view"
+msgstr "ბადის ხედი"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:159
+msgid "Group"
+msgstr "ჯგუფი"
+
+#: ../../../lib/web/src/components/data-table/column-header.tsx:67
+msgid "Hide"
+msgstr "დამალვა"
+
+#: src/features/wiki/page-history.tsx:27
+#: src/features/wiki/wiki-page-content.tsx:260
+#: src/routes/_authenticated/$page/index.tsx:199
+#: src/routes/_authenticated/index.tsx:389
+msgid "History"
+msgstr "ისტორია"
+
+#: src/routes/_authenticated/$page/history/index.tsx:22
+#: src/routes/_authenticated/$page/history/index.tsx:35
+#: src/routes/_authenticated/$page/history/index.tsx:46
+#: src/routes/_authenticated/$page/history/index.tsx:60
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:32
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:45
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:56
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:70
+msgid "History: {pageTitle}"
+msgstr "ისტორია: {pageTitle}"
+
+#: src/features/wiki/wiki-settings.tsx:557
+msgid "home"
+msgstr "ფაილი"
+
+#: ../../../lib/web/src/components/layout/app-sidebar.tsx:82
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:142
+#: ../../../lib/web/src/components/layout/top-bar.tsx:62
+#: ../../../lib/web/src/components/layout/top-bar.tsx:91
+#: src/routes/_authenticated/index.tsx:251
+msgid "Home"
+msgstr "მთავარი"
+
+#: src/features/wiki/wiki-settings.tsx:545
+msgid "Home page"
+msgstr "მთავარი გვერდი"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx:41
+msgid "Hot"
+msgstr "ცხელი"
+
+#: src/features/user/account.tsx:92
+#: src/features/wiki/wiki-settings.tsx:451
+msgid "Identity"
+msgstr "ვინაობა"
+
+#: src/features/wiki/markdown-content.tsx:106
+msgid "Image"
+msgstr "სურათი"
+
+#: src/features/wiki/attachments-page.tsx:308
+msgid "Images"
+msgstr "სურათები"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:83
+msgid "Imperial"
+msgstr "იმპერიული"
+
+#: src/features/wiki/page-editor.tsx:223
+msgid "Insert"
+msgstr "ჩასმა"
+
+#: src/features/wiki/page-editor.tsx:346
+msgid "Insert attachment"
+msgstr "დანართის ჩასმა"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:239
+msgid "Inset"
+msgstr "ჩაკიდებული"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx:39
+msgid "Interests"
+msgstr "ინტერესები"
+
+#: src/features/user/account.tsx:508
+msgid "Invalid code"
+msgstr "არასწორი კოდი"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:237
+msgid "Invalid verification code"
+msgstr "არასწორი დადასტურების კოდი"
+
+#: src/routes/_authenticated/$page/revert.tsx:40
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:41
+msgid "Invalid version number"
+msgstr "არასწორი ვერსიის ნომერი"
+
+#: src/routes/_authenticated/join.tsx:42
+msgid "Joined wiki"
+msgstr "შეუერთდა ვიკის"
+
+#: src/features/user/sessions.tsx:146
+msgid "Last active"
+msgstr "ბოლოს აქტიური"
+
+#: src/features/wiki/wiki-settings.tsx:841
+msgid "Last synced"
+msgstr "ბოლოს დასინქრონიზდა"
+
+#: src/features/user/account.tsx:454
+msgid "Last used"
+msgstr "ბოლოს გამოყენებული"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:273
+msgid "Layout"
+msgstr "განლაგება"
+
+#: ../../../lib/web/src/components/learn-more.tsx:27
+msgid "Learn more"
+msgstr "შეიტყვეთ მეტი"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:341
+msgid "Left to Right"
+msgstr "მარცხნიდან მარჯვნივ"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:200
+#: ../../../lib/web/src/lib/preference-utils.ts:16
+msgid "Light"
+msgstr "ღია"
+
+#: src/features/user/preferences.tsx:124
+msgid "Light or dark mode"
+msgstr "ღია ან მუქი რეჟიმი"
+
+#: src/features/wiki/markdown-content.tsx:154
+msgid "Link to {headingText}"
+msgstr "ბმული {headingText}-ზე"
+
+#: src/features/wiki/attachments-page.tsx:343
+#: src/features/wiki/attachments-page.tsx:344
+msgid "List view"
+msgstr "სიის ხედი"
+
+#: ../../../lib/web/src/components/ui/load-more.tsx:32
+msgid "Load more"
+msgstr "მეტის ჩატვირთვა"
+
+#: ../../../lib/web/src/components/ui/load-more.tsx:32
+msgid "Loading…"
+msgstr "იტვირთება…"
+
+#: ../../../lib/web/src/components/layout/nav-user.tsx:98
+#: ../../../lib/web/src/components/layout/nav-user.tsx:164
+#: ../../../lib/web/src/components/layout/nav-user.tsx:212
+#: ../../../lib/web/src/components/profile-dropdown.tsx:66
+#: ../../../lib/web/src/components/profile-dropdown.tsx:95
+#: ../../../lib/web/src/components/sign-out-dialog.tsx:23
+#: ../../../lib/web/src/components/sign-out-dialog.tsx:25
+msgid "Log out"
+msgstr "გასვლა"
+
+#: ../../../lib/web/src/hooks/use-logout.ts:16
+msgid "Logged out (with errors)"
+msgstr "გასული (შეცდომებით)"
+
+#: ../../../lib/web/src/hooks/use-logout.ts:14
+msgid "Logged out successfully"
+msgstr "წარმატებით გავიდა"
+
+#: ../../../lib/web/src/components/sign-out-dialog.tsx:25
+msgid "Logging out…"
+msgstr "გასვლა…"
+
+#: src/features/user/account.tsx:167
+msgid "Login requirements"
+msgstr "შესვლის მოთხოვნები"
+
+#: src/features/user/account.tsx:157
+msgid "Login requirements updated"
+msgstr "შესვლის მოთხოვნები განახლდა"
+
+#: src/features/user/account.tsx:677
+msgid "Make sure to save the new codes."
+msgstr "დარწმუნდით, რომ შეინახეთ ახალი კოდები."
+
+#: src/features/user/preferences.tsx:82
+msgid "Manage your display settings and preferences"
+msgstr "მართეთ თქვენი ჩვენების პარამეტრები და უპირატესობები"
+
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:86
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:220
+msgid "Mark all as read"
+msgstr "ყველას წაკითხულად მონიშვნა"
+
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:152
+msgid "Menu"
+msgstr "მენიუ"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:82
+msgid "Metric"
+msgstr "მეტრიკული"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:56
+msgid "Monday"
+msgstr "ორშაბათი"
+
+#: src/features/user/account.tsx:417
+msgid "My passkey"
+msgstr "ჩემი passkey"
+
+#: src/features/wiki/page-editor.tsx:292
+msgid "my-page-name"
+msgstr "დაჩუმებული"
+
+#: src/features/user/account.tsx:106
+#: src/features/user/account.tsx:452
+#: src/features/wiki/attachments-page.tsx:321
+#: src/features/wiki/wiki-settings.tsx:453
+msgid "Name"
+msgstr "სახელი"
+
+#: src/features/wiki/wiki-settings.tsx:292
+msgid "Name cannot contain < or > characters"
+msgstr "სახელი ვერ შეიცავს < ან > სიმბოლოებს"
+
+#: src/features/wiki/wiki-settings.tsx:291
+msgid "Name must be 100 characters or less"
+msgstr "სახელი უნდა იყოს 100 სიმბოლო ან ნაკლები"
+
+#: src/features/user/account.tsx:297
+#: src/features/user/sessions.tsx:70
+#: src/features/user/sessions.tsx:73
+#: src/features/wiki/wiki-settings.tsx:855
+msgid "Never"
+msgstr "არასოდეს"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx:40
+msgid "New"
+msgstr "ახალი"
+
+#: src/features/wiki/wiki-page-content.tsx:191
+#: src/features/wiki/wiki-page-content.tsx:312
+#: src/routes/_authenticated/$page/index.tsx:130
+#: src/routes/_authenticated/$page/index.tsx:241
+#: src/routes/_authenticated/$wikiId/new.tsx:19
+#: src/routes/_authenticated/$wikiId/new.tsx:26
+#: src/routes/_authenticated/index.tsx:437
+#: src/routes/_authenticated/new.tsx:19
+#: src/routes/_authenticated/new.tsx:26
+msgid "New page"
+msgstr "ახალი გვერდი"
+
+#: src/features/wiki/rename-page-dialog.tsx:98
+msgid "New URL"
+msgstr "ახალი URL"
+
+#: src/features/wiki/rename-page-dialog.tsx:51
+msgid "New URL is required"
+msgstr "ახალი URL აუცილებელია"
+
+#: src/features/wiki/rename-page-dialog.tsx:55
+msgid "New URL must be different from current URL"
+msgstr "ახალი URL უნდა განსხვავდებოდეს მიმდინარე URL-ისგან"
+
+#: src/features/wiki/redirects-page.tsx:243
+#: src/features/wiki/wiki-settings.tsx:1129
+msgid "new-page-name"
+msgstr "my-page-name"
+
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:342
+msgid "Next image"
+msgstr "შემდეგი სურათი"
+
+#: src/features/wiki/wiki-settings.tsx:615
+msgid "No access"
+msgstr "წვდომა არ არის"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:156
+msgid "No access rules configured. Add rules to control who can access this resource."
+msgstr "წვდომის წესები არ არის კონფიგურირებული. დაამატეთ წესები იმის მართვისთვის, თუ ვის აქვს წვდომა ამ რესურსზე."
+
+#: src/features/user/sessions.tsx:136
+msgid "No active sessions"
+msgstr "აქტიური სესიები არ არის"
+
+#: src/features/wiki/attachments-page.tsx:372
+msgid "No attachments match your search"
+msgstr "თქვენი ძიების შესაბამისი დანართები არ არის"
+
+#: src/features/wiki/attachments-page.tsx:372
+#: src/features/wiki/page-editor.tsx:394
+msgid "No attachments yet"
+msgstr "დანართები ჯერ არ არის"
+
+#: src/features/wiki/changes-list.tsx:34
+msgid "No changes yet"
+msgstr "ცვლილებები ჯერ არ არის"
+
+#: src/features/user/account.tsx:667
+msgid "No codes"
+msgstr "კოდები არ არის"
+
+#: src/features/wiki/page-comments.tsx:90
+msgid "No comments yet"
+msgstr "კომენტარები ჯერ არ არის"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:287
+msgid "No connected accounts"
+msgstr "დაკავშირებული ანგარიშები არ არის"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:238
+msgid "No groups available"
+msgstr "ხელმისაწვდომი ჯგუფები არ არის"
+
+#: ../../../lib/web/src/components/language-picker.tsx:177
+msgid "No matches."
+msgstr "დამთხვევები არ არის."
+
+#: src/features/wiki/search-page.tsx:82
+msgid "No pages found for \"{debouncedQuery}\""
+msgstr "გვერდები ვერ მოიძებნა \"{debouncedQuery}\"-სთვის"
+
+#: src/features/wiki/tag-pages.tsx:48
+msgid "No pages found with this tag"
+msgstr "ამ ტეგით გვერდები ვერ მოიძებნა"
+
+#: src/features/user/account.tsx:445
+msgid "No passkeys registered"
+msgstr "passkey-ები არ არის რეგისტრირებული"
+
+#: ../../../lib/web/src/components/place-picker.tsx:129
+msgid "No places found"
+msgstr "ადგილები ვერ მოიძებნა"
+
+#: ../../../lib/web/src/components/profile-dropdown.tsx:55
+msgid "No profile"
+msgstr "პროფილი არ არის"
+
+#: src/features/wiki/redirects-page.tsx:75
+#: src/features/wiki/wiki-settings.tsx:976
+msgid "No redirects configured"
+msgstr "გადამისამართებები არ არის კონფიგურირებული"
+
+#: src/features/wiki/wiki-settings.tsx:820
+#: src/features/wiki/wiki-settings.tsx:900
+msgid "No replicas yet"
+msgstr "რეპლიკები ჯერ არ არის"
+
+#: ../../../lib/web/src/components/command-menu.tsx:52
+#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:87
+msgid "No results found."
+msgstr "შედეგები ვერ მოიძებნა."
+
+#: src/features/wiki/page-history.tsx:42
+msgid "No revisions found"
+msgstr "რევიზიები ვერ მოიძებნა"
+
+#: src/features/wiki/tags-list.tsx:32
+msgid "No tags found"
+msgstr "ტეგები ვერ მოიძებნა"
+
+#: ../../../lib/web/src/components/timezone-select.tsx:64
+msgid "No time zone found."
+msgstr "დროის სარტყელი ვერ მოიძებნა."
+
+#: ../../../lib/web/src/components/notification-category-button.tsx:135
+msgid "No topic record yet — try again after the next notification."
+msgstr "თემის ჩანაწერი ჯერ არ არის — სცადეთ ხელახლა შემდეგი შეტყობინების შემდეგ."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:203
+msgid "No users found"
+msgstr "მომხმარებლები ვერ მოიძებნა"
+
+#: src/features/wiki/inline-wiki-search.tsx:121
+#: src/routes/_authenticated/find.tsx:89
+msgid "No wikis found"
+msgstr "ვიკიები ვერ მოიძებნა"
+
+#: ../../../lib/web/src/components/person-picker.tsx:349
+msgid "None"
+msgstr "არცერთი"
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:132
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:146
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:247
+msgid "Notifications"
+msgstr "შეტყობინებები"
+
+#: src/features/wiki/redirects-page.tsx:231
+#: src/features/wiki/wiki-settings.tsx:1117
+msgid "old-page-name"
+msgstr "{totalFormatted}-დან"
+
+#: src/features/wiki/page-view.tsx:79
+#: src/features/wiki/page-view.tsx:94
+msgid "On this page"
+msgstr "ამ გვერდზე"
+
+#: ../../../lib/web/src/features/errors/not-found-error.tsx:12
+msgid "Oops! Page Not Found!"
+msgstr "უპს! გვერდი ვერ მოიძებნა!"
+
+#: src/features/wiki/attachments-page.tsx:578
+msgid "Open"
+msgstr "გახსნა"
+
+#. placeholder {0}: wiki.name
+#: src/routes/_authenticated/index.tsx:776
+msgid "Open {0}"
+msgstr "{0}-ის გახსნა"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:150
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:151
+msgid "Open account actions"
+msgstr "ანგარიშის მოქმედებების გახსნა"
+
+#: src/features/wiki/attachments-page.tsx:577
+msgid "Open attachment"
+msgstr "დანართის გახსნა"
+
+#: src/components/value-link-chip.tsx:32
+msgid "Open link"
+msgstr "ბმულის გახსნა"
+
+#: src/components/value-link-chip.tsx:29
+#: src/components/value-link-chip.tsx:29
+msgid "Open link in new tab"
+msgstr "ბმულის ახალ ჩანართში გახსნა"
+
+#: ../../../lib/web/src/components/layout/top-bar.tsx:57
+msgid "Open navigation"
+msgstr "ნავიგაციის გახსნა"
+
+#: ../../../lib/web/src/components/layout/top-nav.tsx:32
+#: ../../../lib/web/src/components/layout/top-nav.tsx:33
+msgid "Open navigation menu"
+msgstr "ნავიგაციის მენიუს გახსნა"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:51
+msgid "Open theme settings"
+msgstr "თემის პარამეტრების გახსნა"
+
+#: src/routes/_authenticated/join.tsx:88
+msgid "Or enter ID directly"
+msgstr "ან შეიყვანეთ ID პირდაპირ"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:163
+msgid "Other"
+msgstr "სხვა"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:213
+msgid "Owner"
+msgstr "მფლობელი"
+
+#: src/features/wiki/changes-list.tsx:42
+#: src/features/wiki/wiki-page-content.tsx:242
+#: src/routes/_authenticated/$page/index.tsx:181
+#: src/routes/_authenticated/index.tsx:371
+msgid "Page"
+msgstr "გვერდი"
+
+#: src/routes/_authenticated/$page/delete.tsx:67
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:80
+msgid "Page \"{slug}\" does not exist"
+msgstr "გვერდი \"{slug}\" არ არსებობს"
+
+#: src/features/wiki/delete-page.tsx:32
+msgid "Page \"{title}\" deleted"
+msgstr "გვერდი \"{title}\" წაიშალა"
+
+#: src/features/wiki/wiki-page-content.tsx:172
+#: src/features/wiki/wiki-page-content.tsx:173
+#: src/features/wiki/wiki-page-content.tsx:234
+#: src/features/wiki/wiki-page-content.tsx:235
+#: src/routes/_authenticated/$page/index.tsx:110
+#: src/routes/_authenticated/$page/index.tsx:111
+#: src/routes/_authenticated/$page/index.tsx:173
+#: src/routes/_authenticated/$page/index.tsx:174
+#: src/routes/_authenticated/index.tsx:363
+#: src/routes/_authenticated/index.tsx:364
+msgid "Page actions"
+msgstr "გვერდის მოქმედებები"
+
+#: src/features/wiki/page-editor.tsx:150
+msgid "Page created"
+msgstr "გვერდი შეიქმნა"
+
+#: src/features/wiki/page-view.tsx:285
+#: src/features/wiki/wiki-page-content.tsx:213
+#: src/routes/_authenticated/$page/index.tsx:152
+#: src/routes/_authenticated/index.tsx:344
+msgid "Page not found"
+msgstr "გვერდი ვერ მოიძებნა"
+
+#: src/features/wiki/page-editor.tsx:167
+msgid "Page saved"
+msgstr "გვერდი შენახულია"
+
+#: src/features/wiki/page-editor.tsx:310
+msgid "Page title"
+msgstr "გვერდის სათაური"
+
+#: src/features/wiki/page-editor.tsx:287
+msgid "Page URL"
+msgstr "გვერდის URL"
+
+#: src/features/wiki/page-editor.tsx:142
+msgid "Page URL is required"
+msgstr "გვერდის URL აუცილებელია"
+
+#: src/features/wiki/tag-pages.tsx:22
+msgid "Pages tagged <0>{tag}</0>"
+msgstr "გვერდები ტეგით <0>{tag}</0>"
+
+#: src/features/user/account.tsx:183
+#: src/features/user/account.tsx:355
+msgid "Passkey"
+msgstr "Passkey"
+
+#: src/features/user/account.tsx:383
+msgid "Passkey deleted"
+msgstr "Passkey წაიშალა"
+
+#: src/features/user/account.tsx:414
+msgid "Passkey name"
+msgstr "Passkey-ის სახელი"
+
+#: src/features/user/account.tsx:357
+msgid "Passkey registered"
+msgstr "Passkey რეგისტრირებულია"
+
+#: src/features/user/account.tsx:375
+msgid "Passkey renamed"
+msgstr "Passkey-ის სახელი შეიცვალა"
+
+#: src/features/user/account.tsx:394
+msgid "Passkeys"
+msgstr "Passkey-ები"
+
+#: src/features/wiki/wiki-settings.tsx:580
+msgid "Permanently delete this wiki and all its contents. This cannot be undone."
+msgstr "სამუდამოდ წაშალეთ ეს ვიკი და მთელი მისი შინაარსი. ეს ვერ გაუქმდება."
+
+#: src/features/user/preferences.tsx:55
+msgid "Preference updated"
+msgstr "უპირატესობა განახლდა"
+
+#: src/features/user/preferences.tsx:41
+#: src/features/user/preferences.tsx:77
+msgid "Preferences"
+msgstr "უპირატესობები"
+
+#: src/features/user/preferences.tsx:67
+msgid "Preferences reset to defaults"
+msgstr "უპირატესობები გადაყენდა ნაგულისხმევზე"
+
+#: src/features/wiki/page-editor.tsx:213
+msgid "Preview"
+msgstr "გადახედვა"
+
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:332
+msgid "Previous image"
+msgstr "წინა სურათი"
+
+#: src/features/user/account.tsx:680
+msgid "Proceed"
+msgstr "გაგრძელება"
+
+#: ../../../lib/web/src/components/layout/nav-user.tsx:134
+#: ../../../lib/web/src/components/profile-dropdown.tsx:111
+msgid "Profile"
+msgstr "პროფილი"
+
+#: src/features/wiki/revert-page.tsx:75
+msgid "Reason for reverting"
+msgstr "დაბრუნების მიზეზი"
+
+#: src/features/user/account.tsx:224
+msgid "Receive a verification code by email"
+msgstr "მიიღეთ გადამოწმების კოდი ელფოსტით"
+
+#: src/features/wiki/changes-list.tsx:20
+#: src/features/wiki/wiki-page-content.tsx:294
+#: src/routes/_authenticated/$page/index.tsx:234
+#: src/routes/_authenticated/$wikiId/changes.tsx:17
+#: src/routes/_authenticated/$wikiId/changes.tsx:23
+#: src/routes/_authenticated/$wikiId/changes.tsx:34
+#: src/routes/_authenticated/$wikiId/changes.tsx:44
+#: src/routes/_authenticated/changes.tsx:16
+#: src/routes/_authenticated/changes.tsx:22
+#: src/routes/_authenticated/changes.tsx:33
+#: src/routes/_authenticated/changes.tsx:43
+#: src/routes/_authenticated/index.tsx:409
+msgid "Recent changes"
+msgstr "ბოლო ცვლილებები"
+
+#: src/features/wiki/changes-list.tsx:24
+msgid "Recent edits across all pages in this wiki."
+msgstr "ბოლო რედაქტირებები ამ ვიკის ყველა გვერდზე."
+
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:216
+#: ../../../lib/web/src/components/search-entity-page.tsx:191
+msgid "Recommended"
+msgstr "რეკომენდებული"
+
+#: src/routes/_authenticated/index.tsx:712
+msgid "Recommended wikis"
+msgstr "რეკომენდებული ვიკიები"
+
+#: src/features/user/account.tsx:668
+msgid "Recovery codes"
+msgstr "აღდგენის კოდები"
+
+#: src/features/user/account.tsx:630
+msgid "Recovery Codes"
+msgstr "აღდგენის კოდები"
+
+#. placeholder {0}: redirect.source
+#: src/features/wiki/redirects-page.tsx:109
+msgid "Redirect \"{0}\" deleted"
+msgstr "გადამისამართება \"{0}\" წაიშალა"
+
+#: src/features/wiki/wiki-settings.tsx:951
+msgid "Redirect \"{source}\" deleted"
+msgstr "გადამისამართება \"{source}\" წაიშალა"
+
+#: src/features/wiki/redirects-page.tsx:193
+#: src/features/wiki/wiki-settings.tsx:1082
+msgid "Redirect created"
+msgstr "გადამისამართება შეიქმნა"
+
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:130
+msgid "Redirecting to login."
+msgstr "შესვლის გვერდზე გადამისამართება."
+
+#: src/features/wiki/redirects-page.tsx:64
+#: src/features/wiki/wiki-settings.tsx:94
+#: src/features/wiki/wiki-settings.tsx:964
+#: src/routes/_authenticated/redirects.tsx:15
+#: src/routes/_authenticated/redirects.tsx:18
+msgid "Redirects"
+msgstr "გადამისამართებები"
+
+#: ../../../lib/web/src/components/post-tags.tsx:175
+msgid "Reduce interest"
+msgstr "ინტერესის შემცირება"
+
+#: src/features/user/account.tsx:673
+msgid "Regenerate"
+msgstr "ხელახალი გენერაცია"
+
+#: src/features/user/account.tsx:676
+msgid "Regenerate?"
+msgstr "ხელახლა შევქმნათ?"
+
+#: src/features/user/account.tsx:425
+msgid "Register"
+msgstr "რეგისტრაცია"
+
+#: src/features/user/account.tsx:187
+msgid "Register a passkey below to enable"
+msgstr "დაარეგისტრირეთ passkey ქვემოთ ჩასართავად"
+
+#: src/features/user/account.tsx:408
+msgid "Register passkey"
+msgstr "passkey-ის რეგისტრაცია"
+
+#: src/features/user/account.tsx:362
+msgid "Registration cancelled"
+msgstr "რეგისტრაცია გაუქმდა"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:47
+msgid "Relative (5m, 3h, 2d)"
+msgstr "ფარდობითი (5წ, 3ს, 2დ)"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:46
+msgid "Relative within 24 hours, else absolute"
+msgstr "ფარდობითი 24 საათში, წინააღმდეგ შემთხვევაში აბსოლუტური"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:257
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:172
+#: src/features/wiki/wiki-settings.tsx:887
+msgid "Remove"
+msgstr "წაშლა"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:241
+#: ../../../lib/web/src/features/access/access-list.tsx:242
+msgid "Remove access rule"
+msgstr "წვდომის წესის წაშლა"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:249
+msgid "Remove access?"
+msgstr "წვდომის წაშლა?"
+
+#: ../../../lib/web/src/components/post-tags.tsx:190
+msgid "Remove interest"
+msgstr "ინტერესის წაშლა"
+
+#. placeholder {0}: replica.name || replica.id
+#: src/features/wiki/wiki-settings.tsx:865
+#: src/features/wiki/wiki-settings.tsx:866
+msgid "Remove replica {0}"
+msgstr "რეპლიკის წაშლა {0}"
+
+#: src/features/wiki/wiki-settings.tsx:873
+msgid "Remove replica?"
+msgstr "რეპლიკის წაშლა?"
+
+#: src/features/wiki/rename-page-dialog.tsx:126
+#: src/features/wiki/rename-page-dialog.tsx:149
+#: src/features/wiki/wiki-page-content.tsx:254
+#: src/routes/_authenticated/$page/index.tsx:193
+#: src/routes/_authenticated/index.tsx:383
+msgid "Rename"
+msgstr "სახელის შეცვლა"
+
+#: src/features/wiki/rename-page-dialog.tsx:94
+msgid "Rename page"
+msgstr "გვერდის სახელის შეცვლა"
+
+#: src/features/wiki/rename-page-dialog.tsx:126
+msgid "Renaming..."
+msgstr "სახელის შეცვლა..."
+
+#. placeholder {0}: name || `${replicaId.slice(0, 12)}...`
+#: src/features/wiki/wiki-settings.tsx:775
+msgid "Replica \"{0}\" removed"
+msgstr "რეპლიკა \"{0}\" წაიშალა"
+
+#: src/features/wiki/wiki-settings.tsx:96
+#: src/features/wiki/wiki-settings.tsx:788
+#: src/features/wiki/wiki-settings.tsx:801
+#: src/features/wiki/wiki-settings.tsx:815
+#: src/features/wiki/wiki-settings.tsx:832
+msgid "Replicas"
+msgstr "რეპლიკები"
+
+#: src/routes/_authenticated/join.tsx:28
+#: src/routes/_authenticated/join.tsx:57
+#: src/routes/_authenticated/join.tsx:64
+#: src/routes/_authenticated/join.tsx:117
+msgid "Replicate wiki"
+msgstr "ვიკის რეპლიკაცია"
+
+#: src/routes/_authenticated/join.tsx:117
+msgid "Replicating..."
+msgstr "რეპლიკაცია..."
+
+#: src/features/wiki/wiki-comment-thread.tsx:162
+msgid "Reply"
+msgstr "პასუხი"
+
+#. placeholder {0}: comment.name || comment.author
+#: src/features/wiki/wiki-comment-thread.tsx:196
+msgid "Reply to {0}..."
+msgstr "პასუხი {0}-ს..."
+
+#: src/features/wiki/wiki-page-content.tsx:156
+msgid "Request URL: {baseURL}{slug}"
+msgstr "მოთხოვნის URL: {baseURL}{slug}"
+
+#: src/features/user/account.tsx:168
+msgid "Require all selected methods to log in"
+msgstr "შესვლისთვის ყველა არჩეული მეთოდის მოთხოვნა"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:77
+#: src/features/user/preferences.tsx:110
+msgid "Reset"
+msgstr "გადაყენება"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:75
+msgid "Reset all settings to default values"
+msgstr "ყველა პარამეტრის გადაყენება ნაგულისხმევ მნიშვნელობებზე"
+
+#: src/features/user/preferences.tsx:102
+msgid "Reset preferences?"
+msgstr "უპირატესობების გადაყენება?"
+
+#: src/features/user/preferences.tsx:97
+msgid "Reset to defaults"
+msgstr "ნაგულისხმევზე გადაყენება"
+
+#: src/features/wiki/revert-page.tsx:100
+msgid "Revert"
+msgstr "დაბრუნება"
+
+#: src/features/wiki/revert-page.tsx:70
+msgid "Revert comment"
+msgstr "კომენტარის დაბრუნება"
+
+#: src/features/wiki/revert-page.tsx:58
+msgid "Revert Page"
+msgstr "გვერდის დაბრუნება"
+
+#: src/features/wiki/page-history.tsx:119
+#: src/features/wiki/revision-view.tsx:61
+#: src/features/wiki/revision-view.tsx:66
+msgid "Revert to this version"
+msgstr "ამ ვერსიაზე დაბრუნება"
+
+#: src/routes/_authenticated/$page/revert.tsx:26
+#: src/routes/_authenticated/$page/revert.tsx:38
+#: src/routes/_authenticated/$page/revert.tsx:48
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:27
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:39
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:49
+msgid "Revert: {slug}"
+msgstr "დაბრუნება: {slug}"
+
+#: src/features/wiki/revert-page.tsx:31
+#: src/features/wiki/revert-page.tsx:38
+msgid "Reverted to version {version}"
+msgstr "დაბრუნდა ვერსიაზე {version}"
+
+#: src/features/wiki/revert-page.tsx:100
+msgid "Reverting..."
+msgstr "დაბრუნება..."
+
+#: src/features/user/sessions.tsx:104
+msgid "Revoke"
+msgstr "გაუქმება"
+
+#: src/features/user/sessions.tsx:88
+msgid "Revoke session"
+msgstr "სესიის გაუქმება"
+
+#: src/features/user/sessions.tsx:93
+msgid "Revoke session?"
+msgstr "სესიის გაუქმება?"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:348
+msgid "Right to Left"
+msgstr "მარჯვნიდან მარცხნივ"
+
+#: ../../../lib/web/src/components/data-table/pagination.tsx:60
+msgid "Rows per page"
+msgstr "სტრიქონები გვერდზე"
+
+#: src/features/wiki/wiki-page-content.tsx:300
+#: src/routes/_authenticated/index.tsx:415
+#: src/routes/_authenticated/index.tsx:646
+msgid "RSS feed"
+msgstr "RSS ფიდი"
+
+#: src/features/wiki/wiki-page-content.tsx:115
+#: src/routes/_authenticated/index.tsx:303
+#: src/routes/_authenticated/index.tsx:553
+msgid "RSS URL copied to clipboard"
+msgstr "RSS URL დაკოპირდა"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:61
+msgid "Saturday"
+msgstr "შაბათი"
+
+#: src/features/wiki/page-editor.tsx:266
+#: src/features/wiki/wiki-comment-thread.tsx:134
+msgid "Save"
+msgstr "შენახვა"
+
+#: src/features/wiki/wiki-settings.tsx:566
+msgid "Save changes"
+msgstr "ცვლილებების შენახვა"
+
+#: src/features/user/account.tsx:641
+msgid "Save these codes"
+msgstr "შეინახეთ ეს კოდები"
+
+#: src/features/wiki/page-editor.tsx:266
+#: src/features/wiki/wiki-settings.tsx:566
+msgid "Saving..."
+msgstr "შენახვა..."
+
+#: src/features/wiki/wiki-page-content.tsx:282
+#: src/routes/_authenticated/$page/index.tsx:222
+#: src/routes/_authenticated/index.tsx:397
+#: src/routes/_authenticated/search.tsx:21
+#: src/routes/_authenticated/search.tsx:26
+msgid "Search"
+msgstr "ძიება"
+
+#: src/features/wiki/attachments-page.tsx:282
+msgid "Search attachments..."
+msgstr "დანართების ძიება..."
+
+#: src/routes/_authenticated/find.tsx:88
+msgid "Search by name, ID, fingerprint, or URL..."
+msgstr "ძიება სახელით, ID-ით, fingerprint-ით ან URL-ით..."
+
+#: ../../../lib/web/src/components/place-picker.tsx:82
+msgid "Search for a place"
+msgstr "ადგილის ძიება"
+
+#: src/routes/_authenticated/index.tsx:688
+msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
+msgstr "მოძებნეთ ვიკი გამოსაწერად ან შექმენით ერთი თქვენი დოკუმენტაციის გამოსაქვეყნებლად."
+
+#: ../../../lib/web/src/components/travelling-picker.tsx:234
+msgid "Search for destination..."
+msgstr "დანიშნულების ძიება..."
+
+#: ../../../lib/web/src/components/travelling-picker.tsx:173
+msgid "Search for origin..."
+msgstr "წყაროს ძიება..."
+
+#: src/routes/_authenticated/join.tsx:67
+msgid "Search for public wikis or enter an entity ID directly."
+msgstr "მოძებნეთ საჯარო ვიკიები ან შეიყვანეთ პირის ID პირდაპირ."
+
+#: src/features/wiki/inline-wiki-search.tsx:94
+#: src/routes/_authenticated/join.tsx:78
+msgid "Search for wikis..."
+msgstr "ვიკიების ძიება..."
+
+#: src/features/wiki/search-page.tsx:72
+msgid "Search pages by title or content."
+msgstr "გვერდების ძიება სათაურით ან შინაარსით."
+
+#: src/features/wiki/search-page.tsx:58
+msgid "Search pages by title or content..."
+msgstr "გვერდების ძიება სათაურით ან შინაარსით..."
+
+#: ../../../lib/web/src/components/timezone-select.tsx:62
+msgid "Search time zone..."
+msgstr "დროის სარტყლის ძიება..."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:170
+msgid "Search users"
+msgstr "მომხმარებლების ძიება"
+
+#: src/features/wiki/search-page.tsx:49
+msgid "Search Wiki"
+msgstr "ვიკის ძიება"
+
+#: ../../../lib/web/src/components/person-picker.tsx:323
+msgid "Search..."
+msgstr "ძიება..."
+
+#: ../../../lib/web/src/components/language-picker.tsx:175
+msgid "Search…"
+msgstr "ძიება…"
+
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/search-entity-page.tsx:149
+#: ../../../lib/web/src/features/access/access-dialog.tsx:199
+msgid "Searching..."
+msgstr "ძიება..."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:147
+msgid "Select a user, group, or other rule to grant access."
+msgstr "აირჩიეთ მომხმარებელი, ჯგუფი ან სხვა წესი წვდომის გადასაცემად."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:270
+msgid "Select access rule"
+msgstr "წვდომის წესის არჩევა"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:126
+msgid "Select account type"
+msgstr "ანგარიშის ტიპის არჩევა"
+
+#: src/features/wiki/page-editor.tsx:348
+msgid "Select an attachment to insert into your page, or upload a new file."
+msgstr "აირჩიეთ დანართი თქვენს გვერდზე ჩასასმელად ან ატვირთეთ ახალი ფაილი."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:228
+msgid "Select group"
+msgstr "აირჩიეთ ჯგუფი"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:291
+msgid "Select layout style"
+msgstr "აირჩიეთ განლაგების სტილი"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:233
+msgid "Select sidebar style"
+msgstr "აირჩიეთ გვერდითი პანელის სტილი"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:335
+msgid "Select site direction"
+msgstr "აირჩიეთ საიტის მიმართულება"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:189
+msgid "Select theme preference"
+msgstr "აირჩიეთ თემის პრიორიტეტი"
+
+#: src/features/wiki/comment-form.tsx:107
+msgid "Send comment"
+msgstr "კომენტარის გაგზავნა"
+
+#: src/features/wiki/wiki-comment-thread.tsx:262
+msgid "Send reply"
+msgstr "პასუხის გაგზავნა"
+
+#: src/features/user/sessions.tsx:144
+msgid "Session"
+msgstr "სესია"
+
+#: ../../../lib/web/src/lib/api-client.ts:224
+msgid "Session expired"
+msgstr "სესიის ვადა გავიდა"
+
+#: src/features/user/sessions.tsx:47
+msgid "Session revoked"
+msgstr "სესია გაუქმდა"
+
+#: src/features/user/sessions.tsx:116
+#: src/features/user/sessions.tsx:125
+msgid "Sessions"
+msgstr "სესიები"
+
+#: ../../../lib/web/src/components/travelling-picker.tsx:143
+msgid "Set origin and destination"
+msgstr "წყაროს და დანიშნულების დაყენება"
+
+#: src/features/user/account.tsx:207
+msgid "Set up an authenticator below to enable"
+msgstr "ქვემოთ დააყენეთ ავტენტიფიკატორი ჩასართავად"
+
+#: src/features/user/account.tsx:600
+msgid "Set up authenticator"
+msgstr "დააყენეთ ავტენტიფიკატორი"
+
+#: ../../../lib/web/src/components/layout/nav-user.tsx:81
+#: ../../../lib/web/src/components/layout/nav-user.tsx:145
+#: ../../../lib/web/src/components/layout/nav-user.tsx:195
+#: src/features/wiki/wiki-page-content.tsx:320
+#: src/features/wiki/wiki-settings.tsx:93
+#: src/routes/_authenticated/$page/index.tsx:249
+#: src/routes/_authenticated/index.tsx:445
+msgid "Settings"
+msgstr "პარამეტრები"
+
+#: src/features/wiki/wiki-settings.tsx:350
+#: src/features/wiki/wiki-settings.tsx:363
+msgid "Settings saved"
+msgstr "პარამეტრები შენახულია"
+
+#: ../../../lib/web/src/components/ui/load-more.tsx:36
+msgid "Showing {totalShown} of {total}"
+msgstr "ნაჩვენებია {totalShown} {total}-დან"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:225
+#: ../../../lib/web/src/components/config-drawer.tsx:249
+#: ../../../lib/web/src/components/ui/sidebar.tsx:234
+msgid "Sidebar"
+msgstr "გვერდითი პანელი"
+
+#: src/features/user/account.tsx:395
+msgid "Sign in with biometrics or security keys"
+msgstr "შესვლა ბიომეტრიით ან უსაფრთხოების გასაღებებით"
+
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:128
+msgid "Signing out..."
+msgstr "გასვლა მიმდინარეობს..."
+
+#: src/features/wiki/attachments-page.tsx:322
+msgid "Size"
+msgstr "ზომა"
+
+#: ../../../lib/web/src/components/skip-to-main.tsx:8
+msgid "Skip to Main"
+msgstr "ძირითადზე გადასვლა"
+
+#: src/features/wiki/attachments-page.tsx:317
+msgid "Sort"
+msgstr "დახარისხება"
+
+#: src/features/wiki/redirects-page.tsx:83
+#: src/features/wiki/wiki-settings.tsx:536
+#: src/features/wiki/wiki-settings.tsx:984
+msgid "Source"
+msgstr "წყარო"
+
+#: src/features/wiki/redirects-page.tsx:226
+#: src/features/wiki/wiki-settings.tsx:1112
+msgid "Source URL"
+msgstr "წყარო URL"
+
+#: src/routes/_authenticated/index.tsx:685
+msgid "Start your first wiki"
+msgstr "დაიწყეთ თქვენი პირველი ვიკი"
+
+#: src/features/user/account.tsx:577
+msgid "Status: Enabled"
+msgstr "სტატუსი: ჩართულია"
+
+#: ../../../lib/web/src/components/coming-soon.tsx:12
+msgid "Stay tuned though!"
+msgstr "თუმცა იყავით ფხიზლად!"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:187
+msgid "Subject"
+msgstr "თემა"
+
+#: src/features/wiki/inline-wiki-search.tsx:158
+#: src/routes/_authenticated/index.tsx:750
+msgid "Subscribe"
+msgstr "გამოწერა"
+
+#: src/features/wiki/wiki-settings.tsx:840
+msgid "Subscribed"
+msgstr "გამოწერილი"
+
+#: src/routes/_authenticated/index.tsx:796
+#: src/routes/_authenticated/index.tsx:797
+msgid "Subscribed wiki actions"
+msgstr "გამოწერილი ვიკის მოქმედებები"
+
+#: src/features/wiki/wiki-settings.tsx:526
+msgid "Subscription"
+msgstr "გამოწერა"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:62
+msgid "Sunday"
+msgstr "კვირა"
+
+#: src/features/wiki/wiki-settings.tsx:531
+msgid "Sync now"
+msgstr "ახლავე სინქრონიზება"
+
+#: src/features/wiki/wiki-settings.tsx:531
+msgid "Syncing..."
+msgstr "სინქრონიზება მიმდინარეობს..."
+
+#: ../../../lib/web/src/components/config-drawer.tsx:195
+#: ../../../lib/web/src/lib/preference-utils.ts:18
+msgid "System"
+msgstr "სისტემა"
+
+#: src/features/wiki/page-view.tsx:47
+msgid "Table of contents"
+msgstr "შინაარსი"
+
+#: ../../../lib/web/src/components/tag-input.tsx:91
+msgid "Tag"
+msgstr "ტეგი"
+
+#: src/features/wiki/tag-manager.tsx:44
+msgid "Tag \"{tag}\" added"
+msgstr "ტეგი \"{tag}\" დაემატა"
+
+#: src/features/wiki/tag-manager.tsx:60
+msgid "Tag \"{tag}\" removed"
+msgstr "ტეგი \"{tag}\" წაიშალა"
+
+#: src/features/wiki/tag-manager.tsx:36
+msgid "Tag already exists"
+msgstr "ტეგი უკვე არსებობს"
+
+#: src/routes/_authenticated/tag/$tag.tsx:18
+#: src/routes/_authenticated/tag/$tag.tsx:24
+#: src/routes/_authenticated/tag/$tag.tsx:35
+#: src/routes/_authenticated/tag/$tag.tsx:45
+msgid "Tag: {tag}"
+msgstr "ტეგი: {tag}"
+
+#: src/features/wiki/wiki-page-content.tsx:288
+#: src/routes/_authenticated/$page/index.tsx:228
+#: src/routes/_authenticated/index.tsx:403
+msgid "Tags"
+msgstr "ტეგები"
+
+#: src/features/wiki/redirects-page.tsx:85
+#: src/features/wiki/wiki-settings.tsx:986
+msgid "Target"
+msgstr "სამიზნე"
+
+#: src/features/wiki/redirects-page.tsx:238
+#: src/features/wiki/wiki-settings.tsx:1124
+msgid "Target URL"
+msgstr "სამიზნე URL"
+
+#: ../../../lib/web/src/components/layout/team-switcher.tsx:60
+msgid "Teams/Apps"
+msgstr "გუნდები/აპები"
+
+#: src/routes/_authenticated/join.tsx:103
+msgid "The entity ID of the wiki you want to replicate."
+msgstr "ვიკის ერთეულის ID, რომლის რეპლიცირებაც გსურთ."
+
+#: src/features/wiki/wiki-settings.tsx:1132
+msgid "The existing page to redirect to"
+msgstr "არსებული გვერდი, რომელზეც უნდა გადამისამართდეს"
+
+#: src/features/wiki/redirects-page.tsx:246
+msgid "The existing page to redirect to (e.g., \"new-page\")"
+msgstr "არსებული გვერდი, რომელზეც უნდა გადამისამართდეს (მაგ., \"new-page\")"
+
+#: src/features/wiki/page-view.tsx:286
+msgid "The page \"{slug}\" does not exist yet."
+msgstr "გვერდი \"{slug}\" ჯერ არ არსებობს."
+
+#: src/features/wiki/wiki-settings.tsx:547
+msgid "The page that users see when they first visit the wiki."
+msgstr "გვერდი, რომელიც მომხმარებლებს უჩვენდება, როდესაც პირველად შემოვლენ ვიკიში."
+
+#: src/features/wiki/wiki-settings.tsx:1120
+msgid "The URL that will be redirected"
+msgstr "URL, რომელიც გადამისამართდება"
+
+#: src/features/wiki/redirects-page.tsx:234
+msgid "The URL that will be redirected (e.g., \"old-page\")"
+msgstr "URL, რომელიც გადამისამართდება (მაგ., \"old-page\")"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:181
+msgid "Theme"
+msgstr "თემა"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:60
+msgid "Theme Settings"
+msgstr "თემის პარამეტრები"
+
+#: src/features/wiki/wiki-settings.tsx:596
+msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
+msgstr "ეს მოქმედება ვერ გაუქმდება. ის სამუდამოდ წაშლის ვიკის და მთელ მის შინაარსს."
+
+#: src/features/wiki/wiki-settings.tsx:527
+msgid "This wiki is subscribed to a source wiki and receives updates from it."
+msgstr "ეს ვიკი გამოწერილია წყარო ვიკიზე და იღებს განახლებებს მისგან."
+
+#: src/features/wiki/page-editor.tsx:295
+msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
+msgstr "ეს იქნება გვერდის გზა. გამოიყენეთ პატარა ასოები, რიცხვები და დეფისები."
+
+#. placeholder {0}: passkey.name
+#: src/features/user/account.tsx:314
+msgid "This will remove \"{0}\" from your account. You won't be able to use it to sign in anymore."
+msgstr "ეს წაშლის \"{0}\"-ს თქვენი ანგარიშიდან. ვეღარ შეძლებთ მისი გამოყენებით შესვლას."
+
+#: src/features/user/account.tsx:588
+msgid "This will remove the app from your account."
+msgstr "ეს წაშლის აპს თქვენი ანგარიშიდან."
+
+#. placeholder {0}: redirect.source
+#. placeholder {1}: redirect.target
+#: src/features/wiki/wiki-settings.tsx:1024
+msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
+msgstr "ეს წაშლის გადამისამართებას \"{0}\"-დან \"{1}\"-ზე."
+
+#. placeholder {0}: redirect.source
+#. placeholder {1}: redirect.target
+#: src/features/wiki/redirects-page.tsx:151
+msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the source URL will no longer be redirected."
+msgstr "ეს წაშლის გადამისამართებას \"{0}\"-დან \"{1}\"-ზე. წყარო URL-ის მნახველი მომხმარებლები აღარ გადამისამართდებიან."
+
+#: src/features/user/preferences.tsx:104
+msgid "This will reset all preferences to their default values."
+msgstr "ეს დააბრუნებს ყველა პარამეტრს ნაგულისხმევ მნიშვნელობებზე."
+
+#: src/features/user/sessions.tsx:95
+msgid "This will sign out this session. If this is your current session, you will need to sign in again."
+msgstr "ეს გასულს გახდის ამ სესიას. თუ ეს თქვენი მიმდინარე სესიაა, საჭირო იქნება ხელახლა შესვლა."
+
+#. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
+#: src/features/wiki/wiki-settings.tsx:875
+msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
+msgstr "ეს შეწყვეტს განახლებების გაგზავნას \"{0}\"-ზე. მათ შეუძლიათ ხელახალი რეპლიცირება, თუ მოისურვებენ."
+
+#: ../../../lib/web/src/lib/preference-utils.ts:59
+msgid "Thursday"
+msgstr "ხუთშაბათი"
+
+#: src/features/user/preferences.tsx:146
+msgid "Time zone"
+msgstr "დროის სარტყელი"
+
+#: src/features/wiki/page-editor.tsx:305
+#: src/features/wiki/page-history.tsx:50
+msgid "Title"
+msgstr "სათაური"
+
+#: src/features/wiki/page-editor.tsx:136
+msgid "Title is required"
+msgstr "სათაური სავალდებულოა"
+
+#: ../../../lib/web/src/components/data-table/view-options.tsx:34
+msgid "Toggle columns"
+msgstr "სვეტების გადართვა"
+
+#: ../../../lib/web/src/components/layout/right-panel.tsx:227
+msgid "Toggle Right Panel"
+msgstr "მარჯვენა პანელის გადართვა"
+
+#: ../../../lib/web/src/components/ui/sidebar.tsx:312
+#: ../../../lib/web/src/components/ui/sidebar.tsx:324
+#: ../../../lib/web/src/components/ui/sidebar.tsx:327
+msgid "Toggle Sidebar"
+msgstr "გვერდითი პანელის გადართვა"
+
+#: ../../../lib/web/src/components/theme-switch.tsx:31
+msgid "Toggle theme"
+msgstr "თემის გადართვა"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx:42
+msgid "Top"
+msgstr "ძალიან დიდი"
+
+#: ../../../lib/web/src/components/travelling-picker.tsx:141
+msgid "Travelling"
+msgstr "თარგმნე ინგლისურად და აჩვენე ჩამონათვალის სახით."
+
+#: src/features/wiki/attachments-page.tsx:377
+msgid "Try a different search term or filter."
+msgstr "სცადეთ სხვა ძიების ტერმინი"
+
+#: src/features/wiki/tag-pages.tsx:49
+msgid "Try a different tag."
+msgstr "სცადეთ სხვა ძიების ტერმინი ან ფილტრი."
+
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:190
+#: ../../../lib/web/src/components/search-entity-page.tsx:165
+msgid "Try adjusting your search terms"
+msgstr "სცადეთ ძიების კრიტერიუმების კორექტირება"
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:125
+#: ../../../lib/web/src/features/errors/general-error.tsx:165
+#: ../../../lib/web/src/features/errors/maintenance-error.tsx:15
+msgid "Try again"
+msgstr "სცადეთ ძიების ტერმინების კორექტირება"
+
+#: src/features/wiki/search-page.tsx:83
+msgid "Try different search terms."
+msgstr "სცადეთ თავიდან"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:57
+msgid "Tuesday"
+msgstr "სცადეთ სხვა ძიების ტერმინები."
+
+#: ../../../lib/web/src/components/command-menu.tsx:49
+msgid "Type a command or search..."
+msgstr "ტიპი"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:188
+msgid "Type to search users"
+msgstr "ჩაწერეთ შეტყობინება…"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:180
+msgid "Type to search..."
+msgstr "მომხმარებლების მოსაძებნად ჩაწერეთ"
+
+#: ../../../lib/web/src/lib/auth-manager.ts:82
+#: ../../../lib/web/src/lib/auth-manager.ts:94
+msgid "Unable to redirect to login. Please try again."
+msgstr "ვერსიის ინფორმაციის ჩატვირთვა ვერ ხერხდება"
+
+#: ../../../lib/web/src/components/notification-category-button.tsx:143
+msgid "Unassigned"
+msgstr "ფიდების სერვისთან სინქრონიზება ვერ ხერხდება. ნაჩვენებია ქეშირებული მონაცემები."
+
+#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:12
+msgid "Unauthorized Access"
+msgstr "უუფლებო"
+
+#: src/features/wiki/wiki-settings.tsx:451
+msgid "Unique identifiers for this wiki."
+msgstr "გაერთიანებული"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:84
+msgid "United States"
+msgstr "ამ ვიკის უნიკალური იდენტიფიკატორები."
+
+#: src/features/user/sessions.tsx:60
+msgid "Unknown device"
+msgstr "უცნობი ბრაუზერი"
+
+#: src/features/wiki/wiki-page-content.tsx:332
+#: src/features/wiki/wiki-page-content.tsx:353
+#: src/features/wiki/wiki-page-content.tsx:355
+#: src/routes/_authenticated/$page/index.tsx:214
+#: src/routes/_authenticated/$page/index.tsx:270
+#: src/routes/_authenticated/$page/index.tsx:272
+#: src/routes/_authenticated/index.tsx:456
+#: src/routes/_authenticated/index.tsx:483
+#: src/routes/_authenticated/index.tsx:485
+#: src/routes/_authenticated/index.tsx:808
+#: src/routes/_authenticated/index.tsx:826
+#: src/routes/_authenticated/index.tsx:828
+msgid "Unsubscribe"
+msgstr "ამოუცნობი ანგარიში"
+
+#: src/features/wiki/wiki-page-content.tsx:64
+#: src/routes/_authenticated/$page/index.tsx:63
+#: src/routes/_authenticated/index.tsx:283
+msgid "Unsubscribed"
+msgstr "გავაუქმოთ რეპოზიტორის გამოწერა?"
+
+#: src/features/wiki/wiki-page-content.tsx:332
+#: src/routes/_authenticated/$page/index.tsx:214
+#: src/routes/_authenticated/index.tsx:456
+#: src/routes/_authenticated/index.tsx:808
+msgid "Unsubscribing..."
+msgstr "{feedName}-ის გამოწერა გაუქმდა"
+
+#: src/features/wiki/page-editor.tsx:278
+msgid "Untitled"
+msgstr "შეჩერება მოხსნილია"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:131
+msgid "Unverified"
+msgstr "უსათაურო ლისტინგი"
+
+#. placeholder {0}: formatTimestamp(page.updated)
+#. placeholder {0}: formatTimestamp(result.updated)
+#: src/features/wiki/page-view.tsx:256
+#: src/features/wiki/search-page.tsx:124
+#: src/features/wiki/tag-pages.tsx:67
+msgid "Updated {0}"
+msgstr "განახლდა"
+
+#: src/features/wiki/page-editor.tsx:395
+msgid "Upload a file to get started."
+msgstr "ატვირთეთ .zip build ფაილი თქვენი აპლიკაციისთვის."
+
+#: src/features/wiki/attachments-page.tsx:269
+msgid "Upload files"
+msgstr "ფაილის ატვირთვა"
+
+#: src/features/wiki/page-editor.tsx:376
+msgid "Upload new"
+msgstr "ფაილების ატვირთვა"
+
+#: src/features/user/account.tsx:187
+msgid "Use a registered passkey to sign in"
+msgstr "სხვა ანგარიშის გამოყენება"
+
+#: src/features/user/account.tsx:410
+msgid "Use a security key, fingerprint, or face recognition."
+msgstr "გამოიყენეთ რეგისტრირებული passkey შესასვლელად"
+
+#: src/features/user/account.tsx:207
+msgid "Use an authenticator app code to sign in"
+msgstr "გამოიყენეთ უსაფრთხოების გასაღები, თითის ანაბეჭდი ან სახის ამოცნობა."
+
+#: src/features/user/account.tsx:529
+msgid "Use an authenticator app to generate one-time codes"
+msgstr "გამოიყენეთ ავტენტიფიკატორის აპის კოდი შესასვლელად"
+
+#: src/features/wiki/wiki-settings.tsx:552
+msgid "Use as home"
+msgstr "გამოიყენეთ ავტენტიფიკატორის აპი ერთჯერადი კოდების გენერირებისთვის"
+
+#: src/features/user/preferences.tsx:147
+msgid "Used for displaying dates and times"
+msgstr "გამოყენებული"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:155
+msgid "User"
+msgstr "გამოიყენება წასაკითხი ID-ებისთვის, როგორიცაა {0}-1, {1}-2"
+
+#: src/features/user/account.tsx:111
+msgid "Username"
+msgstr "მომხმარებელი განახლდა"
+
+#: ../../../lib/web/src/features/accounts/account-verify.tsx:68
+msgid "Verification code"
+msgstr "შემოწმება"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:247
+msgid "Verification code sent"
+msgstr "შემოწმების კოდი"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:240
+msgid "Verification failed"
+msgstr "შემოწმების კოდი გაიგზავნა"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:164
+msgid "Verify"
+msgstr "შემოწმებული"
+
+#: src/features/user/account.tsx:563
+msgid "Verify & enable"
+msgstr "შემოწმება"
+
+#: ../../../lib/web/src/features/accounts/account-verify.tsx:58
+msgid "Verify email address"
+msgstr "შემოწმება და ჩართვა"
+
+#: src/features/wiki/changes-list.tsx:43
+#: src/features/wiki/page-history.tsx:49
+msgid "Version"
+msgstr "passkey-ით შემოწმება"
+
+#. placeholder {0}: revision.version
+#: src/features/wiki/revision-view.tsx:32
+msgid "Version {0}"
+msgstr "ვერსია აიტვირთა"
+
+#: ../../../lib/web/src/components/data-table/view-options.tsx:30
+#: src/features/wiki/page-history.tsx:103
+msgid "View"
+msgstr "ვიდეოს ესკიზი"
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:173
+msgid "View all"
+msgstr "ნახვა"
+
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:94
+msgid "View all notifications"
+msgstr "ყველას ნახვა"
+
+#: src/features/wiki/wiki-settings.tsx:614
+msgid "View only"
+msgstr "ხედის კონტროლები"
+
+#: src/features/wiki/page-history.tsx:31
+msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
+msgstr "კიდევ {remaining} კომენტარის ნახვა"
+
+#: ../../../lib/web/src/features/errors/maintenance-error.tsx:12
+msgid "We'll be back online shortly."
+msgstr "ვერ ვიპოვეთ აპები თქვენთვის. ეს მოულოდნელია."
+
+#: ../../../lib/web/src/features/errors/maintenance-error.tsx:9
+msgid "Website is under maintenance!"
+msgstr "ჩვენ ვეძებთ ადრეულ მომხმარებლებს, რომლებიც სცდიან Mochi-ს და მოგვცემენ პატიოსან უკუკავშირს. ეს არის ვერსია 0.3, ასე რომ ხარვეზებიც აქვს, მაგრამ მზადაა ყოველდღიური გამოყენებისთვის."
+
+#: ../../../lib/web/src/lib/preference-utils.ts:58
+msgid "Wednesday"
+msgstr "ვებსაიტი ტექმომსახურებაშია!"
+
+#: src/features/wiki/wiki-settings.tsx:821
+#: src/features/wiki/wiki-settings.tsx:901
+msgid "When other wikis replicate this wiki, they will appear here."
+msgstr "კვირის დასაწყისი"
+
+#: src/components/layout/wiki-layout.tsx:106
+#: src/components/layout/wiki-layout.tsx:155
+#: src/features/wiki/wiki-page-content.tsx:86
+#: src/features/wiki/wiki-page-content.tsx:278
+#: src/routes/_authenticated/$page/index.tsx:218
+#: src/routes/_authenticated/$wikiId/settings.tsx:33
+#: src/routes/_authenticated/index.tsx:393
+#: src/routes/_authenticated/settings.tsx:32
+msgid "Wiki"
+msgstr "რატომ უნდა გადაიხედოს ეს ლისტინგი?"
+
+#: src/routes/_authenticated/index.tsx:635
+#: src/routes/_authenticated/index.tsx:636
+msgid "Wiki actions"
+msgstr "ვიკის ID სავალდებულოა"
+
+#: src/components/layout/wiki-layout.tsx:70
+msgid "Wiki created"
+msgstr "ვიკის მოქმედებები"
+
+#: src/features/wiki/wiki-settings.tsx:403
+#: src/features/wiki/wiki-settings.tsx:413
+msgid "Wiki deleted"
+msgstr "ვიკი შეიქმნა"
+
+#: src/routes/_authenticated/join.tsx:95
+msgid "Wiki entity ID"
+msgstr "ვიკი წაიშალა"
+
+#: src/routes/_authenticated/$wikiId/route.tsx:35
+#: src/routes/_authenticated/join.tsx:37
+msgid "Wiki ID is required"
+msgstr "ვიკი"
+
+#: src/features/wiki/wiki-settings.tsx:290
+msgid "Wiki name is required"
+msgstr "ვიკის ერთეულის ID"
+
+#: src/routes/_authenticated/$wikiId/route.tsx:70
+msgid "Wiki not found"
+msgstr "ვიკის სახელი სავალდებულოა"
+
+#: src/features/wiki/wiki-settings.tsx:326
+msgid "Wiki renamed"
+msgstr "ვიკი ვერ მოიძებნა"
+
+#: src/features/wiki/wiki-page-content.tsx:201
+#: src/routes/_authenticated/$page/index.tsx:140
+msgid "Wiki settings"
+msgstr "ვიკი გადაერქვა"
+
+#: src/features/wiki/wiki-settings.tsx:144
+msgid "Wiki settings sections"
+msgstr "ვიკის პარამეტრები"
+
+#: src/features/wiki/wiki-settings.tsx:379
+#: src/features/wiki/wiki-settings.tsx:389
+msgid "Wiki synced"
+msgstr "ვიკის პარამეტრების სექციები"
+
+#: src/routes/_authenticated/index.tsx:528
+#: src/routes/_authenticated/index.tsx:626
+msgid "Wikis"
+msgstr "ვიკი სინქრონიზდა"
+
+#: src/features/wiki/page-comments.tsx:85
+msgid "Write a comment..."
+msgstr "ჩამოყალიბებული სიტყვები"
+
+#: src/features/wiki/page-editor.tsx:322
+msgid "Write your content here using Markdown..."
+msgstr "დაწერეთ კომენტარი..."
+
+#: src/features/wiki/delete-page.tsx:54
+msgid "You are about to delete the page <0>\"{title}\"</0> ({slug}). This action can be undone by restoring from history."
+msgstr "უკვე გაქვთ ჩატები მათთან:"
+
+#: src/features/wiki/revert-page.tsx:61
+msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
+msgstr "თქვენ აპირებთ წაშალოთ გვერდი <0>\"{title}\"</0> ({slug}). ეს მოქმედება შეიძლება გაუქმდეს ისტორიიდან აღდგენით."
+
+#: src/features/user/sessions.tsx:137
+msgid "Your active sessions will appear here."
+msgstr "თქვენი ანგარიში მოითხოვს passkey-ს შესასვლელად"
+
+#: src/features/user/account.tsx:93
+msgid "Your personal account information"
+msgstr "თქვენი ანაზღაურება"

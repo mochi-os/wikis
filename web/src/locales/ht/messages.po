@@ -1,0 +1,2815 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-05-08 12:06+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ht\n"
+
+#: src/features/user/sessions.tsx:63
+msgid "(current)"
+msgstr "(aktyèl)"
+
+#: src/features/wiki/wiki-comment-thread.tsx:108
+msgid "(edited)"
+msgstr "(edite)"
+
+#: src/features/wiki/wiki-comment-thread.tsx:94
+msgid "(expand)"
+msgstr "(elaji)"
+
+#. placeholder {0}: fileArray.length
+#. placeholder {0}: files.length
+#: src/features/wiki/attachments-page.tsx:123
+#: src/features/wiki/page-editor.tsx:125
+msgid "{0, plural, one {# file uploaded} other {# files uploaded}}"
+msgstr "{0, plural, other {# fichye telechaje}}"
+
+#. placeholder {0}: attachments.length
+#: src/features/wiki/attachments-page.tsx:246
+msgid "{0, plural, one {# file} other {# files}}"
+msgstr "{0, plural, other {# fichye}}"
+
+#. placeholder {0}: pages.length
+#: src/features/wiki/tag-pages.tsx:39
+msgid "{0, plural, one {# page} other {# pages}}"
+msgstr "{0, plural, other {# paj}}"
+
+#. placeholder {0}: results.length
+#: src/features/wiki/search-page.tsx:89
+msgid "{0, plural, one {# result} other {# results}}"
+msgstr "{0, plural, other {# rezilta}}"
+
+#. placeholder {0}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, ArrowLeft, X, Image, ExternalLink, } from 'lucide-react' import { toast, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare,} from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' interface AttachmentsPageProps { slug: string } type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage({ slug }: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length > 0) { uploadMutation.mutate(fileArray, { onSuccess: () => { toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to upload files`)) }, }) } } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}> {wikiId ? ( <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> ) : ( <Link to="/$page/edit" params={{ page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> )} </Button> <div> <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> </div> </div> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.md" /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
+#. placeholder {1}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, ArrowLeft, X, Image, ExternalLink, } from 'lucide-react' import { toast, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare,} from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' interface AttachmentsPageProps { slug: string } type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage({ slug }: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length > 0) { uploadMutation.mutate(fileArray, { onSuccess: () => { toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to upload files`)) }, }) } } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}> {wikiId ? ( <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> ) : ( <Link to="/$page/edit" params={{ page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> )} </Button> <div> <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> </div> </div> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.md" /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
+#. placeholder {2}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, ArrowLeft, X, Image, ExternalLink, } from 'lucide-react' import { toast, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare,} from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' interface AttachmentsPageProps { slug: string } type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage({ slug }: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length > 0) { uploadMutation.mutate(fileArray, { onSuccess: () => { toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to upload files`)) }, }) } } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}> {wikiId ? ( <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> ) : ( <Link to="/$page/edit" params={{ page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> )} </Button> <div> <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> </div> </div> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.md" /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="secondary" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
+#: src/features/wiki/attachments-page.tsx:245
+msgid "{0} ({1}, {2})"
+msgstr "{0} ({1}, {2})"
+
+#. placeholder {0}: import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-muted/50 group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
+#: src/features/wiki/tag-pages.tsx:39
+msgid "{0} with this tag."
+msgstr "{0} ak tag sa."
+
+#: src/features/wiki/wiki-page-content.tsx:266
+#: src/routes/_authenticated/$page/index.tsx:205
+msgid "{commentCount, plural, one {1 comment} other {# comments}}"
+msgstr "{commentCount, plural, other {# kòmantè}}"
+
+#: src/features/user/account.tsx:667
+msgid "{count} remaining"
+msgstr "{count} rete"
+
+#: src/features/wiki/attachments-page.tsx:246
+msgid "{documentCount, plural, one {# document} other {# documents}}"
+msgstr "{documentCount, plural, other {# dokiman}}"
+
+#: src/features/wiki/attachments-page.tsx:246
+msgid "{imageCount, plural, one {# image} other {# images}}"
+msgstr "{imageCount, plural, other {# imaj}}"
+
+#: src/features/wiki/rename-page-dialog.tsx:71
+msgid "{linksUpdated, plural, one {, updated 1 link} other {, updated # links}}"
+msgstr "{linksUpdated, plural, other {, mete ajou # lyen}}"
+
+#: src/routes/_authenticated/$page/comments.tsx:29
+#: src/routes/_authenticated/$page/comments.tsx:41
+#: src/routes/_authenticated/$wikiId/$page/comments.tsx:35
+#: src/routes/_authenticated/$wikiId/$page/comments.tsx:47
+msgid "{pageTitle} - Comments"
+msgstr "{pageTitle} - Kòmantè"
+
+#: src/features/wiki/rename-page-dialog.tsx:69
+msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
+msgstr "{renamedCount, plural, other {Rebatize # paj}}"
+
+#: src/features/wiki/wiki-comment-thread.tsx:92
+msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
+msgstr "{totalDescendants, plural, other {+# plis repons}}"
+
+#: src/routes/_authenticated/$wikiId/settings.tsx:34
+#: src/routes/_authenticated/$wikiId/settings.tsx:37
+#: src/routes/_authenticated/settings.tsx:33
+#: src/routes/_authenticated/settings.tsx:36
+msgid "{wikiName} settings"
+msgstr "Paramèt {wikiName}"
+
+#: src/features/wiki/page-editor.tsx:279
+msgid "*No content*"
+msgstr "*Pa gen kontni*"
+
+#: src/features/user/account.tsx:540
+msgid "1. Scan QR code"
+msgstr "1. Eskane kòd QR"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:39
+msgid "12 hours"
+msgstr "12 èdtan"
+
+#: src/features/user/account.tsx:546
+msgid "2. Manual entry"
+msgstr "2. Antre manyèl"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:38
+msgid "24 hours"
+msgstr "24 èdtan"
+
+#: src/features/user/account.tsx:550
+msgid "3. Verify code"
+msgstr "3. Verifye kòd"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:48
+msgid "Absolute (date and time)"
+msgstr "Absoli (dat ak lè)"
+
+#: src/features/wiki/wiki-settings.tsx:95
+msgid "Access"
+msgstr "Aksè"
+
+#: ../../../lib/web/src/features/errors/forbidden.tsx:12
+msgid "Access Forbidden"
+msgstr "Aksè Entèdi"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:188
+msgid "Access level"
+msgstr "Nivo aksè"
+
+#: src/features/wiki/wiki-settings.tsx:683
+msgid "Access removed"
+msgstr "Aksè retire"
+
+#: src/features/wiki/wiki-settings.tsx:662
+msgid "Access set for {subjectName}"
+msgstr "Aksè defini pou {subjectName}"
+
+#: src/features/wiki/wiki-settings.tsx:673
+msgid "Access updated"
+msgstr "Aksè mete ajou"
+
+#: src/features/user/account.tsx:696
+#: src/features/user/account.tsx:700
+msgid "Account"
+msgstr "Kont"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:208
+msgid "Account added"
+msgstr "Kont ajoute"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:224
+msgid "Account removed"
+msgstr "Kont retire"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:123
+msgid "Account type"
+msgstr "Tip kont"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:234
+msgid "Account verified"
+msgstr "Kont verifye"
+
+#: src/features/wiki/page-history.tsx:54
+#: src/features/wiki/redirects-page.tsx:87
+#: src/features/wiki/wiki-settings.tsx:842
+msgid "Actions"
+msgstr "Aksyon yo"
+
+#: src/features/wiki/tag-manager.tsx:128
+#: src/features/wiki/wiki-settings.tsx:697
+msgid "Add"
+msgstr "Ajoute"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:117
+msgid "Add a new account"
+msgstr "Ajoute yon nouvo kont"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:145
+msgid "Add access"
+msgstr "Ajoute aksè"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:116
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:280
+msgid "Add account"
+msgstr "Ajoute kont"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:289
+msgid "Add an account to receive notifications and use services."
+msgstr "Ajoute yon kont pou resevwa notifikasyon epi itilize sèvis yo."
+
+#: src/features/user/account.tsx:599
+msgid "Add an app for additional security"
+msgstr "Ajoute yon app pou sekirite anplis"
+
+#: ../../../lib/web/src/features/accounts/account-picker.tsx:98
+msgid "Add new account"
+msgstr "Ajoute nouvo kont"
+
+#: src/features/user/account.tsx:403
+msgid "Add passkey"
+msgstr "Ajoute passkey"
+
+#: src/features/wiki/redirects-page.tsx:210
+#: src/features/wiki/wiki-settings.tsx:1099
+msgid "Add redirect"
+msgstr "Ajoute redireksyon"
+
+#: ../../../lib/web/src/components/post-tags.tsx:119
+msgid "Add tag..."
+msgstr "Ajoute etikèt..."
+
+#: src/features/wiki/tags-list.tsx:33
+msgid "Add tags to group pages in your wiki."
+msgstr "Ajoute etikèt pou gwoupe paj nan wiki ou a."
+
+#: ../../../lib/web/src/components/layout/team-switcher.tsx:80
+msgid "Add team/app"
+msgstr "Ajoute ekip/app"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:159
+msgid "Add to existing notifications"
+msgstr "Ajoute nan notifikasyon ki egziste"
+
+#: ../../../lib/web/src/components/view-tabs.tsx:57
+msgid "Add view"
+msgstr "Ajoute vi"
+
+#: src/features/wiki/tag-manager.tsx:128
+msgid "Adding..."
+msgstr "Ap ajoute..."
+
+#: ../../../lib/web/src/components/config-drawer.tsx:62
+msgid "Adjust the appearance and layout to suit your preferences."
+msgstr "Ajiste aparans ak layout dapre preferans ou."
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx:38
+msgid "AI"
+msgstr "AI"
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:159
+msgid "All"
+msgstr "Tout"
+
+#: src/features/wiki/attachments-page.tsx:307
+msgid "All files"
+msgstr "Tout fichye"
+
+#: src/features/wiki/tag-pages.tsx:33
+#: src/features/wiki/tags-list.tsx:18
+#: src/routes/_authenticated/tags.tsx:16
+#: src/routes/_authenticated/tags.tsx:22
+#: src/routes/_authenticated/tags.tsx:33
+#: src/routes/_authenticated/tags.tsx:43
+msgid "All tags"
+msgstr "Tout etikèt"
+
+#: src/components/layout/wiki-layout.tsx:114
+msgid "All wikis"
+msgstr "Tout wiki"
+
+#: src/components/layout/wiki-layout.tsx:157
+msgid "Allow anyone to search for wiki"
+msgstr "Pèmèt nenpòt moun chèche wiki"
+
+#: src/features/user/preferences.tsx:124
+msgid "Appearance"
+msgstr "Aparans"
+
+#: src/features/wiki/wiki-settings.tsx:595
+msgid "Are you absolutely sure?"
+msgstr "Èske ou totalman sèten?"
+
+#: src/features/wiki/wiki-comment-thread.tsx:274
+msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
+msgstr "Èske ou sèten ou vle efase kòmantè sa a? Sa a pral efase tout repons yo tou. Aksyon sa a pa ka anile."
+
+#: ../../../lib/web/src/components/sign-out-dialog.tsx:24
+msgid "Are you sure you want to log out? You will need to log in again to access your account."
+msgstr "Èske ou sèten ou vle dekonekte? Ou pral bezwen konekte ankò pou aksede kont ou."
+
+#: src/features/wiki/wiki-page-content.tsx:354
+#: src/routes/_authenticated/$page/index.tsx:271
+#: src/routes/_authenticated/index.tsx:484
+#: src/routes/_authenticated/index.tsx:827
+msgid "Are you sure you want to unsubscribe from this wiki?"
+msgstr "Èske ou sèten ou vle dezabòne nan wiki sa a?"
+
+#: ../../../lib/web/src/components/data-table/column-header.tsx:56
+msgid "Asc"
+msgstr "Mont"
+
+#: src/features/wiki/comment-form.tsx:93
+msgid "Attach files"
+msgstr "Tache fichye"
+
+#: src/features/wiki/wiki-comment-thread.tsx:244
+msgid "Attach reply files"
+msgstr "Tache fichye repons"
+
+#: src/features/wiki/attachments-page.tsx:188
+msgid "Attachment deleted"
+msgstr "Atachman efase"
+
+#: src/features/wiki/attachments-page.tsx:243
+#: src/features/wiki/page-editor.tsx:229
+#: src/features/wiki/page-editor.tsx:234
+#: src/routes/_authenticated/$page/attachments.tsx:22
+#: src/routes/_authenticated/$page/attachments.tsx:33
+#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:31
+#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:42
+msgid "Attachments"
+msgstr "Atachman yo"
+
+#: src/features/user/account.tsx:203
+msgid "Authenticator app"
+msgstr "App otantifikatè"
+
+#: src/features/user/account.tsx:528
+msgid "Authenticator App"
+msgstr "App Otantifikatè"
+
+#: src/features/user/account.tsx:519
+msgid "Authenticator app disabled"
+msgstr "App otantifikatè dezaktive"
+
+#: src/features/user/account.tsx:504
+msgid "Authenticator app enabled"
+msgstr "App otantifikatè aktive"
+
+#: src/features/user/account.tsx:578
+msgid "Authenticator app is active"
+msgstr "App otantifikatè aktif"
+
+#: src/features/wiki/changes-list.tsx:44
+#: src/features/wiki/page-history.tsx:51
+msgid "Author"
+msgstr "Otè"
+
+#: ../../../lib/web/src/components/place-picker.tsx:152
+msgid "Back"
+msgstr "Retounen"
+
+#: src/features/wiki/attachments-page.tsx:231
+#: src/features/wiki/attachments-page.tsx:231
+msgid "Back to editor"
+msgstr "Retounen nan editè"
+
+#: src/features/wiki/revision-view.tsx:47
+#: src/features/wiki/revision-view.tsx:52
+msgid "Back to history"
+msgstr "Retounen nan istwa"
+
+#: ../../../lib/web/src/features/errors/forbidden.tsx:21
+#: ../../../lib/web/src/features/errors/not-found-error.tsx:21
+#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:21
+msgid "Back to Home"
+msgstr "Retounen nan Akèy"
+
+#: src/routes/_authenticated/$page/attachments.tsx:33
+#: src/routes/_authenticated/$page/comments.tsx:42
+#: src/routes/_authenticated/$page/delete.tsx:38
+#: src/routes/_authenticated/$page/delete.tsx:51
+#: src/routes/_authenticated/$page/delete.tsx:63
+#: src/routes/_authenticated/$page/delete.tsx:79
+#: src/routes/_authenticated/$page/edit.tsx:43
+#: src/routes/_authenticated/$page/edit.tsx:54
+#: src/routes/_authenticated/$page/edit.tsx:66
+#: src/routes/_authenticated/$page/edit.tsx:78
+#: src/routes/_authenticated/$page/history/$version.tsx:35
+#: src/routes/_authenticated/$page/history/$version.tsx:46
+#: src/routes/_authenticated/$page/history/$version.tsx:57
+#: src/routes/_authenticated/$page/history/index.tsx:35
+#: src/routes/_authenticated/$page/history/index.tsx:46
+#: src/routes/_authenticated/$page/history/index.tsx:60
+#: src/routes/_authenticated/$page/revert.tsx:38
+#: src/routes/_authenticated/$page/revert.tsx:48
+#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:42
+#: src/routes/_authenticated/$wikiId/$page/comments.tsx:48
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:51
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:64
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:76
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:92
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:52
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:63
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:75
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:87
+#: src/routes/_authenticated/$wikiId/$page/history/$version.tsx:34
+#: src/routes/_authenticated/$wikiId/$page/history/$version.tsx:45
+#: src/routes/_authenticated/$wikiId/$page/history/$version.tsx:56
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:45
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:56
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:70
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:39
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:49
+msgid "Back to page"
+msgstr "Retounen nan paj"
+
+#: src/features/wiki/wiki-page-content.tsx:128
+#: src/features/wiki/wiki-page-content.tsx:139
+#: src/features/wiki/wiki-page-content.tsx:151
+#: src/features/wiki/wiki-page-content.tsx:215
+#: src/features/wiki/wiki-page-content.tsx:345
+#: src/routes/_authenticated/$page/index.tsx:83
+#: src/routes/_authenticated/$page/index.tsx:94
+#: src/routes/_authenticated/$page/index.tsx:154
+#: src/routes/_authenticated/$page/index.tsx:262
+#: src/routes/_authenticated/$wikiId/changes.tsx:23
+#: src/routes/_authenticated/$wikiId/changes.tsx:34
+#: src/routes/_authenticated/$wikiId/changes.tsx:44
+#: src/routes/_authenticated/$wikiId/new.tsx:26
+#: src/routes/_authenticated/$wikiId/settings.tsx:37
+#: src/routes/_authenticated/changes.tsx:22
+#: src/routes/_authenticated/changes.tsx:33
+#: src/routes/_authenticated/changes.tsx:43
+#: src/routes/_authenticated/index.tsx:314
+#: src/routes/_authenticated/index.tsx:329
+#: src/routes/_authenticated/index.tsx:345
+#: src/routes/_authenticated/index.tsx:469
+#: src/routes/_authenticated/join.tsx:57
+#: src/routes/_authenticated/new.tsx:26
+#: src/routes/_authenticated/redirects.tsx:18
+#: src/routes/_authenticated/search.tsx:26
+#: src/routes/_authenticated/settings.tsx:36
+#: src/routes/_authenticated/tag/$tag.tsx:24
+#: src/routes/_authenticated/tag/$tag.tsx:35
+#: src/routes/_authenticated/tag/$tag.tsx:45
+#: src/routes/_authenticated/tags.tsx:22
+#: src/routes/_authenticated/tags.tsx:33
+#: src/routes/_authenticated/tags.tsx:43
+msgid "Back to wikis"
+msgstr "Retounen nan wiki yo"
+
+#: src/features/user/account.tsx:631
+msgid "Backup codes for account recovery"
+msgstr "Kòd backup pou rekiperasyon kont"
+
+#: src/features/wiki/page-comments.tsx:91
+msgid "Be the first to comment on this page."
+msgstr "Se ou ki premye komante sou paj sa a."
+
+#: ../../../lib/web/src/components/post-tags.tsx:160
+msgid "Boost interest"
+msgstr "Ogmante enterè"
+
+#: src/features/wiki/redirects-page.tsx:185
+#: src/features/wiki/wiki-settings.tsx:1072
+msgid "Both source and target are required"
+msgstr "Ni sous ni sib obligatwa"
+
+#: src/features/wiki/page-editor.tsx:335
+msgid "Briefly describe your changes"
+msgstr "Dekri chanjman ou yo brèvman"
+
+#: src/features/wiki/tags-list.tsx:22
+msgid "Browse pages by tag. Click a tag to see all pages with that tag."
+msgstr "Navige paj pa etikèt. Klike sou yon etikèt pou wè tout paj ki gen etikèt sa a."
+
+#: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:64
+#: ../../../lib/web/src/components/travelling-picker.tsx:292
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:245
+#: ../../../lib/web/src/features/access/access-dialog.tsx:325
+#: ../../../lib/web/src/features/access/access-list.tsx:255
+#: ../../../lib/web/src/features/accounts/account-add.tsx:185
+#: ../../../lib/web/src/features/accounts/account-verify.tsx:86
+#: src/features/user/account.tsx:321
+#: src/features/user/account.tsx:566
+#: src/features/user/account.tsx:591
+#: src/features/user/account.tsx:679
+#: src/features/user/preferences.tsx:108
+#: src/features/user/sessions.tsx:102
+#: src/features/wiki/comment-form.tsx:99
+#: src/features/wiki/delete-page.tsx:66
+#: src/features/wiki/delete-page.tsx:71
+#: src/features/wiki/page-editor.tsx:240
+#: src/features/wiki/redirects-page.tsx:159
+#: src/features/wiki/redirects-page.tsx:256
+#: src/features/wiki/rename-page-dialog.tsx:123
+#: src/features/wiki/revert-page.tsx:85
+#: src/features/wiki/revert-page.tsx:90
+#: src/features/wiki/tag-manager.tsx:121
+#: src/features/wiki/wiki-comment-thread.tsx:123
+#: src/features/wiki/wiki-settings.tsx:882
+#: src/features/wiki/wiki-settings.tsx:1031
+#: src/features/wiki/wiki-settings.tsx:1138
+#: src/routes/_authenticated/join.tsx:113
+msgid "Cancel"
+msgstr "Anile"
+
+#: src/features/wiki/wiki-comment-thread.tsx:253
+msgid "Cancel reply"
+msgstr "Anile repons"
+
+#: ../../../lib/web/src/components/notification-category-button.tsx:131
+msgid "Category for this notification"
+msgstr "Kategori pou notifikasyon sa a"
+
+#: ../../../lib/web/src/components/notification-category-button.tsx:115
+msgid "Change notification category"
+msgstr "Chanje kategori notifikasyon"
+
+#: src/features/wiki/wiki-page-content.tsx:303
+#: src/routes/_authenticated/index.tsx:421
+#: src/routes/_authenticated/index.tsx:652
+msgid "Changes"
+msgstr "Chanjman"
+
+#: src/features/wiki/wiki-page-content.tsx:305
+#: src/routes/_authenticated/index.tsx:429
+#: src/routes/_authenticated/index.tsx:662
+msgid "Changes and comments"
+msgstr "Chanjman ak kòmantè"
+
+#: src/features/wiki/changes-list.tsx:35
+msgid "Changes will appear here when pages are edited."
+msgstr "Chanjman pral parèt isit la lè paj yo edite."
+
+#: ../../../lib/web/src/components/config-drawer.tsx:315
+msgid "Choose between default expanded, compact icon-only, or full layout mode"
+msgstr "Chwazi ant elaji defo, konpak ikon-sèlman, oswa mòd layout konplè"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:257
+msgid "Choose between inset, floating, or standard sidebar layout"
+msgstr "Chwazi ant ankastre, flotan, oswa layout ba kote estanda"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:358
+msgid "Choose between left-to-right or right-to-left site direction"
+msgstr "Chwazi ant direksyon sit gòch-a-dwat oswa dwat-a-gòch"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:213
+msgid "Choose between system preference, light mode, or dark mode"
+msgstr "Chwazi ant preferans sistèm, mòd klè, oswa mòd fonse"
+
+#: ../../../lib/web/src/components/language-picker.tsx:167
+msgid "Choose language"
+msgstr "Chwazi lang"
+
+#: ../../../lib/web/src/components/colour-picker.tsx:304
+msgid "Clear"
+msgstr "Efase"
+
+#: ../../../lib/web/src/components/filter-bar.tsx:64
+msgid "Clear all"
+msgstr "Efase tout"
+
+#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:137
+msgid "Clear filters"
+msgstr "Efase filtè"
+
+#: src/features/wiki/attachments-page.tsx:293
+#: src/features/wiki/attachments-page.tsx:294
+msgid "Clear search"
+msgstr "Efase rechèch"
+
+#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:164
+#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:168
+msgid "Clear selection"
+msgstr "Efase seleksyon"
+
+#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:165
+msgid "Clear selection (Escape)"
+msgstr "Efase seleksyon (Escape)"
+
+#: ../../../lib/web/src/components/ui/dialog.tsx:75
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:318
+#: ../../../lib/web/src/components/ui/sheet.tsx:76
+msgid "Close"
+msgstr "Fèmen"
+
+#: ../../../lib/web/src/components/layout/app-sidebar.tsx:97
+msgid "Close navigation"
+msgstr "Fèmen navigasyon"
+
+#: ../../../lib/web/src/components/layout/right-panel.tsx:254
+msgid "Close Panel"
+msgstr "Fèmen Panèl"
+
+#: ../../../lib/web/src/components/header-search.tsx:51
+msgid "Close search"
+msgstr "Fèmen rechèch"
+
+#: src/features/user/account.tsx:654
+msgid "Codes copied"
+msgstr "Kòd kopye"
+
+#: ../../../lib/web/src/components/layout/app-sidebar.tsx:35
+msgid "Collapse sidebar"
+msgstr "Fèmen ba kote"
+
+#: ../../../lib/web/src/components/coming-soon.tsx:9
+msgid "Coming Soon!"
+msgstr "Vini Talè!"
+
+#: src/features/wiki/changes-list.tsx:46
+#: src/features/wiki/page-history.tsx:53
+msgid "Comment"
+msgstr "Kòmantè"
+
+#: src/features/wiki/wiki-page-content.tsx:304
+#: src/routes/_authenticated/index.tsx:426
+#: src/routes/_authenticated/index.tsx:657
+msgid "Comments"
+msgstr "Kòmantè"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:302
+msgid "Compact"
+msgstr "Konpak"
+
+#: ../../../lib/web/src/components/place-picker.tsx:155
+#: ../../../lib/web/src/components/travelling-picker.tsx:299
+msgid "Confirm"
+msgstr "Konfime"
+
+#: src/features/wiki/page-editor.tsx:316
+msgid "Content"
+msgstr "Kontni"
+
+#: ../../../lib/web/src/lib/query-client.ts:78
+msgid "Content not modified"
+msgstr "Kontni pa modifye"
+
+#: ../../../lib/web/src/components/layout/right-panel.tsx:145
+msgid "Contextual information and details."
+msgstr "Enfòmasyon ak detay kontèks."
+
+#: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:72
+msgid "Continue"
+msgstr "Kontinye"
+
+#: ../../../lib/web/src/components/ui/copy-button.tsx:60
+msgid "Copy"
+msgstr "Kopye"
+
+#: src/features/user/account.tsx:656
+msgid "Copy all"
+msgstr "Kopye tout"
+
+#: src/features/wiki/attachments-page.tsx:495
+#: src/features/wiki/attachments-page.tsx:496
+#: src/features/wiki/attachments-page.tsx:586
+#: src/features/wiki/attachments-page.tsx:587
+msgid "Copy embed link"
+msgstr "Kopye lyen entegre"
+
+#: src/features/wiki/wiki-settings.tsx:1107
+msgid "Create a redirect from one URL to another."
+msgstr "Kreye yon redireksyon soti yon URL nan yon lòt."
+
+#: src/features/wiki/redirects-page.tsx:218
+msgid "Create a redirect from one URL to another. The source URL must not be an existing page."
+msgstr "Kreye yon redireksyon soti yon URL nan yon lòt. URL sous la pa dwe yon paj ki egziste."
+
+#: src/features/wiki/redirects-page.tsx:76
+#: src/features/wiki/wiki-settings.tsx:977
+msgid "Create a redirect to forward one URL to another."
+msgstr "Kreye yon redireksyon pou voye yon URL nan yon lòt."
+
+#: src/features/wiki/page-editor.tsx:197
+msgid "Create new page"
+msgstr "Kreye nouvo paj"
+
+#: src/features/wiki/page-editor.tsx:261
+msgid "Create page"
+msgstr "Kreye paj"
+
+#: src/features/wiki/redirects-page.tsx:216
+#: src/features/wiki/redirects-page.tsx:259
+#: src/features/wiki/wiki-settings.tsx:1105
+#: src/features/wiki/wiki-settings.tsx:1141
+msgid "Create redirect"
+msgstr "Kreye redireksyon"
+
+#: src/features/wiki/rename-page-dialog.tsx:113
+msgid "Create redirect from old URL"
+msgstr "Kreye redireksyon soti nan ansyen URL"
+
+#: src/features/wiki/page-view.tsx:293
+#: src/features/wiki/page-view.tsx:298
+#: src/features/wiki/wiki-page-content.tsx:183
+#: src/routes/_authenticated/$page/index.tsx:122
+msgid "Create this page"
+msgstr "Kreye paj sa a"
+
+#: src/components/layout/wiki-layout.tsx:134
+#: src/components/layout/wiki-layout.tsx:154
+#: src/routes/_authenticated/index.tsx:702
+msgid "Create wiki"
+msgstr "Kreye wiki"
+
+#: src/features/user/account.tsx:453
+#: src/features/user/sessions.tsx:145
+#: src/features/wiki/redirects-page.tsx:86
+#: src/features/wiki/wiki-settings.tsx:987
+msgid "Created"
+msgstr "Kreye"
+
+#: src/features/wiki/page-editor.tsx:261
+#: src/features/wiki/redirects-page.tsx:259
+#: src/features/wiki/wiki-settings.tsx:1141
+msgid "Creating..."
+msgstr "Ap kreye..."
+
+#: src/features/wiki/revision-view.tsx:35
+msgid "Current"
+msgstr "Aktyèl"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:205
+#: ../../../lib/web/src/lib/preference-utils.ts:17
+msgid "Dark"
+msgstr "Fonse"
+
+#: ../../../lib/web/src/components/layout/nav-user.tsx:88
+#: ../../../lib/web/src/components/layout/nav-user.tsx:151
+#: ../../../lib/web/src/components/layout/nav-user.tsx:202
+#: ../../../lib/web/src/components/profile-dropdown.tsx:84
+#: ../../../lib/web/src/components/profile-dropdown.tsx:120
+msgid "Dark mode"
+msgstr "Mòd fonse"
+
+#: src/features/wiki/attachments-page.tsx:320
+#: src/features/wiki/changes-list.tsx:45
+#: src/features/wiki/page-history.tsx:52
+msgid "Date"
+msgstr "Dat"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:297
+msgid "Default"
+msgstr "Defo"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:169
+msgid "Default AI account"
+msgstr "Kont AI defo"
+
+#: src/features/user/account.tsx:323
+#: src/features/wiki/attachments-page.tsx:425
+#: src/features/wiki/attachments-page.tsx:510
+#: src/features/wiki/attachments-page.tsx:602
+#: src/features/wiki/delete-page.tsx:81
+#: src/features/wiki/redirects-page.tsx:164
+#: src/features/wiki/wiki-comment-thread.tsx:186
+#: src/features/wiki/wiki-comment-thread.tsx:275
+#: src/features/wiki/wiki-page-content.tsx:273
+#: src/features/wiki/wiki-settings.tsx:1036
+msgid "Delete"
+msgstr "Efase"
+
+#. placeholder {0}: pendingDelete.name
+#: src/features/wiki/attachments-page.tsx:424
+msgid "Delete \"{0}\"? This cannot be undone."
+msgstr "Efase \"{0}\"? Sa a pa ka anile."
+
+#: src/features/wiki/attachments-page.tsx:423
+#: src/features/wiki/attachments-page.tsx:509
+#: src/features/wiki/attachments-page.tsx:601
+msgid "Delete attachment"
+msgstr "Efase atachman"
+
+#: src/features/wiki/wiki-comment-thread.tsx:273
+msgid "Delete comment"
+msgstr "Efase kòmantè"
+
+#: src/features/wiki/delete-page.tsx:51
+#: src/features/wiki/page-editor.tsx:247
+#: src/features/wiki/page-editor.tsx:252
+msgid "Delete page"
+msgstr "Efase paj"
+
+#: src/features/user/account.tsx:312
+msgid "Delete passkey?"
+msgstr "Efase passkey?"
+
+#. placeholder {0}: redirect.source
+#: src/features/wiki/redirects-page.tsx:141
+#: src/features/wiki/redirects-page.tsx:142
+#: src/features/wiki/wiki-settings.tsx:1014
+#: src/features/wiki/wiki-settings.tsx:1015
+msgid "Delete redirect {0}"
+msgstr "Efase redireksyon {0}"
+
+#: src/features/wiki/redirects-page.tsx:149
+#: src/features/wiki/wiki-settings.tsx:1022
+msgid "Delete redirect?"
+msgstr "Efase redireksyon?"
+
+#: src/features/wiki/wiki-settings.tsx:578
+#: src/features/wiki/wiki-settings.tsx:589
+#: src/features/wiki/wiki-settings.tsx:597
+msgid "Delete wiki"
+msgstr "Efase wiki"
+
+#: src/routes/_authenticated/$page/delete.tsx:26
+#: src/routes/_authenticated/$page/delete.tsx:38
+#: src/routes/_authenticated/$page/delete.tsx:51
+#: src/routes/_authenticated/$page/delete.tsx:63
+#: src/routes/_authenticated/$page/delete.tsx:79
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:39
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:51
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:64
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:76
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:92
+msgid "Delete: {pageTitle}"
+msgstr "Efase: {pageTitle}"
+
+#: src/features/wiki/delete-page.tsx:81
+#: src/features/wiki/wiki-settings.tsx:589
+msgid "Deleting..."
+msgstr "Ap efase..."
+
+#: ../../../lib/web/src/components/data-table/column-header.tsx:60
+msgid "Desc"
+msgstr "Desann"
+
+#: ../../../lib/web/src/components/layout/right-panel.tsx:144
+msgid "Details Panel"
+msgstr "Panèl Detay"
+
+#: ../../../lib/web/src/components/language-picker.tsx:145
+#: ../../../lib/web/src/components/timezone-select.tsx:43
+#: ../../../lib/web/src/components/timezone-select.tsx:80
+#: ../../../lib/web/src/lib/preference-utils.ts:25
+#: ../../../lib/web/src/lib/preference-utils.ts:37
+#: ../../../lib/web/src/lib/preference-utils.ts:55
+#: ../../../lib/web/src/lib/preference-utils.ts:69
+#: ../../../lib/web/src/lib/preference-utils.ts:81
+msgid "Detect from web browser"
+msgstr "Detekte nan navigatè web"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:327
+msgid "Direction"
+msgstr "Direksyon"
+
+#: src/features/user/account.tsx:583
+#: src/features/user/account.tsx:592
+msgid "Disable"
+msgstr "Dezaktive"
+
+#: src/features/user/account.tsx:587
+msgid "Disable authenticator?"
+msgstr "Dezaktive otantifikatè?"
+
+#: ../../../lib/web/src/components/ui/sidebar.tsx:235
+msgid "Displays the mobile sidebar."
+msgstr "Afiche ba kote mobil la."
+
+#: src/features/wiki/attachments-page.tsx:309
+msgid "Documents"
+msgstr "Dokiman"
+
+#: src/features/user/account.tsx:657
+msgid "Done"
+msgstr "Fini"
+
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:312
+msgid "Download"
+msgstr "Telechaje"
+
+#: src/features/wiki/attachments-page.tsx:376
+msgid "Drag and drop files here, or click \"Upload files\" to get started."
+msgstr "Trennen ak lage fichye yo isit la, oswa klike \"Telechaje fichye\" pou kòmanse."
+
+#: src/features/user/account.tsx:642
+msgid "Each code can only be used once."
+msgstr "Chak kòd kapab itilize sèlman yon fwa."
+
+#: src/features/wiki/page-editor.tsx:208
+#: src/features/wiki/wiki-comment-thread.tsx:175
+#: src/features/wiki/wiki-page-content.tsx:247
+#: src/routes/_authenticated/$page/index.tsx:186
+#: src/routes/_authenticated/index.tsx:376
+msgid "Edit"
+msgstr "Modifye"
+
+#: src/features/wiki/wiki-settings.tsx:613
+msgid "Edit and view"
+msgstr "Modifye epi gade"
+
+#: src/features/wiki/page-editor.tsx:330
+msgid "Edit summary (optional)"
+msgstr "Modifye rezime (opsyonèl)"
+
+#: src/routes/_authenticated/$page/edit.tsx:31
+#: src/routes/_authenticated/$page/edit.tsx:43
+#: src/routes/_authenticated/$page/edit.tsx:54
+#: src/routes/_authenticated/$page/edit.tsx:66
+#: src/routes/_authenticated/$page/edit.tsx:78
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:40
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:52
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:63
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:75
+#: src/routes/_authenticated/$wikiId/$page/edit.tsx:87
+msgid "Edit: {pageTitle}"
+msgstr "Modifye: {pageTitle}"
+
+#. placeholder {0}: page?.title ?? slug
+#: src/features/wiki/page-editor.tsx:197
+msgid "Editing: {0}"
+msgstr "Modifye: {0}"
+
+#: src/features/user/account.tsx:221
+msgid "Email code"
+msgstr "Kòd imèl"
+
+#: src/features/wiki/attachments-page.tsx:170
+msgid "Embed link copied"
+msgstr "Lyen entegre kopye"
+
+#: src/features/wiki/search-page.tsx:71
+msgid "Enter a search term"
+msgstr "Antre yon tèm rechèch"
+
+#: src/features/wiki/tag-manager.tsx:112
+msgid "Enter tag name"
+msgstr "Antre non tag"
+
+#: src/features/user/account.tsx:119
+#: src/features/wiki/wiki-settings.tsx:512
+msgid "Entity ID"
+msgstr "ID Antite"
+
+#: src/features/wiki/wiki-page-content.tsx:154
+msgid "Error: Received invalid response from server."
+msgstr "Erè: Resevwa repons envalid soti nan sèvè a."
+
+#: src/features/wiki/wiki-settings.tsx:560
+msgid "Example: \"home\", \"welcome\", \"index\""
+msgstr "Egzanp: \"home\", \"welcome\", \"index\""
+
+#: ../../../lib/web/src/components/layout/app-sidebar.tsx:35
+msgid "Expand sidebar"
+msgstr "Elaji ba kote"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:217
+msgid "Failed to add account"
+msgstr "Echwe pou ajoute kont"
+
+#: src/features/wiki/tag-manager.tsx:49
+msgid "Failed to add tag"
+msgstr "Echwe pou ajoute tag"
+
+#: src/features/wiki/attachments-page.tsx:173
+msgid "Failed to copy"
+msgstr "Echwe pou kopye"
+
+#: src/features/wiki/page-editor.tsx:158
+msgid "Failed to create page"
+msgstr "Echwe pou kreye paj"
+
+#: src/features/wiki/redirects-page.tsx:199
+#: src/features/wiki/wiki-settings.tsx:1088
+msgid "Failed to create redirect"
+msgstr "Echwe pou kreye redireksyon"
+
+#: src/components/layout/wiki-layout.tsx:77
+msgid "Failed to create wiki"
+msgstr "Echwe pou kreye wiki"
+
+#: src/features/wiki/attachments-page.tsx:192
+msgid "Failed to delete attachment"
+msgstr "Echwe pou efase atachman"
+
+#: src/features/wiki/delete-page.tsx:40
+msgid "Failed to delete page"
+msgstr "Echwe pou efase paj"
+
+#: src/features/user/account.tsx:384
+msgid "Failed to delete passkey"
+msgstr "Echwe pou efase passkey"
+
+#: src/features/wiki/redirects-page.tsx:112
+#: src/features/wiki/wiki-settings.tsx:954
+msgid "Failed to delete redirect"
+msgstr "Echwe pou efase redireksyon"
+
+#: src/features/wiki/wiki-settings.tsx:406
+#: src/features/wiki/wiki-settings.tsx:417
+msgid "Failed to delete wiki"
+msgstr "Echwe pou efase wiki"
+
+#: src/features/user/account.tsx:520
+msgid "Failed to disable authenticator"
+msgstr "Echwe pou dezaktive otantifikatè"
+
+#: src/features/user/account.tsx:622
+msgid "Failed to generate codes"
+msgstr "Echwe pou jenere kòd"
+
+#: src/features/wiki/wiki-page-content.tsx:117
+#: src/routes/_authenticated/index.tsx:305
+#: src/routes/_authenticated/index.tsx:555
+msgid "Failed to get RSS token"
+msgstr "Echwe pou jwenn token RSS"
+
+#: src/routes/_authenticated/join.tsx:46
+msgid "Failed to join wiki"
+msgstr "Echwe pou rantre nan wiki"
+
+#: src/features/wiki/wiki-settings.tsx:649
+msgid "Failed to load access rules"
+msgstr "Echwe pou chaje règ aksè"
+
+#: src/features/wiki/wiki-settings.tsx:937
+msgid "Failed to load redirects"
+msgstr "Echwe pou chaje redireksyon"
+
+#: src/features/wiki/wiki-settings.tsx:759
+msgid "Failed to load replicas"
+msgstr "Echwe pou chaje replika"
+
+#: src/routes/_authenticated/$wikiId/route.tsx:61
+msgid "Failed to load wiki info"
+msgstr "Echwe pou chaje enfo wiki"
+
+#: src/routes/_authenticated/index.tsx:121
+msgid "Failed to load wikis"
+msgstr "Echwe pou chaje wiki yo"
+
+#: src/features/user/account.tsx:364
+msgid "Failed to register passkey"
+msgstr "Echwe pou anrejistre passkey"
+
+#: src/features/wiki/wiki-settings.tsx:686
+msgid "Failed to remove access"
+msgstr "Echwe pou retire aksè"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:226
+msgid "Failed to remove account"
+msgstr "Echwe pou retire kont"
+
+#: src/features/wiki/wiki-settings.tsx:778
+msgid "Failed to remove replica"
+msgstr "Echwe pou retire replika"
+
+#: src/features/wiki/tag-manager.tsx:63
+msgid "Failed to remove tag"
+msgstr "Echwe pou retire tag"
+
+#: src/features/wiki/rename-page-dialog.tsx:84
+msgid "Failed to rename page"
+msgstr "Echwe pou rebatize paj"
+
+#: src/features/user/account.tsx:376
+msgid "Failed to rename passkey"
+msgstr "Echwe pou rebatize passkey"
+
+#: src/features/wiki/wiki-settings.tsx:330
+msgid "Failed to rename wiki"
+msgstr "Echwe pou rebatize wiki"
+
+#: src/features/user/preferences.tsx:70
+msgid "Failed to reset preferences"
+msgstr "Echwe pou reset preferans"
+
+#: src/features/wiki/revert-page.tsx:46
+msgid "Failed to revert page"
+msgstr "Echwe pou ranvèse paj"
+
+#: src/features/user/sessions.tsx:50
+msgid "Failed to revoke session"
+msgstr "Echwe pou revoke sesyon"
+
+#: src/features/wiki/page-editor.tsx:175
+msgid "Failed to save page"
+msgstr "Echwe pou sove paj"
+
+#: src/features/wiki/wiki-settings.tsx:354
+#: src/features/wiki/wiki-settings.tsx:367
+msgid "Failed to save settings"
+msgstr "Echwe pou sove paramèt yo"
+
+#: src/features/wiki/inline-wiki-search.tsx:63
+msgid "Failed to search wikis"
+msgstr "Echwe pou chèche wiki"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:249
+msgid "Failed to send verification code"
+msgstr "Echwe pou voye kòd verifikasyon"
+
+#: src/features/wiki/wiki-settings.tsx:665
+msgid "Failed to set access level"
+msgstr "Echwe pou mete nivo aksè"
+
+#: src/features/user/account.tsx:494
+msgid "Failed to set up authenticator"
+msgstr "Echwe pou konfigire otantifikatè"
+
+#: src/features/wiki/inline-wiki-search.tsx:80
+#: src/routes/_authenticated/index.tsx:609
+msgid "Failed to subscribe"
+msgstr "Echwe pou abòne"
+
+#: src/features/wiki/wiki-settings.tsx:382
+#: src/features/wiki/wiki-settings.tsx:392
+msgid "Failed to sync wiki"
+msgstr "Echwe pou senkronize wiki"
+
+#: src/features/wiki/wiki-page-content.tsx:68
+#: src/routes/_authenticated/$page/index.tsx:68
+#: src/routes/_authenticated/index.tsx:288
+#: src/routes/_authenticated/index.tsx:543
+msgid "Failed to unsubscribe"
+msgstr "Echwe pou dezabòne"
+
+#: src/features/wiki/wiki-settings.tsx:676
+msgid "Failed to update access level"
+msgstr "Echwe pou mete ajou nivo aksè"
+
+#: ../../../lib/web/src/components/notification-category-button.tsx:104
+msgid "Failed to update category"
+msgstr "Echwe pou mete ajou kategori"
+
+#: src/features/user/account.tsx:160
+msgid "Failed to update login requirements"
+msgstr "Echwe pou mete ajou egzijans login"
+
+#: src/features/user/preferences.tsx:58
+msgid "Failed to update preference"
+msgstr "Echwe pou mete ajou preferans"
+
+#: src/features/wiki/attachments-page.tsx:126
+#: src/features/wiki/page-editor.tsx:128
+msgid "Failed to upload files"
+msgstr "Echwe pou telechaje fichye"
+
+#: src/features/user/account.tsx:511
+msgid "Failed to verify code"
+msgstr "Echwe pou verifye kòd"
+
+#: src/features/wiki/attachments-page.tsx:304
+msgid "Filter"
+msgstr "Filtre"
+
+#: src/components/layout/wiki-layout.tsx:133
+#: src/routes/_authenticated/find.tsx:87
+msgid "Find wikis"
+msgstr "Jwenn wiki"
+
+#: src/features/user/account.tsx:116
+#: src/features/wiki/wiki-settings.tsx:516
+msgid "Fingerprint"
+msgstr "Anprent dijital"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:244
+msgid "Floating"
+msgstr "Flotan"
+
+#. placeholder {0}: import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string } export function SearchPage({ initialQuery = '' }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Update URL when debounced query changes useEffect(() => { if (debouncedQuery !== initialQuery) { const params = new URLSearchParams(window.location.search) if (debouncedQuery) { params.set('q', debouncedQuery) } else { params.delete('q') } const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname window.history.replaceState({}, '', newUrl) } }, [debouncedQuery, initialQuery]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Header */} <div className="space-y-4"> <h1 className="flex items-center gap-3 text-2xl font-bold"> <Search className="h-6 w-6" /> <Trans>Search Wiki</Trans> </h1> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult } function SearchResultItem({ result }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link to="/$page" params={{ page: result.page }} className="hover:bg-muted/50 group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
+#: src/features/wiki/search-page.tsx:89
+msgid "Found {0} for \"{debouncedQuery}\""
+msgstr "Jwenn {0} pou \"{debouncedQuery}\""
+
+#: ../../../lib/web/src/lib/preference-utils.ts:60
+msgid "Friday"
+msgstr "Vandredi"
+
+#: ../../../lib/web/src/components/travelling-picker.tsx:149
+msgid "From"
+msgstr "Soti nan"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:307
+msgid "Full layout"
+msgstr "Layout konplè"
+
+#: src/features/user/preferences.tsx:81
+msgid "General"
+msgstr "Jeneral"
+
+#: src/features/user/account.tsx:673
+msgid "Generate"
+msgstr "Jenere"
+
+#: src/features/user/account.tsx:676
+msgid "Generate?"
+msgstr "Jenere?"
+
+#: ../../../lib/web/src/features/errors/forbidden.tsx:19
+#: ../../../lib/web/src/features/errors/not-found-error.tsx:19
+#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:19
+msgid "Go Back"
+msgstr "Tounen"
+
+#: ../../../lib/web/src/components/data-table/pagination.tsx:75
+msgid "Go to first page"
+msgstr "Ale nan premye paj"
+
+#: ../../../lib/web/src/components/data-table/pagination.tsx:121
+msgid "Go to last page"
+msgstr "Ale nan dènye paj"
+
+#: ../../../lib/web/src/components/data-table/pagination.tsx:112
+msgid "Go to next page"
+msgstr "Ale nan paj swivan"
+
+#: ../../../lib/web/src/components/data-table/pagination.tsx:84
+msgid "Go to previous page"
+msgstr "Ale nan paj anvan"
+
+#: src/features/wiki/attachments-page.tsx:333
+#: src/features/wiki/attachments-page.tsx:334
+msgid "Grid view"
+msgstr "Vi grid"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:159
+msgid "Group"
+msgstr "Gwoup"
+
+#: ../../../lib/web/src/components/data-table/column-header.tsx:67
+msgid "Hide"
+msgstr "Kache"
+
+#: src/features/wiki/page-history.tsx:27
+#: src/features/wiki/wiki-page-content.tsx:260
+#: src/routes/_authenticated/$page/index.tsx:199
+#: src/routes/_authenticated/index.tsx:389
+msgid "History"
+msgstr "Istwa"
+
+#: src/routes/_authenticated/$page/history/index.tsx:22
+#: src/routes/_authenticated/$page/history/index.tsx:35
+#: src/routes/_authenticated/$page/history/index.tsx:46
+#: src/routes/_authenticated/$page/history/index.tsx:60
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:32
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:45
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:56
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:70
+msgid "History: {pageTitle}"
+msgstr "Istwa: {pageTitle}"
+
+#: src/features/wiki/wiki-settings.tsx:557
+msgid "home"
+msgstr "akèy"
+
+#: ../../../lib/web/src/components/layout/app-sidebar.tsx:82
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:142
+#: ../../../lib/web/src/components/layout/top-bar.tsx:62
+#: ../../../lib/web/src/components/layout/top-bar.tsx:91
+#: src/routes/_authenticated/index.tsx:251
+msgid "Home"
+msgstr "Akèy"
+
+#: src/features/wiki/wiki-settings.tsx:545
+msgid "Home page"
+msgstr "Paj akèy"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx:41
+msgid "Hot"
+msgstr "Cho"
+
+#: src/features/user/account.tsx:92
+#: src/features/wiki/wiki-settings.tsx:451
+msgid "Identity"
+msgstr "Idantite"
+
+#: src/features/wiki/markdown-content.tsx:106
+msgid "Image"
+msgstr "Imaj"
+
+#: src/features/wiki/attachments-page.tsx:308
+msgid "Images"
+msgstr "Imaj"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:83
+msgid "Imperial"
+msgstr "Imperyal"
+
+#: src/features/wiki/page-editor.tsx:223
+msgid "Insert"
+msgstr "Insè"
+
+#: src/features/wiki/page-editor.tsx:346
+msgid "Insert attachment"
+msgstr "Insè atachman"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:239
+msgid "Inset"
+msgstr "Inset"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx:39
+msgid "Interests"
+msgstr "Enterè"
+
+#: src/features/user/account.tsx:508
+msgid "Invalid code"
+msgstr "Kòd envalid"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:237
+msgid "Invalid verification code"
+msgstr "Kòd verifikasyon envalid"
+
+#: src/routes/_authenticated/$page/revert.tsx:40
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:41
+msgid "Invalid version number"
+msgstr "Nimewo vèsyon envalid"
+
+#: src/routes/_authenticated/join.tsx:42
+msgid "Joined wiki"
+msgstr "Rantre nan wiki"
+
+#: src/features/user/sessions.tsx:146
+msgid "Last active"
+msgstr "Dènye aktif"
+
+#: src/features/wiki/wiki-settings.tsx:841
+msgid "Last synced"
+msgstr "Dènye senkronize"
+
+#: src/features/user/account.tsx:454
+msgid "Last used"
+msgstr "Dènye itilize"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:273
+msgid "Layout"
+msgstr "Layout"
+
+#: ../../../lib/web/src/components/learn-more.tsx:27
+msgid "Learn more"
+msgstr "Aprann plis"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:341
+msgid "Left to Right"
+msgstr "Goch a Dwat"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:200
+#: ../../../lib/web/src/lib/preference-utils.ts:16
+msgid "Light"
+msgstr "Klè"
+
+#: src/features/user/preferences.tsx:124
+msgid "Light or dark mode"
+msgstr "Mòd klè oswa fonse"
+
+#: src/features/wiki/markdown-content.tsx:154
+msgid "Link to {headingText}"
+msgstr "Lyen pou {headingText}"
+
+#: src/features/wiki/attachments-page.tsx:343
+#: src/features/wiki/attachments-page.tsx:344
+msgid "List view"
+msgstr "Vi lis"
+
+#: ../../../lib/web/src/components/ui/load-more.tsx:32
+msgid "Load more"
+msgstr "Chaje plis"
+
+#: ../../../lib/web/src/components/ui/load-more.tsx:32
+msgid "Loading…"
+msgstr "Ap chaje…"
+
+#: ../../../lib/web/src/components/layout/nav-user.tsx:98
+#: ../../../lib/web/src/components/layout/nav-user.tsx:164
+#: ../../../lib/web/src/components/layout/nav-user.tsx:212
+#: ../../../lib/web/src/components/profile-dropdown.tsx:66
+#: ../../../lib/web/src/components/profile-dropdown.tsx:95
+#: ../../../lib/web/src/components/sign-out-dialog.tsx:23
+#: ../../../lib/web/src/components/sign-out-dialog.tsx:25
+msgid "Log out"
+msgstr "Dekonekte"
+
+#: ../../../lib/web/src/hooks/use-logout.ts:16
+msgid "Logged out (with errors)"
+msgstr "Dekonekte (ak erè)"
+
+#: ../../../lib/web/src/hooks/use-logout.ts:14
+msgid "Logged out successfully"
+msgstr "Dekonekte avèk siksè"
+
+#: ../../../lib/web/src/components/sign-out-dialog.tsx:25
+msgid "Logging out…"
+msgstr "Ap dekonekte…"
+
+#: src/features/user/account.tsx:167
+msgid "Login requirements"
+msgstr "Egzijans login"
+
+#: src/features/user/account.tsx:157
+msgid "Login requirements updated"
+msgstr "Egzijans login mete ajou"
+
+#: src/features/user/account.tsx:677
+msgid "Make sure to save the new codes."
+msgstr "Asire ou ke ou sove nouvo kòd yo."
+
+#: src/features/user/preferences.tsx:82
+msgid "Manage your display settings and preferences"
+msgstr "Jere paramèt afichaj ak preferans ou"
+
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:86
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:220
+msgid "Mark all as read"
+msgstr "Make tout kòm li"
+
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:152
+msgid "Menu"
+msgstr "Meni"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:82
+msgid "Metric"
+msgstr "Metrik"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:56
+msgid "Monday"
+msgstr "Lendi"
+
+#: src/features/user/account.tsx:417
+msgid "My passkey"
+msgstr "Passkey mwen"
+
+#: src/features/wiki/page-editor.tsx:292
+msgid "my-page-name"
+msgstr "my-page-name"
+
+#: src/features/user/account.tsx:106
+#: src/features/user/account.tsx:452
+#: src/features/wiki/attachments-page.tsx:321
+#: src/features/wiki/wiki-settings.tsx:453
+msgid "Name"
+msgstr "Non"
+
+#: src/features/wiki/wiki-settings.tsx:292
+msgid "Name cannot contain < or > characters"
+msgstr "Non pa ka gen karaktè < oswa >"
+
+#: src/features/wiki/wiki-settings.tsx:291
+msgid "Name must be 100 characters or less"
+msgstr "Non dwe gen 100 karaktè oswa mwens"
+
+#: src/features/user/account.tsx:297
+#: src/features/user/sessions.tsx:70
+#: src/features/user/sessions.tsx:73
+#: src/features/wiki/wiki-settings.tsx:855
+msgid "Never"
+msgstr "Janmen"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx:40
+msgid "New"
+msgstr "Nouvo"
+
+#: src/features/wiki/wiki-page-content.tsx:191
+#: src/features/wiki/wiki-page-content.tsx:312
+#: src/routes/_authenticated/$page/index.tsx:130
+#: src/routes/_authenticated/$page/index.tsx:241
+#: src/routes/_authenticated/$wikiId/new.tsx:19
+#: src/routes/_authenticated/$wikiId/new.tsx:26
+#: src/routes/_authenticated/index.tsx:437
+#: src/routes/_authenticated/new.tsx:19
+#: src/routes/_authenticated/new.tsx:26
+msgid "New page"
+msgstr "Nouvo paj"
+
+#: src/features/wiki/rename-page-dialog.tsx:98
+msgid "New URL"
+msgstr "Nouvo URL"
+
+#: src/features/wiki/rename-page-dialog.tsx:51
+msgid "New URL is required"
+msgstr "Nouvo URL obligatwa"
+
+#: src/features/wiki/rename-page-dialog.tsx:55
+msgid "New URL must be different from current URL"
+msgstr "Nouvo URL dwe diferan de URL aktyèl la"
+
+#: src/features/wiki/redirects-page.tsx:243
+#: src/features/wiki/wiki-settings.tsx:1129
+msgid "new-page-name"
+msgstr "new-page-name"
+
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:342
+msgid "Next image"
+msgstr "Pwochen imaj"
+
+#: src/features/wiki/wiki-settings.tsx:615
+msgid "No access"
+msgstr "Pa gen aksè"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:156
+msgid "No access rules configured. Add rules to control who can access this resource."
+msgstr "Pa gen règ aksè konfigire. Ajoute règ pou kontwole kiyès ki ka jwenn aksè nan resous sa a."
+
+#: src/features/user/sessions.tsx:136
+msgid "No active sessions"
+msgstr "Pa gen sesyon aktif"
+
+#: src/features/wiki/attachments-page.tsx:372
+msgid "No attachments match your search"
+msgstr "Pa gen atachman ki koresponn ak rechèch ou"
+
+#: src/features/wiki/attachments-page.tsx:372
+#: src/features/wiki/page-editor.tsx:394
+msgid "No attachments yet"
+msgstr "Poko gen atachman"
+
+#: src/features/wiki/changes-list.tsx:34
+msgid "No changes yet"
+msgstr "Poko gen chanjman"
+
+#: src/features/user/account.tsx:667
+msgid "No codes"
+msgstr "Pa gen kòd"
+
+#: src/features/wiki/page-comments.tsx:90
+msgid "No comments yet"
+msgstr "Poko gen kòmantè"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:287
+msgid "No connected accounts"
+msgstr "Pa gen kont konekte"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:238
+msgid "No groups available"
+msgstr "Pa gen gwoup disponib"
+
+#: ../../../lib/web/src/components/language-picker.tsx:177
+msgid "No matches."
+msgstr "Pa gen korespondans."
+
+#: src/features/wiki/search-page.tsx:82
+msgid "No pages found for \"{debouncedQuery}\""
+msgstr "Pa gen paj ki jwenn pou \"{debouncedQuery}\""
+
+#: src/features/wiki/tag-pages.tsx:48
+msgid "No pages found with this tag"
+msgstr "Pa gen paj ki jwenn ak tag sa a"
+
+#: src/features/user/account.tsx:445
+msgid "No passkeys registered"
+msgstr "Pa gen passkey anrejistre"
+
+#: ../../../lib/web/src/components/place-picker.tsx:129
+msgid "No places found"
+msgstr "Pa gen kote ki jwenn"
+
+#: ../../../lib/web/src/components/profile-dropdown.tsx:55
+msgid "No profile"
+msgstr "Pa gen pwofil"
+
+#: src/features/wiki/redirects-page.tsx:75
+#: src/features/wiki/wiki-settings.tsx:976
+msgid "No redirects configured"
+msgstr "Pa gen redireksyon konfigire"
+
+#: src/features/wiki/wiki-settings.tsx:820
+#: src/features/wiki/wiki-settings.tsx:900
+msgid "No replicas yet"
+msgstr "Poko gen replika"
+
+#: ../../../lib/web/src/components/command-menu.tsx:52
+#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:87
+msgid "No results found."
+msgstr "Pa gen rezilta ki jwenn."
+
+#: src/features/wiki/page-history.tsx:42
+msgid "No revisions found"
+msgstr "Pa gen revizyon ki jwenn"
+
+#: src/features/wiki/tags-list.tsx:32
+msgid "No tags found"
+msgstr "Pa gen tag ki jwenn"
+
+#: ../../../lib/web/src/components/timezone-select.tsx:64
+msgid "No time zone found."
+msgstr "Pa gen zòn lè ki jwenn."
+
+#: ../../../lib/web/src/components/notification-category-button.tsx:135
+msgid "No topic record yet — try again after the next notification."
+msgstr "Poko gen anrejistreman sijè — eseye ankò apre pwochèn notifikasyon an."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:203
+msgid "No users found"
+msgstr "Pa gen itilizatè ki jwenn"
+
+#: src/features/wiki/inline-wiki-search.tsx:121
+#: src/routes/_authenticated/find.tsx:89
+msgid "No wikis found"
+msgstr "Pa gen wiki ki jwenn"
+
+#: ../../../lib/web/src/components/person-picker.tsx:349
+msgid "None"
+msgstr "Okenn"
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:132
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:146
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:247
+msgid "Notifications"
+msgstr "Notifikasyon"
+
+#: src/features/wiki/redirects-page.tsx:231
+#: src/features/wiki/wiki-settings.tsx:1117
+msgid "old-page-name"
+msgstr "old-page-name"
+
+#: src/features/wiki/page-view.tsx:79
+#: src/features/wiki/page-view.tsx:94
+msgid "On this page"
+msgstr "Sou paj sa a"
+
+#: ../../../lib/web/src/features/errors/not-found-error.tsx:12
+msgid "Oops! Page Not Found!"
+msgstr "Oops! Paj Pa Jwenn!"
+
+#: src/features/wiki/attachments-page.tsx:578
+msgid "Open"
+msgstr "Ouvri"
+
+#. placeholder {0}: wiki.name
+#: src/routes/_authenticated/index.tsx:776
+msgid "Open {0}"
+msgstr "Ouvri {0}"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:150
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:151
+msgid "Open account actions"
+msgstr "Ouvri aksyon kont yo"
+
+#: src/features/wiki/attachments-page.tsx:577
+msgid "Open attachment"
+msgstr "Ouvri atachman"
+
+#: src/components/value-link-chip.tsx:32
+msgid "Open link"
+msgstr "Ouvri lyen"
+
+#: src/components/value-link-chip.tsx:29
+#: src/components/value-link-chip.tsx:29
+msgid "Open link in new tab"
+msgstr "Ouvri lyen nan nouvo tab"
+
+#: ../../../lib/web/src/components/layout/top-bar.tsx:57
+msgid "Open navigation"
+msgstr "Ouvri navigasyon"
+
+#: ../../../lib/web/src/components/layout/top-nav.tsx:32
+#: ../../../lib/web/src/components/layout/top-nav.tsx:33
+msgid "Open navigation menu"
+msgstr "Ouvri meni navigasyon"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:51
+msgid "Open theme settings"
+msgstr "Ouvri paramèt tèm"
+
+#: src/routes/_authenticated/join.tsx:88
+msgid "Or enter ID directly"
+msgstr "Oswa antre ID dirèkteman"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:163
+msgid "Other"
+msgstr "Lòt"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:213
+msgid "Owner"
+msgstr "Pwopriyetè"
+
+#: src/features/wiki/changes-list.tsx:42
+#: src/features/wiki/wiki-page-content.tsx:242
+#: src/routes/_authenticated/$page/index.tsx:181
+#: src/routes/_authenticated/index.tsx:371
+msgid "Page"
+msgstr "Paj"
+
+#: src/routes/_authenticated/$page/delete.tsx:67
+#: src/routes/_authenticated/$wikiId/$page/delete.tsx:80
+msgid "Page \"{slug}\" does not exist"
+msgstr "Paj \"{slug}\" pa egziste"
+
+#: src/features/wiki/delete-page.tsx:32
+msgid "Page \"{title}\" deleted"
+msgstr "Paj \"{title}\" efase"
+
+#: src/features/wiki/wiki-page-content.tsx:172
+#: src/features/wiki/wiki-page-content.tsx:173
+#: src/features/wiki/wiki-page-content.tsx:234
+#: src/features/wiki/wiki-page-content.tsx:235
+#: src/routes/_authenticated/$page/index.tsx:110
+#: src/routes/_authenticated/$page/index.tsx:111
+#: src/routes/_authenticated/$page/index.tsx:173
+#: src/routes/_authenticated/$page/index.tsx:174
+#: src/routes/_authenticated/index.tsx:363
+#: src/routes/_authenticated/index.tsx:364
+msgid "Page actions"
+msgstr "Aksyon paj"
+
+#: src/features/wiki/page-editor.tsx:150
+msgid "Page created"
+msgstr "Paj kreye"
+
+#: src/features/wiki/page-view.tsx:285
+#: src/features/wiki/wiki-page-content.tsx:213
+#: src/routes/_authenticated/$page/index.tsx:152
+#: src/routes/_authenticated/index.tsx:344
+msgid "Page not found"
+msgstr "Paj pa jwenn"
+
+#: src/features/wiki/page-editor.tsx:167
+msgid "Page saved"
+msgstr "Paj sove"
+
+#: src/features/wiki/page-editor.tsx:310
+msgid "Page title"
+msgstr "Tit paj"
+
+#: src/features/wiki/page-editor.tsx:287
+msgid "Page URL"
+msgstr "URL paj"
+
+#: src/features/wiki/page-editor.tsx:142
+msgid "Page URL is required"
+msgstr "URL paj obligatwa"
+
+#: src/features/wiki/tag-pages.tsx:22
+msgid "Pages tagged <0>{tag}</0>"
+msgstr "Paj make ak <0>{tag}</0>"
+
+#: src/features/user/account.tsx:183
+#: src/features/user/account.tsx:355
+msgid "Passkey"
+msgstr "Passkey"
+
+#: src/features/user/account.tsx:383
+msgid "Passkey deleted"
+msgstr "Passkey efase"
+
+#: src/features/user/account.tsx:414
+msgid "Passkey name"
+msgstr "Non passkey"
+
+#: src/features/user/account.tsx:357
+msgid "Passkey registered"
+msgstr "Passkey anrejistre"
+
+#: src/features/user/account.tsx:375
+msgid "Passkey renamed"
+msgstr "Passkey rebatize"
+
+#: src/features/user/account.tsx:394
+msgid "Passkeys"
+msgstr "Passkeys"
+
+#: src/features/wiki/wiki-settings.tsx:580
+msgid "Permanently delete this wiki and all its contents. This cannot be undone."
+msgstr "Efase pèmanan wiki sa a ak tout kontni li. Sa pa ka defèt."
+
+#: src/features/user/preferences.tsx:55
+msgid "Preference updated"
+msgstr "Preferans mete ajou"
+
+#: src/features/user/preferences.tsx:41
+#: src/features/user/preferences.tsx:77
+msgid "Preferences"
+msgstr "Preferans"
+
+#: src/features/user/preferences.tsx:67
+msgid "Preferences reset to defaults"
+msgstr "Preferans reset nan default"
+
+#: src/features/wiki/page-editor.tsx:213
+msgid "Preview"
+msgstr "Apèsi"
+
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:332
+msgid "Previous image"
+msgstr "Imaj anvan"
+
+#: src/features/user/account.tsx:680
+msgid "Proceed"
+msgstr "Kontinye"
+
+#: ../../../lib/web/src/components/layout/nav-user.tsx:134
+#: ../../../lib/web/src/components/profile-dropdown.tsx:111
+msgid "Profile"
+msgstr "Pwofil"
+
+#: src/features/wiki/revert-page.tsx:75
+msgid "Reason for reverting"
+msgstr "Rezon pou retounen"
+
+#: src/features/user/account.tsx:224
+msgid "Receive a verification code by email"
+msgstr "Resevwa yon kòd verifikasyon pa imèl"
+
+#: src/features/wiki/changes-list.tsx:20
+#: src/features/wiki/wiki-page-content.tsx:294
+#: src/routes/_authenticated/$page/index.tsx:234
+#: src/routes/_authenticated/$wikiId/changes.tsx:17
+#: src/routes/_authenticated/$wikiId/changes.tsx:23
+#: src/routes/_authenticated/$wikiId/changes.tsx:34
+#: src/routes/_authenticated/$wikiId/changes.tsx:44
+#: src/routes/_authenticated/changes.tsx:16
+#: src/routes/_authenticated/changes.tsx:22
+#: src/routes/_authenticated/changes.tsx:33
+#: src/routes/_authenticated/changes.tsx:43
+#: src/routes/_authenticated/index.tsx:409
+msgid "Recent changes"
+msgstr "Chanjman resan"
+
+#: src/features/wiki/changes-list.tsx:24
+msgid "Recent edits across all pages in this wiki."
+msgstr "Modifikasyon resan nan tout paj nan wiki sa a."
+
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:216
+#: ../../../lib/web/src/components/search-entity-page.tsx:191
+msgid "Recommended"
+msgstr "Rekòmande"
+
+#: src/routes/_authenticated/index.tsx:712
+msgid "Recommended wikis"
+msgstr "Wiki rekòmande"
+
+#: src/features/user/account.tsx:668
+msgid "Recovery codes"
+msgstr "Kòd rekiperasyon"
+
+#: src/features/user/account.tsx:630
+msgid "Recovery Codes"
+msgstr "Kòd Rekiperasyon"
+
+#. placeholder {0}: redirect.source
+#: src/features/wiki/redirects-page.tsx:109
+msgid "Redirect \"{0}\" deleted"
+msgstr "Redireksyon \"{0}\" efase"
+
+#: src/features/wiki/wiki-settings.tsx:951
+msgid "Redirect \"{source}\" deleted"
+msgstr "Redireksyon \"{source}\" efase"
+
+#: src/features/wiki/redirects-page.tsx:193
+#: src/features/wiki/wiki-settings.tsx:1082
+msgid "Redirect created"
+msgstr "Redireksyon kreye"
+
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:130
+msgid "Redirecting to login."
+msgstr "Ap redirije nan koneksyon."
+
+#: src/features/wiki/redirects-page.tsx:64
+#: src/features/wiki/wiki-settings.tsx:94
+#: src/features/wiki/wiki-settings.tsx:964
+#: src/routes/_authenticated/redirects.tsx:15
+#: src/routes/_authenticated/redirects.tsx:18
+msgid "Redirects"
+msgstr "Redireksyon"
+
+#: ../../../lib/web/src/components/post-tags.tsx:175
+msgid "Reduce interest"
+msgstr "Diminye enterè"
+
+#: src/features/user/account.tsx:673
+msgid "Regenerate"
+msgstr "Rejenere"
+
+#: src/features/user/account.tsx:676
+msgid "Regenerate?"
+msgstr "Rejenere?"
+
+#: src/features/user/account.tsx:425
+msgid "Register"
+msgstr "Anrejistre"
+
+#: src/features/user/account.tsx:187
+msgid "Register a passkey below to enable"
+msgstr "Anrejistre yon passkey anba a pou aktive"
+
+#: src/features/user/account.tsx:408
+msgid "Register passkey"
+msgstr "Anrejistre passkey"
+
+#: src/features/user/account.tsx:362
+msgid "Registration cancelled"
+msgstr "Enskripsyon anile"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:47
+msgid "Relative (5m, 3h, 2d)"
+msgstr "Relatif (5m, 3h, 2d)"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:46
+msgid "Relative within 24 hours, else absolute"
+msgstr "Relatif nan 24 èdtan, sinon absoli"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:257
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:172
+#: src/features/wiki/wiki-settings.tsx:887
+msgid "Remove"
+msgstr "Retire"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:241
+#: ../../../lib/web/src/features/access/access-list.tsx:242
+msgid "Remove access rule"
+msgstr "Retire règ aksè"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:249
+msgid "Remove access?"
+msgstr "Retire aksè?"
+
+#: ../../../lib/web/src/components/post-tags.tsx:190
+msgid "Remove interest"
+msgstr "Retire enterè"
+
+#. placeholder {0}: replica.name || replica.id
+#: src/features/wiki/wiki-settings.tsx:865
+#: src/features/wiki/wiki-settings.tsx:866
+msgid "Remove replica {0}"
+msgstr "Retire replika {0}"
+
+#: src/features/wiki/wiki-settings.tsx:873
+msgid "Remove replica?"
+msgstr "Retire replika?"
+
+#: src/features/wiki/rename-page-dialog.tsx:126
+#: src/features/wiki/rename-page-dialog.tsx:149
+#: src/features/wiki/wiki-page-content.tsx:254
+#: src/routes/_authenticated/$page/index.tsx:193
+#: src/routes/_authenticated/index.tsx:383
+msgid "Rename"
+msgstr "Rebatize"
+
+#: src/features/wiki/rename-page-dialog.tsx:94
+msgid "Rename page"
+msgstr "Rebatize paj"
+
+#: src/features/wiki/rename-page-dialog.tsx:126
+msgid "Renaming..."
+msgstr "Ap rebatize..."
+
+#. placeholder {0}: name || `${replicaId.slice(0, 12)}...`
+#: src/features/wiki/wiki-settings.tsx:775
+msgid "Replica \"{0}\" removed"
+msgstr "Replika \"{0}\" retire"
+
+#: src/features/wiki/wiki-settings.tsx:96
+#: src/features/wiki/wiki-settings.tsx:788
+#: src/features/wiki/wiki-settings.tsx:801
+#: src/features/wiki/wiki-settings.tsx:815
+#: src/features/wiki/wiki-settings.tsx:832
+msgid "Replicas"
+msgstr "Replika yo"
+
+#: src/routes/_authenticated/join.tsx:28
+#: src/routes/_authenticated/join.tsx:57
+#: src/routes/_authenticated/join.tsx:64
+#: src/routes/_authenticated/join.tsx:117
+msgid "Replicate wiki"
+msgstr "Replike wiki"
+
+#: src/routes/_authenticated/join.tsx:117
+msgid "Replicating..."
+msgstr "Ap replike..."
+
+#: src/features/wiki/wiki-comment-thread.tsx:162
+msgid "Reply"
+msgstr "Reponn"
+
+#. placeholder {0}: comment.name || comment.author
+#: src/features/wiki/wiki-comment-thread.tsx:196
+msgid "Reply to {0}..."
+msgstr "Reponn {0}..."
+
+#: src/features/wiki/wiki-page-content.tsx:156
+msgid "Request URL: {baseURL}{slug}"
+msgstr "URL demand: {baseURL}{slug}"
+
+#: src/features/user/account.tsx:168
+msgid "Require all selected methods to log in"
+msgstr "Egzije tout metòd ki chwazi pou konekte"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:77
+#: src/features/user/preferences.tsx:110
+msgid "Reset"
+msgstr "Reset"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:75
+msgid "Reset all settings to default values"
+msgstr "Reset tout paramèt nan valè default"
+
+#: src/features/user/preferences.tsx:102
+msgid "Reset preferences?"
+msgstr "Reset preferans?"
+
+#: src/features/user/preferences.tsx:97
+msgid "Reset to defaults"
+msgstr "Reset nan default"
+
+#: src/features/wiki/revert-page.tsx:100
+msgid "Revert"
+msgstr "Retounen"
+
+#: src/features/wiki/revert-page.tsx:70
+msgid "Revert comment"
+msgstr "Retounen kòmantè"
+
+#: src/features/wiki/revert-page.tsx:58
+msgid "Revert Page"
+msgstr "Retounen Paj"
+
+#: src/features/wiki/page-history.tsx:119
+#: src/features/wiki/revision-view.tsx:61
+#: src/features/wiki/revision-view.tsx:66
+msgid "Revert to this version"
+msgstr "Retounen nan vèsyon sa a"
+
+#: src/routes/_authenticated/$page/revert.tsx:26
+#: src/routes/_authenticated/$page/revert.tsx:38
+#: src/routes/_authenticated/$page/revert.tsx:48
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:27
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:39
+#: src/routes/_authenticated/$wikiId/$page/revert.tsx:49
+msgid "Revert: {slug}"
+msgstr "Retounen: {slug}"
+
+#: src/features/wiki/revert-page.tsx:31
+#: src/features/wiki/revert-page.tsx:38
+msgid "Reverted to version {version}"
+msgstr "Retounen nan vèsyon {version}"
+
+#: src/features/wiki/revert-page.tsx:100
+msgid "Reverting..."
+msgstr "Ap retounen..."
+
+#: src/features/user/sessions.tsx:104
+msgid "Revoke"
+msgstr "Revoke"
+
+#: src/features/user/sessions.tsx:88
+msgid "Revoke session"
+msgstr "Revoke sesyon"
+
+#: src/features/user/sessions.tsx:93
+msgid "Revoke session?"
+msgstr "Revoke sesyon?"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:348
+msgid "Right to Left"
+msgstr "Dwat a Goch"
+
+#: ../../../lib/web/src/components/data-table/pagination.tsx:60
+msgid "Rows per page"
+msgstr "Ranje pa paj"
+
+#: src/features/wiki/wiki-page-content.tsx:300
+#: src/routes/_authenticated/index.tsx:415
+#: src/routes/_authenticated/index.tsx:646
+msgid "RSS feed"
+msgstr "Flux RSS"
+
+#: src/features/wiki/wiki-page-content.tsx:115
+#: src/routes/_authenticated/index.tsx:303
+#: src/routes/_authenticated/index.tsx:553
+msgid "RSS URL copied to clipboard"
+msgstr "URL RSS kopye nan clipboard"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:61
+msgid "Saturday"
+msgstr "Samdi"
+
+#: src/features/wiki/page-editor.tsx:266
+#: src/features/wiki/wiki-comment-thread.tsx:134
+msgid "Save"
+msgstr "Sove"
+
+#: src/features/wiki/wiki-settings.tsx:566
+msgid "Save changes"
+msgstr "Sove chanjman"
+
+#: src/features/user/account.tsx:641
+msgid "Save these codes"
+msgstr "Sove kòd sa yo"
+
+#: src/features/wiki/page-editor.tsx:266
+#: src/features/wiki/wiki-settings.tsx:566
+msgid "Saving..."
+msgstr "Ap sove..."
+
+#: src/features/wiki/wiki-page-content.tsx:282
+#: src/routes/_authenticated/$page/index.tsx:222
+#: src/routes/_authenticated/index.tsx:397
+#: src/routes/_authenticated/search.tsx:21
+#: src/routes/_authenticated/search.tsx:26
+msgid "Search"
+msgstr "Chèche"
+
+#: src/features/wiki/attachments-page.tsx:282
+msgid "Search attachments..."
+msgstr "Chèche atachman..."
+
+#: src/routes/_authenticated/find.tsx:88
+msgid "Search by name, ID, fingerprint, or URL..."
+msgstr "Chèche pa non, ID, fingerprint, oswa URL..."
+
+#: ../../../lib/web/src/components/place-picker.tsx:82
+msgid "Search for a place"
+msgstr "Chèche yon kote"
+
+#: src/routes/_authenticated/index.tsx:688
+msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
+msgstr "Chèche yon wiki pou abone, oswa kreye youn pou pibliye pwòp dokimantasyon ou."
+
+#: ../../../lib/web/src/components/travelling-picker.tsx:234
+msgid "Search for destination..."
+msgstr "Chèche pou destinasyon..."
+
+#: ../../../lib/web/src/components/travelling-picker.tsx:173
+msgid "Search for origin..."
+msgstr "Chèche pou orijin..."
+
+#: src/routes/_authenticated/join.tsx:67
+msgid "Search for public wikis or enter an entity ID directly."
+msgstr "Chèche pou wiki piblik oswa antre yon ID antite dirèkteman."
+
+#: src/features/wiki/inline-wiki-search.tsx:94
+#: src/routes/_authenticated/join.tsx:78
+msgid "Search for wikis..."
+msgstr "Chèche pou wiki..."
+
+#: src/features/wiki/search-page.tsx:72
+msgid "Search pages by title or content."
+msgstr "Chèche paj pa tit oswa kontni."
+
+#: src/features/wiki/search-page.tsx:58
+msgid "Search pages by title or content..."
+msgstr "Chèche paj pa tit oswa kontni..."
+
+#: ../../../lib/web/src/components/timezone-select.tsx:62
+msgid "Search time zone..."
+msgstr "Chèche zòn lè..."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:170
+msgid "Search users"
+msgstr "Chèche itilizatè"
+
+#: src/features/wiki/search-page.tsx:49
+msgid "Search Wiki"
+msgstr "Chèche Wiki"
+
+#: ../../../lib/web/src/components/person-picker.tsx:323
+msgid "Search..."
+msgstr "Chèche..."
+
+#: ../../../lib/web/src/components/language-picker.tsx:175
+msgid "Search…"
+msgstr "Chèche…"
+
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/search-entity-page.tsx:149
+#: ../../../lib/web/src/features/access/access-dialog.tsx:199
+msgid "Searching..."
+msgstr "Ap chèche..."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:147
+msgid "Select a user, group, or other rule to grant access."
+msgstr "Chwazi yon itilizatè, gwoup, oswa lòt règ pou bay aksè."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:270
+msgid "Select access rule"
+msgstr "Chwazi règ aksè"
+
+#: ../../../lib/web/src/features/accounts/account-add.tsx:126
+msgid "Select account type"
+msgstr "Chwazi tip kont"
+
+#: src/features/wiki/page-editor.tsx:348
+msgid "Select an attachment to insert into your page, or upload a new file."
+msgstr "Chwazi yon atachman pou ensere nan paj ou, oswa telechaje yon nouvo fichye."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:228
+msgid "Select group"
+msgstr "Chwazi gwoup"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:291
+msgid "Select layout style"
+msgstr "Chwazi style layout"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:233
+msgid "Select sidebar style"
+msgstr "Chwazi style sidebar"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:335
+msgid "Select site direction"
+msgstr "Chwazi direksyon sit la"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:189
+msgid "Select theme preference"
+msgstr "Chwazi preferans tèm"
+
+#: src/features/wiki/comment-form.tsx:107
+msgid "Send comment"
+msgstr "Voye kòmantè"
+
+#: src/features/wiki/wiki-comment-thread.tsx:262
+msgid "Send reply"
+msgstr "Voye repons"
+
+#: src/features/user/sessions.tsx:144
+msgid "Session"
+msgstr "Sesyon"
+
+#: ../../../lib/web/src/lib/api-client.ts:224
+msgid "Session expired"
+msgstr "Sesyon ekspire"
+
+#: src/features/user/sessions.tsx:47
+msgid "Session revoked"
+msgstr "Sesyon revoke"
+
+#: src/features/user/sessions.tsx:116
+#: src/features/user/sessions.tsx:125
+msgid "Sessions"
+msgstr "Sesyon"
+
+#: ../../../lib/web/src/components/travelling-picker.tsx:143
+msgid "Set origin and destination"
+msgstr "Mete orijin ak destinasyon"
+
+#: src/features/user/account.tsx:207
+msgid "Set up an authenticator below to enable"
+msgstr "Konfigire yon otantifikatè anba pou aktive"
+
+#: src/features/user/account.tsx:600
+msgid "Set up authenticator"
+msgstr "Konfigire otantifikatè"
+
+#: ../../../lib/web/src/components/layout/nav-user.tsx:81
+#: ../../../lib/web/src/components/layout/nav-user.tsx:145
+#: ../../../lib/web/src/components/layout/nav-user.tsx:195
+#: src/features/wiki/wiki-page-content.tsx:320
+#: src/features/wiki/wiki-settings.tsx:93
+#: src/routes/_authenticated/$page/index.tsx:249
+#: src/routes/_authenticated/index.tsx:445
+msgid "Settings"
+msgstr "Paramèt"
+
+#: src/features/wiki/wiki-settings.tsx:350
+#: src/features/wiki/wiki-settings.tsx:363
+msgid "Settings saved"
+msgstr "Paramèt sove"
+
+#: ../../../lib/web/src/components/ui/load-more.tsx:36
+msgid "Showing {totalShown} of {total}"
+msgstr "Ap montre {totalShown} nan {total}"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:225
+#: ../../../lib/web/src/components/config-drawer.tsx:249
+#: ../../../lib/web/src/components/ui/sidebar.tsx:234
+msgid "Sidebar"
+msgstr "Sidebar"
+
+#: src/features/user/account.tsx:395
+msgid "Sign in with biometrics or security keys"
+msgstr "Konekte ak byometrik oswa kle sekirite"
+
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:128
+msgid "Signing out..."
+msgstr "Ap dekonekte..."
+
+#: src/features/wiki/attachments-page.tsx:322
+msgid "Size"
+msgstr "Gwosè"
+
+#: ../../../lib/web/src/components/skip-to-main.tsx:8
+msgid "Skip to Main"
+msgstr "Sote pou Prensipal"
+
+#: src/features/wiki/attachments-page.tsx:317
+msgid "Sort"
+msgstr "Klase"
+
+#: src/features/wiki/redirects-page.tsx:83
+#: src/features/wiki/wiki-settings.tsx:536
+#: src/features/wiki/wiki-settings.tsx:984
+msgid "Source"
+msgstr "Sous"
+
+#: src/features/wiki/redirects-page.tsx:226
+#: src/features/wiki/wiki-settings.tsx:1112
+msgid "Source URL"
+msgstr "URL sous"
+
+#: src/routes/_authenticated/index.tsx:685
+msgid "Start your first wiki"
+msgstr "Kòmanse premye wiki w la"
+
+#: src/features/user/account.tsx:577
+msgid "Status: Enabled"
+msgstr "Estati: Aktive"
+
+#: ../../../lib/web/src/components/coming-soon.tsx:12
+msgid "Stay tuned though!"
+msgstr "Men rete kanpe!"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:187
+msgid "Subject"
+msgstr "Sijè"
+
+#: src/features/wiki/inline-wiki-search.tsx:158
+#: src/routes/_authenticated/index.tsx:750
+msgid "Subscribe"
+msgstr "Abone"
+
+#: src/features/wiki/wiki-settings.tsx:840
+msgid "Subscribed"
+msgstr "Abone"
+
+#: src/routes/_authenticated/index.tsx:796
+#: src/routes/_authenticated/index.tsx:797
+msgid "Subscribed wiki actions"
+msgstr "Aksyon wiki abone"
+
+#: src/features/wiki/wiki-settings.tsx:526
+msgid "Subscription"
+msgstr "Abònman"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:62
+msgid "Sunday"
+msgstr "Dimanch"
+
+#: src/features/wiki/wiki-settings.tsx:531
+msgid "Sync now"
+msgstr "Sinkronize kounye a"
+
+#: src/features/wiki/wiki-settings.tsx:531
+msgid "Syncing..."
+msgstr "Ap sinkronize..."
+
+#: ../../../lib/web/src/components/config-drawer.tsx:195
+#: ../../../lib/web/src/lib/preference-utils.ts:18
+msgid "System"
+msgstr "Sistèm"
+
+#: src/features/wiki/page-view.tsx:47
+msgid "Table of contents"
+msgstr "Tab kontni"
+
+#: ../../../lib/web/src/components/tag-input.tsx:91
+msgid "Tag"
+msgstr "Tag"
+
+#: src/features/wiki/tag-manager.tsx:44
+msgid "Tag \"{tag}\" added"
+msgstr "Tag \"{tag}\" ajoute"
+
+#: src/features/wiki/tag-manager.tsx:60
+msgid "Tag \"{tag}\" removed"
+msgstr "Tag \"{tag}\" retire"
+
+#: src/features/wiki/tag-manager.tsx:36
+msgid "Tag already exists"
+msgstr "Tag deja egziste"
+
+#: src/routes/_authenticated/tag/$tag.tsx:18
+#: src/routes/_authenticated/tag/$tag.tsx:24
+#: src/routes/_authenticated/tag/$tag.tsx:35
+#: src/routes/_authenticated/tag/$tag.tsx:45
+msgid "Tag: {tag}"
+msgstr "Tag: {tag}"
+
+#: src/features/wiki/wiki-page-content.tsx:288
+#: src/routes/_authenticated/$page/index.tsx:228
+#: src/routes/_authenticated/index.tsx:403
+msgid "Tags"
+msgstr "Tag yo"
+
+#: src/features/wiki/redirects-page.tsx:85
+#: src/features/wiki/wiki-settings.tsx:986
+msgid "Target"
+msgstr "Sib"
+
+#: src/features/wiki/redirects-page.tsx:238
+#: src/features/wiki/wiki-settings.tsx:1124
+msgid "Target URL"
+msgstr "URL sib"
+
+#: ../../../lib/web/src/components/layout/team-switcher.tsx:60
+msgid "Teams/Apps"
+msgstr "Ekip/App"
+
+#: src/routes/_authenticated/join.tsx:103
+msgid "The entity ID of the wiki you want to replicate."
+msgstr "ID antite wiki ou vle replike a."
+
+#: src/features/wiki/wiki-settings.tsx:1132
+msgid "The existing page to redirect to"
+msgstr "Paj ki egziste pou redireksyone a"
+
+#: src/features/wiki/redirects-page.tsx:246
+msgid "The existing page to redirect to (e.g., \"new-page\")"
+msgstr "Paj ki egziste pou redireksyone a (pa egzanp, \"new-page\")"
+
+#: src/features/wiki/page-view.tsx:286
+msgid "The page \"{slug}\" does not exist yet."
+msgstr "Paj \"{slug}\" la poko egziste."
+
+#: src/features/wiki/wiki-settings.tsx:547
+msgid "The page that users see when they first visit the wiki."
+msgstr "Paj itilizatè yo wè lè yo premye vizite wiki a."
+
+#: src/features/wiki/wiki-settings.tsx:1120
+msgid "The URL that will be redirected"
+msgstr "URL ki pral redireksyone"
+
+#: src/features/wiki/redirects-page.tsx:234
+msgid "The URL that will be redirected (e.g., \"old-page\")"
+msgstr "URL ki pral redireksyone (pa egzanp, \"old-page\")"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:181
+msgid "Theme"
+msgstr "Tèm"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:60
+msgid "Theme Settings"
+msgstr "Paramèt Tèm"
+
+#: src/features/wiki/wiki-settings.tsx:596
+msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
+msgstr "Aksyon sa pa ka anile. Sa pral efase wiki a ak tout kontni l yo pèmanan."
+
+#: src/features/wiki/wiki-settings.tsx:527
+msgid "This wiki is subscribed to a source wiki and receives updates from it."
+msgstr "Wiki sa abone nan yon wiki sous epi li resevwa mizajou ladan l."
+
+#: src/features/wiki/page-editor.tsx:295
+msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
+msgstr "Sa pral chemen pou paj la. Itilize lèt minuskil, chif, ak tirè."
+
+#. placeholder {0}: passkey.name
+#: src/features/user/account.tsx:314
+msgid "This will remove \"{0}\" from your account. You won't be able to use it to sign in anymore."
+msgstr "Sa pral retire \"{0}\" nan kont ou. Ou pap ka itilize l pou konekte ankò."
+
+#: src/features/user/account.tsx:588
+msgid "This will remove the app from your account."
+msgstr "Sa pral retire app la nan kont ou."
+
+#. placeholder {0}: redirect.source
+#. placeholder {1}: redirect.target
+#: src/features/wiki/wiki-settings.tsx:1024
+msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
+msgstr "Sa pral retire redireksyon nan \"{0}\" pou \"{1}\"."
+
+#. placeholder {0}: redirect.source
+#. placeholder {1}: redirect.target
+#: src/features/wiki/redirects-page.tsx:151
+msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the source URL will no longer be redirected."
+msgstr "Sa pral retire redireksyon nan \"{0}\" pou \"{1}\". Itilizatè ki vizite URL sous la pap redireksyone ankò."
+
+#: src/features/user/preferences.tsx:104
+msgid "This will reset all preferences to their default values."
+msgstr "Sa pral remete tout preferans nan valè defo yo."
+
+#: src/features/user/sessions.tsx:95
+msgid "This will sign out this session. If this is your current session, you will need to sign in again."
+msgstr "Sa pral dekonekte sesyon sa. Si se sesyon aktyèl ou a, ou pral bezwen konekte ankò."
+
+#. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
+#: src/features/wiki/wiki-settings.tsx:875
+msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
+msgstr "Sa pral sispann voye mizajou bay \"{0}\". Yo ka replike ankò si yo vle."
+
+#: ../../../lib/web/src/lib/preference-utils.ts:59
+msgid "Thursday"
+msgstr "Jedi"
+
+#: src/features/user/preferences.tsx:146
+msgid "Time zone"
+msgstr "Zòn lè"
+
+#: src/features/wiki/page-editor.tsx:305
+#: src/features/wiki/page-history.tsx:50
+msgid "Title"
+msgstr "Tit"
+
+#: src/features/wiki/page-editor.tsx:136
+msgid "Title is required"
+msgstr "Tit obligatwa"
+
+#: ../../../lib/web/src/components/data-table/view-options.tsx:34
+msgid "Toggle columns"
+msgstr "Aktive kolòn"
+
+#: ../../../lib/web/src/components/layout/right-panel.tsx:227
+msgid "Toggle Right Panel"
+msgstr "Aktive Panèl Dwat"
+
+#: ../../../lib/web/src/components/ui/sidebar.tsx:312
+#: ../../../lib/web/src/components/ui/sidebar.tsx:324
+#: ../../../lib/web/src/components/ui/sidebar.tsx:327
+msgid "Toggle Sidebar"
+msgstr "Aktive Sidebar"
+
+#: ../../../lib/web/src/components/theme-switch.tsx:31
+msgid "Toggle theme"
+msgstr "Aktive tèm"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx:42
+msgid "Top"
+msgstr "Anwo"
+
+#: ../../../lib/web/src/components/travelling-picker.tsx:141
+msgid "Travelling"
+msgstr "Vwayaje"
+
+#: src/features/wiki/attachments-page.tsx:377
+msgid "Try a different search term or filter."
+msgstr "Eseye yon lòt tèm rechèch oswa filtè."
+
+#: src/features/wiki/tag-pages.tsx:49
+msgid "Try a different tag."
+msgstr "Eseye yon lòt tag."
+
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:190
+#: ../../../lib/web/src/components/search-entity-page.tsx:165
+msgid "Try adjusting your search terms"
+msgstr "Eseye ajiste tèm rechèch ou"
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:125
+#: ../../../lib/web/src/features/errors/general-error.tsx:165
+#: ../../../lib/web/src/features/errors/maintenance-error.tsx:15
+msgid "Try again"
+msgstr "Eseye ankò"
+
+#: src/features/wiki/search-page.tsx:83
+msgid "Try different search terms."
+msgstr "Eseye lòt tèm rechèch."
+
+#: ../../../lib/web/src/lib/preference-utils.ts:57
+msgid "Tuesday"
+msgstr "Madi"
+
+#: ../../../lib/web/src/components/command-menu.tsx:49
+msgid "Type a command or search..."
+msgstr "Tape yon kòmand oswa rechèch..."
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:188
+msgid "Type to search users"
+msgstr "Tape pou chèche itilizatè"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:180
+msgid "Type to search..."
+msgstr "Tape pou chèche..."
+
+#: ../../../lib/web/src/lib/auth-manager.ts:82
+#: ../../../lib/web/src/lib/auth-manager.ts:94
+msgid "Unable to redirect to login. Please try again."
+msgstr "Pa ka redireksyone pou login. Tanpri eseye ankò."
+
+#: ../../../lib/web/src/components/notification-category-button.tsx:143
+msgid "Unassigned"
+msgstr "Pa asiyen"
+
+#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:12
+msgid "Unauthorized Access"
+msgstr "Aksè Pa Otorize"
+
+#: src/features/wiki/wiki-settings.tsx:451
+msgid "Unique identifiers for this wiki."
+msgstr "Idantifyan inik pou wiki sa."
+
+#: ../../../lib/web/src/lib/preference-utils.ts:84
+msgid "United States"
+msgstr "Etazini"
+
+#: src/features/user/sessions.tsx:60
+msgid "Unknown device"
+msgstr "Aparèy enkoni"
+
+#: src/features/wiki/wiki-page-content.tsx:332
+#: src/features/wiki/wiki-page-content.tsx:353
+#: src/features/wiki/wiki-page-content.tsx:355
+#: src/routes/_authenticated/$page/index.tsx:214
+#: src/routes/_authenticated/$page/index.tsx:270
+#: src/routes/_authenticated/$page/index.tsx:272
+#: src/routes/_authenticated/index.tsx:456
+#: src/routes/_authenticated/index.tsx:483
+#: src/routes/_authenticated/index.tsx:485
+#: src/routes/_authenticated/index.tsx:808
+#: src/routes/_authenticated/index.tsx:826
+#: src/routes/_authenticated/index.tsx:828
+msgid "Unsubscribe"
+msgstr "Dezabòne"
+
+#: src/features/wiki/wiki-page-content.tsx:64
+#: src/routes/_authenticated/$page/index.tsx:63
+#: src/routes/_authenticated/index.tsx:283
+msgid "Unsubscribed"
+msgstr "Dezabòne"
+
+#: src/features/wiki/wiki-page-content.tsx:332
+#: src/routes/_authenticated/$page/index.tsx:214
+#: src/routes/_authenticated/index.tsx:456
+#: src/routes/_authenticated/index.tsx:808
+msgid "Unsubscribing..."
+msgstr "Ap dezabòne..."
+
+#: src/features/wiki/page-editor.tsx:278
+msgid "Untitled"
+msgstr "San tit"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:131
+msgid "Unverified"
+msgstr "Pa verifye"
+
+#. placeholder {0}: formatTimestamp(page.updated)
+#. placeholder {0}: formatTimestamp(result.updated)
+#: src/features/wiki/page-view.tsx:256
+#: src/features/wiki/search-page.tsx:124
+#: src/features/wiki/tag-pages.tsx:67
+msgid "Updated {0}"
+msgstr "Mete ajou {0}"
+
+#: src/features/wiki/page-editor.tsx:395
+msgid "Upload a file to get started."
+msgstr "Telechaje yon fichye pou kòmanse."
+
+#: src/features/wiki/attachments-page.tsx:269
+msgid "Upload files"
+msgstr "Telechaje fichye yo"
+
+#: src/features/wiki/page-editor.tsx:376
+msgid "Upload new"
+msgstr "Telechaje nouvo"
+
+#: src/features/user/account.tsx:187
+msgid "Use a registered passkey to sign in"
+msgstr "Itilize yon passkey anrejistre pou konekte"
+
+#: src/features/user/account.tsx:410
+msgid "Use a security key, fingerprint, or face recognition."
+msgstr "Itilize yon kle sekirite, anprent dwèt, oswa rekonesans figi."
+
+#: src/features/user/account.tsx:207
+msgid "Use an authenticator app code to sign in"
+msgstr "Itilize yon kòd app otantifikatè pou konekte"
+
+#: src/features/user/account.tsx:529
+msgid "Use an authenticator app to generate one-time codes"
+msgstr "Itilize yon app otantifikatè pou jenere kòd yon-fwa"
+
+#: src/features/wiki/wiki-settings.tsx:552
+msgid "Use as home"
+msgstr "Itilize kòm akèy"
+
+#: src/features/user/preferences.tsx:147
+msgid "Used for displaying dates and times"
+msgstr "Itilize pou montre dat ak tan"
+
+#: ../../../lib/web/src/features/access/access-dialog.tsx:155
+msgid "User"
+msgstr "Itilizatè"
+
+#: src/features/user/account.tsx:111
+msgid "Username"
+msgstr "Non itilizatè"
+
+#: ../../../lib/web/src/features/accounts/account-verify.tsx:68
+msgid "Verification code"
+msgstr "Kòd verifikasyon"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:247
+msgid "Verification code sent"
+msgstr "Kòd verifikasyon voye"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:240
+msgid "Verification failed"
+msgstr "Verifikasyon echwe"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:164
+msgid "Verify"
+msgstr "Verifye"
+
+#: src/features/user/account.tsx:563
+msgid "Verify & enable"
+msgstr "Verifye epi aktive"
+
+#: ../../../lib/web/src/features/accounts/account-verify.tsx:58
+msgid "Verify email address"
+msgstr "Verifye adrès imèl"
+
+#: src/features/wiki/changes-list.tsx:43
+#: src/features/wiki/page-history.tsx:49
+msgid "Version"
+msgstr "Vèsyon"
+
+#. placeholder {0}: revision.version
+#: src/features/wiki/revision-view.tsx:32
+msgid "Version {0}"
+msgstr "Vèsyon {0}"
+
+#: ../../../lib/web/src/components/data-table/view-options.tsx:30
+#: src/features/wiki/page-history.tsx:103
+msgid "View"
+msgstr "Wè"
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:173
+msgid "View all"
+msgstr "Wè tout"
+
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:94
+msgid "View all notifications"
+msgstr "Wè tout notifikasyon"
+
+#: src/features/wiki/wiki-settings.tsx:614
+msgid "View only"
+msgstr "Wè sèlman"
+
+#: src/features/wiki/page-history.tsx:31
+msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
+msgstr "Ap wè istwa pou <0>{slug}</0>, vèsyon aktyèl {currentVersion}"
+
+#: ../../../lib/web/src/features/errors/maintenance-error.tsx:12
+msgid "We'll be back online shortly."
+msgstr "Nou ap retounen online byento."
+
+#: ../../../lib/web/src/features/errors/maintenance-error.tsx:9
+msgid "Website is under maintenance!"
+msgstr "Sit la nan antretyen!"
+
+#: ../../../lib/web/src/lib/preference-utils.ts:58
+msgid "Wednesday"
+msgstr "Mèkredi"
+
+#: src/features/wiki/wiki-settings.tsx:821
+#: src/features/wiki/wiki-settings.tsx:901
+msgid "When other wikis replicate this wiki, they will appear here."
+msgstr "Lè lòt wikis replike wiki sa, yo pral parèt isit la."
+
+#: src/components/layout/wiki-layout.tsx:106
+#: src/components/layout/wiki-layout.tsx:155
+#: src/features/wiki/wiki-page-content.tsx:86
+#: src/features/wiki/wiki-page-content.tsx:278
+#: src/routes/_authenticated/$page/index.tsx:218
+#: src/routes/_authenticated/$wikiId/settings.tsx:33
+#: src/routes/_authenticated/index.tsx:393
+#: src/routes/_authenticated/settings.tsx:32
+msgid "Wiki"
+msgstr "Wiki"
+
+#: src/routes/_authenticated/index.tsx:635
+#: src/routes/_authenticated/index.tsx:636
+msgid "Wiki actions"
+msgstr "Aksyon wiki"
+
+#: src/components/layout/wiki-layout.tsx:70
+msgid "Wiki created"
+msgstr "Wiki kreye"
+
+#: src/features/wiki/wiki-settings.tsx:403
+#: src/features/wiki/wiki-settings.tsx:413
+msgid "Wiki deleted"
+msgstr "Wiki efase"
+
+#: src/routes/_authenticated/join.tsx:95
+msgid "Wiki entity ID"
+msgstr "ID antite wiki"
+
+#: src/routes/_authenticated/$wikiId/route.tsx:35
+#: src/routes/_authenticated/join.tsx:37
+msgid "Wiki ID is required"
+msgstr "ID Wiki obligatwa"
+
+#: src/features/wiki/wiki-settings.tsx:290
+msgid "Wiki name is required"
+msgstr "Non wiki obligatwa"
+
+#: src/routes/_authenticated/$wikiId/route.tsx:70
+msgid "Wiki not found"
+msgstr "Pa jwenn wiki"
+
+#: src/features/wiki/wiki-settings.tsx:326
+msgid "Wiki renamed"
+msgstr "Wiki rebatize"
+
+#: src/features/wiki/wiki-page-content.tsx:201
+#: src/routes/_authenticated/$page/index.tsx:140
+msgid "Wiki settings"
+msgstr "Paramèt wiki"
+
+#: src/features/wiki/wiki-settings.tsx:144
+msgid "Wiki settings sections"
+msgstr "Seksyon paramèt wiki"
+
+#: src/features/wiki/wiki-settings.tsx:379
+#: src/features/wiki/wiki-settings.tsx:389
+msgid "Wiki synced"
+msgstr "Wiki sinkronize"
+
+#: src/routes/_authenticated/index.tsx:528
+#: src/routes/_authenticated/index.tsx:626
+msgid "Wikis"
+msgstr "Wikis"
+
+#: src/features/wiki/page-comments.tsx:85
+msgid "Write a comment..."
+msgstr "Ekri yon kòmantè..."
+
+#: src/features/wiki/page-editor.tsx:322
+msgid "Write your content here using Markdown..."
+msgstr "Ekri kontni w isit la lè l sèvi avèk Markdown..."
+
+#: src/features/wiki/delete-page.tsx:54
+msgid "You are about to delete the page <0>\"{title}\"</0> ({slug}). This action can be undone by restoring from history."
+msgstr "Ou prèt pou efase paj <0>\"{title}\"</0> ({slug}). Aksyon sa ka anile pa restore nan istwa."
+
+#: src/features/wiki/revert-page.tsx:61
+msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
+msgstr "Ou prèt pou retounen <0>{slug}</0> nan vèsyon <1>{version}</1>. Sa pral kreye yon nouvo revizyon ak kontni nan vèsyon {version}."
+
+#: src/features/user/sessions.tsx:137
+msgid "Your active sessions will appear here."
+msgstr "Sesyon aktif ou yo pral parèt isit la."
+
+#: src/features/user/account.tsx:93
+msgid "Your personal account information"
+msgstr "Enfòmasyon kont pèsonèl ou"
