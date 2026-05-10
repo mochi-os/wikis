@@ -100,7 +100,7 @@ export function PageHistory({
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" asChild title={t`View`}>
+                    <Button variant="ghost" size="icon" asChild title={t({ message: 'View', context: 'action' })}>
                       {wikiId ? (
                         <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }}>
                           <Eye className="h-4 w-4" />
