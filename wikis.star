@@ -2213,6 +2213,15 @@ def event_redirect_set(e):
     if created > now + 86400 or created < now - 31536000:
         return
 
+    # LWW gate: an event whose `created` is no newer than the locally
+    # recorded one is a stale duplicate from a concurrent setter on
+    # another replica — drop it rather than overwriting our newer state.
+    # Same-millisecond ties between hosts let whichever event arrived
+    # first stick (rare in practice for user-edited redirects).
+    local = mochi.db.row("select created from redirects where wiki=? and source=?", wiki, source)
+    if local and local["created"] >= created:
+        return
+
     # Insert or update redirect
     mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, source, target, created)
 
@@ -3264,6 +3273,13 @@ def event_comment_edit(e):
     edited = e.content("edited")
 
     if not id or not body or not edited:
+        return
+
+    # LWW gate: skip if our locally-stored edit is at least as new.
+    # `edited` is 0 for never-edited comments, so the first edit always
+    # wins over the create-time state.
+    local = mochi.db.row("select edited from comments where id=? and wiki=?", id, wiki)
+    if local and local["edited"] >= edited:
         return
 
     mochi.db.execute("update comments set body=?, edited=? where id=? and wiki=?", body, edited, id, wiki)
