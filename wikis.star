@@ -151,23 +151,25 @@ def validate_event_sender(wikirow, wiki, sender):
 # idempotently. Throttled to one call per 60 seconds per wiki. Only
 # meaningful for replicas — source wikis are the canonical state.
 def request_resync(wiki_id):
+    """Returns True iff a fresh sync dump was actually fetched and applied."""
     row = mochi.db.row("select source, server, synced from wikis where id=?", wiki_id)
     if not row or not row["source"]:
-        return
+        return False
     now = mochi.time.now()
     if row["synced"] and now - row["synced"] < 60:
-        return
+        return False
     mochi.db.execute("update wikis set synced=? where id=?", now, wiki_id)
     peer = None
     if row["server"]:
         peer = mochi.remote.peer(row["server"])
     dump = mochi.remote.request(row["source"], "wikis", "sync", {}, peer)
     if not dump or dump.get("status") != "200":
-        return
+        return False
     import_sync_dump(wiki_id, dump)
     fp = mochi.entity.fingerprint(wiki_id)
     if fp:
         mochi.websocket.write(fp, {"type": "wiki/resynced", "wiki": wiki_id})
+    return True
 
 # Helper: Broadcast event to all replicas of a wiki
 def broadcast_event(wiki, event, data, exclude=None):
@@ -478,8 +480,8 @@ def action_resync(a):
         # This wiki is itself the canonical source — nothing to resync from.
         return {"data": {"synced": False}}
     mochi.db.execute("update wikis set synced=0 where id=?", wiki["id"])
-    request_resync(wiki["id"])
-    return {"data": {"synced": True}}
+    synced = request_resync(wiki["id"])
+    return {"data": {"synced": synced}}
 
 def action_delete(a):
     if not a.user:
