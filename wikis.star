@@ -5,7 +5,7 @@
 
 def database_create():
     # Wikis table - source is the upstream wiki entity ID for joined wikis, server is the remote server URL
-    mochi.db.execute("create table if not exists wikis (id text primary key, name text not null, home text not null default 'home', source text not null default '', server text not null default '', created integer not null)")
+    mochi.db.execute("create table if not exists wikis (id text primary key, name text not null, home text not null default 'home', source text not null default '', server text not null default '', created integer not null, synced integer not null default 0)")
 
     # Pages table
     mochi.db.execute("create table if not exists pages (id text primary key, wiki text not null references wikis(id), page text not null, title text not null, content text not null, author text not null, created integer not null, updated integer not null, version integer not null default 1, deleted integer not null default 0)")
@@ -41,7 +41,12 @@ def database_create():
 
 # Database upgrade
 def database_upgrade(to_version):
-    pass
+    if to_version == 15:
+        # Add wikis.synced for throttled resync requests when an
+        # incoming event references a page or comment we haven't seen.
+        cols = [r["name"] for r in mochi.db.table("wikis") or []]
+        if "synced" not in cols:
+            mochi.db.execute("alter table wikis add column synced integer not null default 0")
 
 # Helper: Update replica's seen and synced timestamps
 def update_replica_seen(wiki, replica_id):
@@ -139,6 +144,30 @@ def validate_event_sender(wikirow, wiki, sender):
         return False
     update_replica_seen(wiki, sender)
     return True
+
+# request_resync pulls a fresh sync dump from the source wiki when an
+# incoming event references a page or comment we haven't seen. The
+# source's event_sync is the canonical state; import_sync_dump applies it
+# idempotently. Throttled to one call per 60 seconds per wiki. Only
+# meaningful for replicas — source wikis are the canonical state.
+def request_resync(wiki_id):
+    row = mochi.db.row("select source, server, synced from wikis where id=?", wiki_id)
+    if not row or not row["source"]:
+        return
+    now = mochi.time.now()
+    if row["synced"] and now - row["synced"] < 60:
+        return
+    mochi.db.execute("update wikis set synced=? where id=?", now, wiki_id)
+    peer = None
+    if row["server"]:
+        peer = mochi.remote.peer(row["server"])
+    dump = mochi.remote.request(row["source"], "wikis", "sync", {}, peer)
+    if not dump or dump.get("status") != "200":
+        return
+    import_sync_dump(wiki_id, dump)
+    fp = mochi.entity.fingerprint(wiki_id)
+    if fp:
+        mochi.websocket.write(fp, {"type": "wiki/resynced", "wiki": wiki_id})
 
 # Helper: Broadcast event to all replicas of a wiki
 def broadcast_event(wiki, event, data, exclude=None):
@@ -434,6 +463,24 @@ def action_join(a):
     return {"data": {"id": entity, "name": name, "source": source, "fingerprint": fingerprint, "home": dump.get("home") or "home", "message": "Wiki joined successfully"}}
 
 # Delete a wiki and all its data
+def action_resync(a):
+    """Force a fresh sync dump from the source wiki. The event handlers
+    self-heal via request_resync on the next inbound event; this action
+    lets the UI or a user trigger it explicitly."""
+    if not a.user:
+        a.error.label(401, "errors.not_logged_in")
+        return
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error.label(404, "errors.wiki_not_found")
+        return
+    if not wiki.get("source"):
+        # This wiki is itself the canonical source — nothing to resync from.
+        return {"data": {"synced": False}}
+    mochi.db.execute("update wikis set synced=0 where id=?", wiki["id"])
+    request_resync(wiki["id"])
+    return {"data": {"synced": True}}
+
 def action_delete(a):
     if not a.user:
         a.error.label(401, "errors.authentication_required")
@@ -2260,6 +2307,11 @@ def event_tag_add(e):
     # Check if page exists and get wiki
     pagerow = mochi.db.row("select wiki from pages where id=?", page)
     if not pagerow:
+        # Out-of-order delivery: page hasn't arrived yet. tags.page FK
+        # would FK-fail; resync via the wiki header so we converge.
+        wiki = e.header("to")
+        if wiki:
+            request_resync(wiki)
         return
 
     wiki = pagerow["wiki"]
@@ -3279,7 +3331,10 @@ def event_comment_edit(e):
     # `edited` is 0 for never-edited comments, so the first edit always
     # wins over the create-time state.
     local = mochi.db.row("select edited from comments where id=? and wiki=?", id, wiki)
-    if local and local["edited"] >= edited:
+    if not local:
+        request_resync(wiki)
+        return
+    if local["edited"] >= edited:
         return
 
     mochi.db.execute("update comments set body=?, edited=? where id=? and wiki=?", body, edited, id, wiki)
