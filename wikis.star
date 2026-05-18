@@ -2129,6 +2129,15 @@ def event_page_create(e):
             "version": version
         }, exclude=sender)
 
+    # Notify subscribers about new pages by other people. The P2P event
+    # handler only fires for remote actions — the local user's own page
+    # creates go through the action handler directly, never here.
+    if author:
+        wiki_name = wikirow.get("name") or ""
+        notify_title = mochi.app.label("notifications.page_create.title", page=title, wiki=wiki_name)
+        notify_body = mochi.app.label("notifications.page_create.body", author=name or author[:9])
+        notify("page/create", id, notify_title, notify_body, "/wikis/" + wiki + "/-/" + page)
+
 # Receive page/update event
 def event_page_update(e):
     wiki = e.header("to")
@@ -2242,6 +2251,16 @@ def event_page_delete(e):
             "deleted": deleted,
             "version": version
         }, exclude=sender)
+
+    # Notify subscribers when someone else deletes a page. Use the local
+    # page row we just soft-deleted to recover the title + slug for the
+    # notification text + link.
+    wiki_name = wikirow.get("name") or ""
+    page_title = existing.get("title") or existing.get("page") or ""
+    page_slug = existing.get("page") or ""
+    notify_title = mochi.app.label("notifications.page_delete.title", page=page_title, wiki=wiki_name)
+    notify_body = mochi.app.label("notifications.page_delete.body", page=page_title)
+    notify("page/delete", id, notify_title, notify_body, "/wikis/" + wiki + (("/-/" + page_slug) if page_slug else ""))
 
 # Receive redirect/set event
 def event_redirect_set(e):
