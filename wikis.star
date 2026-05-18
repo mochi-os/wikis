@@ -179,29 +179,21 @@ def request_resync(wiki_id):
         mochi.websocket.write(fp, {"type": "wiki/resynced", "wiki": wiki_id})
     return True
 
-# Helper: Broadcast event to all replicas of a wiki
+# Helper: Broadcast event to all replicas of a wiki via the durable
+# broadcast log. Sequence + log + gap-detection live in core. Replicas
+# whose view access has been revoked are filtered out client-side
+# before handing the recipient list to mochi.broadcast.send.
 def broadcast_event(wiki, event, data, exclude=None):
     if not wiki:
         return
     resource = "wiki/" + wiki
-    replicas = mochi.db.rows("select id, peer from replicas where wiki=?", wiki)
+    replicas = mochi.db.rows("select id from replicas where wiki=?", wiki)
+    recipients = []
     for r in replicas:
-        if exclude and r["id"] == exclude:
-            continue
-        # Skip replicas that no longer have view access
         if not mochi.access.check(r["id"], resource, "view"):
             continue
-        if r["peer"]:
-            mochi.message.send.peer(
-                r["peer"],
-                {"from": wiki, "to": r["id"], "service": "wikis", "event": event},
-                data
-            )
-        else:
-            mochi.message.send(
-                {"from": wiki, "to": r["id"], "service": "wikis", "event": event},
-                data
-            )
+        recipients.append(r["id"])
+    mochi.broadcast.send(wiki, wiki, recipients, "wikis", event, data, exclude or "")
 
 # Helper: Remove attachment references from content
 def remove_attachment_refs(content, attachment_id):
