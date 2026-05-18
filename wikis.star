@@ -1,6 +1,14 @@
 # Mochi wiki app
 # Copyright Alistair Cunningham 2025-2026
 
+# Helper: send a notification through the user's notifications app.
+# Mirrors apps/forums/forums.star `notify()`. The topic-label key resolves
+# to the per-locale string in apps/wikis/labels/<lang>.conf under
+# `notifications.topic.<topic-with-dots>` so the notifications app can
+# render the topic header in the user's language.
+def notify(topic, object="", title="", body="", url=""):
+	mochi.service.call("notifications", "send", topic, object, title, body, url, mochi.app.label("notifications.topic." + topic.replace("/", ".")))
+
 # Database creation
 
 def database_create():
@@ -2191,6 +2199,15 @@ def event_page_update(e):
             "version": version
         }, exclude=sender)
 
+    # Notify the local user about edits by other people. The P2P event
+    # handler only fires for remote actions — the local user's own edits
+    # go through the action handler directly, never through this path.
+    if author:
+        wiki_name = wikirow.get("name") or ""
+        notify_title = mochi.app.label("notifications.page_update.title", page=title, wiki=wiki_name)
+        notify_body = mochi.app.label("notifications.page_update.body", author=name or author[:9])
+        notify("page/update", id, notify_title, notify_body, "/wikis/" + wiki + "/-/" + page)
+
 # Receive page/delete event
 def event_page_delete(e):
     wiki = e.header("to")
@@ -3307,6 +3324,20 @@ def event_comment_create(e):
         if attachments:
             rebroadcast["attachments"] = attachments
         broadcast_event(wiki, "comment/create", rebroadcast, exclude=sender)
+
+    # Notify the local user about comments by other people. The P2P event
+    # handler only fires for remote actions — the local user's own
+    # comments go through the action handler directly, never here.
+    if author:
+        page_row = mochi.db.row("select title from pages where wiki=? and page=?", wiki, page)
+        page_title = page_row.get("title") if page_row else page
+        wiki_name = wikirow.get("name") or ""
+        notify_title = mochi.app.label("notifications.comment_create.title", page=page_title, wiki=wiki_name)
+        # Truncate the body to a single-line preview at 140 chars so it
+        # fits in a notification banner.
+        excerpt = body[:140] + ("…" if len(body) > 140 else "")
+        notify_body = mochi.app.label("notifications.comment_create.body", author=name or author[:9], excerpt=excerpt)
+        notify("comment/create", id, notify_title, notify_body, "/wikis/" + wiki + "/-/" + page + "/comments")
 
 # P2P event: comment/edit
 def event_comment_edit(e):
