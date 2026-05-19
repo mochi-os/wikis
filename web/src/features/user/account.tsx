@@ -4,6 +4,7 @@ import type { Passkey, TotpSetupResponse } from '@/types/account'
 import { startRegistration } from '@simplewebauthn/browser'
 import {
   Check,
+  Copy,
   Key,
   Loader2,
   Pencil,
@@ -282,7 +283,7 @@ function PasskeyRow({
                 if (e.key === 'Escape') setIsRenaming(false)
               }}
             />
-            <Button size='sm' variant='ghost' onClick={handleRename}>
+            <Button size='sm' variant='ghost' onClick={handleRename} aria-label={t`Save passkey name`}>
               <Check className='h-4 w-4' />
             </Button>
           </div>
@@ -298,12 +299,12 @@ function PasskeyRow({
       </TableCell>
       <TableCell className='text-end'>
         <div className='flex justify-end gap-1'>
-          <Button variant='ghost' size='sm' onClick={() => setIsRenaming(true)}>
+          <Button variant='ghost' size='sm' onClick={() => setIsRenaming(true)} aria-label={t`Rename passkey`}>
             <Pencil className='h-4 w-4' />
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant='ghost' size='sm'>
+              <Button variant='ghost' size='sm' aria-label={t`Delete passkey`}>
                 <Trash2 className='h-4 w-4' />
               </Button>
             </AlertDialogTrigger>
@@ -653,7 +654,7 @@ function RecoveryCodesSection() {
               void shellClipboardWrite(showCodes.join('\n')).then((ok) => {
                 if (ok) toast.success(t`Codes copied`)
               })
-            }}><Trans>Copy all</Trans></Button>
+            }}><Copy className='size-3.5' /><Trans>Copy all</Trans></Button>
             <Button variant='ghost' size='sm' onClick={() => setShowCodes(null)}><Trans>Done</Trans></Button>
           </div>
         </div>

@@ -487,6 +487,7 @@ function SettingsTab() {
                       onClick={handleCancelEditName}
                       disabled={isRenaming}
                       className="h-8 w-8 p-0"
+                      aria-label={t`Cancel edit`}
                     >
                       <X className="size-4" />
                     </Button>
@@ -503,6 +504,7 @@ function SettingsTab() {
                     variant="ghost"
                     onClick={handleStartEditName}
                     className="h-6 w-6 p-0"
+                    aria-label={t`Edit name`}
                   >
                     <Pencil className="size-3" />
                   </Button>

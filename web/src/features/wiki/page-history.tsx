@@ -100,7 +100,7 @@ export function PageHistory({
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" asChild title={t({ message: 'View', context: 'action' })}>
+                    <Button variant="ghost" size="icon" asChild title={t({ message: 'View', context: 'action' })} aria-label={t({ message: 'View', context: 'action' })}>
                       {wikiId ? (
                         <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }}>
                           <Eye className="h-4 w-4" />
@@ -117,6 +117,7 @@ export function PageHistory({
                         size="icon"
                         asChild
                         title={t`Revert to this version`}
+                        aria-label={t`Revert to this version`}
                       >
                         {wikiId ? (
                           <Link to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>

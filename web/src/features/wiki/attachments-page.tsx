@@ -326,7 +326,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
         {/* View toggle */}
         <div className="flex rounded-md border">
           <Button
-            variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+            variant={viewMode === 'grid' ? 'default' : 'ghost'}
             size="icon"
             className="rounded-e-none"
             onClick={() => setViewMode('grid')}
@@ -336,7 +336,7 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
             <Grid3X3 className="h-4 w-4" />
           </Button>
           <Button
-            variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+            variant={viewMode === 'list' ? 'default' : 'ghost'}
             size="icon"
             className="rounded-s-none"
             onClick={() => setViewMode('list')}
@@ -489,7 +489,7 @@ function AttachmentGridItem({
         onClick={() => onOpen(attachment)}
       >
         <Button
-          variant="secondary"
+          variant="outline"
           size="icon"
           onClick={(e) => { e.stopPropagation(); onCopy(attachment) }}
           aria-label={t`Copy embed link`}
@@ -502,7 +502,7 @@ function AttachmentGridItem({
           )}
         </Button>
         <Button
-          variant="secondary"
+          variant="outline"
           size="icon"
           onClick={(e) => { e.stopPropagation(); onDelete(attachment) }}
           disabled={isDeleting}

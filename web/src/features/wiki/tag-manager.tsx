@@ -125,6 +125,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
                   onClick={handleAddTag}
                   disabled={!newTag.trim() || addTag.isPending}
                 >
+                  <Plus className="size-3.5" />
                   {addTag.isPending ? t`Adding...` : t`Add`}
                 </Button>
               </div>
