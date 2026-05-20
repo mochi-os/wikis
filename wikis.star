@@ -6,8 +6,8 @@
 # to the per-locale string in apps/wikis/labels/<lang>.conf under
 # `notifications.topic.<topic-with-dots>` so the notifications app can
 # render the topic header in the user's language.
-def notify(topic, object="", title="", body="", url=""):
-	mochi.service.call("notifications", "send", topic, object, title, body, url, mochi.app.label("notifications.topic." + topic.replace("/", ".")))
+def notify(topic, object="", title="", body="", url="", name=""):
+	mochi.service.call("notifications", "send", topic, object, title, body, url, mochi.app.label("notifications.topic." + topic.replace("/", ".")), name)
 
 # Database creation
 
@@ -2136,7 +2136,7 @@ def event_page_create(e):
         wiki_name = wikirow.get("name") or ""
         notify_title = mochi.app.label("notifications.page_create.title", page=title, wiki=wiki_name)
         notify_body = mochi.app.label("notifications.page_create.body", author=name or author[:9])
-        notify("page/create", id, notify_title, notify_body, "/wikis/" + wiki + "/-/" + page)
+        notify("page/create", id, notify_title, notify_body, "/wikis/" + wiki + "/-/" + page, title)
 
 # Receive page/update event
 def event_page_update(e):
@@ -2207,7 +2207,7 @@ def event_page_update(e):
         wiki_name = wikirow.get("name") or ""
         notify_title = mochi.app.label("notifications.page_update.title", page=title, wiki=wiki_name)
         notify_body = mochi.app.label("notifications.page_update.body", author=name or author[:9])
-        notify("page/update", id, notify_title, notify_body, "/wikis/" + wiki + "/-/" + page)
+        notify("page/update", id, notify_title, notify_body, "/wikis/" + wiki + "/-/" + page, title)
 
 # Receive page/delete event
 def event_page_delete(e):
@@ -2260,7 +2260,7 @@ def event_page_delete(e):
     page_slug = existing.get("page") or ""
     notify_title = mochi.app.label("notifications.page_delete.title", page=page_title, wiki=wiki_name)
     notify_body = mochi.app.label("notifications.page_delete.body", page=page_title)
-    notify("page/delete", id, notify_title, notify_body, "/wikis/" + wiki + (("/-/" + page_slug) if page_slug else ""))
+    notify("page/delete", id, notify_title, notify_body, "/wikis/" + wiki + (("/-/" + page_slug) if page_slug else ""), page_title)
 
 # Receive redirect/set event
 def event_redirect_set(e):
@@ -3348,7 +3348,7 @@ def event_comment_create(e):
         # fits in a notification banner.
         excerpt = body[:140] + ("…" if len(body) > 140 else "")
         notify_body = mochi.app.label("notifications.comment_create.body", author=name or author[:9], excerpt=excerpt)
-        notify("comment/create", id, notify_title, notify_body, "/wikis/" + wiki + "/-/" + page + "/comments")
+        notify("comment/create", id, notify_title, notify_body, "/wikis/" + wiki + "/-/" + page + "/comments", page_title)
 
 # P2P event: comment/edit
 def event_comment_edit(e):
