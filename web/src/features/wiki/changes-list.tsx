@@ -1,25 +1,23 @@
-import { History } from 'lucide-react'
 import { Trans } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
-import { EntityAvatar, useFormat, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
+import { History } from 'lucide-react'
+import { EntityAvatar, useFormat, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath, Button } from '@mochi/web'
 import type { Change } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
 
 interface ChangesListProps {
   changes: Change[]
   wikiId?: string
+  total?: number
+  offset?: number
+  onLoadMore?: () => void
 }
 
-export function ChangesList({ changes, wikiId }: ChangesListProps) {
+export function ChangesList({ changes, wikiId, total, offset = 0, onLoadMore }: ChangesListProps) {
   const { formatTimestamp } = useFormat()
+  const hasMore = total !== undefined && (offset + changes.length) < total
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <History className="h-6 w-6" />
-        <h1 className="text-2xl font-bold"><Trans>Recent changes</Trans></h1>
-      </div>
-
       <p className="text-muted-foreground">
         <Trans>Recent edits across all pages in this wiki.</Trans>
       </p>
@@ -93,6 +91,13 @@ export function ChangesList({ changes, wikiId }: ChangesListProps) {
           </TableBody>
         </Table>
       )}
+      {hasMore && onLoadMore && (
+        <div className="flex justify-center pt-4">
+          <Button variant="outline" size="sm" onClick={onLoadMore}>
+            <Trans>Load more</Trans>
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
@@ -100,10 +105,6 @@ export function ChangesList({ changes, wikiId }: ChangesListProps) {
 export function ChangesListSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Skeleton className="h-6 w-6" />
-        <Skeleton className="h-8 w-48" />
-      </div>
       <Skeleton className="h-5 w-64" />
       <Separator />
       <div className="space-y-2">

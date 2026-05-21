@@ -33,6 +33,7 @@ import { Route as AuthenticatedUserAccountRouteImport } from './routes/_authenti
 import { Route as AuthenticatedTagTagRouteImport } from './routes/_authenticated/tag/$tag'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedWikiIdSettingsRouteImport } from './routes/_authenticated/$wikiId/settings'
+import { Route as AuthenticatedWikiIdSearchRouteImport } from './routes/_authenticated/$wikiId/search'
 import { Route as AuthenticatedWikiIdNewRouteImport } from './routes/_authenticated/$wikiId/new'
 import { Route as AuthenticatedWikiIdChangesRouteImport } from './routes/_authenticated/$wikiId/changes'
 import { Route as AuthenticatedPageRevertRouteImport } from './routes/_authenticated/$page/revert'
@@ -177,6 +178,12 @@ const AuthenticatedWikiIdSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedWikiIdRouteRoute,
   } as any)
+const AuthenticatedWikiIdSearchRoute =
+  AuthenticatedWikiIdSearchRouteImport.update({
+    id: '/search',
+    path: '/search',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
 const AuthenticatedWikiIdNewRoute = AuthenticatedWikiIdNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -299,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/$page/revert': typeof AuthenticatedPageRevertRoute
   '/$wikiId/changes': typeof AuthenticatedWikiIdChangesRoute
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
+  '/$wikiId/search': typeof AuthenticatedWikiIdSearchRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
@@ -340,6 +348,7 @@ export interface FileRoutesByTo {
   '/$page/revert': typeof AuthenticatedPageRevertRoute
   '/$wikiId/changes': typeof AuthenticatedWikiIdChangesRoute
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
+  '/$wikiId/search': typeof AuthenticatedWikiIdSearchRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
@@ -384,6 +393,7 @@ export interface FileRoutesById {
   '/_authenticated/$page/revert': typeof AuthenticatedPageRevertRoute
   '/_authenticated/$wikiId/changes': typeof AuthenticatedWikiIdChangesRoute
   '/_authenticated/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
+  '/_authenticated/$wikiId/search': typeof AuthenticatedWikiIdSearchRoute
   '/_authenticated/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/tag/$tag': typeof AuthenticatedTagTagRoute
@@ -428,6 +438,7 @@ export interface FileRouteTypes {
     | '/$page/revert'
     | '/$wikiId/changes'
     | '/$wikiId/new'
+    | '/$wikiId/search'
     | '/$wikiId/settings'
     | '/errors/$error'
     | '/tag/$tag'
@@ -469,6 +480,7 @@ export interface FileRouteTypes {
     | '/$page/revert'
     | '/$wikiId/changes'
     | '/$wikiId/new'
+    | '/$wikiId/search'
     | '/$wikiId/settings'
     | '/errors/$error'
     | '/tag/$tag'
@@ -512,6 +524,7 @@ export interface FileRouteTypes {
     | '/_authenticated/$page/revert'
     | '/_authenticated/$wikiId/changes'
     | '/_authenticated/$wikiId/new'
+    | '/_authenticated/$wikiId/search'
     | '/_authenticated/$wikiId/settings'
     | '/_authenticated/errors/$error'
     | '/_authenticated/tag/$tag'
@@ -711,6 +724,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWikiIdSettingsRouteImport
       parentRoute: typeof AuthenticatedWikiIdRouteRoute
     }
+    '/_authenticated/$wikiId/search': {
+      id: '/_authenticated/$wikiId/search'
+      path: '/search'
+      fullPath: '/$wikiId/search'
+      preLoaderRoute: typeof AuthenticatedWikiIdSearchRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
     '/_authenticated/$wikiId/new': {
       id: '/_authenticated/$wikiId/new'
       path: '/new'
@@ -836,6 +856,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedWikiIdRouteRouteChildren {
   AuthenticatedWikiIdChangesRoute: typeof AuthenticatedWikiIdChangesRoute
   AuthenticatedWikiIdNewRoute: typeof AuthenticatedWikiIdNewRoute
+  AuthenticatedWikiIdSearchRoute: typeof AuthenticatedWikiIdSearchRoute
   AuthenticatedWikiIdSettingsRoute: typeof AuthenticatedWikiIdSettingsRoute
   AuthenticatedWikiIdIndexRoute: typeof AuthenticatedWikiIdIndexRoute
   AuthenticatedWikiIdPageAttachmentsRoute: typeof AuthenticatedWikiIdPageAttachmentsRoute
@@ -852,6 +873,7 @@ const AuthenticatedWikiIdRouteRouteChildren: AuthenticatedWikiIdRouteRouteChildr
   {
     AuthenticatedWikiIdChangesRoute: AuthenticatedWikiIdChangesRoute,
     AuthenticatedWikiIdNewRoute: AuthenticatedWikiIdNewRoute,
+    AuthenticatedWikiIdSearchRoute: AuthenticatedWikiIdSearchRoute,
     AuthenticatedWikiIdSettingsRoute: AuthenticatedWikiIdSettingsRoute,
     AuthenticatedWikiIdIndexRoute: AuthenticatedWikiIdIndexRoute,
     AuthenticatedWikiIdPageAttachmentsRoute:

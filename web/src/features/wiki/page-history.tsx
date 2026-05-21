@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Trans } from '@lingui/react/macro'
-import { History, Eye, RotateCcw } from 'lucide-react'
+import { Eye, History, RotateCcw } from 'lucide-react'
 import { Button, EntityAvatar, EmptyState, useFormat, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
 import type { Revision } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
@@ -10,6 +10,9 @@ interface PageHistoryProps {
   revisions: Revision[]
   currentVersion: number
   wikiId?: string
+  total?: number
+  offset?: number
+  onLoadMore?: () => void
 }
 
 export function PageHistory({
@@ -17,16 +20,14 @@ export function PageHistory({
   revisions,
   currentVersion,
   wikiId,
+  total,
+  offset = 0,
+  onLoadMore,
 }: PageHistoryProps) {
   const { formatTimestamp } = useFormat()
+  const hasMore = total !== undefined && (offset + revisions.length) < total
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <History className="h-6 w-6" />
-        <h1 className="text-2xl font-bold"><Trans>History</Trans></h1>
-      </div>
-
       <p className="text-muted-foreground">
         <Trans>
           Viewing history for <strong>{slug}</strong>, current version {currentVersion}
@@ -137,6 +138,13 @@ export function PageHistory({
           </TableBody>
         </Table>
       )}
+      {hasMore && onLoadMore && (
+        <div className="flex justify-center pt-4">
+          <Button variant="outline" size="sm" onClick={onLoadMore}>
+            <Trans>Load more</Trans>
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
@@ -144,10 +152,6 @@ export function PageHistory({
 export function PageHistorySkeleton() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Skeleton className="h-6 w-6" />
-        <Skeleton className="h-8 w-40" />
-      </div>
       <Skeleton className="h-5 w-64" />
       <Separator />
       <div className="space-y-2">

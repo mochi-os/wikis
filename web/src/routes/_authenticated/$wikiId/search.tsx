@@ -2,38 +2,38 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { z } from 'zod'
 import { usePageTitle, Main } from '@mochi/web'
-import { PageEditor } from '@/features/wiki/page-editor'
+import { SearchPage } from '@/features/wiki/search-page'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 
 const searchSchema = z.object({
-  slug: z.string().optional(),
+  q: z.string().optional(),
 })
 
-export const Route = createFileRoute('/_authenticated/$wikiId/new')({
+export const Route = createFileRoute('/_authenticated/$wikiId/search')({
   validateSearch: searchSchema,
-  component: NewPageRoute,
+  component: WikiSearchRoute,
 })
 
-function NewPageRoute() {
+function WikiSearchRoute() {
   const { t } = useLingui()
-  usePageTitle(t`New page`)
   const { wikiId } = Route.useParams()
   const navigate = useNavigate()
   const { wiki } = useWikiBaseURL()
   const homeSlug = wiki.home ?? 'home'
-  const goBackToWiki = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: homeSlug } })
-  const { slug } = Route.useSearch()
+  const goBack = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: homeSlug } })
+  usePageTitle(t`Search`)
+  const { q } = Route.useSearch() as { q?: string }
 
   return (
     <>
       <WikiRouteHeader
-        title={t`New page`}
-        back={{ label: wiki.name ?? t`Back`, onFallback: goBackToWiki }}
+        title={t`Search`}
+        back={{ label: wiki.name ?? t`Back`, onFallback: goBack }}
         showSidebarTrigger
       />
       <Main>
-        <PageEditor slug={slug ?? ''} isNew wikiId={wikiId} />
+        <SearchPage initialQuery={q} wikiId={wikiId} />
       </Main>
     </>
   )

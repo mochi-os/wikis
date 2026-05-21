@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
@@ -7,8 +7,10 @@ import { GeneralError, Main, requestHelpers, usePageTitle } from '@mochi/web'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
-import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
+import type { PageResponse, PageNotFoundResponse, Revision } from '@/types/wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
+
+const LIMIT = 50
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/history/')({
   component: PageHistoryRoute,
@@ -19,7 +21,7 @@ function PageHistoryRoute() {
   const { wikiId, page: slug } = Route.useParams()
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
-  const { baseURL } = useWikiBaseURL()
+  const { baseURL, wiki } = useWikiBaseURL()
 
   // Fetch page data using the wiki's base URL
   const { data: pageData } = useQuery({
@@ -30,7 +32,18 @@ function PageHistoryRoute() {
   })
   const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
   usePageTitle(t`History: ${pageTitle}`)
-  const { data, isLoading, error, refetch } = usePageHistory(slug)
+
+  const [offset, setOffset] = useState(0)
+  const [allRevisions, setAllRevisions] = useState<Revision[]>([])
+  const { data, isLoading, error, refetch } = usePageHistory(slug, { limit: LIMIT, offset })
+
+  const currentPage = data?.revisions ?? []
+  const revisions = offset === 0 ? currentPage : [...allRevisions, ...currentPage.filter(r => !allRevisions.some(a => a.id === r.id))]
+
+  const handleLoadMore = () => {
+    setAllRevisions(revisions)
+    setOffset(offset + LIMIT)
+  }
 
   // Register page with sidebar context for tree expansion
   const { setPage } = useSidebarContext()
@@ -39,10 +52,10 @@ function PageHistoryRoute() {
     return () => setPage(null)
   }, [slug, pageTitle, setPage])
 
-  if (isLoading) {
+  if (isLoading && offset === 0) {
     return (
       <>
-        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: wiki.name ?? t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <PageHistorySkeleton />
         </Main>
@@ -50,10 +63,10 @@ function PageHistoryRoute() {
     )
   }
 
-  if (error) {
+  if (error && offset === 0) {
     return (
       <>
-        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: wiki.name ?? t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -61,19 +74,20 @@ function PageHistoryRoute() {
     )
   }
 
-  if (data) {
-    // Get current version from the first revision (most recent)
-    const currentVersion = data.revisions[0]?.version ?? 1
-
+  if (data || revisions.length > 0) {
+    const currentVersion = revisions[0]?.version ?? 1
     return (
       <>
-        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: wiki.name ?? t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <PageHistory
             slug={slug}
-            revisions={data.revisions}
+            revisions={revisions}
             currentVersion={currentVersion}
             wikiId={wikiId}
+            total={data?.total}
+            offset={offset}
+            onLoadMore={handleLoadMore}
           />
         </Main>
       </>

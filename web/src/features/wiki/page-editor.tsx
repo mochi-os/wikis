@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus } from 'lucide-react'
+import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus, RefreshCw } from 'lucide-react'
 import {
   toast,
   Button,
@@ -41,6 +41,14 @@ function buildAttachmentUrl(baseURL: string, id: string): string {
   return authenticatedUrl(`${baseURL}attachments/${id}`)
 }
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
 export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: PageEditorProps) {
   const { t } = useLingui()
   const navigate = useNavigate()
@@ -58,18 +66,17 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   // If still no wikiId, try to extract from URL for class context
   if (!wikiId) {
     const pathname = window.location.pathname
-    // Check if we're in class context: /wikis/<wikiId>/...
     const classContextMatch = pathname.match(/^\/wikis\/([^/]+)\//)
     if (classContextMatch) {
       wikiId = classContextMatch[1]
     }
   }
 
-
   const [title, setTitle] = useState(page?.title ?? '')
   const [content, setContent] = useState(page?.content ?? '')
   const [comment, setComment] = useState('')
   const [newSlug, setNewSlug] = useState(slug)
+  const [slugEdited, setSlugEdited] = useState(!!slug) // pre-filled slugs are treated as edited
   const [showPreview, setShowPreview] = useState(false)
   const [insertDialogOpen, setInsertDialogOpen] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -86,6 +93,24 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   const attachments = attachmentsData?.attachments || []
 
   const isPending = editPage.isPending || createPage.isPending
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value
+    setTitle(newTitle)
+    if (!slugEdited) {
+      setNewSlug(slugify(newTitle))
+    }
+  }
+
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewSlug(e.target.value)
+    setSlugEdited(true)
+  }
+
+  const handleResetSlug = () => {
+    setNewSlug(slugify(title))
+    setSlugEdited(false)
+  }
 
   // Save cursor position when opening dialog
   const handleOpenInsertDialog = () => {
@@ -107,7 +132,6 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
     setContent(newContent)
     setInsertDialogOpen(false)
 
-    // Focus textarea and set cursor after inserted text
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus()
@@ -181,7 +205,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
   const handleCancel = () => {
     if (isNew) {
-      navigate({ to: '/' })
+      if (wikiId) {
+        const homeSlug = wikiContext?.wiki?.home ?? 'home'
+        navigate({ to: '/$wikiId/$page', params: { wikiId, page: homeSlug } })
+      } else {
+        navigate({ to: '/' })
+      }
     } else if (wikiId) {
       navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
     } else {
@@ -191,83 +220,78 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">
-          {isNew ? t`Create new page` : t`Editing: ${page?.title ?? slug}`}
-        </h1>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowPreview(!showPreview)}
-          >
-            {showPreview ? (
-              <>
-                <Edit2 className="me-2 h-4 w-4" />
-                <Trans>Edit</Trans>
-              </>
-            ) : (
-              <>
-                <Eye className="me-2 h-4 w-4" />
-                <Trans>Preview</Trans>
-              </>
-            )}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleOpenInsertDialog}
-          >
-            <ImagePlus className="me-2 h-4 w-4" />
-            <Trans>Insert</Trans>
-          </Button>
+      {/* Action toolbar */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowPreview(!showPreview)}
+        >
+          {showPreview ? (
+            <>
+              <Edit2 className="me-2 h-4 w-4" />
+              <Trans>Edit</Trans>
+            </>
+          ) : (
+            <>
+              <Eye className="me-2 h-4 w-4" />
+              <Trans>Preview</Trans>
+            </>
+          )}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleOpenInsertDialog}
+        >
+          <ImagePlus className="me-2 h-4 w-4" />
+          <Trans>Insert</Trans>
+        </Button>
+        <Button variant="outline" size="sm" asChild>
+          {wikiId ? (
+            <Link to="/$wikiId/$page/attachments" params={{ wikiId, page: slug }}>
+              <Image className="me-2 h-4 w-4" />
+              <Trans>Attachments</Trans>
+            </Link>
+          ) : (
+            <Link to="/$page/attachments" params={{ page: slug }}>
+              <Image className="me-2 h-4 w-4" />
+              <Trans>Attachments</Trans>
+            </Link>
+          )}
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleCancel}>
+          <X className="me-2 h-4 w-4" />
+          <Trans>Cancel</Trans>
+        </Button>
+        {!isNew && permissions.delete && (
           <Button variant="outline" size="sm" asChild>
             {wikiId ? (
-              <Link to="/$wikiId/$page/attachments" params={{ wikiId, page: slug }}>
-                <Image className="me-2 h-4 w-4" />
-                <Trans>Attachments</Trans>
+              <Link to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
+                <Trash2 className="me-2 h-4 w-4" />
+                <Trans>Delete page</Trans>
               </Link>
             ) : (
-              <Link to="/$page/attachments" params={{ page: slug }}>
-                <Image className="me-2 h-4 w-4" />
-                <Trans>Attachments</Trans>
+              <Link to="/$page/delete" params={{ page: slug }}>
+                <Trash2 className="me-2 h-4 w-4" />
+                <Trans>Delete page</Trans>
               </Link>
             )}
           </Button>
-          <Button variant="outline" size="sm" onClick={handleCancel}>
-            <X className="me-2 h-4 w-4" />
-            <Trans>Cancel</Trans>
-          </Button>
-          {!isNew && permissions.delete && (
-            <Button variant="outline" size="sm" asChild>
-              {wikiId ? (
-                <Link to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
-                  <Trash2 className="me-2 h-4 w-4" />
-                  <Trans>Delete page</Trans>
-                </Link>
-              ) : (
-                <Link to="/$page/delete" params={{ page: slug }}>
-                  <Trash2 className="me-2 h-4 w-4" />
-                  <Trans>Delete page</Trans>
-                </Link>
-              )}
-            </Button>
+        )}
+        <Button size="sm" onClick={handleSave} disabled={isPending}>
+          {isNew ? (
+            <>
+              {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
+              {isPending ? t`Creating...` : t`Create page`}
+            </>
+          ) : (
+            <>
+              {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Save className="me-2 h-4 w-4" />}
+              {isPending ? t`Saving...` : t`Save`}
+            </>
           )}
-          <Button size="sm" onClick={handleSave} disabled={isPending}>
-            {isNew ? (
-              <>
-                {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
-                {isPending ? t`Creating...` : t`Create page`}
-              </>
-            ) : (
-              <>
-                {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Save className="me-2 h-4 w-4" />}
-                {isPending ? t`Saving...` : t`Save`}
-              </>
-            )}
-          </Button>
-        </div>
+        </Button>
       </div>
 
       <Separator />
@@ -285,12 +309,26 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           {isNew && (
             <div className="space-y-2">
               <Label htmlFor="slug"><Trans>Page URL</Trans></Label>
-              <Input
-                id="slug"
-                value={newSlug}
-                onChange={(e) => setNewSlug(e.target.value)}
-                placeholder={t`my-page-name`}
-              />
+              <div className="flex items-center gap-2">
+                <Input
+                  id="slug"
+                  value={newSlug}
+                  onChange={handleSlugChange}
+                  placeholder={t`my-page-name`}
+                  className="flex-1"
+                />
+                {slugEdited && title && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleResetSlug}
+                    title={t`Re-derive from title`}
+                    className="shrink-0"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
               <p className="text-muted-foreground text-sm">
                 <Trans>
                   This will be the path for the page. Use lower case letters,
@@ -306,7 +344,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={handleTitleChange}
               placeholder={t`Page title`}
             />
           </div>
@@ -396,7 +434,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
               className="py-8"
             />
           ) : (
-            <div className="grid grid-cols-4 gap-3 max-h-[400px] overflow-y-auto">
+            <div className="grid grid-cols-3 gap-3 max-h-[400px] overflow-y-auto">
               {attachments.map((attachment) => {
                 const FileIcon = getFileIcon(attachment.type)
                 return (
@@ -434,13 +472,11 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 export function PageEditorSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <Skeleton className="h-8 w-64" />
-        <div className="flex gap-2">
-          <Skeleton className="h-9 w-24" />
-          <Skeleton className="h-9 w-24" />
-          <Skeleton className="h-9 w-20" />
-        </div>
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-9 w-24" />
+        <Skeleton className="h-9 w-24" />
+        <Skeleton className="h-9 w-24" />
+        <Skeleton className="h-9 w-20" />
       </div>
       <Separator />
       <div className="space-y-4">

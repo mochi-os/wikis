@@ -1,7 +1,6 @@
 import { useState, useRef, useMemo } from 'react'
 import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { Link } from '@tanstack/react-router'
 import {
   Upload,
   Trash2,
@@ -12,7 +11,6 @@ import {
   Grid3X3,
   List,
   ArrowUpDown,
-  ArrowLeft,
   X,
   Image,
   ExternalLink,
@@ -48,9 +46,8 @@ import {
 import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import type { Attachment } from '@/types/wiki'
 
-interface AttachmentsPageProps {
-  slug: string
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface AttachmentsPageProps {}
 
 type ViewMode = 'grid' | 'list'
 type FilterType = 'all' | 'images' | 'documents'
@@ -61,7 +58,7 @@ function buildAttachmentUrl(baseURL: string, id: string): string {
   return authenticatedUrl(`${baseURL}attachments/${id}`)
 }
 
-export function AttachmentsPage({ slug }: AttachmentsPageProps) {
+export function AttachmentsPage(_props: AttachmentsPageProps) {
   const { t } = useLingui()
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [filterType, setFilterType] = useState<FilterType>('all')
@@ -76,7 +73,6 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
   const uploadMutation = useUploadAttachment()
   const deleteMutation = useDeleteAttachment()
   const wikiContext = useWikiBaseURLOptional()
-  const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
   const baseURL = wikiContext?.baseURL ?? ''
 
   const attachments = data?.attachments ?? EMPTY_ATTACHMENTS
@@ -225,29 +221,13 @@ export function AttachmentsPage({ slug }: AttachmentsPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Upload + stats */}
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}>
-            {wikiId ? (
-              <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
-                <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
-              </Link>
-            ) : (
-              <Link to="/$page/edit" params={{ page: slug }}>
-                <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
-              </Link>
-            )}
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1>
-            <p className="text-muted-foreground text-sm">
-              <Trans>
-                {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })})
-              </Trans>
-            </p>
-          </div>
-        </div>
+        <p className="text-muted-foreground text-sm">
+          <Trans>
+            {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })})
+          </Trans>
+        </p>
         <div>
           <input
             ref={fileInputRef}

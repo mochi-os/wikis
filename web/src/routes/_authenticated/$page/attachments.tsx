@@ -32,7 +32,7 @@ function AttachmentsRoute() {
     <>
       <WikiRouteHeader title={t`Attachments`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
       <Main>
-        <AttachmentsPage slug={slug} />
+        <AttachmentsPage />
       </Main>
     </>
   )

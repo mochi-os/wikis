@@ -307,13 +307,22 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
 export function PageViewSkeleton() {
   return (
     <article className='space-y-4'>
-      <Separator />
-      <div className='space-y-4'>
-        <Skeleton className='h-4 w-full' />
-        <Skeleton className='h-4 w-full' />
-        <Skeleton className='h-4 w-3/4' />
-        <Skeleton className='h-4 w-full' />
-        <Skeleton className='h-4 w-5/6' />
+      <div className='grid gap-8 lg:grid-cols-[minmax(0,1fr)_240px]'>
+        <div className='space-y-4'>
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-3/4' />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-5/6' />
+        </div>
+        <aside className='hidden lg:block'>
+          <div className='space-y-2 rounded-lg border p-3'>
+            <Skeleton className='h-4 w-24' />
+            <Skeleton className='h-3 w-full' />
+            <Skeleton className='h-3 w-5/6' />
+            <Skeleton className='h-3 w-4/6' />
+          </div>
+        </aside>
       </div>
       <Separator />
       <Skeleton className='h-5 w-24' />

@@ -546,7 +546,12 @@ def action_delete(a):
 # Info endpoint for class context - returns list of wikis
 def action_info_class(a):
     # Add fingerprint (without hyphens) to each for shorter URLs
-    wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis")
+    wikis_raw = mochi.db.rows("""
+        select w.id, w.name, w.home, w.source, w.created,
+            (select count(*) from pages p where p.wiki=w.id and p.deleted=0) as page_count,
+            (select max(p.updated) from pages p where p.wiki=w.id and p.deleted=0) as last_updated
+        from wikis w
+    """)
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
     return {"data": {"entity": False, "wikis": wikis}}
 
@@ -707,7 +712,12 @@ def action_info_entity(a):
 
     # Also include all wikis for sidebar display
     # Add fingerprint (without hyphens) to each for shorter URLs
-    wikis_raw = mochi.db.rows("select id, name, home, source, created from wikis")
+    wikis_raw = mochi.db.rows("""
+        select w.id, w.name, w.home, w.source, w.created,
+            (select count(*) from pages p where p.wiki=w.id and p.deleted=0) as page_count,
+            (select max(p.updated) from pages p where p.wiki=w.id and p.deleted=0) as last_updated
+        from wikis w
+    """)
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
 
     return {"data": {"entity": True, "wiki": wiki, "wikis": wikis, "permissions": permissions, "fingerprint": fp}}
@@ -1010,7 +1020,14 @@ def action_page_history(a):
         a.error.label(404, "errors.page_not_found")
         return
 
-    revisions = mochi.db.rows("select id, title, author, name, created, version, comment from revisions where page=? order by version desc", page["id"])
+    limit  = min(max(int(a.input("limit")  or 50), 1), 200)
+    offset = max(int(a.input("offset") or 0), 0)
+
+    total = mochi.db.value("select count(*) from revisions where page=?", page["id"])
+    revisions = mochi.db.rows(
+        "select id, title, author, name, created, version, comment from revisions"
+        " where page=? order by version desc limit ? offset ?",
+        page["id"], limit, offset)
 
     # Resolve author names - use stored name if available, else try to resolve
     for rev in revisions:
@@ -1021,7 +1038,7 @@ def action_page_history(a):
             else:
                 rev["name"] = rev["author"][:12] + "..."
 
-    return {"data": {"page": slug, "revisions": revisions}}
+    return {"data": {"page": slug, "revisions": revisions, "total": total, "limit": limit, "offset": offset}}
 
 # View a specific revision
 def action_page_revision(a):
@@ -1073,6 +1090,20 @@ def action_page_revision(a):
         },
         "current_version": page["version"]
     }}
+
+# List all pages in a wiki (for sidebar page tree)
+def action_page_list(a):
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error.label(404, "errors.wiki_not_found")
+        return
+    if not check_access(a, wiki["id"], "view"):
+        a.error.label(403, "errors.access_denied")
+        return
+    pages = mochi.db.rows(
+        "select page, title from pages where wiki=? and deleted=0 order by title asc limit 500",
+        wiki["id"])
+    return {"data": {"pages": pages}}
 
 # Revert to a previous revision
 def action_page_revert(a):
@@ -1530,6 +1561,13 @@ def action_changes(a):
         a.error.label(403, "errors.access_denied")
         return
 
+    limit  = min(max(int(a.input("limit")  or 50), 1), 200)
+    offset = max(int(a.input("offset") or 0), 0)
+
+    total = mochi.db.value(
+        "select count(*) from revisions r join pages p on p.id=r.page where p.wiki=? and p.deleted=0",
+        wiki["id"])
+
     # Get recent revisions with page info
     changes = mochi.db.rows("""
         select r.id, r.title, r.author, r.name, r.created, r.version, r.comment,
@@ -1538,8 +1576,8 @@ def action_changes(a):
         join pages p on p.id=r.page
         where p.wiki=? and p.deleted=0
         order by r.created desc
-        limit 100
-    """, wiki["id"])
+        limit ? offset ?
+    """, wiki["id"], limit, offset)
 
     # Resolve author names where not stored
     for change in changes:
@@ -1550,7 +1588,7 @@ def action_changes(a):
             else:
                 change["name"] = change["author"][:12] + "..."
 
-    return {"data": {"changes": changes}}
+    return {"data": {"changes": changes, "total": total, "limit": limit, "offset": offset}}
 
 # Create or update a redirect
 def action_redirect_set(a):

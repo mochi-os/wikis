@@ -9,9 +9,10 @@ import type { SearchResult } from '@/types/wiki'
 
 interface SearchPageProps {
   initialQuery?: string
+  wikiId?: string
 }
 
-export function SearchPage({ initialQuery = '' }: SearchPageProps) {
+export function SearchPage({ initialQuery = '', wikiId }: SearchPageProps) {
   const [query, setQuery] = useState(initialQuery)
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery)
 
@@ -42,24 +43,16 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="space-y-4">
-        <h1 className="flex items-center gap-3 text-2xl font-bold">
-          <Search className="h-6 w-6" />
-          <Trans>Search Wiki</Trans>
-        </h1>
-
-        {/* Search input */}
-        <div className="relative">
-          <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t`Search pages by title or content...`}
-            className="ps-10"
-            autoFocus
-          />
-        </div>
+      {/* Search input */}
+      <div className="relative">
+        <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t`Search pages by title or content...`}
+          className="ps-10"
+          autoFocus
+        />
       </div>
 
       <Separator />
@@ -90,7 +83,7 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
           </p>
           <div className="space-y-2">
             {results.map((result) => (
-              <SearchResultItem key={result.page} result={result} />
+              <SearchResultItem key={result.page} result={result} wikiId={wikiId} />
             ))}
           </div>
         </div>
@@ -101,14 +94,15 @@ export function SearchPage({ initialQuery = '' }: SearchPageProps) {
 
 interface SearchResultItemProps {
   result: SearchResult
+  wikiId?: string
 }
 
-function SearchResultItem({ result }: SearchResultItemProps) {
+function SearchResultItem({ result, wikiId }: SearchResultItemProps) {
   const { formatTimestamp } = useFormat()
   return (
     <Link
-      to="/$page"
-      params={{ page: result.page }}
+      to={wikiId ? '/$wikiId/$page' : '/$page'}
+      params={wikiId ? { wikiId, page: result.page } : { page: result.page }}
       className="hover:bg-muted/50 group flex items-start gap-4 rounded-lg border p-4 transition-colors"
     >
       <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" />

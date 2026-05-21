@@ -77,6 +77,13 @@ export function TagManager({ slug, tags }: TagManagerProps) {
     <div className="flex flex-wrap items-center gap-2">
       <TagIcon className="text-muted-foreground h-4 w-4" />
 
+      {/* Empty state for read-only users */}
+      {tags.length === 0 && !canEdit && (
+        <span className="text-muted-foreground text-sm">
+          <Trans>No tags</Trans>
+        </span>
+      )}
+
       {/* Existing tags */}
       {tags.map((tag) => (
         <Badge key={tag} variant="secondary" className={canEdit ? "group gap-1 pe-1" : ""}>

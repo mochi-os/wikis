@@ -24,7 +24,7 @@ import {
   getAppPath,
   shellClipboardWrite,
 } from '@mochi/web'
-import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Rss, Search, Settings, Tags, Trash2 } from 'lucide-react'
+import { Ellipsis, FileEdit, FilePlus, History, LogOut, MessageSquare, Pencil, Rss, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import {
   PageView,
   PageNotFound,
@@ -51,6 +51,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   const { baseURL, wiki, permissions } = useWikiBaseURL()
+  const backLabel = wiki.name ?? t`Back to wikis`
 
   // Can unsubscribe if viewing a subscribed wiki (has source)
   const canUnsubscribe = !!wiki.source
@@ -125,7 +126,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: backLabel, onFallback: goBackToWikis }} />
         <Main>
           <PageViewSkeleton />
         </Main>
@@ -136,7 +137,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   if (pageError) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: backLabel, onFallback: goBackToWikis }} />
         <Main>
           <GeneralError error={pageError} minimal mode="inline" reset={refetch} />
         </Main>
@@ -148,7 +149,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   if (data && !isValidResponse) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+        <WikiRouteHeader title={pageTitle} back={{ label: backLabel, onFallback: goBackToWikis }} />
         <Main>
           <div className="text-destructive">
             <p><Trans>Error: Received invalid response from server.</Trans></p>
@@ -184,14 +185,6 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
               </Link>
             </DropdownMenuItem>
           )}
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/$wikiId/new" params={{ wikiId }}>
-                <FilePlus className="size-4" />
-                <Trans>New page</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
           {permissions.manage && (
             <>
               <DropdownMenuSeparator />
@@ -212,7 +205,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <WikiRouteHeader
           title={t`Page not found`}
           menuAction={notFoundMenu}
-          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+          back={{ label: backLabel, onFallback: goBackToWikis }}
         />
         <Main>
           <PageNotFound slug={slug} wikiId={wikiId} />
@@ -277,7 +270,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           <DropdownMenuSeparator />
           <DropdownMenuLabel><Trans>Wiki</Trans></DropdownMenuLabel>
           <DropdownMenuItem asChild>
-            <Link preload={false} to="/search">
+            <Link preload={false} to="/$wikiId/search" params={{ wikiId }}>
               <Search className="size-4" />
               <Trans>Search</Trans>
             </Link>
@@ -328,7 +321,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
                 onSelect={() => setUnsubscribeConfirmOpen(true)}
                 disabled={isUnsubscribing}
               >
-                <Trash2 className="size-4" />
+                <LogOut className="size-4" />
                 {isUnsubscribing ? t`Unsubscribing...` : t`Unsubscribe`}
               </DropdownMenuItem>
             </>
@@ -342,7 +335,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <PageHeader
           page={data.page}
           menuAction={actionsMenu}
-          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+          back={{ label: backLabel, onFallback: goBackToWikis }}
         />
         <Main className="pt-2">
           <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />

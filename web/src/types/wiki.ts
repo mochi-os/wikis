@@ -60,6 +60,9 @@ export interface RevisionDetail extends Revision {
 export interface PageHistoryResponse {
   page: string
   revisions: Revision[]
+  total?: number
+  limit?: number
+  offset?: number
 }
 
 export interface PageRevisionResponse {
@@ -82,6 +85,9 @@ export interface Change {
 
 export interface ChangesResponse {
   changes: Change[]
+  total?: number
+  limit?: number
+  offset?: number
 }
 
 export interface PageRevertResponse {

@@ -30,6 +30,7 @@ import {
   isDomainEntityRouting,
   getAppPath,
   toast,
+  useFormat,
   usePageTitle,
   shellClipboardWrite, naturalCompare,} from '@mochi/web'
 import {
@@ -77,6 +78,8 @@ interface InfoWiki {
   home: string
   fingerprint?: string
   source?: string
+  page_count?: number
+  last_updated?: number
 }
 
 interface InfoResponse {
@@ -104,6 +107,8 @@ interface WikiItem {
   type: WikiType
   fingerprint?: string
   home: string
+  page_count?: number
+  last_updated?: number
 }
 
 // Module-level flag to track if we've already done initial redirect check (resets on page refresh)
@@ -212,6 +217,7 @@ function IndexPage() {
         <WikiHomePage
           wikiId={data.wiki.fingerprint ?? data.wiki.id}
           homeSlug={data.wiki.home}
+          wikiName={data.wiki.name}
           infoError={data.infoError}
           onRetryInfo={retryInfo}
         />
@@ -232,16 +238,19 @@ function IndexPage() {
 function WikiHomePage({
   wikiId,
   homeSlug,
+  wikiName,
   infoError,
   onRetryInfo,
 }: {
   wikiId: string
   homeSlug: string
+  wikiName?: string
   infoError?: string
   onRetryInfo: () => void
 }) {
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
+  const backLabel = wikiName ?? t`Back to wikis`
   const { data, isLoading, error, refetch } = usePage(homeSlug)
   const permissions = usePermissions()
   const unsubscribeWiki = useUnsubscribeWiki()
@@ -311,7 +320,7 @@ function WikiHomePage({
       <>
         <WikiRouteHeader
           title={pageTitle}
-          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+          back={{ label: backLabel, onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main>
@@ -326,7 +335,7 @@ function WikiHomePage({
       <>
         <WikiRouteHeader
           title={pageTitle}
-          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+          back={{ label: backLabel, onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main>
@@ -342,7 +351,7 @@ function WikiHomePage({
       <>
         <WikiRouteHeader
           title={t`Page not found`}
-          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+          back={{ label: backLabel, onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main>
@@ -466,7 +475,7 @@ function WikiHomePage({
         <PageHeader
           page={data.page}
           menuAction={actionsMenu}
-          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+          back={{ label: backLabel, onFallback: goBackToWikis }}
         />
         {infoErrorBanner}
         <Main className='pt-2'>
@@ -526,8 +535,10 @@ interface RecommendationsResponse {
 
 function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
   usePageTitle(t`Wikis`)
+  const { formatTimestamp } = useFormat()
   const { openCreateDialog } = useSidebarContext()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
   const [unsubscribeId, setUnsubscribeId] = useState<string | null>(null)
 
@@ -537,7 +548,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
       setUnsubscribeId(null)
-      window.location.reload()
+      void navigate({ to: '/' })
     },
     onError: (error) => {
       toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
@@ -569,6 +580,8 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       type: (w.source ? 'subscribed' : 'owned') as WikiType,
       fingerprint: w.fingerprint,
       home: w.home,
+      page_count: (w as InfoWiki).page_count,
+      last_updated: (w as InfoWiki).last_updated,
     })),
   ].sort((a, b) => naturalCompare(a.name, b.name))
 
@@ -785,6 +798,19 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                           </span>
                           <span className='truncate'>{wiki.name}</span>
                         </CardTitle>
+                        {(wiki.page_count !== undefined || wiki.last_updated) && (
+                          <p className='text-muted-foreground text-xs'>
+                            {wiki.page_count !== undefined && (
+                              <Trans>{wiki.page_count} pages</Trans>
+                            )}
+                            {wiki.page_count !== undefined && wiki.last_updated && (
+                              <span aria-hidden='true'> · </span>
+                            )}
+                            {wiki.last_updated && (
+                              <Trans>Updated {formatTimestamp(wiki.last_updated)}</Trans>
+                            )}
+                          </p>
+                        )}
                       </div>
                       <div className='relative z-10 flex items-center gap-2'>
                         {wiki.type === 'subscribed' && (

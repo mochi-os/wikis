@@ -75,17 +75,21 @@ export function usePage(slug: string) {
   })
 }
 
-export function usePageHistory(slug: string) {
+export function usePageHistory(slug: string, params?: { limit?: number; offset?: number }) {
   const e = useEntityEndpoint()
+  const limit = params?.limit ?? 50
+  const offset = params?.offset ?? 0
   return useQuery({
-    queryKey: ['wiki', 'page', slug, 'history'],
+    queryKey: ['wiki', 'page', slug, 'history', limit, offset],
     queryFn: () =>
-      requestHelpers.get<PageHistoryResponse>(e(endpoints.wiki.pageHistory(slug))),
+      requestHelpers.get<PageHistoryResponse>(
+        `${e(endpoints.wiki.pageHistory(slug))}?limit=${limit}&offset=${offset}`
+      ),
     enabled: !!slug,
   })
 }
 
-export function usePageRevision(slug: string, version: number) {
+export function usePageRevision(slug: string, version: number, opts?: { enabled?: boolean }) {
   const e = useEntityEndpoint()
   return useQuery({
     queryKey: ['wiki', 'page', slug, 'revision', version],
@@ -93,7 +97,7 @@ export function usePageRevision(slug: string, version: number) {
       requestHelpers.get<PageRevisionResponse>(
         e(endpoints.wiki.pageRevision(slug, version))
       ),
-    enabled: !!slug && version > 0,
+    enabled: (opts?.enabled ?? true) && !!slug && version > 0,
   })
 }
 
@@ -221,11 +225,30 @@ export function useTagPages(tag: string) {
 
 // Recent changes
 
-export function useChanges() {
+export function useChanges(params?: { limit?: number; offset?: number }) {
   const e = useEntityEndpoint()
+  const limit = params?.limit ?? 50
+  const offset = params?.offset ?? 0
   return useQuery({
-    queryKey: ['wiki', 'changes'],
-    queryFn: () => requestHelpers.get<ChangesResponse>(e(endpoints.wiki.changes)),
+    queryKey: ['wiki', 'changes', limit, offset],
+    queryFn: () =>
+      requestHelpers.get<ChangesResponse>(
+        `${e(endpoints.wiki.changes)}?limit=${limit}&offset=${offset}`
+      ),
+  })
+}
+
+export function useWikiPages(wikiId: string | undefined) {
+  const ctx = useWikiBaseURLOptional()
+  const baseURL = ctx?.baseURL ?? ''
+  return useQuery({
+    queryKey: ['wiki', wikiId, 'pages'],
+    queryFn: () =>
+      requestHelpers.get<{ pages: { page: string; title: string }[] }>(
+        `${baseURL}${endpoints.wiki.pageList}`
+      ),
+    enabled: !!wikiId && !!baseURL,
+    staleTime: 2 * 60 * 1000,
   })
 }
 
