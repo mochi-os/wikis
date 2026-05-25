@@ -10,9 +10,10 @@ import type { SearchResult } from '@/types/wiki'
 interface SearchPageProps {
   initialQuery?: string
   wikiId?: string
+  onQueryChange?: (q: string) => void
 }
 
-export function SearchPage({ initialQuery = '', wikiId }: SearchPageProps) {
+export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) {
   const [query, setQuery] = useState(initialQuery)
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery)
 
@@ -24,19 +25,12 @@ export function SearchPage({ initialQuery = '', wikiId }: SearchPageProps) {
     return () => clearTimeout(timer)
   }, [query])
 
-  // Update URL when debounced query changes
+  // Sync debounced query back to the URL via the router
   useEffect(() => {
     if (debouncedQuery !== initialQuery) {
-      const params = new URLSearchParams(window.location.search)
-      if (debouncedQuery) {
-        params.set('q', debouncedQuery)
-      } else {
-        params.delete('q')
-      }
-      const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname
-      window.history.replaceState({}, '', newUrl)
+      onQueryChange?.(debouncedQuery)
     }
-  }, [debouncedQuery, initialQuery])
+  }, [debouncedQuery, initialQuery, onQueryChange])
 
   const { data, isLoading, error, refetch } = useSearch(debouncedQuery)
   const results = data?.results ?? []

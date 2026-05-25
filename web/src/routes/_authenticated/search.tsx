@@ -1,4 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useCallback } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { z } from 'zod'
 import { usePageTitle, Main } from '@mochi/web'
@@ -16,16 +17,20 @@ export const Route = createFileRoute('/_authenticated/search')({
 
 function SearchRoute() {
   const { t } = useLingui()
-  const navigate = Route.useNavigate()
+  const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   usePageTitle(t`Search`)
   const { q } = Route.useSearch()
+
+  const handleQueryChange = useCallback((query: string) => {
+    void navigate({ to: '/search', search: { q: query || undefined }, replace: true })
+  }, [navigate])
 
   return (
     <>
       <WikiRouteHeader title={t`Search`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
       <Main>
-        <SearchPage initialQuery={q} />
+        <SearchPage initialQuery={q} onQueryChange={handleQueryChange} />
       </Main>
     </>
   )

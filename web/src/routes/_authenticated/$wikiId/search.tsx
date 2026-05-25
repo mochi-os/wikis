@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useCallback } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { z } from 'zod'
 import { usePageTitle, Main } from '@mochi/web'
@@ -25,6 +26,10 @@ function WikiSearchRoute() {
   usePageTitle(t`Search`)
   const { q } = Route.useSearch() as { q?: string }
 
+  const handleQueryChange = useCallback((query: string) => {
+    void navigate({ to: '/$wikiId/search', params: { wikiId }, search: { q: query || undefined }, replace: true })
+  }, [navigate, wikiId])
+
   return (
     <>
       <WikiRouteHeader
@@ -33,7 +38,7 @@ function WikiSearchRoute() {
         showSidebarTrigger
       />
       <Main>
-        <SearchPage initialQuery={q} wikiId={wikiId} />
+        <SearchPage initialQuery={q} wikiId={wikiId} onQueryChange={handleQueryChange} />
       </Main>
     </>
   )

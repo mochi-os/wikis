@@ -7,7 +7,6 @@ import {
   getErrorMessage,
   type SidebarData,
   type NavItem,
-  type NavCollapsible,
   toast,
   CreateEntityDialog,
   type CreateEntityValues, naturalCompare,} from '@mochi/web'
@@ -19,7 +18,7 @@ import {
 } from 'lucide-react'
 import { SidebarProvider, useSidebarContext } from '@/context/sidebar-context'
 import { WikiProvider, useWikiContext } from '@/context/wiki-context'
-import { useCreateWiki, useWikiPages } from '@/hooks/use-wiki'
+import { useCreateWiki } from '@/hooks/use-wiki'
 
 // Check if a string looks like an entity ID (9-char fingerprint or 50-51 char full ID)
 const ENTITY_ID_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
@@ -62,10 +61,6 @@ function WikiLayoutInner() {
   const isInWiki = urlEntityId !== null
   const wikiName = info?.wiki?.name
 
-  // Fetch page list for the currently active wiki (for sidebar tree)
-  const { data: pagesData } = useWikiPages(urlEntityId ?? undefined)
-  const activeWikiPages = pagesData?.pages ?? []
-
   const handleCreateWiki = async (values: CreateEntityValues) => {
     return new Promise<void>((resolve, reject) => {
       createWiki.mutate(
@@ -91,37 +86,25 @@ function WikiLayoutInner() {
     // Get current wiki ID for highlighting - use URL as source of truth
     const currentWikiId = urlEntityId
 
-    // Build wiki items as NavCollapsible with pages as children for the active wiki
+    // Keep the wiki sidebar flat to avoid burying page navigation inside it.
     const wikiItems: NavItem[] = [...(info?.wikis || [])]
       .sort((a, b) => naturalCompare(a.name, b.name))
-      .map((wiki): NavCollapsible => {
-        const isActive = wiki.id === currentWikiId || wiki.fingerprint === currentWikiId
-        const pages = isActive ? activeWikiPages.slice(0, 50) : []
-        return {
-          title: wiki.name,
-          url: `/${wiki.fingerprint ?? wiki.id}/${wiki.home}` as const,
-          icon: BookOpen,
-          open: isActive ? true : undefined,
-          items: pages.map((p) => ({
-            title: p.title,
-            url: `/${wiki.fingerprint ?? wiki.id}/${p.page}` as const,
-          })),
-        }
-      })
+      .map((wiki) => ({
+        title: wiki.name,
+        url: `/${wiki.fingerprint ?? wiki.id}/${wiki.home}` as const,
+        icon: BookOpen,
+        isActive: wiki.id === currentWikiId || wiki.fingerprint === currentWikiId,
+      }))
 
     // Build current wiki item when in entity context but not in the wikis list
     const currentWikiInList = info?.wikis?.some(w => w.id === currentWikiId || w.fingerprint === currentWikiId)
     const standaloneWikiUrl = info?.wiki?.fingerprint ?? info?.wiki?.id ?? urlEntityId
     const standaloneWikiHome = info?.wiki?.home || 'home'
-    const standaloneWikiItem: NavCollapsible | null = isInWiki && !currentWikiInList && standaloneWikiUrl ? {
+    const standaloneWikiItem: NavItem | null = isInWiki && !currentWikiInList && standaloneWikiUrl ? {
       title: wikiName || t`Wiki`,
       url: `/${standaloneWikiUrl}/${standaloneWikiHome}` as const,
       icon: BookOpen,
-      open: true,
-      items: activeWikiPages.slice(0, 50).map((p) => ({
-        title: p.title,
-        url: `/${standaloneWikiUrl}/${p.page}` as const,
-      })),
+      isActive: true,
     } : null
 
     // "All wikis" is now a simple link without submenu
@@ -152,7 +135,7 @@ function WikiLayoutInner() {
     ]
 
     return { navGroups: groups }
-  }, [isInWiki, wikiName, info, urlEntityId, activeWikiPages, handleAllWikisClick, openCreateDialog, location.pathname, t])
+  }, [isInWiki, wikiName, info, urlEntityId, handleAllWikisClick, openCreateDialog, location.pathname, t])
 
   return (
     <>
