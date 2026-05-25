@@ -1023,11 +1023,9 @@ def action_page_history(a):
     limit  = min(max(int(a.input("limit")  or 50), 1), 200)
     offset = max(int(a.input("offset") or 0), 0)
 
-    total = mochi.db.value("select count(*) from revisions where page=?", page["id"])
-    revisions = mochi.db.rows(
-        "select id, title, author, name, created, version, comment from revisions"
-        " where page=? order by version desc limit ? offset ?",
-        page["id"], limit, offset)
+    total_row = mochi.db.row("select count(*) as cnt from revisions where page=?", page["id"])
+    total = total_row["cnt"] if total_row else 0
+    revisions = mochi.db.rows("select id, title, author, name, created, version, comment from revisions where page=? order by version desc limit ? offset ?", page["id"], limit, offset)
 
     # Resolve author names - use stored name if available, else try to resolve
     for rev in revisions:
@@ -1564,9 +1562,8 @@ def action_changes(a):
     limit  = min(max(int(a.input("limit")  or 50), 1), 200)
     offset = max(int(a.input("offset") or 0), 0)
 
-    total = mochi.db.value(
-        "select count(*) from revisions r join pages p on p.id=r.page where p.wiki=? and p.deleted=0",
-        wiki["id"])
+    total_row = mochi.db.row("select count(*) as cnt from revisions r join pages p on p.id=r.page where p.wiki=? and p.deleted=0", wiki["id"])
+    total = total_row["cnt"] if total_row else 0
 
     # Get recent revisions with page info
     changes = mochi.db.rows("""

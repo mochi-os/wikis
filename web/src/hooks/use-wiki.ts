@@ -239,15 +239,13 @@ export function useChanges(params?: { limit?: number; offset?: number }) {
 }
 
 export function useWikiPages(wikiId: string | undefined) {
-  const ctx = useWikiBaseURLOptional()
-  const baseURL = ctx?.baseURL ?? ''
   return useQuery({
     queryKey: ['wiki', wikiId, 'pages'],
     queryFn: () =>
-      requestHelpers.get<{ pages: { page: string; title: string }[] }>(
-        `${baseURL}${endpoints.wiki.pageList}`
+      wikisRequest.get<{ pages: { page: string; title: string }[] }>(
+        `${wikiId}/-/${endpoints.wiki.pageList}`
       ),
-    enabled: !!wikiId && !!baseURL,
+    enabled: !!wikiId,
     staleTime: 2 * 60 * 1000,
   })
 }
