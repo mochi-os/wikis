@@ -153,6 +153,22 @@ def validate_event_sender(wikirow, wiki, sender):
     update_replica_seen(wiki, sender)
     return True
 
+# error_message_timeout: core calls this when a fan-out to a replica aged out
+# undelivered. Remove them only when the directory shows no host left
+# (locations == 0) - definitely gone, not a transient outage or a server
+# migration in progress.
+def error_message_timeout(e):
+    if e.detail.get("locations", 1) != 0:
+        return
+    mochi.db.execute("delete from replicas where id=?", e.entity)
+
+# error_broadcast_gap: core calls this when an unfillable broadcast gap was
+# skipped and events were permanently lost. broadcast/resync can't replay a
+# pruned gap, so pull a fresh full snapshot.
+def error_broadcast_gap(e):
+    request_resync(e.entity)
+
+
 # request_resync pulls a fresh sync dump from the source wiki when an
 # incoming event references a page or comment we haven't seen. The
 # source's event_sync is the canonical state; import_sync_dump applies it
