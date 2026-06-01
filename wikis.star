@@ -153,6 +153,27 @@ def validate_event_sender(wikirow, wiki, sender):
     update_replica_seen(wiki, sender)
     return True
 
+# error_message_timeout: core calls this when a fan-out to a replica aged out
+# undelivered. Remove them only when the directory shows no host left
+# (locations == 0) - definitely gone, not a transient outage or a server
+# migration in progress.
+def error_message_timeout(e):
+    if e.detail.get("locations", 1) != 0:
+        return
+    mochi.db.execute("delete from replicas where id=?", e.entity)
+
+# error_broadcast_gap: core calls this when an unfillable broadcast gap was
+# skipped and events were permanently lost. broadcast/resync can't replay a
+# pruned gap, so pull a fresh full snapshot.
+def error_broadcast_gap(e):
+    request_resync(e.entity)
+
+
+# idle_resync_age: how long without applying any broadcast from a replica's
+# source wiki before the next view re-registers as a replica (the source may
+# have pruned us after a long idle). Matches core's broadcast_log_age.
+idle_resync_age = 7 * 86400
+
 # request_resync pulls a fresh sync dump from the source wiki when an
 # incoming event references a page or comment we haven't seen. The
 # source's event_sync is the canonical state; import_sync_dump applies it
@@ -174,10 +195,33 @@ def request_resync(wiki_id):
     if not dump or dump.get("status") != "200":
         return False
     import_sync_dump(wiki_id, dump)
+    mochi.broadcast.touch(row["source"])
     fp = mochi.entity.fingerprint(wiki_id)
     if fp:
         mochi.websocket.write(fp, {"type": "wiki/resynced", "wiki": wiki_id})
     return True
+
+# maybe_resubscribe re-registers a replica with its source wiki when the
+# subscription has gone idle (idle_resync_age). The source's event_replicate is
+# idempotent and pushes a sync dump, so a bare re-replicate re-adds us and
+# re-syncs; touch() stamps the idle timer (keyed by source - the broadcast key)
+# so a quiet wiki re-registers at most once per window and a dead source isn't
+# re-poked per view.
+def maybe_resubscribe(a, wiki_id):
+    user_id = a.user.identity.id if a.user else None
+    if not user_id:
+        return
+    row = mochi.db.row("select source, name from wikis where id=?", wiki_id)
+    if not row or not row["source"]:
+        return
+    source = row["source"]
+    if mochi.time.now() - mochi.broadcast.seen(source) <= idle_resync_age:
+        return
+    mochi.message.send(
+        {"from": wiki_id, "to": source, "service": "wikis", "event": "replicate"},
+        {"name": row["name"]}
+    )
+    mochi.broadcast.touch(source)
 
 # Helper: Broadcast event to all replicas of a wiki via the durable
 # broadcast log. Sequence + log + gap-detection live in core. Replicas
@@ -460,6 +504,7 @@ def action_join(a):
         {"from": entity, "to": source, "service": "wikis", "event": "replicate"},
         {"name": name}
     )
+    mochi.broadcast.touch(source)
 
     fingerprint = mochi.entity.fingerprint(entity)
     return {"data": {"id": entity, "name": name, "source": source, "fingerprint": fingerprint, "home": dump.get("home") or "home", "message": "Wiki joined successfully"}}
@@ -690,6 +735,9 @@ def action_info_entity(a):
     if not check_access(a, wiki["id"], "view"):
         a.error.label(403, "errors.access_denied")
         return
+
+    # Re-establish with the source if this replica has gone idle.
+    maybe_resubscribe(a, wiki["id"])
 
     # Build permissions object (manage grants all permissions)
     if a.user:

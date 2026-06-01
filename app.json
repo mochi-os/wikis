@@ -2,7 +2,7 @@
 // Copyright Alistair Cunningham 2025-2026
 
 {
-	"version": "3.85",
+	"version": "3.88",
 	"label": "app.name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -88,6 +88,11 @@
 		"-/rss/token": {"function": "action_rss_token"},
 		"-/users/search": {"function": "action_users_search"},
 		"-/groups": {"function": "action_groups"}
+	},
+
+	"errors": {
+		"message/timeout": {"function": "error_message_timeout"},
+		"broadcast/gap": {"function": "error_broadcast_gap"}
 	},
 
 	"events": {
