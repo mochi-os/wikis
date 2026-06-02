@@ -499,7 +499,12 @@ export function useUploadAttachment() {
       })
       return requestHelpers.post<AttachmentUploadResponse>(
         e(endpoints.wiki.attachmentUpload),
-        formData
+        formData,
+        {
+          mochi: {
+            showGlobalErrorToast: false,
+          },
+        }
       )
     },
     onSuccess: () => {
@@ -727,4 +732,3 @@ export function useUnsubscribeWiki() {
     },
   })
 }
-

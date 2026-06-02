@@ -27,7 +27,11 @@ function AttachmentsRoute() {
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
     enabled: !!slug,
   })
-  const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
+  const isValidResponse = pageData && typeof pageData === 'object'
+  const pageTitle =
+    isValidResponse && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title
+      ? pageData.page.title
+      : slug
   usePageTitle(t`Attachments`)
 
   // Register page with sidebar context for tree expansion

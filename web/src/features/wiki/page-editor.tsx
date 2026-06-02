@@ -1,11 +1,14 @@
 import { useState, useRef } from 'react'
-import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus, RefreshCw } from 'lucide-react'
 import {
   toast,
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
+  ConfirmDialog,
   EmptyState,
   GeneralError,
   Input,
@@ -23,11 +26,19 @@ import {
   getFileIcon,
   getErrorMessage,
   authenticatedUrl,
+  extractStatus,
 } from '@mochi/web'
-import { useEditPage, useCreatePage, useAttachments, useUploadAttachment } from '@/hooks/use-wiki'
+import {
+  useEditPage,
+  useCreatePage,
+  useAttachments,
+  useUploadAttachment,
+  useDeleteAttachment,
+} from '@/hooks/use-wiki'
 import { usePermissions } from '@/context/wiki-context'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import type { WikiPage, Attachment } from '@/types/wiki'
+import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload'
 import { MarkdownContent } from './markdown-content'
 
 interface PageEditorProps {
@@ -79,6 +90,8 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   const [slugEdited, setSlugEdited] = useState(!!slug) // pre-filled slugs are treated as edited
   const [showPreview, setShowPreview] = useState(false)
   const [insertDialogOpen, setInsertDialogOpen] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const cursorPositionRef = useRef<number>(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -90,7 +103,9 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
     refetch: refetchAttachments,
   } = useAttachments()
   const uploadMutation = useUploadAttachment()
+  const deleteMutation = useDeleteAttachment()
   const attachments = attachmentsData?.attachments || []
+  const attachmentPageSlug = (isNew ? newSlug : slug).trim()
 
   const isPending = editPage.isPending || createPage.isPending
 
@@ -117,6 +132,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
     if (textareaRef.current) {
       cursorPositionRef.current = textareaRef.current.selectionStart
     }
+    setUploadError(null)
     setInsertDialogOpen(true)
   }
 
@@ -142,17 +158,80 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   }
 
   // Handle file upload from dialog
-  const handleUpload = (files: FileList) => {
-    if (files.length > 0) {
-      uploadMutation.mutate(Array.from(files), {
-        onSuccess: () => {
-          toast.success(plural(files.length, { one: '# file uploaded', other: '# files uploaded' }))
-        },
-        onError: (error) => {
-          toast.error(getErrorMessage(error, t`Failed to upload files`))
-        },
-      })
+  const getAttachmentValidationError = (files: File[]) => {
+    const unsupported = files.filter((file) => !isSupportedAttachmentFile(file))
+    if (unsupported.length === 0) {
+      return null
     }
+
+    const names = unsupported.slice(0, 3).map((file) => file.name).join(', ')
+    return unsupported.length === 1
+      ? `Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
+      : `Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
+  }
+
+  const getUploadErrorMessage = (error: unknown) => {
+    const status = extractStatus(error)
+    if (status === 413) {
+      return 'This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.'
+    }
+
+    const message = getErrorMessage(error, t`Failed to upload files`)
+    if (message === 'Network Error') {
+      return 'Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.'
+    }
+    if (message.toLowerCase().includes('storage limit exceeded')) {
+      return 'Upload failed because this account has reached its storage limit.'
+    }
+    if (message.toLowerCase().includes('file too large')) {
+      return 'This file is too large to upload. Try a smaller file.'
+    }
+
+    return message
+  }
+
+  const handleUpload = (files: FileList | File[]) => {
+    const fileArray = Array.from(files)
+    if (fileArray.length === 0) {
+      return
+    }
+
+    const validationError = getAttachmentValidationError(fileArray)
+    if (validationError) {
+      setUploadError(validationError)
+      return
+    }
+
+    setUploadError(null)
+    const fileCount = fileArray.length
+    uploadMutation.mutate(fileArray, {
+      onSuccess: () => {
+        setUploadError(null)
+        toast.success(fileCount === 1 ? '1 file uploaded' : `${fileCount} files uploaded`)
+      },
+      onError: (error) => {
+        setUploadError(getUploadErrorMessage(error))
+      },
+    })
+  }
+
+  const handleDeleteAttachment = (attachment: Attachment) => {
+    setPendingDelete(attachment)
+  }
+
+  const confirmDeleteAttachment = () => {
+    if (!pendingDelete) return
+
+    deleteMutation.mutate(pendingDelete.id, {
+      onSuccess: () => {
+        toast.success('Attachment deleted')
+        setPendingDelete(null)
+      },
+      onError: (error) => {
+        setUploadError(getErrorMessage(error, t`Failed to delete attachment`))
+        setPendingDelete(null)
+      },
+    })
   }
 
   const handleSave = async () => {
@@ -247,19 +326,26 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           <ImagePlus className="me-2 h-4 w-4" />
           <Trans>Insert</Trans>
         </Button>
-        <Button variant="outline" size="sm" asChild>
-          {wikiId ? (
-            <Link to="/$wikiId/$page/attachments" params={{ wikiId, page: slug }}>
-              <Image className="me-2 h-4 w-4" />
-              <Trans>Attachments</Trans>
-            </Link>
-          ) : (
-            <Link to="/$page/attachments" params={{ page: slug }}>
-              <Image className="me-2 h-4 w-4" />
-              <Trans>Attachments</Trans>
-            </Link>
-          )}
-        </Button>
+        {attachmentPageSlug ? (
+          <Button variant="outline" size="sm" asChild>
+            {wikiId ? (
+              <Link to="/$wikiId/$page/attachments" params={{ wikiId, page: attachmentPageSlug }}>
+                <Image className="me-2 h-4 w-4" />
+                <Trans>Attachments</Trans>
+              </Link>
+            ) : (
+              <Link to="/$page/attachments" params={{ page: attachmentPageSlug }}>
+                <Image className="me-2 h-4 w-4" />
+                <Trans>Attachments</Trans>
+              </Link>
+            )}
+          </Button>
+        ) : (
+          <Button variant="outline" size="sm" disabled>
+            <Image className="me-2 h-4 w-4" />
+            <Trans>Attachments</Trans>
+          </Button>
+        )}
         <div className="ms-auto flex items-center gap-2">
         {!isNew && permissions.delete && (
           <Button variant="outline" size="sm" asChild>
@@ -389,6 +475,15 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             </DialogDescription>
           </DialogHeader>
 
+          <Alert>
+            <AlertTitle>Insert vs attachments</AlertTitle>
+            <AlertDescription>
+              <p>Insert is the quick picker for adding a file link at your cursor.</p>
+              <p>Attachments is the full file library where you can browse and manage everything for this wiki.</p>
+              <p>Supported files: images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration.</p>
+            </AlertDescription>
+          </Alert>
+
           {/* Upload button */}
           <div className="flex items-center gap-2">
             <input
@@ -400,7 +495,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                 e.target.value = ''
               }}
               className="hidden"
-              accept="image/*,.pdf,.doc,.docx,.txt,.md"
+              accept={ATTACHMENT_ACCEPT}
             />
             <Button
               variant="outline"
@@ -416,6 +511,13 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
               <Trans>Upload new</Trans>
             </Button>
           </div>
+
+          {uploadError ? (
+            <Alert variant="destructive">
+              <AlertTitle>Upload failed</AlertTitle>
+              <AlertDescription>{uploadError}</AlertDescription>
+            </Alert>
+          ) : null}
 
           {/* Attachments grid */}
           {isAttachmentsLoading ? (
@@ -439,34 +541,76 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             <div className="grid grid-cols-3 gap-3 max-h-[400px] overflow-y-auto">
               {attachments.map((attachment) => {
                 const FileIcon = getFileIcon(attachment.type)
+                const isDeleting =
+                  deleteMutation.isPending &&
+                  deleteMutation.variables === attachment.id
                 return (
-                  <button
+                  <div
                     key={attachment.id}
-                    type="button"
-                    onClick={() => insertMarkdown(attachment)}
-                    className="group rounded-lg border p-2 text-start hover:bg-muted/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="group relative rounded-lg border p-2 text-start transition-colors hover:bg-muted/50"
                   >
-                    <div className="bg-muted flex aspect-square items-center justify-center overflow-hidden rounded mb-2">
-                      {isImage(attachment.type) ? (
-                        <img
-                          src={`${buildAttachmentUrl(wikiContext?.baseURL ?? '', attachment.id)}/thumbnail`}
-                          alt={attachment.name}
-                          className="h-full w-full object-cover"
-                        />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-3 top-3 z-10 h-7 w-7 bg-background/90 shadow-sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeleteAttachment(attachment)
+                      }}
+                      disabled={isDeleting}
+                      aria-label={t`Delete attachment`}
+                      title={t`Delete attachment`}
+                    >
+                      {isDeleting ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
                       ) : (
-                        <FileIcon className="h-8 w-8 text-muted-foreground" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       )}
-                    </div>
-                    <p className="text-xs truncate" title={attachment.name}>
-                      {attachment.name}
-                    </p>
-                  </button>
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => insertMarkdown(attachment)}
+                      className="block w-full rounded focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      <div className="bg-muted mb-2 flex aspect-square items-center justify-center overflow-hidden rounded">
+                        {isImage(attachment.type) ? (
+                          <img
+                            src={`${buildAttachmentUrl(wikiContext?.baseURL ?? '', attachment.id)}/thumbnail`}
+                            alt={attachment.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <FileIcon className="h-8 w-8 text-muted-foreground" />
+                        )}
+                      </div>
+                      <p className="text-xs truncate" title={attachment.name}>
+                        {attachment.name}
+                      </p>
+                    </button>
+                  </div>
                 )
               })}
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!pendingDelete}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null)
+        }}
+        title={t`Delete attachment`}
+        desc={
+          pendingDelete
+            ? t`Delete "${pendingDelete.name}"? This cannot be undone.`
+            : ''
+        }
+        confirmText={t`Delete`}
+        destructive
+        isLoading={deleteMutation.isPending}
+        handleConfirm={confirmDeleteAttachment}
+      />
     </div>
   )
 }

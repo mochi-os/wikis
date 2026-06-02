@@ -18,7 +18,11 @@ function AttachmentsRoute() {
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   const { data: pageData } = usePage(slug)
-  const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
+  const isValidResponse = pageData && typeof pageData === 'object'
+  const pageTitle =
+    isValidResponse && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title
+      ? pageData.page.title
+      : slug
   usePageTitle(t`Attachments`)
 
   // Register page with sidebar context for tree expansion

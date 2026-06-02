@@ -17,6 +17,9 @@ import {
 } from 'lucide-react'
 import {
   toast,
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   ConfirmDialog,
   EmptyState,
@@ -37,7 +40,10 @@ import {
   isImage,
   getErrorMessage,
   authenticatedUrl,
-  shellClipboardWrite, naturalCompare,} from '@mochi/web'
+  shellClipboardWrite,
+  naturalCompare,
+  extractStatus,
+} from '@mochi/web'
 import {
   useAttachments,
   useUploadAttachment,
@@ -45,6 +51,7 @@ import {
 } from '@/hooks/use-wiki'
 import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import type { Attachment } from '@/types/wiki'
+import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface AttachmentsPageProps {}
@@ -67,6 +74,7 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data, isLoading, error, refetch } = useAttachments()
@@ -111,18 +119,61 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
     return result
   }, [attachments, searchQuery, filterType, sortBy])
 
+  const getAttachmentValidationError = (files: File[]) => {
+    const unsupported = files.filter((file) => !isSupportedAttachmentFile(file))
+    if (unsupported.length === 0) {
+      return null
+    }
+
+    const names = unsupported.slice(0, 3).map((file) => file.name).join(', ')
+    return unsupported.length === 1
+      ? `Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
+      : `Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
+  }
+
+  const getUploadErrorMessage = (error: unknown) => {
+    const status = extractStatus(error)
+    if (status === 413) {
+      return 'This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.'
+    }
+
+    const message = getErrorMessage(error, t`Failed to upload files`)
+    if (message === 'Network Error') {
+      return 'Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.'
+    }
+    if (message.toLowerCase().includes('storage limit exceeded')) {
+      return 'Upload failed because this account has reached its storage limit.'
+    }
+    if (message.toLowerCase().includes('file too large')) {
+      return 'This file is too large to upload. Try a smaller file.'
+    }
+
+    return message
+  }
+
   const handleUpload = (files: FileList | File[]) => {
     const fileArray = Array.from(files)
-    if (fileArray.length > 0) {
-      uploadMutation.mutate(fileArray, {
-        onSuccess: () => {
-          toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' }))
-        },
-        onError: (error) => {
-          toast.error(getErrorMessage(error, t`Failed to upload files`))
-        },
-      })
+    if (fileArray.length === 0) {
+      return
     }
+
+    const validationError = getAttachmentValidationError(fileArray)
+    if (validationError) {
+      setUploadError(validationError)
+      return
+    }
+
+    setUploadError(null)
+    const fileCount = fileArray.length
+    uploadMutation.mutate(fileArray, {
+      onSuccess: () => {
+        setUploadError(null)
+        toast.success(fileCount === 1 ? '1 file uploaded' : `${fileCount} files uploaded`)
+      },
+      onError: (error) => {
+        setUploadError(getUploadErrorMessage(error))
+      },
+    })
   }
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,7 +232,7 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
     const attachment = pendingDelete
     deleteMutation.mutate(attachment.id, {
       onSuccess: () => {
-        toast.success(t`Attachment deleted`)
+        toast.success('Attachment deleted')
         setPendingDelete(null)
       },
       onError: (error) => {
@@ -235,7 +286,7 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
             multiple
             onChange={handleFileInput}
             className="hidden"
-            accept="image/*,.pdf,.doc,.docx,.txt,.md"
+            accept={ATTACHMENT_ACCEPT}
           />
           <Button
             onClick={() => fileInputRef.current?.click()}
@@ -250,6 +301,21 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
           </Button>
         </div>
       </div>
+
+      <Alert>
+        <AlertTitle>Upload guidance</AlertTitle>
+        <AlertDescription>
+          <p>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</p>
+          <p>Large uploads may be limited by your server or proxy configuration.</p>
+        </AlertDescription>
+      </Alert>
+
+      {uploadError ? (
+        <Alert variant="destructive">
+          <AlertTitle>Upload failed</AlertTitle>
+          <AlertDescription>{uploadError}</AlertDescription>
+        </Alert>
+      ) : null}
 
       <Separator />
 
