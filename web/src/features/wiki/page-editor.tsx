@@ -347,38 +347,38 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           </Button>
         )}
         <div className="ms-auto flex items-center gap-2">
-        {!isNew && permissions.delete && (
-          <Button variant="outline" size="sm" asChild>
-            {wikiId ? (
-              <Link to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
-                <Trash2 className="me-2 h-4 w-4" />
-                <Trans>Delete page</Trans>
-              </Link>
+          {!isNew && permissions.delete && (
+            <Button variant="outline" size="sm" asChild>
+              {wikiId ? (
+                <Link to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
+                  <Trash2 className="me-2 h-4 w-4" />
+                  <Trans>Delete page</Trans>
+                </Link>
+              ) : (
+                <Link to="/$page/delete" params={{ page: slug }}>
+                  <Trash2 className="me-2 h-4 w-4" />
+                  <Trans>Delete page</Trans>
+                </Link>
+              )}
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={handleCancel}>
+            <X className="me-2 h-4 w-4" />
+            <Trans>Cancel</Trans>
+          </Button>
+          <Button size="sm" onClick={handleSave} disabled={isPending}>
+            {isNew ? (
+              <>
+                {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
+                {isPending ? t`Creating...` : t`Create page`}
+              </>
             ) : (
-              <Link to="/$page/delete" params={{ page: slug }}>
-                <Trash2 className="me-2 h-4 w-4" />
-                <Trans>Delete page</Trans>
-              </Link>
+              <>
+                {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Save className="me-2 h-4 w-4" />}
+                {isPending ? t`Saving...` : t`Save`}
+              </>
             )}
           </Button>
-        )}
-        <Button variant="outline" size="sm" onClick={handleCancel}>
-          <X className="me-2 h-4 w-4" />
-          <Trans>Cancel</Trans>
-        </Button>
-        <Button size="sm" onClick={handleSave} disabled={isPending}>
-          {isNew ? (
-            <>
-              {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
-              {isPending ? t`Creating...` : t`Create page`}
-            </>
-          ) : (
-            <>
-              {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Save className="me-2 h-4 w-4" />}
-              {isPending ? t`Saving...` : t`Save`}
-            </>
-          )}
-        </Button>
         </div>
       </div>
 
@@ -476,11 +476,9 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           </DialogHeader>
 
           <Alert>
-            <AlertTitle>Insert vs attachments</AlertTitle>
+            <AlertTitle>Supported files</AlertTitle>
             <AlertDescription>
-              <p>Insert is the quick picker for adding a file link at your cursor.</p>
-              <p>Attachments is the full file library where you can browse and manage everything for this wiki.</p>
-              <p>Supported files: images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration.</p>
+              <p>images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration.</p>
             </AlertDescription>
           </Alert>
 
