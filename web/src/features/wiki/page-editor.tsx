@@ -260,10 +260,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             </Link>
           )}
         </Button>
-        <Button variant="outline" size="sm" onClick={handleCancel}>
-          <X className="me-2 h-4 w-4" />
-          <Trans>Cancel</Trans>
-        </Button>
+        <div className="ms-auto flex items-center gap-2">
         {!isNew && permissions.delete && (
           <Button variant="outline" size="sm" asChild>
             {wikiId ? (
@@ -279,6 +276,10 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             )}
           </Button>
         )}
+        <Button variant="outline" size="sm" onClick={handleCancel}>
+          <X className="me-2 h-4 w-4" />
+          <Trans>Cancel</Trans>
+        </Button>
         <Button size="sm" onClick={handleSave} disabled={isPending}>
           {isNew ? (
             <>
@@ -292,6 +293,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             </>
           )}
         </Button>
+        </div>
       </div>
 
       <Separator />
@@ -305,7 +307,18 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
       ) : (
         /* Edit mode */
         <div className="space-y-4">
-          {/* Slug (only for new pages) */}
+          {/* Title */}
+          <div className="space-y-2">
+            <Label htmlFor="title"><Trans>Title</Trans></Label>
+            <Input
+              id="title"
+              value={title}
+              onChange={handleTitleChange}
+              placeholder={t`Page title`}
+            />
+          </div>
+
+          {/* Slug (only for new pages, shown below title) */}
           {isNew && (
             <div className="space-y-2">
               <Label htmlFor="slug"><Trans>Page URL</Trans></Label>
@@ -337,17 +350,6 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
               </p>
             </div>
           )}
-
-          {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title"><Trans>Title</Trans></Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={handleTitleChange}
-              placeholder={t`Page title`}
-            />
-          </div>
 
           {/* Content */}
           <div className="space-y-2">
