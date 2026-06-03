@@ -5,8 +5,7 @@ import { Clock, ArrowLeft, RotateCcw, GitCompare } from 'lucide-react'
 import { Button, useFormat, Badge, Separator, Skeleton, EntityAvatar, getAppPath } from '@mochi/web'
 import { diffLines } from 'diff'
 import type { RevisionDetail } from '@/types/wiki'
-import { usePageRevision, useUserSearch } from '@/hooks/use-wiki'
-import { getAuthorLabel, looksLikeEntityIdentifier } from './author-label'
+import { usePageRevision } from '@/hooks/use-wiki'
 import { MarkdownContent } from './markdown-content'
 
 interface RevisionViewProps {
@@ -54,7 +53,7 @@ export function RevisionView({
   const isCurrentVersion = revision.version === currentVersion
   const [showDiff, setShowDiff] = useState(false)
   const hasPrevious = revision.version > 1
-  const shouldResolveAuthorName = !revision.name || looksLikeEntityIdentifier(revision.name)
+  const authorLabel = revision.name
 
   // Fetch the previous revision when diff mode is active
   const { data: prevData, isLoading: prevLoading } = usePageRevision(
@@ -62,12 +61,6 @@ export function RevisionView({
     revision.version - 1,
     { enabled: showDiff && hasPrevious }
   )
-  const { data: authorSearchData } = useUserSearch(shouldResolveAuthorName ? revision.author : '')
-  const resolvedAuthorName =
-    authorSearchData?.results.find((result) =>
-      result.id === revision.author && result.name && !looksLikeEntityIdentifier(result.name)
-    )?.name
-  const authorLabel = resolvedAuthorName || getAuthorLabel(revision.name, revision.author)
 
   return (
     <article className="space-y-6">

@@ -238,17 +238,6 @@ export function useChanges(params?: { limit?: number; offset?: number }) {
   })
 }
 
-export function useWikiPages(wikiId: string | undefined) {
-  return useQuery({
-    queryKey: ['wiki', wikiId, 'pages'],
-    queryFn: () =>
-      wikisRequest.get<{ pages: { page: string; title: string }[] }>(
-        `${wikiId}/-/${endpoints.wiki.pageList}`
-      ),
-    enabled: !!wikiId,
-    staleTime: 2 * 60 * 1000,
-  })
-}
 
 export function useAddTag() {
   const queryClient = useQueryClient()

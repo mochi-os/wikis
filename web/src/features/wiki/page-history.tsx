@@ -4,7 +4,6 @@ import { Eye, History, RotateCcw } from 'lucide-react'
 import { Button, EntityAvatar, EmptyState, useFormat, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
 import type { Revision } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
-import { getAuthorLabel } from './author-label'
 
 interface PageHistoryProps {
   slug: string
@@ -58,7 +57,7 @@ export function PageHistory({
           </TableHeader>
           <TableBody>
             {revisions.map((revision) => {
-              const authorLabel = getAuthorLabel(revision.name, revision.author)
+              const authorLabel = revision.name
               return (
                 <TableRow key={revision.id}>
                   <TableCell className="font-mono">

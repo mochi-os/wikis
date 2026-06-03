@@ -67,8 +67,6 @@ const endpoints = {
     commentDelete: (slug: string) => `${slug}/comment/delete`,
     // RSS
     rssToken: 'rss/token',
-    // Pages list (for sidebar tree)
-    pageList: 'page-list',
     // Attachments
     attachments: 'attachment/list',
     attachmentUpload: 'attachment/upload',

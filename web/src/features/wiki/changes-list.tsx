@@ -4,7 +4,6 @@ import { History } from 'lucide-react'
 import { EntityAvatar, useFormat, Separator, Skeleton, EmptyState, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath, Button } from '@mochi/web'
 import type { Change } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
-import { getAuthorLabel } from './author-label'
 
 interface ChangesListProps {
   changes: Change[]
@@ -47,7 +46,7 @@ export function ChangesList({ changes, wikiId, total, offset = 0, onLoadMore }: 
           </TableHeader>
           <TableBody>
             {changes.map((change) => {
-              const authorLabel = getAuthorLabel(change.name, change.author)
+              const authorLabel = change.name
               return (
                 <TableRow key={change.id}>
                   <TableCell>

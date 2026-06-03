@@ -1078,11 +1078,7 @@ def action_page_history(a):
     # Resolve author names - use stored name if available, else try to resolve
     for rev in revisions:
         if not rev["name"]:
-            name = mochi.entity.name(rev["author"])
-            if name:
-                rev["name"] = name
-            else:
-                rev["name"] = rev["author"][:12] + "..."
+            rev["name"] = mochi.entity.name(rev["author"]) or ""
 
     return {"data": {"page": slug, "revisions": revisions, "total": total, "limit": limit, "offset": offset}}
 
@@ -1118,9 +1114,9 @@ def action_page_revision(a):
         a.error.label(404, "errors.revision_not_found")
         return
 
-    # Resolve author name
-    name = mochi.entity.name(revision["author"])
-    author_name = name if name else revision["author"][:12] + "..."
+    # Resolve author name from stored value or entity lookup
+    stored_name = revision["name"] if revision["name"] else None
+    resolved_name = stored_name or mochi.entity.name(revision["author"]) or ""
 
     return {"data": {
         "page": slug,
@@ -1129,27 +1125,13 @@ def action_page_revision(a):
             "title": revision["title"],
             "content": revision["content"],
             "author": revision["author"],
-            "author_name": author_name,
+            "name": resolved_name,
             "created": revision["created"],
             "version": revision["version"],
             "comment": revision["comment"]
         },
         "current_version": page["version"]
     }}
-
-# List all pages in a wiki (for sidebar page tree)
-def action_page_list(a):
-    wiki = get_wiki(a)
-    if not wiki:
-        a.error.label(404, "errors.wiki_not_found")
-        return
-    if not check_access(a, wiki["id"], "view"):
-        a.error.label(403, "errors.access_denied")
-        return
-    pages = mochi.db.rows(
-        "select page, title from pages where wiki=? and deleted=0 order by title asc limit 500",
-        wiki["id"])
-    return {"data": {"pages": pages}}
 
 # Revert to a previous revision
 def action_page_revert(a):
@@ -1627,11 +1609,7 @@ def action_changes(a):
     # Resolve author names where not stored
     for change in changes:
         if not change["name"]:
-            name = mochi.entity.name(change["author"])
-            if name:
-                change["name"] = name
-            else:
-                change["name"] = change["author"][:12] + "..."
+            change["name"] = mochi.entity.name(change["author"]) or ""
 
     return {"data": {"changes": changes, "total": total, "limit": limit, "offset": offset}}
 
