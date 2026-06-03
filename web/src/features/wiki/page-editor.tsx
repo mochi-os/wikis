@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus, RefreshCw } from 'lucide-react'
@@ -166,25 +167,25 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
     const names = unsupported.slice(0, 3).map((file) => file.name).join(', ')
     return unsupported.length === 1
-      ? `Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
-      : `Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
+      ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
+      : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
   }
 
   const getUploadErrorMessage = (error: unknown) => {
     const status = extractStatus(error)
     if (status === 413) {
-      return 'This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.'
+      return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.`
     }
 
     const message = getErrorMessage(error, t`Failed to upload files`)
     if (message === 'Network Error') {
-      return 'Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.'
+      return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.`
     }
     if (message.toLowerCase().includes('storage limit exceeded')) {
-      return 'Upload failed because this account has reached its storage limit.'
+      return t`Upload failed because this account has reached its storage limit.`
     }
     if (message.toLowerCase().includes('file too large')) {
-      return 'This file is too large to upload. Try a smaller file.'
+      return t`This file is too large to upload. Try a smaller file.`
     }
 
     return message
@@ -207,7 +208,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
     uploadMutation.mutate(fileArray, {
       onSuccess: () => {
         setUploadError(null)
-        toast.success(fileCount === 1 ? '1 file uploaded' : `${fileCount} files uploaded`)
+        toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' }))
       },
       onError: (error) => {
         setUploadError(getUploadErrorMessage(error))
@@ -224,7 +225,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
     deleteMutation.mutate(pendingDelete.id, {
       onSuccess: () => {
-        toast.success('Attachment deleted')
+        toast.success(t`Attachment deleted`)
         setPendingDelete(null)
       },
       onError: (error) => {
@@ -476,9 +477,9 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           </DialogHeader>
 
           <Alert>
-            <AlertTitle>Supported files</AlertTitle>
+            <AlertTitle><Trans>Supported files</Trans></AlertTitle>
             <AlertDescription>
-              <p>images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration.</p>
+              <p><Trans>images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration.</Trans></p>
             </AlertDescription>
           </Alert>
 
@@ -512,7 +513,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
           {uploadError ? (
             <Alert variant="destructive">
-              <AlertTitle>Upload failed</AlertTitle>
+              <AlertTitle><Trans>Upload failed</Trans></AlertTitle>
               <AlertDescription>{uploadError}</AlertDescription>
             </Alert>
           ) : null}

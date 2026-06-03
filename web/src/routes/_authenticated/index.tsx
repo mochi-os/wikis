@@ -78,8 +78,8 @@ interface InfoWiki {
   home: string
   fingerprint?: string
   source?: string
-  page_count?: number
-  last_updated?: number
+  pages?: number
+  updated?: number
 }
 
 interface InfoResponse {
@@ -107,8 +107,8 @@ interface WikiItem {
   type: WikiType
   fingerprint?: string
   home: string
-  page_count?: number
-  last_updated?: number
+  pages?: number
+  updated?: number
 }
 
 // Module-level flag to track if we've already done initial redirect check (resets on page refresh)
@@ -580,8 +580,8 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       type: (w.source ? 'subscribed' : 'owned') as WikiType,
       fingerprint: w.fingerprint,
       home: w.home,
-      page_count: (w as InfoWiki).page_count,
-      last_updated: (w as InfoWiki).last_updated,
+      pages: (w as InfoWiki).pages,
+      updated: (w as InfoWiki).updated,
     })),
   ].sort((a, b) => naturalCompare(a.name, b.name))
 
@@ -798,16 +798,16 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                           </span>
                           <span className='truncate'>{wiki.name}</span>
                         </CardTitle>
-                        {(wiki.page_count !== undefined || wiki.last_updated) && (
+                        {(wiki.pages !== undefined || wiki.updated) && (
                           <p className='text-muted-foreground text-xs'>
-                            {wiki.page_count !== undefined && (
-                              <Trans>{wiki.page_count} pages</Trans>
+                            {wiki.pages !== undefined && (
+                              <Trans>{wiki.pages} pages</Trans>
                             )}
-                            {wiki.page_count !== undefined && wiki.last_updated && (
+                            {wiki.pages !== undefined && wiki.updated && (
                               <span aria-hidden='true'> · </span>
                             )}
-                            {wiki.last_updated && (
-                              <Trans>Updated {formatTimestamp(wiki.last_updated)}</Trans>
+                            {wiki.updated && (
+                              <Trans>Updated {formatTimestamp(wiki.updated)}</Trans>
                             )}
                           </p>
                         )}

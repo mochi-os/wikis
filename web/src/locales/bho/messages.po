@@ -25,15 +25,13 @@ msgstr "(संपादित)"
 msgid "(expand)"
 msgstr "(फइलाईं)"
 
-#. placeholder {0}: fileArray.length
-#. placeholder {0}: files.length
 #: src/features/wiki/attachments-page.tsx:123
 #: src/features/wiki/page-editor.tsx:125
-msgid "{0, plural, one {# file uploaded} other {# files uploaded}}"
-msgstr "{0, plural, one {# फ़ाइल अपलोड भइल} other {# फ़ाइल अपलोड भइल}}"
+#~ msgid "{0, plural, one {# file uploaded} other {# files uploaded}}"
+#~ msgstr "{0, plural, one {# फ़ाइल अपलोड भइल} other {# फ़ाइल अपलोड भइल}}"
 
 #. placeholder {0}: attachments.length
-#: src/features/wiki/attachments-page.tsx:246
+#: src/features/wiki/attachments-page.tsx:279
 msgid "{0, plural, one {# file} other {# files}}"
 msgstr "{0, plural, one {# फ़ाइल} other {# फ़ाइल}}"
 
@@ -43,23 +41,28 @@ msgid "{0, plural, one {# page} other {# pages}}"
 msgstr "{0, plural, one {# पन्ना} other {# पन्ना}}"
 
 #. placeholder {0}: results.length
-#: src/features/wiki/search-page.tsx:89
+#: src/features/wiki/search-page.tsx:76
 msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# परिणाम} other {# परिणाम}}"
 
-#. placeholder {0}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, ArrowLeft, X, Image, ExternalLink, } from 'lucide-react' import { toast, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare,} from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' interface AttachmentsPageProps { slug: string } type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage({ slug }: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length > 0) { uploadMutation.mutate(fileArray, { onSuccess: () => { toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to upload files`)) }, }) } } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}> {wikiId ? ( <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> ) : ( <Link to="/$page/edit" params={{ page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> )} </Button> <div> <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> </div> </div> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.md" /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
-#. placeholder {1}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, ArrowLeft, X, Image, ExternalLink, } from 'lucide-react' import { toast, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare,} from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' interface AttachmentsPageProps { slug: string } type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage({ slug }: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length > 0) { uploadMutation.mutate(fileArray, { onSuccess: () => { toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to upload files`)) }, }) } } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}> {wikiId ? ( <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> ) : ( <Link to="/$page/edit" params={{ page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> )} </Button> <div> <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> </div> </div> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.md" /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
-#. placeholder {2}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, ArrowLeft, X, Image, ExternalLink, } from 'lucide-react' import { toast, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare,} from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' interface AttachmentsPageProps { slug: string } type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage({ slug }: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const wikiId = wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length > 0) { uploadMutation.mutate(fileArray, { onSuccess: () => { toast.success(plural(fileArray.length, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to upload files`)) }, }) } } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Button variant="ghost" size="icon" asChild aria-label={t`Back to editor`} title={t`Back to editor`}> {wikiId ? ( <Link to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> ) : ( <Link to="/$page/edit" params={{ page: slug }}> <ArrowLeft className="h-4 w-4 rtl:rotate-180" /> </Link> )} </Button> <div> <h1 className="text-2xl font-bold"><Trans>Attachments</Trans></h1> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> </div> </div> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.md" /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
-#: src/features/wiki/attachments-page.tsx:245
+#. placeholder {0}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, X, Image, ExternalLink, } from 'lucide-react' import { toast, Alert, AlertDescription, AlertTitle, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare, extractStatus, } from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload' // eslint-disable-next-line @typescript-eslint/no-empty-object-type interface AttachmentsPageProps {} type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage(_props: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const [uploadError, setUploadError] = useState<string | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const getAttachmentValidationError = (files: File[]) => { const unsupported = files.filter((file) => !isSupportedAttachmentFile(file)) if (unsupported.length === 0) { return null } const names = unsupported.slice(0, 3).map((file) => file.name).join(', ') return unsupported.length === 1 ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` } const getUploadErrorMessage = (error: unknown) => { const status = extractStatus(error) if (status === 413) { return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.` } const message = getErrorMessage(error, t`Failed to upload files`) if (message === 'Network Error') { return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.` } if (message.toLowerCase().includes('storage limit exceeded')) { return t`Upload failed because this account has reached its storage limit.` } if (message.toLowerCase().includes('file too large')) { return t`This file is too large to upload. Try a smaller file.` } return message } const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length === 0) { return } const validationError = getAttachmentValidationError(fileArray) if (validationError) { setUploadError(validationError) return } setUploadError(null) const fileCount = fileArray.length uploadMutation.mutate(fileArray, { onSuccess: () => { setUploadError(null) toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { setUploadError(getUploadErrorMessage(error)) }, }) } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Upload + stats */} <div className="flex items-center justify-between gap-4"> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept={ATTACHMENT_ACCEPT} /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Alert> <AlertTitle><Trans>Upload guidance</Trans></AlertTitle> <AlertDescription> <p><Trans>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</Trans></p> <p><Trans>Large uploads may be limited by your server or proxy configuration.</Trans></p> </AlertDescription> </Alert> {uploadError ? ( <Alert variant="destructive"> <AlertTitle><Trans>Upload failed</Trans></AlertTitle> <AlertDescription>{uploadError}</AlertDescription> </Alert> ) : null} <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
+#. placeholder {1}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, X, Image, ExternalLink, } from 'lucide-react' import { toast, Alert, AlertDescription, AlertTitle, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare, extractStatus, } from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload' // eslint-disable-next-line @typescript-eslint/no-empty-object-type interface AttachmentsPageProps {} type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage(_props: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const [uploadError, setUploadError] = useState<string | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const getAttachmentValidationError = (files: File[]) => { const unsupported = files.filter((file) => !isSupportedAttachmentFile(file)) if (unsupported.length === 0) { return null } const names = unsupported.slice(0, 3).map((file) => file.name).join(', ') return unsupported.length === 1 ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` } const getUploadErrorMessage = (error: unknown) => { const status = extractStatus(error) if (status === 413) { return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.` } const message = getErrorMessage(error, t`Failed to upload files`) if (message === 'Network Error') { return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.` } if (message.toLowerCase().includes('storage limit exceeded')) { return t`Upload failed because this account has reached its storage limit.` } if (message.toLowerCase().includes('file too large')) { return t`This file is too large to upload. Try a smaller file.` } return message } const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length === 0) { return } const validationError = getAttachmentValidationError(fileArray) if (validationError) { setUploadError(validationError) return } setUploadError(null) const fileCount = fileArray.length uploadMutation.mutate(fileArray, { onSuccess: () => { setUploadError(null) toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { setUploadError(getUploadErrorMessage(error)) }, }) } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Upload + stats */} <div className="flex items-center justify-between gap-4"> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept={ATTACHMENT_ACCEPT} /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Alert> <AlertTitle><Trans>Upload guidance</Trans></AlertTitle> <AlertDescription> <p><Trans>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</Trans></p> <p><Trans>Large uploads may be limited by your server or proxy configuration.</Trans></p> </AlertDescription> </Alert> {uploadError ? ( <Alert variant="destructive"> <AlertTitle><Trans>Upload failed</Trans></AlertTitle> <AlertDescription>{uploadError}</AlertDescription> </Alert> ) : null} <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
+#. placeholder {2}: import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Upload, Trash2, Copy, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, X, Image, ExternalLink, } from 'lucide-react' import { toast, Alert, AlertDescription, AlertTitle, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, shellClipboardWrite, naturalCompare, extractStatus, } from '@mochi/web' import { useAttachments, useUploadAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload' // eslint-disable-next-line @typescript-eslint/no-empty-object-type interface AttachmentsPageProps {} type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${id}`) } export function AttachmentsPage(_props: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const [uploadError, setUploadError] = useState<string | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter((a) => a.name.toLowerCase().includes(query)) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const getAttachmentValidationError = (files: File[]) => { const unsupported = files.filter((file) => !isSupportedAttachmentFile(file)) if (unsupported.length === 0) { return null } const names = unsupported.slice(0, 3).map((file) => file.name).join(', ') return unsupported.length === 1 ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` } const getUploadErrorMessage = (error: unknown) => { const status = extractStatus(error) if (status === 413) { return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.` } const message = getErrorMessage(error, t`Failed to upload files`) if (message === 'Network Error') { return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.` } if (message.toLowerCase().includes('storage limit exceeded')) { return t`Upload failed because this account has reached its storage limit.` } if (message.toLowerCase().includes('file too large')) { return t`This file is too large to upload. Try a smaller file.` } return message } const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length === 0) { return } const validationError = getAttachmentValidationError(fileArray) if (validationError) { setUploadError(validationError) return } setUploadError(null) const fileCount = fileArray.length uploadMutation.mutate(fileArray, { onSuccess: () => { setUploadError(null) toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { setUploadError(getUploadErrorMessage(error)) }, }) } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${attachment.id}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Upload + stats */} <div className="flex items-center justify-between gap-4"> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept={ATTACHMENT_ACCEPT} /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <Alert> <AlertTitle><Trans>Upload guidance</Trans></AlertTitle> <AlertDescription> <p><Trans>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</Trans></p> <p><Trans>Large uploads may be limited by your server or proxy configuration.</Trans></p> </AlertDescription> </Alert> {uploadError ? ( <Alert variant="destructive"> <AlertTitle><Trans>Upload failed</Trans></AlertTitle> <AlertDescription>{uploadError}</AlertDescription> </Alert> ) : null} <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} title={t`Clear search`} > <X className="h-3 w-3" /> </Button> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} title={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} title={t`List view`} > <List className="h-4 w-4" /> </Button> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.name} className="h-full w-full object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground text-xs"> {formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt="" className="h-16 w-16 rounded object-cover" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} title={t`Open`} > <ExternalLink className="h-4 w-4" /> </Button> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} title={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} title={t`Delete`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
+#: src/features/wiki/attachments-page.tsx:278
 msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
+
+#. placeholder {0}: wiki.pages
+#: src/routes/_authenticated/index.tsx:804
+msgid "{0} pages"
+msgstr "{0} पन्ना"
 
 #. placeholder {0}: import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-muted/50 group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
 #: src/features/wiki/tag-pages.tsx:39
 msgid "{0} with this tag."
 msgstr "एह टैग के साथे {0}।"
 
-#: src/features/wiki/wiki-page-content.tsx:266
+#: src/features/wiki/wiki-page-content.tsx:259
 #: src/routes/_authenticated/$page/index.tsx:205
 msgid "{commentCount, plural, one {1 comment} other {# comments}}"
 msgstr "{commentCount, plural, one {1 टिप्पणी} other {# टिप्पणी}}"
@@ -68,11 +71,16 @@ msgstr "{commentCount, plural, one {1 टिप्पणी} other {# टिप�
 msgid "{count} remaining"
 msgstr "{count} बाँचल"
 
-#: src/features/wiki/attachments-page.tsx:246
+#: src/features/wiki/attachments-page.tsx:279
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# दस्तावेज़} other {# दस्तावेज़}}"
 
-#: src/features/wiki/attachments-page.tsx:246
+#: src/features/wiki/attachments-page.tsx:171
+#: src/features/wiki/page-editor.tsx:211
+msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
+msgstr "{fileCount, plural, one {# फ़ाइल अपलोड भइल} other {# फ़ाइल अपलोड भइल}}"
+
+#: src/features/wiki/attachments-page.tsx:279
 msgid "{imageCount, plural, one {# image} other {# images}}"
 msgstr "{imageCount, plural, one {# तस्वीर} other {# तस्वीर}}"
 
@@ -102,7 +110,7 @@ msgstr "{totalDescendants, plural, one {# जवाब} other {+# अउरी �
 msgid "{wikiName} settings"
 msgstr "{wikiName} सेटिंग"
 
-#: src/features/wiki/page-editor.tsx:279
+#: src/features/wiki/page-editor.tsx:392
 msgid "*No content*"
 msgstr "*कौनो सामग्री नइखे*"
 
@@ -175,14 +183,14 @@ msgstr "खाता प्रकार"
 msgid "Account verified"
 msgstr "खाता सत्यापित कइल गइल"
 
-#: src/features/wiki/page-history.tsx:54
+#: src/features/wiki/page-history.tsx:55
 #: src/features/wiki/redirects-page.tsx:87
 #: src/features/wiki/wiki-settings.tsx:844
 msgid "Actions"
 msgstr "क्रिया"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:193
-#: src/features/wiki/tag-manager.tsx:129
+#: src/features/wiki/tag-manager.tsx:136
 #: src/features/wiki/wiki-settings.tsx:699
 msgid "Add"
 msgstr "जोड़ीं"
@@ -241,7 +249,7 @@ msgstr "मौजूदा सूचना में जोड़ीं"
 msgid "Add view"
 msgstr "दृश्य जोड़ीं"
 
-#: src/features/wiki/tag-manager.tsx:129
+#: src/features/wiki/tag-manager.tsx:136
 msgid "Adding..."
 msgstr "जोड़ल जा रहल बा..."
 
@@ -257,7 +265,7 @@ msgstr "AI"
 msgid "All"
 msgstr "सब"
 
-#: src/features/wiki/attachments-page.tsx:307
+#: src/features/wiki/attachments-page.tsx:353
 msgid "All files"
 msgstr "सब फाइल"
 
@@ -270,11 +278,11 @@ msgstr "सब फाइल"
 msgid "All tags"
 msgstr "सब टैग"
 
-#: src/components/layout/wiki-layout.tsx:114
+#: src/components/layout/wiki-layout.tsx:112
 msgid "All wikis"
 msgstr "सब wiki"
 
-#: src/components/layout/wiki-layout.tsx:157
+#: src/components/layout/wiki-layout.tsx:155
 msgid "Allow anyone to search for wiki"
 msgstr "केहू के wiki खोजे के अनुमति दीं"
 
@@ -294,10 +302,10 @@ msgstr "का रउआ एह टिप्पणी के मेटावे 
 msgid "Are you sure you want to log out? You will need to log in again to access your account."
 msgstr "का रउआ लॉग आउट करे चाहत बानी? आपन खाता तक पहुंचे खातिर रउआ के फिर लॉग इन करे के पड़ी।"
 
-#: src/features/wiki/wiki-page-content.tsx:354
+#: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/$page/index.tsx:271
-#: src/routes/_authenticated/index.tsx:484
-#: src/routes/_authenticated/index.tsx:827
+#: src/routes/_authenticated/index.tsx:493
+#: src/routes/_authenticated/index.tsx:853
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "का रउआ एह wiki से सदस्यता वापस लेवे चाहत बानी?"
 
@@ -313,17 +321,18 @@ msgstr "फाइल संलग्न करीं"
 msgid "Attach reply files"
 msgstr "जवाब फाइल संलग्न करीं"
 
-#: src/features/wiki/attachments-page.tsx:188
+#: src/features/wiki/attachments-page.tsx:235
+#: src/features/wiki/page-editor.tsx:228
 msgid "Attachment deleted"
 msgstr "संलग्नक मेटा दिहल गइल"
 
-#: src/features/wiki/attachments-page.tsx:243
-#: src/features/wiki/page-editor.tsx:229
-#: src/features/wiki/page-editor.tsx:234
-#: src/routes/_authenticated/$page/attachments.tsx:22
-#: src/routes/_authenticated/$page/attachments.tsx:33
-#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:31
-#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:42
+#: src/features/wiki/page-editor.tsx:335
+#: src/features/wiki/page-editor.tsx:340
+#: src/features/wiki/page-editor.tsx:347
+#: src/routes/_authenticated/$page/attachments.tsx:26
+#: src/routes/_authenticated/$page/attachments.tsx:37
+#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:35
+#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:46
 msgid "Attachments"
 msgstr "संलग्नक"
 
@@ -347,22 +356,31 @@ msgstr "Authenticator ऐप सक्षम कइल गइल"
 msgid "Authenticator app is active"
 msgstr "Authenticator ऐप सक्रिय बा"
 
-#: src/features/wiki/changes-list.tsx:44
-#: src/features/wiki/page-history.tsx:51
+#: ../../../lib/web/src/components/step-up-dialog.tsx:312
+msgid "Authenticator code"
+msgstr "Authenticator कोड"
+
+#: src/features/wiki/changes-list.tsx:42
+#: src/features/wiki/page-history.tsx:52
 msgid "Author"
 msgstr "लेखक"
 
 #: ../../../lib/web/src/components/place-picker.tsx:152
+#: src/routes/_authenticated/$wikiId/changes.tsx:41
+#: src/routes/_authenticated/$wikiId/changes.tsx:52
+#: src/routes/_authenticated/$wikiId/changes.tsx:62
+#: src/routes/_authenticated/$wikiId/new.tsx:32
+#: src/routes/_authenticated/$wikiId/search.tsx:37
 msgid "Back"
 msgstr "वापस"
 
 #: src/features/wiki/attachments-page.tsx:231
 #: src/features/wiki/attachments-page.tsx:231
-msgid "Back to editor"
-msgstr "संपादक पर वापस"
+#~ msgid "Back to editor"
+#~ msgstr "संपादक पर वापस"
 
-#: src/features/wiki/revision-view.tsx:47
-#: src/features/wiki/revision-view.tsx:52
+#: src/features/wiki/revision-view.tsx:98
+#: src/features/wiki/revision-view.tsx:103
 msgid "Back to history"
 msgstr "इतिहास पर वापस"
 
@@ -372,7 +390,7 @@ msgstr "इतिहास पर वापस"
 msgid "Back to home"
 msgstr "घर वापस जाईं"
 
-#: src/routes/_authenticated/$page/attachments.tsx:33
+#: src/routes/_authenticated/$page/attachments.tsx:37
 #: src/routes/_authenticated/$page/comments.tsx:42
 #: src/routes/_authenticated/$page/delete.tsx:38
 #: src/routes/_authenticated/$page/delete.tsx:51
@@ -385,12 +403,12 @@ msgstr "घर वापस जाईं"
 #: src/routes/_authenticated/$page/history/$version.tsx:35
 #: src/routes/_authenticated/$page/history/$version.tsx:46
 #: src/routes/_authenticated/$page/history/$version.tsx:57
-#: src/routes/_authenticated/$page/history/index.tsx:35
-#: src/routes/_authenticated/$page/history/index.tsx:46
+#: src/routes/_authenticated/$page/history/index.tsx:49
 #: src/routes/_authenticated/$page/history/index.tsx:60
+#: src/routes/_authenticated/$page/history/index.tsx:72
 #: src/routes/_authenticated/$page/revert.tsx:38
 #: src/routes/_authenticated/$page/revert.tsx:48
-#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:42
+#: src/routes/_authenticated/$wikiId/$page/attachments.tsx:46
 #: src/routes/_authenticated/$wikiId/$page/comments.tsx:48
 #: src/routes/_authenticated/$wikiId/$page/delete.tsx:51
 #: src/routes/_authenticated/$wikiId/$page/delete.tsx:64
@@ -403,39 +421,28 @@ msgstr "घर वापस जाईं"
 #: src/routes/_authenticated/$wikiId/$page/history/$version.tsx:34
 #: src/routes/_authenticated/$wikiId/$page/history/$version.tsx:45
 #: src/routes/_authenticated/$wikiId/$page/history/$version.tsx:56
-#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:45
-#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:56
-#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:70
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:58
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:69
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:81
 #: src/routes/_authenticated/$wikiId/$page/revert.tsx:39
 #: src/routes/_authenticated/$wikiId/$page/revert.tsx:49
 msgid "Back to page"
 msgstr "पन्ना पर वापस"
 
-#: src/features/wiki/wiki-page-content.tsx:128
-#: src/features/wiki/wiki-page-content.tsx:139
-#: src/features/wiki/wiki-page-content.tsx:151
-#: src/features/wiki/wiki-page-content.tsx:215
-#: src/features/wiki/wiki-page-content.tsx:345
+#: src/features/wiki/wiki-page-content.tsx:54
 #: src/routes/_authenticated/$page/index.tsx:83
 #: src/routes/_authenticated/$page/index.tsx:94
 #: src/routes/_authenticated/$page/index.tsx:154
 #: src/routes/_authenticated/$page/index.tsx:262
-#: src/routes/_authenticated/$wikiId/changes.tsx:23
-#: src/routes/_authenticated/$wikiId/changes.tsx:34
-#: src/routes/_authenticated/$wikiId/changes.tsx:44
-#: src/routes/_authenticated/$wikiId/new.tsx:26
 #: src/routes/_authenticated/$wikiId/settings.tsx:37
-#: src/routes/_authenticated/changes.tsx:22
-#: src/routes/_authenticated/changes.tsx:33
-#: src/routes/_authenticated/changes.tsx:43
-#: src/routes/_authenticated/index.tsx:314
-#: src/routes/_authenticated/index.tsx:329
-#: src/routes/_authenticated/index.tsx:345
-#: src/routes/_authenticated/index.tsx:469
+#: src/routes/_authenticated/changes.tsx:37
+#: src/routes/_authenticated/changes.tsx:48
+#: src/routes/_authenticated/changes.tsx:58
+#: src/routes/_authenticated/index.tsx:253
 #: src/routes/_authenticated/join.tsx:57
 #: src/routes/_authenticated/new.tsx:26
 #: src/routes/_authenticated/redirects.tsx:18
-#: src/routes/_authenticated/search.tsx:26
+#: src/routes/_authenticated/search.tsx:31
 #: src/routes/_authenticated/settings.tsx:36
 #: src/routes/_authenticated/tag/$tag.tsx:24
 #: src/routes/_authenticated/tag/$tag.tsx:35
@@ -463,7 +470,7 @@ msgstr "रुचि बढ़ाईं"
 msgid "Both source and target are required"
 msgstr "स्रोत आ लक्ष्य दुनो जरूरी बा"
 
-#: src/features/wiki/page-editor.tsx:335
+#: src/features/wiki/page-editor.tsx:462
 msgid "Briefly describe your changes"
 msgstr "आपन बदलाव संक्षेप में बताईं"
 
@@ -472,6 +479,7 @@ msgid "Browse pages by tag. Click a tag to see all pages with that tag."
 msgstr "टैग के अनुसार पन्ना देखीं। ओह टैग वाला सब पन्ना देखे खातिर एगो टैग प क्लिक करीं।"
 
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:64
+#: ../../../lib/web/src/components/step-up-dialog.tsx:360
 #: ../../../lib/web/src/components/travelling-picker.tsx:292
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:245
 #: ../../../lib/web/src/features/access/access-dialog.tsx:325
@@ -487,13 +495,13 @@ msgstr "टैग के अनुसार पन्ना देखीं। �
 #: src/features/wiki/comment-form.tsx:99
 #: src/features/wiki/delete-page.tsx:66
 #: src/features/wiki/delete-page.tsx:71
-#: src/features/wiki/page-editor.tsx:240
+#: src/features/wiki/page-editor.tsx:368
 #: src/features/wiki/redirects-page.tsx:159
 #: src/features/wiki/redirects-page.tsx:256
 #: src/features/wiki/rename-page-dialog.tsx:123
 #: src/features/wiki/revert-page.tsx:85
 #: src/features/wiki/revert-page.tsx:90
-#: src/features/wiki/tag-manager.tsx:121
+#: src/features/wiki/tag-manager.tsx:128
 #: src/features/wiki/wiki-comment-thread.tsx:123
 #: src/features/wiki/wiki-settings.tsx:884
 #: src/features/wiki/wiki-settings.tsx:1033
@@ -510,27 +518,33 @@ msgstr "संपादन रद्द करीं"
 msgid "Cancel reply"
 msgstr "जवाब रद्द करीं"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:131
+#: ../../../lib/web/src/components/notification-category-button.tsx:135
 msgid "Category for this notification"
 msgstr "एह सूचना खातिर श्रेणी"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:115
+#: ../../../lib/web/src/components/notification-category-button.tsx:119
 msgid "Change notification category"
 msgstr "सूचना श्रेणी बदलीं"
 
-#: src/features/wiki/wiki-page-content.tsx:303
-#: src/routes/_authenticated/index.tsx:421
-#: src/routes/_authenticated/index.tsx:652
+#: src/features/wiki/wiki-page-content.tsx:296
+#: src/routes/_authenticated/index.tsx:430
+#: src/routes/_authenticated/index.tsx:665
 msgid "Changes"
 msgstr "बदलाव"
 
-#: src/features/wiki/wiki-page-content.tsx:305
-#: src/routes/_authenticated/index.tsx:429
-#: src/routes/_authenticated/index.tsx:662
+#: src/features/wiki/wiki-page-content.tsx:298
+#: src/routes/_authenticated/index.tsx:438
+#: src/routes/_authenticated/index.tsx:675
 msgid "Changes and comments"
 msgstr "बदलाव आ टिप्पणी"
 
-#: src/features/wiki/changes-list.tsx:35
+#. placeholder {0}: prevData.revision.version
+#. placeholder {1}: revision.version
+#: src/features/wiki/revision-view.tsx:160
+msgid "Changes from version {0} → {1}"
+msgstr "संस्करण {0} → {1} से बदलाव"
+
+#: src/features/wiki/changes-list.tsx:33
 msgid "Changes will appear here when pages are edited."
 msgstr "जब पन्ना संपादित कइल जाई त बदलाव इहां देखाई।"
 
@@ -566,8 +580,8 @@ msgstr "सब साफ करीं"
 msgid "Clear filters"
 msgstr "फिल्टर साफ करीं"
 
-#: src/features/wiki/attachments-page.tsx:293
-#: src/features/wiki/attachments-page.tsx:294
+#: src/features/wiki/attachments-page.tsx:339
+#: src/features/wiki/attachments-page.tsx:340
 msgid "Clear search"
 msgstr "खोज साफ करीं"
 
@@ -614,14 +628,14 @@ msgstr "आरामदायक"
 msgid "Coming Soon!"
 msgstr "जल्दिये आ रहल बा!"
 
-#: src/features/wiki/changes-list.tsx:46
-#: src/features/wiki/page-history.tsx:53
+#: src/features/wiki/changes-list.tsx:44
+#: src/features/wiki/page-history.tsx:54
 msgid "Comment"
 msgstr "टिप्पणी"
 
-#: src/features/wiki/wiki-page-content.tsx:304
-#: src/routes/_authenticated/index.tsx:426
-#: src/routes/_authenticated/index.tsx:657
+#: src/features/wiki/wiki-page-content.tsx:297
+#: src/routes/_authenticated/index.tsx:435
+#: src/routes/_authenticated/index.tsx:670
 msgid "Comments"
 msgstr "टिप्पणी"
 
@@ -630,12 +644,16 @@ msgstr "टिप्पणी"
 msgid "Compact"
 msgstr "कॉम्पैक्ट"
 
+#: src/features/wiki/revision-view.tsx:91
+msgid "Compare changes"
+msgstr "बदलाव के तुलना करीं"
+
 #: ../../../lib/web/src/components/place-picker.tsx:155
 #: ../../../lib/web/src/components/travelling-picker.tsx:299
 msgid "Confirm"
 msgstr "पुष्टि करीं"
 
-#: src/features/wiki/page-editor.tsx:316
+#: src/features/wiki/page-editor.tsx:443
 msgid "Content"
 msgstr "सामग्री"
 
@@ -651,6 +669,10 @@ msgstr "प्रासंगिक जानकारी आ विवरण।
 msgid "Continue"
 msgstr "जारी रखीं"
 
+#: ../../../lib/web/src/components/step-up-dialog.tsx:349
+msgid "Continue with {label}"
+msgstr "{label} के साथ आगे बढ़ीं"
+
 #: ../../../lib/web/src/components/ui/copy-button.tsx:60
 msgid "Copy"
 msgstr "कॉपी करीं"
@@ -659,16 +681,32 @@ msgstr "कॉपी करीं"
 msgid "Copy all"
 msgstr "सब कॉपी करीं"
 
-#: src/features/wiki/attachments-page.tsx:495
-#: src/features/wiki/attachments-page.tsx:496
-#: src/features/wiki/attachments-page.tsx:586
-#: src/features/wiki/attachments-page.tsx:587
+#: src/features/wiki/attachments-page.tsx:541
+#: src/features/wiki/attachments-page.tsx:542
+#: src/features/wiki/attachments-page.tsx:632
+#: src/features/wiki/attachments-page.tsx:633
 msgid "Copy embed link"
 msgstr "Embed लिंक कॉपी करीं"
+
+#: src/features/wiki/revision-view.tsx:166
+msgid "Could not load previous version for comparison."
+msgstr "तुलना खातिर पिछला संस्करण लोड ना हो सकल।"
 
 #: ../../../lib/web/src/features/document/document-page.tsx:81
 msgid "Could not load this document. Please try again later."
 msgstr "एह दस्तावेज के लोड ना कर सकल। बाद में फिर कोशिश करीं।"
+
+#: ../../../lib/web/src/components/step-up-dialog.tsx:181
+msgid "Couldn't send the code. Please try again."
+msgstr "कोड भेजल ना जा सकल। कृपया फिर से कोशिश करीं।"
+
+#: ../../../lib/web/src/components/step-up-dialog.tsx:133
+msgid "Couldn't start re-authentication. Please try again."
+msgstr "फिर से प्रमाणीकरण शुरू ना हो सकल। कृपया फिर से कोशिश करीं।"
+
+#: ../../../lib/web/src/components/step-up-dialog.tsx:218
+msgid "Couldn't verify with that account. Please try again."
+msgstr "ओह खाता से सत्यापन ना हो सकल। कृपया फेर से कोसिस करीं।"
 
 #: src/features/wiki/wiki-settings.tsx:1109
 msgid "Create a redirect from one URL to another."
@@ -684,10 +722,10 @@ msgid "Create a redirect to forward one URL to another."
 msgstr "एगो URL के दोसरा प आगे भेजे खातिर रीडायरेक्ट बनाईं।"
 
 #: src/features/wiki/page-editor.tsx:197
-msgid "Create new page"
-msgstr "नया पन्ना बनाईं"
+#~ msgid "Create new page"
+#~ msgstr "नया पन्ना बनाईं"
 
-#: src/features/wiki/page-editor.tsx:261
+#: src/features/wiki/page-editor.tsx:374
 msgid "Create page"
 msgstr "पन्ना बनाईं"
 
@@ -704,14 +742,14 @@ msgstr "पुरान URL से रीडायरेक्ट बनाई�
 
 #: src/features/wiki/page-view.tsx:293
 #: src/features/wiki/page-view.tsx:298
-#: src/features/wiki/wiki-page-content.tsx:183
+#: src/features/wiki/wiki-page-content.tsx:184
 #: src/routes/_authenticated/$page/index.tsx:122
 msgid "Create this page"
 msgstr "ई पन्ना बनाईं"
 
-#: src/components/layout/wiki-layout.tsx:134
-#: src/components/layout/wiki-layout.tsx:154
-#: src/routes/_authenticated/index.tsx:702
+#: src/components/layout/wiki-layout.tsx:132
+#: src/components/layout/wiki-layout.tsx:152
+#: src/routes/_authenticated/index.tsx:715
 msgid "Create wiki"
 msgstr "wiki बनाईं"
 
@@ -722,13 +760,13 @@ msgstr "wiki बनाईं"
 msgid "Created"
 msgstr "बनावल गइल"
 
-#: src/features/wiki/page-editor.tsx:261
+#: src/features/wiki/page-editor.tsx:374
 #: src/features/wiki/redirects-page.tsx:259
 #: src/features/wiki/wiki-settings.tsx:1143
 msgid "Creating..."
 msgstr "बनावल जा रहल बा..."
 
-#: src/features/wiki/revision-view.tsx:35
+#: src/features/wiki/revision-view.tsx:76
 msgid "Current"
 msgstr "मौजूदा"
 
@@ -745,9 +783,9 @@ msgstr "गहिरा"
 msgid "Dark mode"
 msgstr "गहिरा मोड"
 
-#: src/features/wiki/attachments-page.tsx:320
-#: src/features/wiki/changes-list.tsx:45
-#: src/features/wiki/page-history.tsx:52
+#: src/features/wiki/attachments-page.tsx:366
+#: src/features/wiki/changes-list.tsx:43
+#: src/features/wiki/page-history.tsx:53
 msgid "Date"
 msgstr "तारीख"
 
@@ -760,26 +798,31 @@ msgid "Default AI account"
 msgstr "डिफ़ॉल्ट AI खाता"
 
 #: src/features/user/account.tsx:324
-#: src/features/wiki/attachments-page.tsx:425
-#: src/features/wiki/attachments-page.tsx:510
-#: src/features/wiki/attachments-page.tsx:602
+#: src/features/wiki/attachments-page.tsx:471
+#: src/features/wiki/attachments-page.tsx:556
+#: src/features/wiki/attachments-page.tsx:648
 #: src/features/wiki/delete-page.tsx:81
+#: src/features/wiki/page-editor.tsx:608
 #: src/features/wiki/redirects-page.tsx:164
 #: src/features/wiki/wiki-comment-thread.tsx:186
 #: src/features/wiki/wiki-comment-thread.tsx:275
-#: src/features/wiki/wiki-page-content.tsx:273
+#: src/features/wiki/wiki-page-content.tsx:266
 #: src/features/wiki/wiki-settings.tsx:1038
 msgid "Delete"
 msgstr "मेटाईं"
 
 #. placeholder {0}: pendingDelete.name
-#: src/features/wiki/attachments-page.tsx:424
+#: src/features/wiki/attachments-page.tsx:470
+#: src/features/wiki/page-editor.tsx:605
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "\"{0}\" मेटाईं? ई वापस ना हो सकेला।"
 
-#: src/features/wiki/attachments-page.tsx:423
-#: src/features/wiki/attachments-page.tsx:509
-#: src/features/wiki/attachments-page.tsx:601
+#: src/features/wiki/attachments-page.tsx:469
+#: src/features/wiki/attachments-page.tsx:555
+#: src/features/wiki/attachments-page.tsx:647
+#: src/features/wiki/page-editor.tsx:560
+#: src/features/wiki/page-editor.tsx:561
+#: src/features/wiki/page-editor.tsx:602
 msgid "Delete attachment"
 msgstr "संलग्नक मेटाईं"
 
@@ -788,8 +831,8 @@ msgid "Delete comment"
 msgstr "टिप्पणी मेटाईं"
 
 #: src/features/wiki/delete-page.tsx:51
-#: src/features/wiki/page-editor.tsx:247
-#: src/features/wiki/page-editor.tsx:252
+#: src/features/wiki/page-editor.tsx:356
+#: src/features/wiki/page-editor.tsx:361
 msgid "Delete page"
 msgstr "पन्ना मेटाईं"
 
@@ -819,6 +862,10 @@ msgstr "रीडायरेक्ट मेटाईं?"
 #: src/features/wiki/wiki-settings.tsx:599
 msgid "Delete wiki"
 msgstr "wiki मेटाईं"
+
+#: ../../../lib/web/src/components/restore-banner.tsx:90
+msgid "Delete your account on the old server"
+msgstr "पुरान सर्वर पर आपन खाता मेटाईं"
 
 #: src/routes/_authenticated/$page/delete.tsx:26
 #: src/routes/_authenticated/$page/delete.tsx:38
@@ -870,11 +917,15 @@ msgstr "अक्षम करीं"
 msgid "Disable authenticator?"
 msgstr "Authenticator अक्षम करीं?"
 
+#: ../../../lib/web/src/components/restore-banner.tsx:73
+msgid "Dismiss"
+msgstr "खारिज करीं"
+
 #: ../../../lib/web/src/components/ui/sidebar.tsx:235
 msgid "Displays the mobile sidebar."
 msgstr "मोबाइल साइडबार देखावेला।"
 
-#: src/features/wiki/attachments-page.tsx:309
+#: src/features/wiki/attachments-page.tsx:355
 msgid "Documents"
 msgstr "दस्तावेज"
 
@@ -886,7 +937,7 @@ msgstr "हो गइल"
 msgid "Download"
 msgstr "डाउनलोड"
 
-#: src/features/wiki/attachments-page.tsx:376
+#: src/features/wiki/attachments-page.tsx:422
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
 msgstr "फाइल इहाँ खींच के छोड़ीं, भा शुरू करे खातिर \"फाइल अपलोड करीं\" पर क्लिक करीं।"
 
@@ -898,11 +949,11 @@ msgstr "डिस्लेक्सिया-अनुकूल"
 msgid "Each code can only be used once."
 msgstr "हर कोड के बस एक बेर इस्तेमाल कइल जा सकेला।"
 
-#: src/features/wiki/page-editor.tsx:208
+#: src/features/wiki/page-editor.tsx:313
 #: src/features/wiki/wiki-comment-thread.tsx:175
-#: src/features/wiki/wiki-page-content.tsx:247
+#: src/features/wiki/wiki-page-content.tsx:240
 #: src/routes/_authenticated/$page/index.tsx:186
-#: src/routes/_authenticated/index.tsx:376
+#: src/routes/_authenticated/index.tsx:385
 msgid "Edit"
 msgstr "संपादित करीं"
 
@@ -914,7 +965,7 @@ msgstr "संपादन आ देखीं"
 msgid "Edit name"
 msgstr "नाम संपादित करीं"
 
-#: src/features/wiki/page-editor.tsx:330
+#: src/features/wiki/page-editor.tsx:457
 msgid "Edit summary (optional)"
 msgstr "सारांश संपादित करीं (वैकल्पिक)"
 
@@ -931,33 +982,41 @@ msgstr "सारांश संपादित करीं (वैकल्�
 msgid "Edit: {pageTitle}"
 msgstr "संपादित करीं: {pageTitle}"
 
-#. placeholder {0}: page?.title ?? slug
 #: src/features/wiki/page-editor.tsx:197
-msgid "Editing: {0}"
-msgstr "संपादन: {0}"
+#~ msgid "Editing: {0}"
+#~ msgstr "संपादन: {0}"
 
+#: ../../../lib/web/src/components/step-up-dialog.tsx:286
 #: src/features/user/account.tsx:222
 msgid "Email code"
 msgstr "ईमेल कोड"
 
-#: src/features/wiki/attachments-page.tsx:170
+#: src/features/wiki/attachments-page.tsx:217
 msgid "Embed link copied"
 msgstr "एम्बेड लिंक कॉपी हो गइल"
 
-#: src/features/wiki/search-page.tsx:71
+#: src/features/wiki/search-page.tsx:58
 msgid "Enter a search term"
 msgstr "खोज शब्द लिखीं"
 
-#: src/features/wiki/tag-manager.tsx:112
+#: src/features/wiki/tag-manager.tsx:119
 msgid "Enter tag name"
 msgstr "टैग के नाम लिखीं"
+
+#: ../../../lib/web/src/components/step-up-dialog.tsx:296
+msgid "Enter the code from your email"
+msgstr "आपन ईमेल से आइल कोड डालीं"
+
+#: ../../../lib/web/src/components/step-up-dialog.tsx:321
+msgid "Enter your authenticator code"
+msgstr "आपन प्रमाणक कोड डालीं"
 
 #: src/features/user/account.tsx:120
 #: src/features/wiki/wiki-settings.tsx:514
 msgid "Entity ID"
 msgstr "एंटिटी ID"
 
-#: src/features/wiki/wiki-page-content.tsx:154
+#: src/features/wiki/wiki-page-content.tsx:155
 msgid "Error: Received invalid response from server."
 msgstr "त्रुटि: सर्वर से अमान्य प्रतिक्रिया मिलल।"
 
@@ -981,11 +1040,11 @@ msgstr "खाता जोड़े में विफल"
 msgid "Failed to add tag"
 msgstr "टैग जोड़े में विफल"
 
-#: src/features/wiki/attachments-page.tsx:173
+#: src/features/wiki/attachments-page.tsx:220
 msgid "Failed to copy"
 msgstr "कॉपी करे में विफल"
 
-#: src/features/wiki/page-editor.tsx:158
+#: src/features/wiki/page-editor.tsx:262
 msgid "Failed to create page"
 msgstr "पन्ना बनावे में विफल"
 
@@ -998,7 +1057,8 @@ msgstr "रीडायरेक्ट बनावे में विफल"
 msgid "Failed to create wiki"
 msgstr "विकी बनावे में विफल"
 
-#: src/features/wiki/attachments-page.tsx:192
+#: src/features/wiki/attachments-page.tsx:239
+#: src/features/wiki/page-editor.tsx:232
 msgid "Failed to delete attachment"
 msgstr "अटैचमेंट मेटावे में विफल"
 
@@ -1028,9 +1088,9 @@ msgstr "ऑथेंटिकेटर बंद करे में विफ�
 msgid "Failed to generate codes"
 msgstr "कोड बनावे में विफल"
 
-#: src/features/wiki/wiki-page-content.tsx:117
-#: src/routes/_authenticated/index.tsx:305
-#: src/routes/_authenticated/index.tsx:555
+#: src/features/wiki/wiki-page-content.tsx:118
+#: src/routes/_authenticated/index.tsx:314
+#: src/routes/_authenticated/index.tsx:566
 msgid "Failed to get RSS token"
 msgstr "RSS टोकन पावे में विफल"
 
@@ -1054,7 +1114,7 @@ msgstr "प्रतिकृति लोड करे में विफल"
 msgid "Failed to load wiki info"
 msgstr "विकी जानकारी लोड करे में विफल"
 
-#: src/routes/_authenticated/index.tsx:121
+#: src/routes/_authenticated/index.tsx:126
 msgid "Failed to load wikis"
 msgstr "विकी लोड करे में विफल"
 
@@ -1102,7 +1162,7 @@ msgstr "पन्ना वापस करे में विफल"
 msgid "Failed to revoke session"
 msgstr "सत्र रद्द करे में विफल"
 
-#: src/features/wiki/page-editor.tsx:175
+#: src/features/wiki/page-editor.tsx:279
 msgid "Failed to save page"
 msgstr "पन्ना सहेजे में विफल"
 
@@ -1128,7 +1188,7 @@ msgid "Failed to set up authenticator"
 msgstr "ऑथेंटिकेटर सेट अप करे में विफल"
 
 #: src/features/wiki/inline-wiki-search.tsx:80
-#: src/routes/_authenticated/index.tsx:609
+#: src/routes/_authenticated/index.tsx:622
 msgid "Failed to subscribe"
 msgstr "सब्सक्राइब करे में विफल"
 
@@ -1137,10 +1197,10 @@ msgstr "सब्सक्राइब करे में विफल"
 msgid "Failed to sync wiki"
 msgstr "विकी सिंक करे में विफल"
 
-#: src/features/wiki/wiki-page-content.tsx:68
+#: src/features/wiki/wiki-page-content.tsx:69
 #: src/routes/_authenticated/$page/index.tsx:68
-#: src/routes/_authenticated/index.tsx:288
-#: src/routes/_authenticated/index.tsx:543
+#: src/routes/_authenticated/index.tsx:297
+#: src/routes/_authenticated/index.tsx:554
 msgid "Failed to unsubscribe"
 msgstr "अनसब्सक्राइब करे में विफल"
 
@@ -1148,7 +1208,7 @@ msgstr "अनसब्सक्राइब करे में विफल"
 msgid "Failed to update access level"
 msgstr "पहुँच स्तर अपडेट करे में विफल"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:104
+#: ../../../lib/web/src/components/notification-category-button.tsx:108
 msgid "Failed to update category"
 msgstr "श्रेणी अपडेट करे में विफल"
 
@@ -1160,8 +1220,8 @@ msgstr "लॉगिन जरूरत अपडेट करे में व�
 msgid "Failed to update preference"
 msgstr "प्राथमिकता अपडेट करे में विफल"
 
-#: src/features/wiki/attachments-page.tsx:126
-#: src/features/wiki/page-editor.tsx:128
+#: src/features/wiki/attachments-page.tsx:140
+#: src/features/wiki/page-editor.tsx:180
 msgid "Failed to upload files"
 msgstr "फाइल अपलोड करे में विफल"
 
@@ -1169,11 +1229,11 @@ msgstr "फाइल अपलोड करे में विफल"
 msgid "Failed to verify code"
 msgstr "कोड सत्यापन में विफल"
 
-#: src/features/wiki/attachments-page.tsx:304
+#: src/features/wiki/attachments-page.tsx:350
 msgid "Filter"
 msgstr "फिल्टर"
 
-#: src/components/layout/wiki-layout.tsx:133
+#: src/components/layout/wiki-layout.tsx:131
 #: src/routes/_authenticated/find.tsx:87
 msgid "Find wikis"
 msgstr "विकी खोजीं"
@@ -1183,12 +1243,16 @@ msgstr "विकी खोजीं"
 msgid "Fingerprint"
 msgstr "फिंगरप्रिंट"
 
+#: ../../../lib/web/src/components/restore-banner.tsx:79
+msgid "Finish moving your account"
+msgstr "आपन खाता हिलावल पूरा करीं"
+
 #: ../../../lib/web/src/components/config-drawer.tsx:244
 msgid "Floating"
 msgstr "तैरत"
 
-#. placeholder {0}: import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string } export function SearchPage({ initialQuery = '' }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Update URL when debounced query changes useEffect(() => { if (debouncedQuery !== initialQuery) { const params = new URLSearchParams(window.location.search) if (debouncedQuery) { params.set('q', debouncedQuery) } else { params.delete('q') } const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname window.history.replaceState({}, '', newUrl) } }, [debouncedQuery, initialQuery]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Header */} <div className="space-y-4"> <h1 className="flex items-center gap-3 text-2xl font-bold"> <Search className="h-6 w-6" /> <Trans>Search Wiki</Trans> </h1> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult } function SearchResultItem({ result }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link to="/$page" params={{ page: result.page }} className="hover:bg-muted/50 group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
-#: src/features/wiki/search-page.tsx:89
+#. placeholder {0}: import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-muted/50 group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
+#: src/features/wiki/search-page.tsx:76
 msgid "Found {0} for \"{debouncedQuery}\""
 msgstr "\"{debouncedQuery}\" खातिर {0} मिलल"
 
@@ -1250,8 +1314,8 @@ msgstr "पृष्ठ {pageNumber} पर जाईं"
 msgid "Go to previous page"
 msgstr "पिछला पन्ना पर जाईं"
 
-#: src/features/wiki/attachments-page.tsx:333
-#: src/features/wiki/attachments-page.tsx:334
+#: src/features/wiki/attachments-page.tsx:379
+#: src/features/wiki/attachments-page.tsx:380
 msgid "Grid view"
 msgstr "ग्रिड व्यू"
 
@@ -1263,21 +1327,20 @@ msgstr "समूह"
 msgid "Hide"
 msgstr "छिपाईं"
 
-#: src/features/wiki/page-history.tsx:27
-#: src/features/wiki/wiki-page-content.tsx:260
+#: src/features/wiki/wiki-page-content.tsx:253
 #: src/routes/_authenticated/$page/index.tsx:199
-#: src/routes/_authenticated/index.tsx:389
+#: src/routes/_authenticated/index.tsx:398
 msgid "History"
 msgstr "इतिहास"
 
-#: src/routes/_authenticated/$page/history/index.tsx:22
-#: src/routes/_authenticated/$page/history/index.tsx:35
-#: src/routes/_authenticated/$page/history/index.tsx:46
+#: src/routes/_authenticated/$page/history/index.tsx:25
+#: src/routes/_authenticated/$page/history/index.tsx:49
 #: src/routes/_authenticated/$page/history/index.tsx:60
-#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:32
-#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:45
-#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:56
-#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:70
+#: src/routes/_authenticated/$page/history/index.tsx:72
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:34
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:58
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:69
+#: src/routes/_authenticated/$wikiId/$page/history/index.tsx:81
 msgid "History: {pageTitle}"
 msgstr "इतिहास: {pageTitle}"
 
@@ -1289,7 +1352,7 @@ msgstr "होम"
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:142
 #: ../../../lib/web/src/components/layout/top-bar.tsx:62
 #: ../../../lib/web/src/components/layout/top-bar.tsx:91
-#: src/routes/_authenticated/index.tsx:251
+#: src/routes/_authenticated/index.tsx:260
 msgid "Home"
 msgstr "होम"
 
@@ -1310,19 +1373,23 @@ msgstr "पहचान"
 msgid "Image"
 msgstr "चित्र"
 
-#: src/features/wiki/attachments-page.tsx:308
+#: src/features/wiki/attachments-page.tsx:354
 msgid "Images"
 msgstr "चित्र"
+
+#: src/features/wiki/page-editor.tsx:482
+msgid "images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration."
+msgstr "छवि, PDF, DOC, DOCX, TXT, आ MD। बड़हन अपलोड राउर सर्वर भा प्रॉक्सी कॉन्फ़िगरेशन से भी सीमित हो सकेला।"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:83
 msgid "Imperial"
 msgstr "इम्पीरियल"
 
-#: src/features/wiki/page-editor.tsx:223
+#: src/features/wiki/page-editor.tsx:328
 msgid "Insert"
 msgstr "डालीं"
 
-#: src/features/wiki/page-editor.tsx:346
+#: src/features/wiki/page-editor.tsx:473
 msgid "Insert attachment"
 msgstr "अटैचमेंट डालीं"
 
@@ -1355,6 +1422,10 @@ msgstr "विकी में शामिल हो गइल"
 #: ../../../lib/web/src/lib/preference-utils.ts:123
 msgid "Large"
 msgstr "बड़ा"
+
+#: src/features/wiki/attachments-page.tsx:309
+msgid "Large uploads may be limited by your server or proxy configuration."
+msgstr "बड़हन अपलोड राउर सर्वर भा प्रॉक्सी कॉन्फ़िगरेशन से सीमित हो सकेला।"
 
 #: src/features/user/sessions.tsx:146
 msgid "Last active"
@@ -1393,12 +1464,14 @@ msgstr "हल्का भा गहिरा मोड"
 msgid "Link to {headingText}"
 msgstr "{headingText} पर लिंक"
 
-#: src/features/wiki/attachments-page.tsx:343
-#: src/features/wiki/attachments-page.tsx:344
+#: src/features/wiki/attachments-page.tsx:389
+#: src/features/wiki/attachments-page.tsx:390
 msgid "List view"
 msgstr "सूची व्यू"
 
 #: ../../../lib/web/src/components/ui/load-more.tsx:32
+#: src/features/wiki/changes-list.tsx:100
+#: src/features/wiki/page-history.tsx:147
 msgid "Load more"
 msgstr "अउरी लोड करीं"
 
@@ -1470,13 +1543,13 @@ msgstr "सोमवार"
 msgid "My passkey"
 msgstr "हमार Passkey"
 
-#: src/features/wiki/page-editor.tsx:292
+#: src/features/wiki/page-editor.tsx:417
 msgid "my-page-name"
 msgstr "my-page-name"
 
 #: src/features/user/account.tsx:107
 #: src/features/user/account.tsx:453
-#: src/features/wiki/attachments-page.tsx:321
+#: src/features/wiki/attachments-page.tsx:367
 #: src/features/wiki/wiki-settings.tsx:453
 msgid "Name"
 msgstr "नाम"
@@ -1500,13 +1573,12 @@ msgstr "कबो ना"
 msgid "New"
 msgstr "नया"
 
-#: src/features/wiki/wiki-page-content.tsx:191
-#: src/features/wiki/wiki-page-content.tsx:312
+#: src/features/wiki/wiki-page-content.tsx:305
 #: src/routes/_authenticated/$page/index.tsx:130
 #: src/routes/_authenticated/$page/index.tsx:241
-#: src/routes/_authenticated/$wikiId/new.tsx:19
-#: src/routes/_authenticated/$wikiId/new.tsx:26
-#: src/routes/_authenticated/index.tsx:437
+#: src/routes/_authenticated/$wikiId/new.tsx:20
+#: src/routes/_authenticated/$wikiId/new.tsx:31
+#: src/routes/_authenticated/index.tsx:446
 #: src/routes/_authenticated/new.tsx:19
 #: src/routes/_authenticated/new.tsx:26
 msgid "New page"
@@ -1545,16 +1617,16 @@ msgstr "कौनो पहुँच नियम सेट नइखे। ए 
 msgid "No active sessions"
 msgstr "कौनो सक्रिय सत्र नइखे"
 
-#: src/features/wiki/attachments-page.tsx:372
+#: src/features/wiki/attachments-page.tsx:418
 msgid "No attachments match your search"
 msgstr "रउआ खोज से कौनो अटैचमेंट मेल ना खाइल"
 
-#: src/features/wiki/attachments-page.tsx:372
-#: src/features/wiki/page-editor.tsx:394
+#: src/features/wiki/attachments-page.tsx:418
+#: src/features/wiki/page-editor.tsx:535
 msgid "No attachments yet"
 msgstr "अबहीं तक कौनो अटैचमेंट नइखे"
 
-#: src/features/wiki/changes-list.tsx:34
+#: src/features/wiki/changes-list.tsx:32
 msgid "No changes yet"
 msgstr "अबहीं तक कौनो बदलाव नइखे"
 
@@ -1574,7 +1646,7 @@ msgstr "कौनो जुड़ल खाता नइखे"
 msgid "No groups available"
 msgstr "कौनो ग्रुप उपलब्ध नइखे"
 
-#: src/features/wiki/search-page.tsx:82
+#: src/features/wiki/search-page.tsx:69
 msgid "No pages found for \"{debouncedQuery}\""
 msgstr "\"{debouncedQuery}\" खातिर कौनो पन्ना ना मिलल"
 
@@ -1609,9 +1681,13 @@ msgstr "अबहीं तक कौनो प्रतिकृति नइ�
 msgid "No results found."
 msgstr "कौनो परिणाम ना मिलल।"
 
-#: src/features/wiki/page-history.tsx:42
+#: src/features/wiki/page-history.tsx:43
 msgid "No revisions found"
 msgstr "कौनो संशोधन ना मिलल"
+
+#: src/features/wiki/tag-manager.tsx:83
+msgid "No tags"
+msgstr "कवनो टैग नइखे"
 
 #: src/features/wiki/tags-list.tsx:32
 msgid "No tags found"
@@ -1621,7 +1697,7 @@ msgstr "कौनो टैग ना मिलल"
 msgid "No time zone found."
 msgstr "कौनो टाइम जोन ना मिलल।"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:135
+#: ../../../lib/web/src/components/notification-category-button.tsx:139
 msgid "No topic record yet — try again after the next notification."
 msgstr "अबहीं तक कौनो विषय रिकॉर्ड नइखे — अगिला सूचना के बाद फेर कोशिश करीं।"
 
@@ -1664,12 +1740,12 @@ msgstr "ए पन्ना पर"
 msgid "Oops! Page Not Found!"
 msgstr "ओह! पन्ना ना मिलल!"
 
-#: src/features/wiki/attachments-page.tsx:578
+#: src/features/wiki/attachments-page.tsx:624
 msgid "Open"
 msgstr "खोलीं"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:776
+#: src/routes/_authenticated/index.tsx:789
 msgid "Open {0}"
 msgstr "{0} खोलीं"
 
@@ -1678,7 +1754,7 @@ msgstr "{0} खोलीं"
 msgid "Open account actions"
 msgstr "खाता क्रिया खोलीं"
 
-#: src/features/wiki/attachments-page.tsx:577
+#: src/features/wiki/attachments-page.tsx:623
 msgid "Open attachment"
 msgstr "अटैचमेंट खोलीं"
 
@@ -1716,10 +1792,10 @@ msgstr "दोसर"
 msgid "Owner"
 msgstr "मालिक"
 
-#: src/features/wiki/changes-list.tsx:42
-#: src/features/wiki/wiki-page-content.tsx:242
+#: src/features/wiki/changes-list.tsx:40
+#: src/features/wiki/wiki-page-content.tsx:235
 #: src/routes/_authenticated/$page/index.tsx:181
-#: src/routes/_authenticated/index.tsx:371
+#: src/routes/_authenticated/index.tsx:380
 msgid "Page"
 msgstr "पन्ना"
 
@@ -1732,43 +1808,43 @@ msgstr "पन्ना \"{slug}\" मौजूद नइखे"
 msgid "Page \"{title}\" deleted"
 msgstr "पन्ना \"{title}\" मिटावल गइल"
 
-#: src/features/wiki/wiki-page-content.tsx:172
 #: src/features/wiki/wiki-page-content.tsx:173
-#: src/features/wiki/wiki-page-content.tsx:234
-#: src/features/wiki/wiki-page-content.tsx:235
+#: src/features/wiki/wiki-page-content.tsx:174
+#: src/features/wiki/wiki-page-content.tsx:227
+#: src/features/wiki/wiki-page-content.tsx:228
 #: src/routes/_authenticated/$page/index.tsx:110
 #: src/routes/_authenticated/$page/index.tsx:111
 #: src/routes/_authenticated/$page/index.tsx:173
 #: src/routes/_authenticated/$page/index.tsx:174
-#: src/routes/_authenticated/index.tsx:363
-#: src/routes/_authenticated/index.tsx:364
+#: src/routes/_authenticated/index.tsx:372
+#: src/routes/_authenticated/index.tsx:373
 msgid "Page actions"
 msgstr "पन्ना क्रिया"
 
-#: src/features/wiki/page-editor.tsx:150
+#: src/features/wiki/page-editor.tsx:254
 msgid "Page created"
 msgstr "पन्ना बनल"
 
 #: src/features/wiki/page-view.tsx:285
-#: src/features/wiki/wiki-page-content.tsx:213
+#: src/features/wiki/wiki-page-content.tsx:206
 #: src/routes/_authenticated/$page/index.tsx:152
-#: src/routes/_authenticated/index.tsx:344
+#: src/routes/_authenticated/index.tsx:353
 msgid "Page not found"
 msgstr "पन्ना ना मिलल"
 
-#: src/features/wiki/page-editor.tsx:167
+#: src/features/wiki/page-editor.tsx:271
 msgid "Page saved"
 msgstr "पन्ना सहेजल गइल"
 
-#: src/features/wiki/page-editor.tsx:310
+#: src/features/wiki/page-editor.tsx:404
 msgid "Page title"
 msgstr "पन्ना शीर्षक"
 
-#: src/features/wiki/page-editor.tsx:287
+#: src/features/wiki/page-editor.tsx:411
 msgid "Page URL"
 msgstr "पन्ना URL"
 
-#: src/features/wiki/page-editor.tsx:142
+#: src/features/wiki/page-editor.tsx:246
 msgid "Page URL is required"
 msgstr "पन्ना URL जरूरी बा"
 
@@ -1776,6 +1852,7 @@ msgstr "पन्ना URL जरूरी बा"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "<0>{tag}</0> टैग कइल पन्ना"
 
+#: ../../../lib/web/src/components/step-up-dialog.tsx:331
 #: src/features/user/account.tsx:184
 #: src/features/user/account.tsx:356
 msgid "Passkey"
@@ -1797,6 +1874,11 @@ msgstr "Passkey पंजीकृत भइल"
 msgid "Passkey renamed"
 msgstr "Passkey के नाम बदलल गइल"
 
+#: ../../../lib/web/src/components/step-up-dialog.tsx:206
+msgid "Passkey verification failed. Please try again."
+msgstr "पासकी सत्यापन विफल हो गइल। कृपया फिर से कोशिश करीं।"
+
+#: ../../../lib/web/src/components/restore-banner.tsx:126
 #: src/features/user/account.tsx:395
 msgid "Passkeys"
 msgstr "Passkey"
@@ -1818,7 +1900,7 @@ msgstr "वरीयता"
 msgid "Preferences reset to defaults"
 msgstr "वरीयता डिफ़ॉल्ट पर रीसेट भइल"
 
-#: src/features/wiki/page-editor.tsx:213
+#: src/features/wiki/page-editor.tsx:318
 msgid "Preview"
 msgstr "पूर्वावलोकन"
 
@@ -1840,6 +1922,18 @@ msgstr "आगे बढ़ीं"
 msgid "Profile"
 msgstr "प्रोफाइल"
 
+#: src/features/wiki/page-editor.tsx:425
+msgid "Re-derive from title"
+msgstr "शीर्षक से फेर से निकालीं"
+
+#: ../../../lib/web/src/components/restore-banner.tsx:98
+msgid "Re-link your accounts on this server"
+msgstr "एह सर्वर पर आपन खाता फिर से जोड़ीं"
+
+#: ../../../lib/web/src/components/restore-banner.tsx:120
+msgid "Re-register your passkeys on this server"
+msgstr "एह सर्वर पर आपन पासकी फिर से रजिस्टर करीं"
+
 #: src/features/wiki/revert-page.tsx:75
 msgid "Reason for reverting"
 msgstr "वापस ले जाए के कारण"
@@ -1848,22 +1942,21 @@ msgstr "वापस ले जाए के कारण"
 msgid "Receive a verification code by email"
 msgstr "ईमेल से सत्यापन कोड पाईं"
 
-#: src/features/wiki/changes-list.tsx:20
-#: src/features/wiki/wiki-page-content.tsx:294
+#: src/features/wiki/wiki-page-content.tsx:287
 #: src/routes/_authenticated/$page/index.tsx:234
-#: src/routes/_authenticated/$wikiId/changes.tsx:17
-#: src/routes/_authenticated/$wikiId/changes.tsx:23
-#: src/routes/_authenticated/$wikiId/changes.tsx:34
-#: src/routes/_authenticated/$wikiId/changes.tsx:44
-#: src/routes/_authenticated/changes.tsx:16
-#: src/routes/_authenticated/changes.tsx:22
-#: src/routes/_authenticated/changes.tsx:33
-#: src/routes/_authenticated/changes.tsx:43
-#: src/routes/_authenticated/index.tsx:409
+#: src/routes/_authenticated/$wikiId/changes.tsx:22
+#: src/routes/_authenticated/$wikiId/changes.tsx:41
+#: src/routes/_authenticated/$wikiId/changes.tsx:52
+#: src/routes/_authenticated/$wikiId/changes.tsx:62
+#: src/routes/_authenticated/changes.tsx:19
+#: src/routes/_authenticated/changes.tsx:37
+#: src/routes/_authenticated/changes.tsx:48
+#: src/routes/_authenticated/changes.tsx:58
+#: src/routes/_authenticated/index.tsx:418
 msgid "Recent changes"
 msgstr "हाल के बदलाव"
 
-#: src/features/wiki/changes-list.tsx:24
+#: src/features/wiki/changes-list.tsx:22
 msgid "Recent edits across all pages in this wiki."
 msgstr "ए विकी के सब पन्ना पर हाल के संपादन।"
 
@@ -1872,7 +1965,7 @@ msgstr "ए विकी के सब पन्ना पर हाल के �
 msgid "Recommended"
 msgstr "सिफारिश कइल"
 
-#: src/routes/_authenticated/index.tsx:712
+#: src/routes/_authenticated/index.tsx:725
 msgid "Recommended wikis"
 msgstr "सिफारिश कइल विकी"
 
@@ -1977,9 +2070,9 @@ msgstr "प्रतिकृति हटाईं?"
 
 #: src/features/wiki/rename-page-dialog.tsx:126
 #: src/features/wiki/rename-page-dialog.tsx:149
-#: src/features/wiki/wiki-page-content.tsx:254
+#: src/features/wiki/wiki-page-content.tsx:247
 #: src/routes/_authenticated/$page/index.tsx:193
-#: src/routes/_authenticated/index.tsx:383
+#: src/routes/_authenticated/index.tsx:392
 msgid "Rename"
 msgstr "नाम बदलीं"
 
@@ -2028,13 +2121,17 @@ msgstr "जवाब"
 msgid "Reply to {0}..."
 msgstr "{0} के जवाब..."
 
-#: src/features/wiki/wiki-page-content.tsx:156
+#: src/features/wiki/wiki-page-content.tsx:157
 msgid "Request URL: {baseURL}{slug}"
 msgstr "अनुरोध URL: {baseURL}{slug}"
 
 #: src/features/user/account.tsx:169
 msgid "Require all selected methods to log in"
 msgstr "लॉग इन करे खातिर सब चुनल तरीका जरूरी करीं"
+
+#: ../../../lib/web/src/components/step-up-dialog.tsx:364
+msgid "Resend email"
+msgstr "ईमेल फिर से भेजीं"
 
 #: ../../../lib/web/src/components/config-drawer.tsx:77
 #: ../../../lib/web/src/components/data-table/toolbar.tsx:78
@@ -2066,10 +2163,10 @@ msgstr "टिप्पणी वापस लीं"
 msgid "Revert Page"
 msgstr "पन्ना वापस लीं"
 
-#: src/features/wiki/page-history.tsx:119
-#: src/features/wiki/page-history.tsx:120
-#: src/features/wiki/revision-view.tsx:61
-#: src/features/wiki/revision-view.tsx:66
+#: src/features/wiki/page-history.tsx:122
+#: src/features/wiki/page-history.tsx:123
+#: src/features/wiki/revision-view.tsx:112
+#: src/features/wiki/revision-view.tsx:117
 msgid "Revert to this version"
 msgstr "ए संस्करण पर वापस जाईं"
 
@@ -2111,15 +2208,15 @@ msgstr "दहिने से बायें"
 msgid "Rows per page"
 msgstr "हर पन्ना पर पंक्ति"
 
-#: src/features/wiki/wiki-page-content.tsx:300
-#: src/routes/_authenticated/index.tsx:415
-#: src/routes/_authenticated/index.tsx:646
+#: src/features/wiki/wiki-page-content.tsx:293
+#: src/routes/_authenticated/index.tsx:424
+#: src/routes/_authenticated/index.tsx:659
 msgid "RSS feed"
 msgstr "RSS feed"
 
-#: src/features/wiki/wiki-page-content.tsx:115
-#: src/routes/_authenticated/index.tsx:303
-#: src/routes/_authenticated/index.tsx:553
+#: src/features/wiki/wiki-page-content.tsx:116
+#: src/routes/_authenticated/index.tsx:312
+#: src/routes/_authenticated/index.tsx:564
 msgid "RSS URL copied to clipboard"
 msgstr "RSS URL क्लिपबोर्ड पर कॉपी भइल"
 
@@ -2127,7 +2224,7 @@ msgstr "RSS URL क्लिपबोर्ड पर कॉपी भइल"
 msgid "Saturday"
 msgstr "शनिवार"
 
-#: src/features/wiki/page-editor.tsx:266
+#: src/features/wiki/page-editor.tsx:379
 #: src/features/wiki/wiki-comment-thread.tsx:134
 msgid "Save"
 msgstr "सहेजीं"
@@ -2144,20 +2241,22 @@ msgstr "passkey के नाम सहेजीं"
 msgid "Save these codes"
 msgstr "ए कोड सहेजीं"
 
-#: src/features/wiki/page-editor.tsx:266
+#: src/features/wiki/page-editor.tsx:379
 #: src/features/wiki/wiki-settings.tsx:568
 msgid "Saving..."
 msgstr "सहेज रहल बा..."
 
-#: src/features/wiki/wiki-page-content.tsx:282
+#: src/features/wiki/wiki-page-content.tsx:275
 #: src/routes/_authenticated/$page/index.tsx:222
-#: src/routes/_authenticated/index.tsx:397
-#: src/routes/_authenticated/search.tsx:21
-#: src/routes/_authenticated/search.tsx:26
+#: src/routes/_authenticated/$wikiId/search.tsx:26
+#: src/routes/_authenticated/$wikiId/search.tsx:36
+#: src/routes/_authenticated/index.tsx:406
+#: src/routes/_authenticated/search.tsx:22
+#: src/routes/_authenticated/search.tsx:31
 msgid "Search"
 msgstr "खोजीं"
 
-#: src/features/wiki/attachments-page.tsx:282
+#: src/features/wiki/attachments-page.tsx:328
 msgid "Search attachments..."
 msgstr "अटैचमेंट खोजीं..."
 
@@ -2169,7 +2268,7 @@ msgstr "नाम, ID, फिंगरप्रिंट, भा URL से ख�
 msgid "Search for a place"
 msgstr "जगह खोजीं"
 
-#: src/routes/_authenticated/index.tsx:688
+#: src/routes/_authenticated/index.tsx:701
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "सब्सक्राइब करे खातिर विकी खोजीं, भा अपन दस्तावेज प्रकाशित करे खातिर एक बनाईं।"
 
@@ -2190,11 +2289,11 @@ msgstr "सार्वजनिक विकी खोजीं भा सी�
 msgid "Search for wikis..."
 msgstr "विकी खोजीं..."
 
-#: src/features/wiki/search-page.tsx:72
+#: src/features/wiki/search-page.tsx:59
 msgid "Search pages by title or content."
 msgstr "शीर्षक भा सामग्री से पन्ना खोजीं।"
 
-#: src/features/wiki/search-page.tsx:58
+#: src/features/wiki/search-page.tsx:46
 msgid "Search pages by title or content..."
 msgstr "शीर्षक भा सामग्री से पन्ना खोजीं..."
 
@@ -2207,8 +2306,8 @@ msgid "Search users"
 msgstr "यूजर खोजीं"
 
 #: src/features/wiki/search-page.tsx:49
-msgid "Search Wiki"
-msgstr "विकी खोजीं"
+#~ msgid "Search Wiki"
+#~ msgstr "विकी खोजीं"
 
 #: ../../../lib/web/src/components/person-picker.tsx:323
 msgid "Search..."
@@ -2232,7 +2331,7 @@ msgstr "पहुँच नियम चुनीं"
 msgid "Select account type"
 msgstr "खाता प्रकार चुनीं"
 
-#: src/features/wiki/page-editor.tsx:348
+#: src/features/wiki/page-editor.tsx:475
 msgid "Select an attachment to insert into your page, or upload a new file."
 msgstr "रउआ पन्ना में डाले खातिर अटैचमेंट चुनीं, भा नया फाइल अपलोड करीं।"
 
@@ -2263,6 +2362,10 @@ msgstr "फेरु भेजीं"
 #: src/features/wiki/comment-form.tsx:107
 msgid "Send comment"
 msgstr "टिप्पणी भेजीं"
+
+#: ../../../lib/web/src/components/step-up-dialog.tsx:304
+msgid "Send email"
+msgstr "ईमेल भेजीं"
 
 #: src/features/wiki/wiki-comment-thread.tsx:262
 msgid "Send reply"
@@ -2309,10 +2412,10 @@ msgstr "ऑथेंटिकेटर सेट अप करीं"
 #: ../../../lib/web/src/components/layout/nav-user.tsx:81
 #: ../../../lib/web/src/components/layout/nav-user.tsx:145
 #: ../../../lib/web/src/components/layout/nav-user.tsx:195
-#: src/features/wiki/wiki-page-content.tsx:320
+#: src/features/wiki/wiki-page-content.tsx:313
 #: src/features/wiki/wiki-settings.tsx:93
 #: src/routes/_authenticated/$page/index.tsx:249
-#: src/routes/_authenticated/index.tsx:445
+#: src/routes/_authenticated/index.tsx:454
 msgid "Settings"
 msgstr "सेटिंग सब"
 
@@ -2320,6 +2423,10 @@ msgstr "सेटिंग सब"
 #: src/features/wiki/wiki-settings.tsx:363
 msgid "Settings saved"
 msgstr "सेटिंग सहेजल गइल"
+
+#: src/features/wiki/revision-view.tsx:91
+msgid "Show page"
+msgstr "पन्ना देखाईं"
 
 #: ../../../lib/web/src/components/ui/load-more.tsx:36
 msgid "Showing {totalShown} of {total}"
@@ -2339,7 +2446,7 @@ msgstr "बायोमेट्रिक्स या सुरक्षा क
 msgid "Signing out..."
 msgstr "साइन आउट हो रहल बा..."
 
-#: src/features/wiki/attachments-page.tsx:322
+#: src/features/wiki/attachments-page.tsx:368
 msgid "Size"
 msgstr "आकार"
 
@@ -2352,7 +2459,7 @@ msgstr "मुख्य पर जाईं"
 msgid "Small"
 msgstr "छोट"
 
-#: src/features/wiki/attachments-page.tsx:317
+#: src/features/wiki/attachments-page.tsx:363
 msgid "Sort"
 msgstr "क्रमबद्ध करीं"
 
@@ -2371,7 +2478,7 @@ msgstr "स्रोत URL"
 msgid "Spacious"
 msgstr "विशाल"
 
-#: src/routes/_authenticated/index.tsx:685
+#: src/routes/_authenticated/index.tsx:698
 msgid "Start your first wiki"
 msgstr "अपना पहिला विकी शुरू करीं"
 
@@ -2388,7 +2495,7 @@ msgid "Subject"
 msgstr "विषय"
 
 #: src/features/wiki/inline-wiki-search.tsx:158
-#: src/routes/_authenticated/index.tsx:750
+#: src/routes/_authenticated/index.tsx:763
 msgid "Subscribe"
 msgstr "सदस्यता लीं"
 
@@ -2396,8 +2503,8 @@ msgstr "सदस्यता लीं"
 msgid "Subscribed"
 msgstr "सदस्यता ले लिहल गइल"
 
-#: src/routes/_authenticated/index.tsx:796
-#: src/routes/_authenticated/index.tsx:797
+#: src/routes/_authenticated/index.tsx:822
+#: src/routes/_authenticated/index.tsx:823
 msgid "Subscribed wiki actions"
 msgstr "सदस्यता वाला विकी क्रिया सब"
 
@@ -2408,6 +2515,14 @@ msgstr "सदस्यता"
 #: ../../../lib/web/src/lib/preference-utils.ts:62
 msgid "Sunday"
 msgstr "रविवार"
+
+#: src/features/wiki/page-editor.tsx:480
+msgid "Supported files"
+msgstr "समर्थित फ़ाइल"
+
+#: src/features/wiki/attachments-page.tsx:308
+msgid "Supported files: images, PDF, DOC, DOCX, TXT, and MD."
+msgstr "समर्थित फ़ाइल: छवि, PDF, DOC, DOCX, TXT, आ MD।"
 
 #: src/features/wiki/wiki-settings.tsx:533
 msgid "Sync now"
@@ -2450,9 +2565,9 @@ msgstr "टैग पहिले से बा"
 msgid "Tag: {tag}"
 msgstr "टैग: {tag}"
 
-#: src/features/wiki/wiki-page-content.tsx:288
+#: src/features/wiki/wiki-page-content.tsx:281
 #: src/routes/_authenticated/$page/index.tsx:228
-#: src/routes/_authenticated/index.tsx:403
+#: src/routes/_authenticated/index.tsx:412
 msgid "Tags"
 msgstr "टैग सब"
 
@@ -2474,6 +2589,10 @@ msgstr "टीम/ऐप सब"
 #: ../../../lib/web/src/features/document/document-page.tsx:39
 msgid "Terms and conditions"
 msgstr "नियम आ शर्त"
+
+#: ../../../lib/web/src/components/step-up-dialog.tsx:192
+msgid "That code is incorrect or has expired."
+msgstr "ऊ कोड गलत बा भा ओकर मियाद खतम हो गइल बा।"
 
 #: src/routes/_authenticated/join.tsx:103
 msgid "The entity ID of the wiki you want to replicate."
@@ -2515,11 +2634,21 @@ msgstr "थीम सेटिंग"
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "ई कार्य पूर्ववत ना कइल जा सकेला। ई विकी आ ओकर सब सामग्री के स्थायी रूप से हटा दी।"
 
+#: src/features/wiki/attachments-page.tsx:137
+#: src/features/wiki/page-editor.tsx:177
+msgid "This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit."
+msgstr "ई फ़ाइल मौजूदा सर्वर अपलोड सीमा खातिर बहुते बड़ बा। एगो छोट फ़ाइल आज़माईं भा सर्वर भा प्रॉक्सी के अपलोड आकार सीमा बढ़ाईं।"
+
+#: src/features/wiki/attachments-page.tsx:148
+#: src/features/wiki/page-editor.tsx:188
+msgid "This file is too large to upload. Try a smaller file."
+msgstr "ई फ़ाइल अपलोड करे खातिर बहुते बड़ बा। एगो छोट फ़ाइल आज़माईं।"
+
 #: src/features/wiki/wiki-settings.tsx:529
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "ई विकी एगो स्रोत विकी से सदस्यता लिहले बा आ ओकरा से अपडेट प्राप्त करेला।"
 
-#: src/features/wiki/page-editor.tsx:295
+#: src/features/wiki/page-editor.tsx:433
 msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
 msgstr "ई पन्ना खातिर पथ होई। छोट अक्षर, संख्या, आ हाइफन के उपयोग करीं।"
 
@@ -2565,12 +2694,12 @@ msgstr "बृहस्पतिवार"
 msgid "Time zone"
 msgstr "समय क्षेत्र"
 
-#: src/features/wiki/page-editor.tsx:305
-#: src/features/wiki/page-history.tsx:50
+#: src/features/wiki/page-editor.tsx:399
+#: src/features/wiki/page-history.tsx:51
 msgid "Title"
 msgstr "शीर्षक"
 
-#: src/features/wiki/page-editor.tsx:136
+#: src/features/wiki/page-editor.tsx:240
 msgid "Title is required"
 msgstr "शीर्षक चाहीं"
 
@@ -2603,7 +2732,7 @@ msgstr "ऊपर"
 msgid "Travelling"
 msgstr "यात्रा कर रहल बा"
 
-#: src/features/wiki/attachments-page.tsx:377
+#: src/features/wiki/attachments-page.tsx:423
 msgid "Try a different search term or filter."
 msgstr "अलग खोज शब्द या फ़िल्टर आजमाईं।"
 
@@ -2622,7 +2751,7 @@ msgstr "अपना खोज शब्द समायोजित करे �
 msgid "Try again"
 msgstr "फेर से कोशिश करीं"
 
-#: src/features/wiki/search-page.tsx:83
+#: src/features/wiki/search-page.tsx:70
 msgid "Try different search terms."
 msgstr "अलग खोज शब्द आजमाईं।"
 
@@ -2647,7 +2776,7 @@ msgstr "खोजे खातिर टाइप करीं..."
 msgid "Unable to redirect to login. Please try again."
 msgstr "लॉगिन पर रीडायरेक्ट ना हो सकल। कृपया फेर से कोशिश करीं।"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:143
+#: ../../../lib/web/src/components/notification-category-button.tsx:147
 msgid "Unassigned"
 msgstr "अनसौंपल"
 
@@ -2667,35 +2796,45 @@ msgstr "संयुक्त राज्य अमेरिका"
 msgid "Unknown device"
 msgstr "अनजान डिवाइस"
 
-#: src/features/wiki/wiki-page-content.tsx:332
-#: src/features/wiki/wiki-page-content.tsx:353
-#: src/features/wiki/wiki-page-content.tsx:355
+#: src/features/wiki/wiki-page-content.tsx:325
+#: src/features/wiki/wiki-page-content.tsx:346
+#: src/features/wiki/wiki-page-content.tsx:348
 #: src/routes/_authenticated/$page/index.tsx:214
 #: src/routes/_authenticated/$page/index.tsx:270
 #: src/routes/_authenticated/$page/index.tsx:272
-#: src/routes/_authenticated/index.tsx:456
-#: src/routes/_authenticated/index.tsx:483
-#: src/routes/_authenticated/index.tsx:485
-#: src/routes/_authenticated/index.tsx:808
-#: src/routes/_authenticated/index.tsx:826
-#: src/routes/_authenticated/index.tsx:828
+#: src/routes/_authenticated/index.tsx:465
+#: src/routes/_authenticated/index.tsx:492
+#: src/routes/_authenticated/index.tsx:494
+#: src/routes/_authenticated/index.tsx:834
+#: src/routes/_authenticated/index.tsx:852
+#: src/routes/_authenticated/index.tsx:854
 msgid "Unsubscribe"
 msgstr "सदस्यता रद्द करीं"
 
-#: src/features/wiki/wiki-page-content.tsx:64
+#: src/features/wiki/wiki-page-content.tsx:65
 #: src/routes/_authenticated/$page/index.tsx:63
-#: src/routes/_authenticated/index.tsx:283
+#: src/routes/_authenticated/index.tsx:292
 msgid "Unsubscribed"
 msgstr "सदस्यता रद्द भइल"
 
-#: src/features/wiki/wiki-page-content.tsx:332
+#: src/features/wiki/wiki-page-content.tsx:325
 #: src/routes/_authenticated/$page/index.tsx:214
-#: src/routes/_authenticated/index.tsx:456
-#: src/routes/_authenticated/index.tsx:808
+#: src/routes/_authenticated/index.tsx:465
+#: src/routes/_authenticated/index.tsx:834
 msgid "Unsubscribing..."
 msgstr "सदस्यता रद्द हो रहल बा..."
 
-#: src/features/wiki/page-editor.tsx:278
+#: src/features/wiki/attachments-page.tsx:130
+#: src/features/wiki/page-editor.tsx:170
+msgid "Unsupported file type: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
+msgstr "असमर्थित फ़ाइल प्रकार: {names}। समर्थित फ़ाइल: छवि, PDF, DOC, DOCX, TXT, आ MD।"
+
+#: src/features/wiki/attachments-page.tsx:131
+#: src/features/wiki/page-editor.tsx:171
+msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
+msgstr "असमर्थित फ़ाइल प्रकार: {names}। समर्थित फ़ाइल: छवि, PDF, DOC, DOCX, TXT, आ MD।"
+
+#: src/features/wiki/page-editor.tsx:391
 msgid "Untitled"
 msgstr "बेशीर्षक"
 
@@ -2705,21 +2844,42 @@ msgstr "असत्यापित"
 
 #. placeholder {0}: formatTimestamp(page.updated)
 #. placeholder {0}: formatTimestamp(result.updated)
+#. placeholder {0}: formatTimestamp(wiki.updated)
 #: src/features/wiki/page-view.tsx:256
-#: src/features/wiki/search-page.tsx:124
+#: src/features/wiki/search-page.tsx:112
 #: src/features/wiki/tag-pages.tsx:67
+#: src/routes/_authenticated/index.tsx:810
 msgid "Updated {0}"
 msgstr "अपडेट भइल {0}"
 
-#: src/features/wiki/page-editor.tsx:395
+#: src/features/wiki/page-editor.tsx:536
 msgid "Upload a file to get started."
 msgstr "शुरू करे खातिर एगो फ़ाइल अपलोड करीं।"
 
-#: src/features/wiki/attachments-page.tsx:269
+#: src/features/wiki/attachments-page.tsx:315
+#: src/features/wiki/page-editor.tsx:516
+msgid "Upload failed"
+msgstr "अपलोड विफल भइल"
+
+#: src/features/wiki/attachments-page.tsx:145
+#: src/features/wiki/page-editor.tsx:185
+msgid "Upload failed because this account has reached its storage limit."
+msgstr "अपलोड विफल भइल काहेकि ई खाता आपन भंडारण सीमा पर पहुँच गइल बा।"
+
+#: src/features/wiki/attachments-page.tsx:142
+#: src/features/wiki/page-editor.tsx:182
+msgid "Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again."
+msgstr "अपलोड विफल भइल। फ़ाइल मौजूदा सर्वर भा प्रॉक्सी अपलोड सीमा खातिर बहुते बड़ हो सकेला। अगर फ़ाइल छोट बा, त आपन कनेक्शन जाँचीं आ फेर से आज़माईं।"
+
+#: src/features/wiki/attachments-page.tsx:300
 msgid "Upload files"
 msgstr "फ़ाइल अपलोड करीं"
 
-#: src/features/wiki/page-editor.tsx:376
+#: src/features/wiki/attachments-page.tsx:306
+msgid "Upload guidance"
+msgstr "अपलोड मार्गदर्शन"
+
+#: src/features/wiki/page-editor.tsx:510
 msgid "Upload new"
 msgstr "नया अपलोड करीं"
 
@@ -2742,6 +2902,10 @@ msgstr "एक बार के कोड बनावे खातिर एग
 #: src/features/wiki/wiki-settings.tsx:554
 msgid "Use as home"
 msgstr "होम के रूप में उपयोग करीं"
+
+#: ../../../lib/web/src/components/step-up-dialog.tsx:335
+msgid "Use your passkey"
+msgstr "आपन पासकी इस्तेमाल करीं"
 
 #: src/features/user/preferences.tsx:147
 msgid "Used for displaying dates and times"
@@ -2767,6 +2931,7 @@ msgstr "सत्यापन कोड भेजल गइल"
 msgid "Verification failed"
 msgstr "सत्यापन विफल भइल"
 
+#: ../../../lib/web/src/components/step-up-dialog.tsx:385
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:164
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:106
 msgid "Verify"
@@ -2780,22 +2945,26 @@ msgstr "सत्यापित करीं आ सक्षम करीं"
 msgid "Verify email address"
 msgstr "ईमेल पता सत्यापित करीं"
 
-#: src/features/wiki/changes-list.tsx:43
-#: src/features/wiki/page-history.tsx:49
+#: src/features/wiki/changes-list.tsx:41
+#: src/features/wiki/page-history.tsx:50
 msgid "Version"
 msgstr "संस्करण"
 
 #. placeholder {0}: revision.version
-#: src/features/wiki/revision-view.tsx:32
+#: src/features/wiki/revision-view.tsx:73
 msgid "Version {0}"
 msgstr "संस्करण {0}"
+
+#: ../../../lib/web/src/components/attachment-gallery.tsx:63
+msgid "Video thumbnail"
+msgstr "वीडियो थंबनेल"
 
 #: ../../../lib/web/src/components/data-table/view-options.tsx:30
 msgid "View"
 msgstr "देखीं"
 
-#: src/features/wiki/page-history.tsx:103
-#: src/features/wiki/page-history.tsx:103
+#: src/features/wiki/page-history.tsx:106
+#: src/features/wiki/page-history.tsx:106
 msgctxt "action"
 msgid "View"
 msgstr "देखीं"
@@ -2812,7 +2981,7 @@ msgstr "सब सूचना देखीं"
 msgid "View only"
 msgstr "खाली देखीं"
 
-#: src/features/wiki/page-history.tsx:31
+#: src/features/wiki/page-history.tsx:32
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "<0>{slug}</0> खातिर इतिहास देखावल जा रहल बा, वर्तमान संस्करण {currentVersion}"
 
@@ -2833,19 +3002,19 @@ msgstr "बुधवार"
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "जब अउरी विकी एह विकी के प्रतिकृति बनइहें, ऊ इहाँ देखाई।"
 
-#: src/components/layout/wiki-layout.tsx:106
-#: src/components/layout/wiki-layout.tsx:155
-#: src/features/wiki/wiki-page-content.tsx:86
-#: src/features/wiki/wiki-page-content.tsx:278
+#: src/components/layout/wiki-layout.tsx:104
+#: src/components/layout/wiki-layout.tsx:153
+#: src/features/wiki/wiki-page-content.tsx:87
+#: src/features/wiki/wiki-page-content.tsx:271
 #: src/routes/_authenticated/$page/index.tsx:218
 #: src/routes/_authenticated/$wikiId/settings.tsx:33
-#: src/routes/_authenticated/index.tsx:393
+#: src/routes/_authenticated/index.tsx:402
 #: src/routes/_authenticated/settings.tsx:32
 msgid "Wiki"
 msgstr "विकी"
 
-#: src/routes/_authenticated/index.tsx:635
-#: src/routes/_authenticated/index.tsx:636
+#: src/routes/_authenticated/index.tsx:648
+#: src/routes/_authenticated/index.tsx:649
 msgid "Wiki actions"
 msgstr "विकी क्रिया सब"
 
@@ -2879,7 +3048,7 @@ msgstr "विकी ना मिलल"
 msgid "Wiki renamed"
 msgstr "विकी के नाम बदलल गइल"
 
-#: src/features/wiki/wiki-page-content.tsx:201
+#: src/features/wiki/wiki-page-content.tsx:194
 #: src/routes/_authenticated/$page/index.tsx:140
 msgid "Wiki settings"
 msgstr "विकी सेटिंग"
@@ -2893,8 +3062,8 @@ msgstr "विकी सेटिंग खंड सब"
 msgid "Wiki synced"
 msgstr "विकी सिंक भइल"
 
-#: src/routes/_authenticated/index.tsx:528
-#: src/routes/_authenticated/index.tsx:626
+#: src/routes/_authenticated/index.tsx:537
+#: src/routes/_authenticated/index.tsx:639
 msgid "Wikis"
 msgstr "विकी सब"
 
@@ -2902,7 +3071,7 @@ msgstr "विकी सब"
 msgid "Write a comment..."
 msgstr "एगो टिप्पणी लिखीं..."
 
-#: src/features/wiki/page-editor.tsx:322
+#: src/features/wiki/page-editor.tsx:449
 msgid "Write your content here using Markdown..."
 msgstr "Markdown के उपयोग करत आपन सामग्री इहाँ लिखीं..."
 
@@ -2913,6 +3082,10 @@ msgstr "आप पन्ना <0>\"{title}\"</0> ({slug}) के हटाव�
 #: src/features/wiki/revert-page.tsx:61
 msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
 msgstr "आप <0>{slug}</0> के संस्करण <1>{version}</1> पर वापस लावे जा रहल बानीं। एसे संस्करण {version} के सामग्री से एगो नया संशोधन बनी।"
+
+#: ../../../lib/web/src/components/restore-banner.tsx:82
+msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
+msgstr "आपन खाता {source} से इहाँ हिलावल गइल। जब तक उहाँ से ना मेटाईं, संदेश आ सूचना दुनो सर्वर पर पहुँच सकेला, कुछ सामग्री पुरान सर्वर से आवत रही, आ फॉलोअर्स के इहाँ ढूंढे में कुछ मिनट लाग सकेला।"
 
 #: src/features/user/sessions.tsx:137
 msgid "Your active sessions will appear here."

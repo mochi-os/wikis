@@ -593,8 +593,8 @@ def action_info_class(a):
     # Add fingerprint (without hyphens) to each for shorter URLs
     wikis_raw = mochi.db.rows("""
         select w.id, w.name, w.home, w.source, w.created,
-            (select count(*) from pages p where p.wiki=w.id and p.deleted=0) as page_count,
-            (select max(p.updated) from pages p where p.wiki=w.id and p.deleted=0) as last_updated
+            (select count(*) from pages p where p.wiki=w.id and p.deleted=0) as pages,
+            (select max(p.updated) from pages p where p.wiki=w.id and p.deleted=0) as updated
         from wikis w
     """)
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
@@ -762,8 +762,8 @@ def action_info_entity(a):
     # Add fingerprint (without hyphens) to each for shorter URLs
     wikis_raw = mochi.db.rows("""
         select w.id, w.name, w.home, w.source, w.created,
-            (select count(*) from pages p where p.wiki=w.id and p.deleted=0) as page_count,
-            (select max(p.updated) from pages p where p.wiki=w.id and p.deleted=0) as last_updated
+            (select count(*) from pages p where p.wiki=w.id and p.deleted=0) as pages,
+            (select max(p.updated) from pages p where p.wiki=w.id and p.deleted=0) as updated
         from wikis w
     """)
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
@@ -1047,6 +1047,14 @@ def action_new(a):
 
     return {"data": {"id": id, "slug": slug}}
 
+# Parse and clamp limit/offset query parameters for paginated list actions
+def pagination(a):
+    limit_input = a.input("limit")
+    offset_input = a.input("offset")
+    limit = int(limit_input) if limit_input != None and str(limit_input).isdigit() else 50
+    offset = int(offset_input) if offset_input != None and str(offset_input).isdigit() else 0
+    return min(max(limit, 1), 200), max(offset, 0)
+
 # Page history
 def action_page_history(a):
     wiki = get_wiki(a)
@@ -1068,8 +1076,7 @@ def action_page_history(a):
         a.error.label(404, "errors.page_not_found")
         return
 
-    limit  = min(max(int(a.input("limit")  or 50), 1), 200)
-    offset = max(int(a.input("offset") or 0), 0)
+    limit, offset = pagination(a)
 
     total_row = mochi.db.row("select count(*) as cnt from revisions where page=?", page["id"])
     total = total_row["cnt"] if total_row else 0
@@ -1589,8 +1596,7 @@ def action_changes(a):
         a.error.label(403, "errors.access_denied")
         return
 
-    limit  = min(max(int(a.input("limit")  or 50), 1), 200)
-    offset = max(int(a.input("offset") or 0), 0)
+    limit, offset = pagination(a)
 
     total_row = mochi.db.row("select count(*) as cnt from revisions r join pages p on p.id=r.page where p.wiki=? and p.deleted=0", wiki["id"])
     total = total_row["cnt"] if total_row else 0
