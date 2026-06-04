@@ -27,9 +27,6 @@ import { Route as errors401RouteImport } from './routes/(errors)/401'
 import { Route as AuthenticatedWikiIdRouteRouteImport } from './routes/_authenticated/$wikiId/route'
 import { Route as AuthenticatedWikiIdIndexRouteImport } from './routes/_authenticated/$wikiId/index'
 import { Route as AuthenticatedPageIndexRouteImport } from './routes/_authenticated/$page/index'
-import { Route as AuthenticatedUserSessionsRouteImport } from './routes/_authenticated/user/sessions'
-import { Route as AuthenticatedUserPreferencesRouteImport } from './routes/_authenticated/user/preferences'
-import { Route as AuthenticatedUserAccountRouteImport } from './routes/_authenticated/user/account'
 import { Route as AuthenticatedTagTagRouteImport } from './routes/_authenticated/tag/$tag'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedWikiIdSettingsRouteImport } from './routes/_authenticated/$wikiId/settings'
@@ -143,24 +140,6 @@ const AuthenticatedPageIndexRoute = AuthenticatedPageIndexRouteImport.update({
   path: '/$page/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedUserSessionsRoute =
-  AuthenticatedUserSessionsRouteImport.update({
-    id: '/user/sessions',
-    path: '/user/sessions',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedUserPreferencesRoute =
-  AuthenticatedUserPreferencesRouteImport.update({
-    id: '/user/preferences',
-    path: '/user/preferences',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedUserAccountRoute =
-  AuthenticatedUserAccountRouteImport.update({
-    id: '/user/account',
-    path: '/user/account',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedTagTagRoute = AuthenticatedTagTagRouteImport.update({
   id: '/tag/$tag',
   path: '/tag/$tag',
@@ -310,9 +289,6 @@ export interface FileRoutesByFullPath {
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
-  '/user/account': typeof AuthenticatedUserAccountRoute
-  '/user/preferences': typeof AuthenticatedUserPreferencesRoute
-  '/user/sessions': typeof AuthenticatedUserSessionsRoute
   '/$page': typeof AuthenticatedPageIndexRoute
   '/$wikiId/': typeof AuthenticatedWikiIdIndexRoute
   '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
@@ -352,9 +328,6 @@ export interface FileRoutesByTo {
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
-  '/user/account': typeof AuthenticatedUserAccountRoute
-  '/user/preferences': typeof AuthenticatedUserPreferencesRoute
-  '/user/sessions': typeof AuthenticatedUserSessionsRoute
   '/$page': typeof AuthenticatedPageIndexRoute
   '/$wikiId': typeof AuthenticatedWikiIdIndexRoute
   '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
@@ -397,9 +370,6 @@ export interface FileRoutesById {
   '/_authenticated/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/tag/$tag': typeof AuthenticatedTagTagRoute
-  '/_authenticated/user/account': typeof AuthenticatedUserAccountRoute
-  '/_authenticated/user/preferences': typeof AuthenticatedUserPreferencesRoute
-  '/_authenticated/user/sessions': typeof AuthenticatedUserSessionsRoute
   '/_authenticated/$page/': typeof AuthenticatedPageIndexRoute
   '/_authenticated/$wikiId/': typeof AuthenticatedWikiIdIndexRoute
   '/_authenticated/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
@@ -442,9 +412,6 @@ export interface FileRouteTypes {
     | '/$wikiId/settings'
     | '/errors/$error'
     | '/tag/$tag'
-    | '/user/account'
-    | '/user/preferences'
-    | '/user/sessions'
     | '/$page'
     | '/$wikiId/'
     | '/$page/history/$version'
@@ -484,9 +451,6 @@ export interface FileRouteTypes {
     | '/$wikiId/settings'
     | '/errors/$error'
     | '/tag/$tag'
-    | '/user/account'
-    | '/user/preferences'
-    | '/user/sessions'
     | '/$page'
     | '/$wikiId'
     | '/$page/history/$version'
@@ -528,9 +492,6 @@ export interface FileRouteTypes {
     | '/_authenticated/$wikiId/settings'
     | '/_authenticated/errors/$error'
     | '/_authenticated/tag/$tag'
-    | '/_authenticated/user/account'
-    | '/_authenticated/user/preferences'
-    | '/_authenticated/user/sessions'
     | '/_authenticated/$page/'
     | '/_authenticated/$wikiId/'
     | '/_authenticated/$page/history/$version'
@@ -680,27 +641,6 @@ declare module '@tanstack/react-router' {
       path: '/$page'
       fullPath: '/$page'
       preLoaderRoute: typeof AuthenticatedPageIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/user/sessions': {
-      id: '/_authenticated/user/sessions'
-      path: '/user/sessions'
-      fullPath: '/user/sessions'
-      preLoaderRoute: typeof AuthenticatedUserSessionsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/user/preferences': {
-      id: '/_authenticated/user/preferences'
-      path: '/user/preferences'
-      fullPath: '/user/preferences'
-      preLoaderRoute: typeof AuthenticatedUserPreferencesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/user/account': {
-      id: '/_authenticated/user/account'
-      path: '/user/account'
-      fullPath: '/user/account'
-      preLoaderRoute: typeof AuthenticatedUserAccountRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/tag/$tag': {
@@ -912,9 +852,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPageRevertRoute: typeof AuthenticatedPageRevertRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
   AuthenticatedTagTagRoute: typeof AuthenticatedTagTagRoute
-  AuthenticatedUserAccountRoute: typeof AuthenticatedUserAccountRoute
-  AuthenticatedUserPreferencesRoute: typeof AuthenticatedUserPreferencesRoute
-  AuthenticatedUserSessionsRoute: typeof AuthenticatedUserSessionsRoute
   AuthenticatedPageIndexRoute: typeof AuthenticatedPageIndexRoute
   AuthenticatedPageHistoryVersionRoute: typeof AuthenticatedPageHistoryVersionRoute
   AuthenticatedPageHistoryIndexRoute: typeof AuthenticatedPageHistoryIndexRoute
@@ -938,9 +875,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPageRevertRoute: AuthenticatedPageRevertRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
   AuthenticatedTagTagRoute: AuthenticatedTagTagRoute,
-  AuthenticatedUserAccountRoute: AuthenticatedUserAccountRoute,
-  AuthenticatedUserPreferencesRoute: AuthenticatedUserPreferencesRoute,
-  AuthenticatedUserSessionsRoute: AuthenticatedUserSessionsRoute,
   AuthenticatedPageIndexRoute: AuthenticatedPageIndexRoute,
   AuthenticatedPageHistoryVersionRoute: AuthenticatedPageHistoryVersionRoute,
   AuthenticatedPageHistoryIndexRoute: AuthenticatedPageHistoryIndexRoute,

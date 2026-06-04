@@ -577,13 +577,13 @@ def action_delete(a):
     # 8. Delete wiki record
     mochi.db.execute("delete from wikis where id=?", wiki_id)
 
-    # 7. Delete all attachments for this entity
+    # 9. Delete all attachments for this entity
     mochi.attachment.clear(wiki_id)
 
-    # 8. Clear access rules
+    # 10. Clear access rules
     mochi.access.clear.resource("wiki/" + wiki_id)
 
-    # 9. Delete the entity from the entities table and directory
+    # 11. Delete the entity from the entities table and directory
     mochi.entity.delete(wiki_id)
 
     return {"data": {"ok": True, "deleted": wiki_id}}
@@ -1107,7 +1107,7 @@ def action_page_revision(a):
         a.error.label(400, "errors.missing_page_parameter")
         return
 
-    if not version:
+    if not version or not version.isdigit():
         a.error.label(400, "errors.missing_version_parameter")
         return
 
@@ -1163,7 +1163,7 @@ def action_page_revert(a):
         a.error.label(400, "errors.missing_page_parameter")
         return
 
-    if not version:
+    if not version or not version.isdigit():
         a.error.label(400, "errors.version_is_required")
         return
 
@@ -2157,6 +2157,11 @@ def event_page_create(e):
     if not id or not page or not title or not author or not created or not version:
         return
 
+    # Enforce the same length caps as action_page_edit, so a replica can't push
+    # an oversized row that we'd then store and replicate onward.
+    if len(title) > 255 or (content and len(content) > 1000000):
+        return
+
     # Validate timestamp is within reasonable range (not more than 1 day in future or 1 year in past)
     now = mochi.time.now()
     if created > now + 86400 or created < now - 31536000:
@@ -2231,6 +2236,11 @@ def event_page_update(e):
 
     # Validate required fields
     if not id or not page or not title or not author or not updated or not version:
+        return
+
+    # Enforce the same length caps as action_page_edit, so a replica can't push
+    # an oversized row that we'd then store and replicate onward.
+    if len(title) > 255 or (content and len(content) > 1000000):
         return
 
     # Check if page exists
@@ -3142,14 +3152,21 @@ def page_comment_count(wiki_id, page_slug):
         return row["count"]
     return 0
 
-# Helper: Delete a comment tree recursively
+# Helper: Delete a comment and all its descendants.
+# Collected iteratively with a worklist rather than recursively so a deeply
+# nested (adversarial) comment chain can't blow the Starlark stack. `parent`
+# is not a foreign key, so deletion order is unconstrained.
 def delete_comment_tree(comment_id, wiki_id):
-    children = mochi.db.rows("select id from comments where parent=?", comment_id)
-    for child in children:
-        delete_comment_tree(child["id"], wiki_id)
-    for att in (mochi.attachment.list(comment_id, wiki_id) or []):
-        mochi.attachment.delete(att["id"])
-    mochi.db.execute("delete from comments where id=?", comment_id)
+    pending = [comment_id]
+    i = 0
+    while i < len(pending):
+        for child in mochi.db.rows("select id from comments where parent=?", pending[i]):
+            pending.append(child["id"])
+        i += 1
+    for cid in pending:
+        for att in (mochi.attachment.list(cid, wiki_id) or []):
+            mochi.attachment.delete(att["id"])
+        mochi.db.execute("delete from comments where id=?", cid)
 
 # List comments for a page
 def action_page_comments(a):
@@ -3377,6 +3394,11 @@ def event_comment_create(e):
     created = e.content("created")
 
     if not id or not page or not author or not body or not created:
+        return
+
+    # Enforce the same cap as action_comment_create, so a replica can't push an
+    # oversized comment that we'd then store and replicate onward.
+    if len(body) > 100000:
         return
 
     mochi.db.execute("insert or ignore into comments (id, wiki, page, parent, author, name, body, created) values (?, ?, ?, ?, ?, ?, ?, ?)",

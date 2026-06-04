@@ -6,12 +6,6 @@ const endpoints = {
   groups: {
     list: '-/groups',
   },
-  auth: {
-    code: '/_/code',
-    verify: '/_/verify',
-    identity: '/_/identity',
-    logout: '/_/logout',
-  },
   wiki: {
     // Info
     info: '-/info',
@@ -51,9 +45,6 @@ const endpoints = {
     access: 'access',
     accessSet: 'access/set',
     accessRevoke: 'access/revoke',
-    // User/group search
-    userSearch: 'user/search',
-    groups: 'groups',
     // Delete wiki
     delete: 'delete',
     // Sync
@@ -72,33 +63,6 @@ const endpoints = {
     attachmentUpload: 'attachment/upload',
     attachmentDelete: 'attachment/delete',
     attachment: (id: string) => `-/attachments/${id}`,
-  },
-  user: {
-    account: 'user/account/data',
-    accountIdentity: 'user/account/identity',
-    accountSessions: 'user/account/sessions',
-    accountSessionRevoke: 'user/account/session/revoke',
-    // Login methods
-    accountMethods: 'user/account/methods',
-    accountMethodsSet: 'user/account/methods/set',
-    // Passkeys
-    accountPasskeys: 'user/account/passkeys',
-    accountPasskeyRegisterBegin: 'user/account/passkey/register/begin',
-    accountPasskeyRegisterFinish: 'user/account/passkey/register/finish',
-    accountPasskeyRename: 'user/account/passkey/rename',
-    accountPasskeyDelete: 'user/account/passkey/delete',
-    // TOTP
-    accountTotp: 'user/account/totp',
-    accountTotpSetup: 'user/account/totp/setup',
-    accountTotpVerify: 'user/account/totp/verify',
-    accountTotpDisable: 'user/account/totp/disable',
-    // Recovery
-    accountRecovery: 'user/account/recovery',
-    accountRecoveryGenerate: 'user/account/recovery/generate',
-    // Preferences
-    preferences: 'user/preferences/data',
-    preferencesSet: 'user/preferences/set',
-    preferencesReset: 'user/preferences/reset',
   },
 } as const
 
