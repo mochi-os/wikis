@@ -81,7 +81,7 @@ function FindWikisPage() {
       onSubscribe={handleSubscribe}
       subscribedIds={subscribedWikiIds}
       entityClass="wiki"
-      searchEndpoint={`${getAppPath()}/directory/search`}
+      searchEndpoint={endpoints.wiki.directorySearch}
       icon={BookOpen}
       iconClassName="bg-emerald-500/10 text-emerald-600"
       title={t`Find wikis`}
