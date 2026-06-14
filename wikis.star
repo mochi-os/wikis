@@ -37,6 +37,13 @@ def database_create():
     # Replicas table - downstream wikis that replicate from this wiki
     mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', peer text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
 
+    # Unreplicate tombstones - wikis we unreplicated as a replica, keyed by our
+    # local (now-deleted) wiki id, recording the source to notify. Lets a dropped
+    # broadcast re-send the unreplicate to the source (which may have missed our
+    # original one) without keeping the wiki's heavy data around. See
+    # unreplicate_stale().
+    mochi.db.execute("create table if not exists unreplicated (wiki text not null primary key, source text not null, synced integer not null default 0)")
+
     # Comments table
     mochi.db.execute("create table if not exists comments (id text primary key, wiki text not null references wikis(id), page text not null, parent text not null default '', author text not null, name text not null default '', body text not null, created integer not null, edited integer not null default 0, deleted integer not null default 0)")
     mochi.db.execute("create index if not exists comments_wiki on comments(wiki)")
@@ -55,6 +62,9 @@ def database_upgrade(to_version):
         cols = [r["name"] for r in mochi.db.table("wikis") or []]
         if "synced" not in cols:
             mochi.db.execute("alter table wikis add column synced integer not null default 0")
+    if to_version == 16:
+        # Unreplicate tombstones: see the table comment in database_create.
+        mochi.db.execute("create table if not exists unreplicated (wiki text not null primary key, source text not null, synced integer not null default 0)")
 
 # Helper: Update replica's seen and synced timestamps
 def update_replica_seen(wiki, replica_id):
@@ -161,6 +171,27 @@ def error_message_timeout(e):
     if e.detail.get("locations", 1) != 0:
         return
     mochi.db.execute("delete from replicas where id=?", e.entity)
+
+# unreplicate_stale: a broadcast arrived for a wiki we no longer hold. If we
+# kept an unreplicate tombstone for it, the source missed our original
+# unreplicate (offline past the queue age) and is still fanning out to us. Re-send
+# the unreplicate to the RECORDED source - never the broadcast sender, which in a
+# chained setup (we were a replica of one wiki and a re-broadcasting source for
+# another) could be a downstream replica whose row we'd wrongly delete. The
+# source's event_unreplicate deletes only (source, us), so this can never remove
+# anyone else's registration. error_message_timeout still covers the dead-host
+# case (us at 0 locations); this covers the alive-but-unreplicated case it can't.
+# Throttled to once per 60s per wiki so a burst of broadcasts can't spam the
+# source before it processes the first unreplicate.
+def unreplicate_stale(wiki):
+    row = mochi.db.row("select source, synced from unreplicated where wiki=?", wiki)
+    if not row:
+        return
+    now = mochi.time.now()
+    if row["synced"] and now - row["synced"] < 60:
+        return
+    mochi.db.execute("update unreplicated set synced=? where wiki=?", now, wiki)
+    mochi.message.send({"from": wiki, "to": row["source"], "service": "wikis", "event": "unreplicate"}, {})
 
 # error_broadcast_gap: core calls this when an unfillable broadcast gap was
 # skipped and events were permanently lost. broadcast/resync can't replay a
@@ -585,6 +616,14 @@ def action_delete(a):
 
     # 11. Delete the entity from the entities table and directory
     mochi.entity.delete(wiki_id)
+
+    # If this was a replica (source set), notify the source to drop us and
+    # tombstone it, matching action_unsubscribe - so deleting a replica via
+    # this path doesn't strand us in the source's replicas list.
+    if wiki["source"]:
+        now = mochi.time.now()
+        mochi.db.execute("insert or replace into unreplicated (wiki, source, synced) values (?, ?, ?)", wiki_id, wiki["source"], now)
+        mochi.message.send({"from": wiki_id, "to": wiki["source"], "service": "wikis", "event": "unreplicate"}, {})
 
     return {"data": {"ok": True, "deleted": wiki_id}}
 
@@ -1929,6 +1968,13 @@ def action_unsubscribe(a):
     mochi.access.clear.resource("wiki/" + wiki_id)
     mochi.entity.delete(wiki_id)
 
+    # Tombstone the unreplication (keyed by our now-deleted wiki id, recording
+    # the source). synced=now so the unreplicate we send below counts as the
+    # first attempt; a later dropped broadcast re-sends via unreplicate_stale()
+    # if the source missed this one.
+    now = mochi.time.now()
+    mochi.db.execute("insert or replace into unreplicated (wiki, source, synced) values (?, ?, ?)", wiki_id, wiki["source"], now)
+
     # Notify source wiki owner to remove us from their replicas list
     mochi.message.send(
         {"from": wiki["id"], "to": wiki["source"], "service": "wikis", "event": "unreplicate"},
@@ -2138,6 +2184,7 @@ def event_page_create(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -2219,6 +2266,7 @@ def event_page_update(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -2295,6 +2343,7 @@ def event_page_delete(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -2348,6 +2397,7 @@ def event_redirect_set(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -2388,6 +2438,7 @@ def event_redirect_delete(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -2424,6 +2475,7 @@ def event_tag_add(e):
     wiki = pagerow["wiki"]
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -2450,6 +2502,7 @@ def event_tag_remove(e):
     wiki = pagerow["wiki"]
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -2467,6 +2520,7 @@ def event_setting_set(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -2913,6 +2967,7 @@ def event_attachment_delete(e):
     # Verify wiki exists and is a source wiki (not a replica)
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     if wikirow.get("source"):
@@ -2973,6 +3028,7 @@ def event_attachment_add(e):
 
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -2992,6 +3048,7 @@ def event_attachment_remove(e):
 
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3379,6 +3436,7 @@ def event_comment_create(e):
 
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3447,6 +3505,7 @@ def event_comment_edit(e):
 
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3489,6 +3548,7 @@ def event_comment_delete(e):
 
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
+        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
