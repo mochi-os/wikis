@@ -3,7 +3,7 @@ import { Trans } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import type { WikiPage } from '@/types/wiki'
 import { Button, EmptyState, PageUtilityBar, useFormat, Skeleton, Separator, cn } from '@mochi/web'
-import { ChevronDown, Edit, FileQuestion, ListTree } from 'lucide-react'
+import { ChevronDown, Plus, FileQuestion, ListTree } from 'lucide-react'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import { usePermissions } from '@/context/wiki-context'
 import { MarkdownContent } from './markdown-content'
@@ -289,12 +289,12 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
         <Button asChild>
           {wikiId ? (
             <Link to='/$wikiId/$page/edit' params={{ wikiId, page: slug }}>
-              <Edit className='me-2 h-4 w-4' />
+              <Plus className='me-2 h-4 w-4' />
               <Trans>Create this page</Trans>
             </Link>
           ) : (
             <Link to='/$page/edit' params={{ page: slug }}>
-              <Edit className='me-2 h-4 w-4' />
+              <Plus className='me-2 h-4 w-4' />
               <Trans>Create this page</Trans>
             </Link>
           )}

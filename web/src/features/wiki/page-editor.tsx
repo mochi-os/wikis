@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { Save, X, Eye, Edit2, Trash2, ImagePlus, Image, Loader2, Plus, RefreshCw } from 'lucide-react'
+import { Save, X, Eye, Pencil, Trash2, ImagePlus, Image, Loader2, Plus, RefreshCw } from 'lucide-react'
 import {
   toast,
   Alert,
@@ -309,7 +309,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
         >
           {showPreview ? (
             <>
-              <Edit2 className="me-2 h-4 w-4" />
+              <Pencil className="me-2 h-4 w-4" />
               <Trans>Edit</Trans>
             </>
           ) : (

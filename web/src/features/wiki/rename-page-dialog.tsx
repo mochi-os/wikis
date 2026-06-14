@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { plural } from '@lingui/core/macro'
 import { useNavigate } from '@tanstack/react-router'
-import { FileEdit, Loader2, Pencil } from 'lucide-react'
+import { Loader2, Pencil } from 'lucide-react'
 import {
   Button,
   Dialog,
@@ -146,7 +146,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="outline">
-            <FileEdit className="me-2 h-4 w-4" />
+            <Pencil className="me-2 h-4 w-4" />
             <Trans>Rename</Trans>
           </Button>
         )}
