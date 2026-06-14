@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { plural } from '@lingui/core/macro'
 import { useNavigate } from '@tanstack/react-router'
-import { FileEdit } from 'lucide-react'
+import { FileEdit, Loader2, Pencil } from 'lucide-react'
 import {
   Button,
   Dialog,
@@ -123,6 +123,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
             <Trans>Cancel</Trans>
           </Button>
           <Button type="submit" disabled={renamePage.isPending}>
+            {renamePage.isPending ? <Loader2 className="size-4 animate-spin" /> : <Pencil className="size-4" />}
             {renamePage.isPending ? t`Renaming...` : t`Rename`}
           </Button>
         </DialogFooter>

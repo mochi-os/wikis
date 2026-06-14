@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { plural, t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
-import { Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
+import { Check, Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
 import {
   Button,
   CommentTreeLayout,
@@ -131,6 +131,7 @@ export function WikiCommentThread({
                   setEditing(false)
                 }}
               >
+                <Check className="size-4" />
                 <Trans>Save</Trans>
               </Button>
             </div>
