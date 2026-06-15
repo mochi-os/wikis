@@ -356,7 +356,7 @@ export function MarkdownContent({
                     {...props}
                     className={cn(
                       'transition-colors',
-                      isMissing && 'text-red-600! dark:text-red-400!'
+                      isMissing && 'text-destructive!'
                     )}
                   >
                     {children}

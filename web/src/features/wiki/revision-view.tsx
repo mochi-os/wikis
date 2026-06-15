@@ -22,15 +22,15 @@ function DiffView({ oldContent, newContent }: { oldContent: string; newContent: 
       {changes.map((part, i) => {
         const lines = part.value.replace(/\n$/, '').split('\n')
         const bg = part.added
-          ? 'bg-green-500/10 dark:bg-green-500/15'
+          ? 'bg-success/10 dark:bg-success/15'
           : part.removed
-            ? 'bg-red-500/10 dark:bg-red-500/15'
+            ? 'bg-destructive/10 dark:bg-destructive/15'
             : ''
         const prefix = part.added ? '+' : part.removed ? '-' : ' '
         const textColor = part.added
-          ? 'text-green-700 dark:text-green-400'
+          ? 'text-success'
           : part.removed
-            ? 'text-red-700 dark:text-red-400'
+            ? 'text-destructive'
             : 'text-muted-foreground'
         return lines.map((line, j) => (
           <div key={`${i}-${j}`} className={`flex gap-2 px-3 py-0.5 ${bg}`}>

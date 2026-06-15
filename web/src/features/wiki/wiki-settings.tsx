@@ -58,6 +58,10 @@ import {
   TableHeader,
   TableRow,
   cn,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
   AccessDialog,
   AccessList,
   type AccessLevel,
@@ -137,66 +141,36 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
 
   return (
     <WikiSettingsContext.Provider value={contextValue}>
-    <div className="space-y-6">
-      {/* Tabs */}
-      <div
-        role="tablist"
-        aria-label={t`Wiki settings sections`}
-        className="flex gap-1 border-b"
-        onKeyDown={(e) => {
-          const tabButtons = e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')
-          const currentIndex = Array.from(tabButtons).findIndex((btn) => btn.getAttribute('aria-selected') === 'true')
-          if (e.key === 'ArrowRight') {
-            e.preventDefault()
-            const next = tabButtons[(currentIndex + 1) % tabButtons.length]
-            next.focus(); next.click()
-          } else if (e.key === 'ArrowLeft') {
-            e.preventDefault()
-            const prev = tabButtons[(currentIndex - 1 + tabButtons.length) % tabButtons.length]
-            prev.focus(); prev.click()
-          } else if (e.key === 'Home') {
-            e.preventDefault()
-            tabButtons[0].focus(); tabButtons[0].click()
-          } else if (e.key === 'End') {
-            e.preventDefault()
-            tabButtons[tabButtons.length - 1].focus(); tabButtons[tabButtons.length - 1].click()
-          }
-        }}
-      >
+    <Tabs
+      variant="underline"
+      value={activeTab}
+      onValueChange={(value) => onTabChange(value as WikiSettingsTabId)}
+      className="space-y-6"
+    >
+      <TabsList aria-label={t`Wiki settings sections`}>
         {visibleTabs.map((tab) => (
-          <button
-            key={tab.id}
-            role="tab"
-            aria-selected={activeTab === tab.id}
-            aria-controls={`wiki-settings-${tab.id}-tabpanel`}
-            tabIndex={activeTab === tab.id ? 0 : -1}
-            onClick={() => onTabChange(tab.id)}
-            className={cn(
-              'flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
-              'border-b-2 -mb-px',
-              activeTab === tab.id
-                ? 'border-primary text-foreground'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            )}
-          >
+          <TabsTrigger key={tab.id} value={tab.id} className="gap-2">
             {tab.icon}
             {tab.label}
-          </button>
+          </TabsTrigger>
         ))}
-      </div>
+      </TabsList>
 
-      {/* Tab content */}
-      <div
-        id={`wiki-settings-${activeTab}-tabpanel`}
-        role="tabpanel"
-        className="pt-2"
-      >
-        {activeTab === 'settings' && <SettingsTab />}
-        {activeTab === 'access' && <AccessTab />}
-        {activeTab === 'redirects' && <RedirectsTab />}
-        {activeTab === 'replicas' && <ReplicasTab />}
-      </div>
-    </div>
+      <TabsContent value="settings" className="pt-2">
+        <SettingsTab />
+      </TabsContent>
+      <TabsContent value="access" className="pt-2">
+        <AccessTab />
+      </TabsContent>
+      <TabsContent value="redirects" className="pt-2">
+        <RedirectsTab />
+      </TabsContent>
+      {!wiki?.source && (
+        <TabsContent value="replicas" className="pt-2">
+          <ReplicasTab />
+        </TabsContent>
+      )}
+    </Tabs>
     </WikiSettingsContext.Provider>
   )
 }
