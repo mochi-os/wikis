@@ -10,9 +10,6 @@ import {
 } from '@tanstack/react-router'
 import {
   Button,
-  Card,
-  CardHeader,
-  CardTitle,
   ConfirmDialog,
   DropdownMenu,
   DropdownMenuContent,
@@ -26,20 +23,23 @@ import {
   GeneralError,
   Main,
   PageHeader as CommonPageHeader,
+  cn,
   getErrorMessage,
   isDomainEntityRouting,
   getAppPath,
   toast,
   useFormat,
   usePageTitle,
-  shellClipboardWrite, naturalCompare,} from '@mochi/web'
+  shellClipboardWrite,
+  naturalCompare,
+} from '@mochi/web'
 import {
+  BookMarked,
   BookOpen,
   Ellipsis,
   FileEdit,
   FilePlus,
   History,
-  Link2,
   Loader2,
   Pencil,
   Plus,
@@ -624,15 +624,6 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
     }
   }
 
-  const getIcon = (type: WikiType) => {
-    switch (type) {
-      case 'owned':
-        return <BookOpen className='h-5 w-5' />
-      case 'subscribed':
-        return <Link2 className='h-5 w-5' />
-    }
-  }
-
   return (
     <>
       <CommonPageHeader
@@ -772,55 +763,43 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                 )}
             </div>
           ) : (
-            <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
-              {allWikis.map((wiki) => (
-                <Card
-                  key={wiki.id}
-                  className='group border-border/70 hover:border-primary/30 relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md'
-                >
-                  <Link
-                    to='/$wikiId/$page'
-                    params={{
-                      wikiId: wiki.fingerprint ?? wiki.id,
-                      page: wiki.home,
-                    }}
-                    className='focus-visible:ring-ring absolute inset-0 rounded-xl focus-visible:ring-2 focus-visible:ring-offset-2'
+            <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-3'>
+              {allWikis.map((wiki) => {
+                const isSubscribed = wiki.type === 'subscribed'
+                return (
+                  <div
+                    key={wiki.id}
+                    className='group relative flex flex-col rounded-xl border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md'
                   >
-                    <span className='sr-only'><Trans>Open {wiki.name}</Trans></span>
-                  </Link>
+                    <Link
+                      to='/$wikiId/$page'
+                      params={{ wikiId: wiki.fingerprint ?? wiki.id, page: wiki.home }}
+                      className='absolute inset-0 rounded-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+                    >
+                      <span className='sr-only'><Trans>Open {wiki.name}</Trans></span>
+                    </Link>
 
-                  <CardHeader className='space-y-3 pb-2'>
-                    <div className='flex items-start justify-between gap-2'>
-                      <div className='min-w-0'>
-                        <CardTitle className='flex items-center gap-2 truncate text-lg'>
-                          <span className='bg-muted text-muted-foreground inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border'>
-                            {getIcon(wiki.type)}
-                          </span>
-                          <span className='truncate'>{wiki.name}</span>
-                        </CardTitle>
-                        {(wiki.pages !== undefined || wiki.updated) && (
-                          <p className='text-muted-foreground text-xs'>
-                            {wiki.pages !== undefined && (
-                              <Trans>{wiki.pages} pages</Trans>
-                            )}
-                            {wiki.pages !== undefined && wiki.updated && (
-                              <span aria-hidden='true'> · </span>
-                            )}
-                            {wiki.updated && (
-                              <Trans>Updated {formatTimestamp(wiki.updated)}</Trans>
-                            )}
-                          </p>
-                        )}
+                    <div className='mb-3 flex items-start justify-between'>
+                      <div className={cn(
+                        'flex h-10 w-10 items-center justify-center rounded-lg',
+                        isSubscribed
+                          ? 'bg-primary/10 text-primary'
+                          : 'bg-muted text-foreground'
+                      )}>
+                        {isSubscribed
+                          ? <BookMarked className='h-5 w-5' />
+                          : <BookOpen className='h-5 w-5' />
+                        }
                       </div>
-                      <div className='relative z-10 flex items-center gap-2'>
-                        {wiki.type === 'subscribed' && (
+                      {isSubscribed && (
+                        <div className='relative z-10 -me-1 -mt-1'>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
                                 variant='ghost'
                                 size='icon'
-                                aria-label={t`Subscribed wiki actions`}
-                                title={t`Subscribed wiki actions`}
+                                aria-label={t`Wiki actions`}
+                                className='size-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100'
                               >
                                 <Ellipsis className='size-4' />
                               </Button>
@@ -831,16 +810,30 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                                 disabled={unsubscribeMutation.isPending && unsubscribeId === wiki.id}
                               >
                                 {unsubscribeMutation.isPending && unsubscribeId === wiki.id
-                                  ? t`Unsubscribing...` : t`Unsubscribe`}
+                                  ? t`Unsubscribing...`
+                                  : t`Unsubscribe`}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
-                  </CardHeader>
-                </Card>
-              ))}
+
+                    <p className='truncate font-semibold leading-snug'>{wiki.name}</p>
+                    {(wiki.pages !== undefined || wiki.updated) && (
+                      <p className='text-muted-foreground mt-1 text-xs'>
+                        {wiki.pages !== undefined && <Trans>{wiki.pages} pages</Trans>}
+                        {wiki.pages !== undefined && wiki.updated && (
+                          <span aria-hidden='true'> · </span>
+                        )}
+                        {wiki.updated && (
+                          <Trans>Updated {formatTimestamp(wiki.updated)}</Trans>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>
