@@ -23,7 +23,7 @@ import {
   GeneralError,
   Main,
   PageHeader as CommonPageHeader,
-  cn,
+  ListCard,
   getErrorMessage,
   isDomainEntityRouting,
   getAppPath,
@@ -672,176 +672,181 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
         }
       />
       <Main>
-        <div className='mx-auto w-full max-w-6xl py-4 md:px-6 md:py-6'>
-          {infoError ? (
-            <GeneralError
-              error={infoError}
-              minimal
-              mode='inline'
-              reset={onRetryInfo}
-              className='pb-6'
-            />
-          ) : null}
-          {!hasWikis ? (
-            <div className='bg-muted/10 mx-auto flex max-w-2xl flex-col items-center rounded-2xl border p-6 text-center md:p-8'>
-              <BookOpen className='text-muted-foreground mx-auto mb-3 h-10 w-10 opacity-70' />
-              <p className='mb-1 text-base font-semibold'>
-                <Trans>Start your first wiki</Trans>
-              </p>
-              <p className='text-muted-foreground mb-5 max-w-md text-sm'>
-                <Trans>
-                  Search for a wiki to subscribe, or create one to publish your
-                  own documentation.
-                </Trans>
-              </p>
-              <div className='w-full max-w-md'>
-                <InlineWikiSearch subscribedIds={subscribedWikiIds} />
-              </div>
-              <Button
-                variant='outline'
-                onClick={openCreateDialog}
-                className='mt-4'
-              >
-                <Plus className='me-2 h-4 w-4' />
-                <Trans>Create wiki</Trans>
-              </Button>
-
-              {!isRecommendationsError &&
-                recommendations.filter((rec) => !subscribedWikiIds.has(rec.id))
-                  .length > 0 && (
-                  <>
-                    <hr className='my-6 w-full max-w-md border-t' />
-                    <div className='w-full max-w-md text-start'>
-                      <p className='text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase'>
-                        <Trans>Recommended wikis</Trans>
-                      </p>
-                      <div className='divide-border overflow-hidden rounded-xl border'>
-                        {recommendations
-                          .filter((rec) => !subscribedWikiIds.has(rec.id))
-                          .map((rec) => {
-                            const isPending = pendingWikiId === rec.id
-
-                            return (
-                              <div
-                                key={rec.id}
-                                className='hover:bg-muted/50 flex items-center justify-between gap-3 px-4 py-3 transition-colors'
-                              >
-                                <div className='flex min-w-0 flex-1 items-center gap-3'>
-                                  <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10'>
-                                    <BookOpen className='h-4 w-4 text-emerald-600' />
-                                  </div>
-                                  <div className='flex min-w-0 flex-1 flex-col'>
-                                    <span className='truncate text-sm font-medium'>
-                                      {rec.name}
-                                    </span>
-                                    {rec.blurb && (
-                                      <span className='text-muted-foreground truncate text-xs'>
-                                        {rec.blurb}
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                                <Button
-                                  size='sm'
-                                  onClick={() =>
-                                    handleSubscribeRecommendation(rec)
-                                  }
-                                  disabled={isPending}
-                                >
-                                  {isPending ? (
-                                    <Loader2 className='h-4 w-4 animate-spin' />
-                                  ) : (
-                                    <Trans>Subscribe</Trans>
-                                  )}
-                                </Button>
-                              </div>
-                            )
-                          })}
-                      </div>
-                    </div>
-                  </>
-                )}
+        {infoError ? (
+          <GeneralError
+            error={infoError}
+            minimal
+            mode='inline'
+            reset={onRetryInfo}
+            className='pb-6'
+          />
+        ) : null}
+        {!hasWikis ? (
+          <div className='bg-muted/10 mx-auto flex max-w-2xl flex-col items-center rounded-2xl border p-6 text-center md:p-8'>
+            <BookOpen className='text-muted-foreground mx-auto mb-3 h-10 w-10 opacity-70' />
+            <p className='mb-1 text-base font-semibold'>
+              <Trans>Start your first wiki</Trans>
+            </p>
+            <p className='text-muted-foreground mb-5 max-w-md text-sm'>
+              <Trans>
+                Search for a wiki to subscribe, or create one to publish your
+                own documentation.
+              </Trans>
+            </p>
+            <div className='w-full max-w-md'>
+              <InlineWikiSearch subscribedIds={subscribedWikiIds} />
             </div>
-          ) : (
-            <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-3'>
-              {allWikis.map((wiki) => {
-                const isSubscribed = wiki.type === 'subscribed'
-                return (
-                  <div
-                    key={wiki.id}
-                    className='group relative flex flex-col rounded-xl border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md'
-                  >
+            <Button
+              variant='outline'
+              onClick={openCreateDialog}
+              className='mt-4'
+            >
+              <Plus className='me-2 h-4 w-4' />
+              <Trans>Create wiki</Trans>
+            </Button>
+
+            {!isRecommendationsError &&
+              recommendations.filter((rec) => !subscribedWikiIds.has(rec.id))
+                .length > 0 && (
+                <>
+                  <hr className='my-6 w-full max-w-md border-t' />
+                  <div className='w-full max-w-md text-start'>
+                    <p className='text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase'>
+                      <Trans>Recommended wikis</Trans>
+                    </p>
+                    <div className='divide-border overflow-hidden rounded-xl border'>
+                      {recommendations
+                        .filter((rec) => !subscribedWikiIds.has(rec.id))
+                        .map((rec) => {
+                          const isPending = pendingWikiId === rec.id
+
+                          return (
+                            <div
+                              key={rec.id}
+                              className='hover:bg-muted/50 flex items-center justify-between gap-3 px-4 py-3 transition-colors'
+                            >
+                              <div className='flex min-w-0 flex-1 items-center gap-3'>
+                                <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10'>
+                                  <BookOpen className='h-4 w-4 text-emerald-600' />
+                                </div>
+                                <div className='flex min-w-0 flex-1 flex-col'>
+                                  <span className='truncate text-sm font-medium'>
+                                    {rec.name}
+                                  </span>
+                                  {rec.blurb && (
+                                    <span className='text-muted-foreground truncate text-xs'>
+                                      {rec.blurb}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <Button
+                                size='sm'
+                                onClick={() =>
+                                  handleSubscribeRecommendation(rec)
+                                }
+                                disabled={isPending}
+                              >
+                                {isPending ? (
+                                  <Loader2 className='h-4 w-4 animate-spin' />
+                                ) : (
+                                  <Trans>Subscribe</Trans>
+                                )}
+                              </Button>
+                            </div>
+                          )
+                        })}
+                    </div>
+                  </div>
+                </>
+              )}
+          </div>
+        ) : (
+          <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-3'>
+            {allWikis.map((wiki) => {
+              const isSubscribed = wiki.type === 'subscribed'
+              return (
+                <ListCard
+                  key={wiki.id}
+                  icon={
+                    isSubscribed ? (
+                      <BookMarked className='h-5 w-5' />
+                    ) : (
+                      <BookOpen className='h-5 w-5' />
+                    )
+                  }
+                  title={wiki.name}
+                  highlighted={isSubscribed}
+                  renderLink={(className) => (
                     <Link
                       to='/$wikiId/$page'
-                      params={{ wikiId: wiki.fingerprint ?? wiki.id, page: wiki.home }}
-                      className='absolute inset-0 rounded-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+                      params={{
+                        wikiId: wiki.fingerprint ?? wiki.id,
+                        page: wiki.home,
+                      }}
+                      className={className}
                     >
-                      <span className='sr-only'><Trans>Open {wiki.name}</Trans></span>
+                      <span className='sr-only'>
+                        <Trans>Open {wiki.name}</Trans>
+                      </span>
                     </Link>
-
-                    <div className='mb-3 flex items-start justify-between'>
-                      <div className={cn(
-                        'flex h-10 w-10 items-center justify-center rounded-lg',
-                        isSubscribed
-                          ? 'bg-primary/10 text-primary'
-                          : 'bg-muted text-foreground'
-                      )}>
-                        {isSubscribed
-                          ? <BookMarked className='h-5 w-5' />
-                          : <BookOpen className='h-5 w-5' />
-                        }
-                      </div>
-                      {isSubscribed && (
-                        <div className='relative z-10 -me-1 -mt-1'>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant='ghost'
-                                size='icon'
-                                aria-label={t`Wiki actions`}
-                                className='size-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100'
-                              >
-                                <Ellipsis className='size-4' />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align='end'>
-                              <DropdownMenuItem
-                                onSelect={() => setUnsubscribeId(wiki.id)}
-                                disabled={unsubscribeMutation.isPending && unsubscribeId === wiki.id}
-                              >
-                                {unsubscribeMutation.isPending && unsubscribeId === wiki.id
-                                  ? t`Unsubscribing...`
-                                  : t`Unsubscribe`}
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
+                  )}
+                  menu={
+                    isSubscribed && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            aria-label={t`Wiki actions`}
+                            className='size-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100'
+                          >
+                            <Ellipsis className='size-4' />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align='end'>
+                          <DropdownMenuItem
+                            onSelect={() => setUnsubscribeId(wiki.id)}
+                            disabled={
+                              unsubscribeMutation.isPending &&
+                              unsubscribeId === wiki.id
+                            }
+                          >
+                            {unsubscribeMutation.isPending &&
+                            unsubscribeId === wiki.id
+                              ? t`Unsubscribing...`
+                              : t`Unsubscribe`}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )
+                  }
+                >
+                  {(wiki.pages !== undefined || wiki.updated) && (
+                    <p className='text-muted-foreground mt-1 text-xs'>
+                      {wiki.pages !== undefined && (
+                        <Trans>{wiki.pages} pages</Trans>
                       )}
-                    </div>
-
-                    <p className='truncate font-semibold leading-snug'>{wiki.name}</p>
-                    {(wiki.pages !== undefined || wiki.updated) && (
-                      <p className='text-muted-foreground mt-1 text-xs'>
-                        {wiki.pages !== undefined && <Trans>{wiki.pages} pages</Trans>}
-                        {wiki.pages !== undefined && wiki.updated && (
-                          <span aria-hidden='true'> · </span>
-                        )}
-                        {wiki.updated && (
-                          <Trans>Updated {formatTimestamp(wiki.updated)}</Trans>
-                        )}
-                      </p>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
+                      {wiki.pages !== undefined && wiki.updated && (
+                        <span aria-hidden='true'> · </span>
+                      )}
+                      {wiki.updated && (
+                        <Trans>Updated {formatTimestamp(wiki.updated)}</Trans>
+                      )}
+                    </p>
+                  )}
+                </ListCard>
+              )
+            })}
+          </div>
+        )}
       </Main>
 
       <ConfirmDialog
         open={!!unsubscribeId}
-        onOpenChange={(open) => { if (!open) setUnsubscribeId(null) }}
+        onOpenChange={(open) => {
+          if (!open) setUnsubscribeId(null)
+        }}
         title={t`Unsubscribe`}
         desc={t`Are you sure you want to unsubscribe from this wiki?`}
         confirmText={t`Unsubscribe`}
