@@ -95,8 +95,11 @@ def check_access(a, wiki_id, operation, page=None):
     if a.user and a.user.identity:
         user = a.user.identity.id
 
-    # Owner has full access (mochi.entity.get returns entity only if current user owns it)
-    if mochi.entity.get(wiki_id):
+    # Owner has full access. Gate on a real authenticated user: mochi.entity.get
+    # keys on the thread-local effective user, which for an anonymous request to a
+    # public action is the entity owner. Without the `user and` guard an anonymous
+    # caller is treated as the owner and bypasses the access rules below.
+    if user and mochi.entity.get(wiki_id):
         return True
 
     # Manage or wildcard grants full access
@@ -629,13 +632,24 @@ def action_delete(a):
 
 # Info endpoint for class context - returns list of wikis
 def action_info_class(a):
-    # Add fingerprint (without hyphens) to each for shorter URLs
-    wikis_raw = mochi.db.rows("""
+    columns = """
         select w.id, w.name, w.home, w.source, w.created,
             (select count(*) from pages p where p.wiki=w.id and p.deleted=0) as pages,
             (select max(p.updated) from pages p where p.wiki=w.id and p.deleted=0) as updated
         from wikis w
-    """)
+    """
+    if a.user and a.user.identity:
+        # Logged-in owner sees all their wikis (owned + subscribed replicas)
+        wikis_raw = mochi.db.rows(columns)
+    else:
+        # Anonymous callers (this action is public) run as the host owner, so the
+        # query would otherwise return every wiki the owner has, including private
+        # ones. Restrict to locally-owned wikis (source='') that grant public view
+        # access. Check access with mochi.access.check(None, ...) directly — NOT
+        # check_access(), which calls mochi.entity.get() and would treat the
+        # thread-local owner as the wiki owner and bypass the access rules.
+        wikis_raw = mochi.db.rows(columns + " where w.source=''")
+        wikis_raw = [w for w in wikis_raw if mochi.access.check(None, "wiki/" + w["id"], "view")]
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
     return {"data": {"entity": False, "wikis": wikis}}
 
