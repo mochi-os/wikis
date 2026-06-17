@@ -166,6 +166,18 @@ def validate_event_sender(wikirow, wiki, sender):
     update_replica_seen(wiki, sender)
     return True
 
+# Helper: authorize a replica-originated mutation on the source side.
+# validate_event_sender only proves the sender is a registered replica
+# (authenticity); it does NOT check the replica's access level. When we are the
+# source, the replica must additionally hold `operation` access (e.g. "edit")
+# for the change to apply — otherwise a view-only replica's edits would be
+# accepted upstream and replicated onward. Source->replica propagation (we are a
+# replica, sender is our authoritative source) is always allowed.
+def replica_can(wikirow, wiki, sender, operation):
+    if wikirow.get("source"):
+        return True
+    return check_event_access(sender, wiki, operation)
+
 # error_message_timeout: core calls this when a fan-out to a replica aged out
 # undelivered. Remove them only when the directory shows no host left
 # (locations == 0) - definitely gone, not a transient outage or a server
@@ -2204,6 +2216,8 @@ def event_page_create(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     id = e.content("id")
     page = e.content("page")
@@ -2286,6 +2300,8 @@ def event_page_update(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     id = e.content("id")
     page = e.content("page")
@@ -2363,6 +2379,8 @@ def event_page_delete(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     id = e.content("id")
     deleted = e.content("deleted")
@@ -2417,6 +2435,8 @@ def event_redirect_set(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     source = e.content("source")
     target = e.content("target")
@@ -2458,6 +2478,8 @@ def event_redirect_delete(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     source = e.content("source")
 
@@ -2495,6 +2517,8 @@ def event_tag_add(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     # Insert tag (ignore if already exists)
     mochi.db.execute("insert or ignore into tags (page, tag) values (?, ?)", page, tag)
@@ -2522,6 +2546,8 @@ def event_tag_remove(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     mochi.db.execute("delete from tags where page=? and tag=?", page, tag)
 
@@ -2539,6 +2565,9 @@ def event_setting_set(e):
 
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
+        return
+    # Settings (e.g. home) are owner-level, matching action_settings_set.
+    if not replica_can(wikirow, wiki, sender, "manage"):
         return
 
     name = e.content("name")
@@ -2903,6 +2932,9 @@ def event_attachment_create(e):
     if not validate_event_sender(wikirow, wiki, sender):
         mochi.log.info("attachment/create: sender %s not valid", sender)
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        mochi.log.info("attachment/create: sender %s lacks edit access", sender)
+        return
 
     # Get attachment metadata from event content
     attachment_id = e.content("id")
@@ -2991,6 +3023,8 @@ def event_attachment_delete(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     attachment_id = e.content("id")
 
@@ -3048,6 +3082,8 @@ def event_attachment_add(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     attachments = e.content("attachments") or []
     if attachments:
@@ -3067,6 +3103,8 @@ def event_attachment_remove(e):
 
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
+        return
+    if not replica_can(wikirow, wiki, sender, "edit"):
         return
 
     attachment_id = e.content("id")
@@ -3456,6 +3494,8 @@ def event_comment_create(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     id = e.content("id")
     page = e.content("page")
@@ -3525,6 +3565,8 @@ def event_comment_edit(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     id = e.content("id")
     body = e.content("body")
@@ -3567,6 +3609,8 @@ def event_comment_delete(e):
 
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
+        return
+    if not replica_can(wikirow, wiki, sender, "edit"):
         return
 
     id = e.content("id")
