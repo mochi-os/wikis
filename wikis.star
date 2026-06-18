@@ -95,8 +95,11 @@ def check_access(a, wiki_id, operation, page=None):
     if a.user and a.user.identity:
         user = a.user.identity.id
 
-    # Owner has full access (mochi.entity.get returns entity only if current user owns it)
-    if mochi.entity.get(wiki_id):
+    # Owner has full access. Gate on a real authenticated user: mochi.entity.get
+    # keys on the thread-local effective user, which for an anonymous request to a
+    # public action is the entity owner. Without the `user and` guard an anonymous
+    # caller is treated as the owner and bypasses the access rules below.
+    if user and mochi.entity.get(wiki_id):
         return True
 
     # Manage or wildcard grants full access
@@ -162,6 +165,18 @@ def validate_event_sender(wikirow, wiki, sender):
         return False
     update_replica_seen(wiki, sender)
     return True
+
+# Helper: authorize a replica-originated mutation on the source side.
+# validate_event_sender only proves the sender is a registered replica
+# (authenticity); it does NOT check the replica's access level. When we are the
+# source, the replica must additionally hold `operation` access (e.g. "edit")
+# for the change to apply — otherwise a view-only replica's edits would be
+# accepted upstream and replicated onward. Source->replica propagation (we are a
+# replica, sender is our authoritative source) is always allowed.
+def replica_can(wikirow, wiki, sender, operation):
+    if wikirow.get("source"):
+        return True
+    return check_event_access(sender, wiki, operation)
 
 # error_message_timeout: core calls this when a fan-out to a replica aged out
 # undelivered. Remove them only when the directory shows no host left
@@ -629,13 +644,24 @@ def action_delete(a):
 
 # Info endpoint for class context - returns list of wikis
 def action_info_class(a):
-    # Add fingerprint (without hyphens) to each for shorter URLs
-    wikis_raw = mochi.db.rows("""
+    columns = """
         select w.id, w.name, w.home, w.source, w.created,
             (select count(*) from pages p where p.wiki=w.id and p.deleted=0) as pages,
             (select max(p.updated) from pages p where p.wiki=w.id and p.deleted=0) as updated
         from wikis w
-    """)
+    """
+    if a.user and a.user.identity:
+        # Logged-in owner sees all their wikis (owned + subscribed replicas)
+        wikis_raw = mochi.db.rows(columns)
+    else:
+        # Anonymous callers (this action is public) run as the host owner, so the
+        # query would otherwise return every wiki the owner has, including private
+        # ones. Restrict to locally-owned wikis (source='') that grant public view
+        # access. Check access with mochi.access.check(None, ...) directly — NOT
+        # check_access(), which calls mochi.entity.get() and would treat the
+        # thread-local owner as the wiki owner and bypass the access rules.
+        wikis_raw = mochi.db.rows(columns + " where w.source=''")
+        wikis_raw = [w for w in wikis_raw if mochi.access.check(None, "wiki/" + w["id"], "view")]
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
     return {"data": {"entity": False, "wikis": wikis}}
 
@@ -2190,6 +2216,8 @@ def event_page_create(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     id = e.content("id")
     page = e.content("page")
@@ -2272,6 +2300,8 @@ def event_page_update(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     id = e.content("id")
     page = e.content("page")
@@ -2349,6 +2379,8 @@ def event_page_delete(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     id = e.content("id")
     deleted = e.content("deleted")
@@ -2403,6 +2435,8 @@ def event_redirect_set(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     source = e.content("source")
     target = e.content("target")
@@ -2444,6 +2478,8 @@ def event_redirect_delete(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     source = e.content("source")
 
@@ -2481,6 +2517,8 @@ def event_tag_add(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     # Insert tag (ignore if already exists)
     mochi.db.execute("insert or ignore into tags (page, tag) values (?, ?)", page, tag)
@@ -2508,6 +2546,8 @@ def event_tag_remove(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     mochi.db.execute("delete from tags where page=? and tag=?", page, tag)
 
@@ -2525,6 +2565,9 @@ def event_setting_set(e):
 
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
+        return
+    # Settings (e.g. home) are owner-level, matching action_settings_set.
+    if not replica_can(wikirow, wiki, sender, "manage"):
         return
 
     name = e.content("name")
@@ -2889,6 +2932,9 @@ def event_attachment_create(e):
     if not validate_event_sender(wikirow, wiki, sender):
         mochi.log.info("attachment/create: sender %s not valid", sender)
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        mochi.log.info("attachment/create: sender %s lacks edit access", sender)
+        return
 
     # Get attachment metadata from event content
     attachment_id = e.content("id")
@@ -2977,6 +3023,8 @@ def event_attachment_delete(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     attachment_id = e.content("id")
 
@@ -3034,6 +3082,8 @@ def event_attachment_add(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     attachments = e.content("attachments") or []
     if attachments:
@@ -3053,6 +3103,8 @@ def event_attachment_remove(e):
 
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
+        return
+    if not replica_can(wikirow, wiki, sender, "edit"):
         return
 
     attachment_id = e.content("id")
@@ -3442,6 +3494,8 @@ def event_comment_create(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     id = e.content("id")
     page = e.content("page")
@@ -3511,6 +3565,8 @@ def event_comment_edit(e):
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
         return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
 
     id = e.content("id")
     body = e.content("body")
@@ -3553,6 +3609,8 @@ def event_comment_delete(e):
 
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
+        return
+    if not replica_can(wikirow, wiki, sender, "edit"):
         return
 
     id = e.content("id")
