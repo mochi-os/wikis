@@ -4,11 +4,8 @@ import { useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   ArrowRight,
-  Check,
   CornerDownRight,
-  Loader2,
   Minus,
-  Pencil,
   Plus,
   RefreshCw,
   Save,
@@ -21,6 +18,7 @@ import {
 import {
   Button,
   DataChip,
+  EditableFieldRow,
   EmptyState,
   FieldRow,
   GeneralError,
@@ -239,12 +237,8 @@ function SettingsTab() {
   const [homePage, setHomePage] = useState('')
   const [hasChanges, setHasChanges] = useState(false)
 
-  // Inline edit state for name
+  // Current name, kept in sync with the wiki context for the inline editor.
   const [currentName, setCurrentName] = useState(wikiInfo?.name || '')
-  const [isEditingName, setIsEditingName] = useState(false)
-  const [editName, setEditName] = useState('')
-  const [isRenaming, setIsRenaming] = useState(false)
-  const [nameError, setNameError] = useState<string | null>(null)
 
   useEffect(() => {
     if (data?.settings) {
@@ -267,30 +261,7 @@ function SettingsTab() {
     return null
   }
 
-  const handleStartEditName = () => {
-    setEditName(currentName || '')
-    setNameError(null)
-    setIsEditingName(true)
-  }
-
-  const handleCancelEditName = () => {
-    setIsEditingName(false)
-    setEditName(currentName || '')
-    setNameError(null)
-  }
-
-  const handleSaveEditName = async () => {
-    const trimmedName = editName.trim()
-    const validationError = validateName(trimmedName)
-    if (validationError) {
-      setNameError(validationError)
-      return
-    }
-    if (trimmedName === currentName) {
-      setIsEditingName(false)
-      return
-    }
-    setIsRenaming(true)
+  const handleRenameWiki = async (trimmedName: string) => {
     try {
       const url = settingsContext.baseURL
         ? `${settingsContext.baseURL}${endpoints.wiki.rename}`
@@ -299,11 +270,9 @@ function SettingsTab() {
       setCurrentName(trimmedName)
       toast.success(t`Wiki renamed`)
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
-      setIsEditingName(false)
     } catch (err) {
       toast.error(getErrorMessage(err, t`Failed to rename wiki`))
-    } finally {
-      setIsRenaming(false)
+      throw err
     }
   }
 
@@ -424,67 +393,13 @@ function SettingsTab() {
       {wikiInfo && (
         <Section title={t`Identity`} description={t`Unique identifiers for this wiki.`}>
           <div className="divide-y-0">
-            <FieldRow label={t`Name`}>
-              {isEditingName ? (
-                <div className="flex w-full flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={editName}
-                      onChange={(e) => {
-                        setEditName(e.target.value)
-                        setNameError(null)
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') void handleSaveEditName()
-                        if (e.key === 'Escape') handleCancelEditName()
-                      }}
-                      className="h-8"
-                      disabled={isRenaming}
-                      autoFocus
-                    />
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => void handleSaveEditName()}
-                      disabled={isRenaming}
-                      className="h-8 w-8 p-0"
-                    >
-                      {isRenaming ? (
-                        <Loader2 className="size-4 animate-spin" />
-                      ) : (
-                        <Check className="size-4" />
-                      )}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={handleCancelEditName}
-                      disabled={isRenaming}
-                      className="h-8 w-8 p-0"
-                      aria-label={t`Cancel edit`}
-                    >
-                      <X className="size-4" />
-                    </Button>
-                  </div>
-                  {nameError && (
-                    <span className="text-sm text-destructive">{nameError}</span>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <span>{currentName}</span>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={handleStartEditName}
-                    className="h-6 w-6 p-0"
-                    aria-label={t`Edit name`}
-                  >
-                    <Pencil className="size-3" />
-                  </Button>
-                </div>
-              )}
-            </FieldRow>
+            <EditableFieldRow
+              label={t`Name`}
+              value={currentName}
+              onSave={handleRenameWiki}
+              validate={validateName}
+              emphasize
+            />
             <FieldRow label={t`Entity ID`}>
               <DataChip value={wikiInfo.id} truncate="middle" />
             </FieldRow>
