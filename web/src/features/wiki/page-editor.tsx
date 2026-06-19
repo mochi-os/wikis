@@ -546,7 +546,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                 return (
                   <div
                     key={attachment.id}
-                    className="group relative rounded-lg border p-2 text-start transition-colors hover:bg-muted/50"
+                    className="group relative rounded-lg border p-2 text-start transition-colors hover:bg-hover"
                   >
                     <Button
                       variant="ghost"

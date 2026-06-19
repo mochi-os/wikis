@@ -56,7 +56,7 @@ export function TagPages({ tag, pages }: TagPagesProps) {
               key={page.page}
               to="/$page"
               params={{ page: page.page }}
-              className="hover:bg-muted/50 group flex items-center gap-4 rounded-lg border p-4 transition-colors"
+              className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors"
             >
               <FileText className="text-muted-foreground h-5 w-5 shrink-0" />
               <div className="min-w-0 flex-1">

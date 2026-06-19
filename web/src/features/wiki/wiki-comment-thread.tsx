@@ -156,7 +156,7 @@ export function WikiCommentThread({
           <div className="flex items-center gap-1 opacity-100 transition-opacity md:pointer-events-none md:opacity-0 md:group-hover/row:pointer-events-auto md:group-hover/row:opacity-100 md:group-focus-within/row:pointer-events-auto md:group-focus-within/row:opacity-100">
             <button
               type="button"
-              className="text-muted-foreground hover:bg-muted hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors"
+              className="text-muted-foreground hover:bg-hover hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors"
               onClick={() => onStartReply(comment.id)}
             >
               <Reply className="size-3" />
@@ -166,7 +166,7 @@ export function WikiCommentThread({
             {canEdit && (
               <button
                 type="button"
-                className="text-muted-foreground hover:bg-muted hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors"
+                className="text-muted-foreground hover:bg-hover hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors"
                 onClick={() => {
                   setEditing(true)
                   setEditBody(comment.body)
@@ -180,7 +180,7 @@ export function WikiCommentThread({
             {canDelete && (
               <button
                 type="button"
-                className="text-muted-foreground hover:bg-muted hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors"
+                className="text-muted-foreground hover:bg-hover hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors"
                 onClick={() => setDeleting(true)}
               >
                 <Trash2 className="size-3" />

@@ -501,7 +501,7 @@ function AttachmentGridItem({
   const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id)
 
   return (
-    <div className="group bg-card hover:bg-muted/50 relative overflow-hidden rounded-lg border transition-colors">
+    <div className="group bg-card hover:bg-hover relative overflow-hidden rounded-lg border transition-colors">
       {/* Preview - clickable to open lightbox (images) or new tab (files) */}
       <button
         type="button"
@@ -581,7 +581,7 @@ function AttachmentListItem({
   const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id)
 
   return (
-    <div className="hover:bg-muted/50 flex items-center gap-4 rounded-lg border p-3 transition-colors">
+    <div className="hover:bg-hover flex items-center gap-4 rounded-lg border p-3 transition-colors">
       {/* Icon/Preview - clickable */}
       <button
         type="button"

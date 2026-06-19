@@ -97,7 +97,7 @@ function SearchResultItem({ result, wikiId }: SearchResultItemProps) {
     <Link
       to={wikiId ? '/$wikiId/$page' : '/$page'}
       params={wikiId ? { wikiId, page: result.page } : { page: result.page }}
-      className="hover:bg-muted/50 group flex items-start gap-4 rounded-lg border p-4 transition-colors"
+      className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors"
     >
       <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" />
       <div className="min-w-0 flex-1">
