@@ -17,7 +17,6 @@ import {
   type CreateEntityValues, naturalCompare,} from '@mochi/web'
 import {
   BookOpen,
-  Library,
   Plus,
   Search,
 } from 'lucide-react'
@@ -116,7 +115,8 @@ function WikiLayoutInner() {
     const allWikisItem = {
       title: t`All wikis`,
       onClick: handleAllWikisClick,
-      icon: Library,
+      icon: BookOpen,
+      aggregate: true,
       isActive: location.pathname === '/',
     }
 
