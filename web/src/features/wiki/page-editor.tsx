@@ -33,6 +33,9 @@ import {
   getErrorMessage,
   authenticatedUrl,
   extractStatus,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from '@mochi/web'
 import {
   useEditPage,
@@ -423,15 +426,20 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                   className="flex-1"
                 />
                 {slugEdited && title && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleResetSlug}
-                    title={t`Re-derive from title`}
-                    className="shrink-0"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleResetSlug}
+                        aria-label={t`Re-derive from title`}
+                        className="shrink-0"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t`Re-derive from title`}</TooltipContent>
+                  </Tooltip>
                 )}
               </div>
               <p className="text-muted-foreground text-sm">
@@ -553,24 +561,28 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                     key={attachment.id}
                     className="group relative rounded-lg border p-2 text-start transition-colors hover:bg-hover"
                   >
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-3 top-3 z-10 h-7 w-7 bg-background/90 shadow-sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleDeleteAttachment(attachment)
-                      }}
-                      disabled={isDeleting}
-                      aria-label={t`Delete attachment`}
-                      title={t`Delete attachment`}
-                    >
-                      {isDeleting ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-3.5 w-3.5" />
-                      )}
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-3 top-3 z-10 h-7 w-7 bg-background/90 shadow-sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDeleteAttachment(attachment)
+                          }}
+                          disabled={isDeleting}
+                          aria-label={t`Delete attachment`}
+                        >
+                          {isDeleting ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t`Delete attachment`}</TooltipContent>
+                    </Tooltip>
                     <button
                       type="button"
                       onClick={() => insertMarkdown(attachment)}

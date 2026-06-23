@@ -41,6 +41,9 @@ import {
   toast,
   getErrorMessage,
   useFormat,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from '@mochi/web'
 import { ValueLinkChip } from '@/components/value-link-chip'
 import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wiki'
@@ -138,17 +141,21 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
       </TableCell>
       <TableCell>
         <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground"
-              aria-label={t`Delete redirect ${redirect.source}`}
-              title={t`Delete redirect ${redirect.source}`}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </AlertDialogTrigger>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground"
+                  aria-label={t`Delete redirect ${redirect.source}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent>{t`Delete redirect ${redirect.source}`}</TooltipContent>
+          </Tooltip>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle><Trans>Delete redirect?</Trans></AlertDialogTitle>

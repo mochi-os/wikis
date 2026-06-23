@@ -6,7 +6,7 @@
 import { Link } from '@tanstack/react-router'
 import { Trans } from '@lingui/react/macro'
 import { Eye, History, RotateCcw } from 'lucide-react'
-import { Button, EntityAvatar, EmptyState, useFormat, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath } from '@mochi/web'
+import { Button, EntityAvatar, EmptyState, useFormat, Separator, Skeleton, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, getAppPath, Tooltip, TooltipTrigger, TooltipContent } from '@mochi/web'
 import type { Revision } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
 
@@ -108,35 +108,44 @@ export function PageHistory({
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" asChild title={t({ message: 'View', context: 'action' })} aria-label={t({ message: 'View', context: 'action' })}>
-                        {wikiId ? (
-                          <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                        ) : (
-                          <Link to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                        )}
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" asChild aria-label={t({ message: 'View', context: 'action' })}>
+                            {wikiId ? (
+                              <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }}>
+                                <Eye className="h-4 w-4" />
+                              </Link>
+                            ) : (
+                              <Link to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }}>
+                                <Eye className="h-4 w-4" />
+                              </Link>
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t({ message: 'View', context: 'action' })}</TooltipContent>
+                      </Tooltip>
                       {revision.version !== currentVersion && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          asChild
-                          title={t`Revert to this version`}
-                          aria-label={t`Revert to this version`}
-                        >
-                          {wikiId ? (
-                            <Link to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>
-                              <RotateCcw className="h-4 w-4" />
-                            </Link>
-                          ) : (
-                            <Link to="/$page/revert" params={{ page: slug }} search={{ version: revision.version }}>
-                              <RotateCcw className="h-4 w-4" />
-                            </Link>
-                          )}
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              asChild
+                              aria-label={t`Revert to this version`}
+                            >
+                              {wikiId ? (
+                                <Link to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>
+                                  <RotateCcw className="h-4 w-4" />
+                                </Link>
+                              ) : (
+                                <Link to="/$page/revert" params={{ page: slug }} search={{ version: revision.version }}>
+                                  <RotateCcw className="h-4 w-4" />
+                                </Link>
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{t`Revert to this version`}</TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
                   </TableCell>

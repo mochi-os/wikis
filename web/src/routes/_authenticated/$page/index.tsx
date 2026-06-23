@@ -8,7 +8,7 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { plural } from '@lingui/core/macro'
 import { useCallback, useEffect, useState } from 'react'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
-import { Button, ConfirmDialog, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, GeneralError, usePageTitle, toast, getErrorMessage, Main } from '@mochi/web'
+import { Button, ConfirmDialog, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, GeneralError, usePageTitle, toast, getErrorMessage, Main, Tooltip, TooltipTrigger, TooltipContent } from '@mochi/web'
 import {
   PageView,
   PageNotFound,
@@ -108,17 +108,21 @@ function WikiPageRoute() {
   if (data && 'error' in data && data.error === 'not_found') {
     const notFoundMenu = (
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={t`Page actions`}
-            title={t`Page actions`}
-            className="size-11 md:size-9"
-          >
-            <Ellipsis className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t`Page actions`}
+                className="size-11 md:size-9"
+              >
+                <Ellipsis className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>{t`Page actions`}</TooltipContent>
+        </Tooltip>
         <DropdownMenuContent align="end">
           {permissions.edit && (
             <DropdownMenuItem asChild>
@@ -171,17 +175,21 @@ function WikiPageRoute() {
 
     const actionsMenu = (
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={t`Page actions`}
-            title={t`Page actions`}
-            className="size-11 md:size-9"
-          >
-            <Ellipsis className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t`Page actions`}
+                className="size-11 md:size-9"
+              >
+                <Ellipsis className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>{t`Page actions`}</TooltipContent>
+        </Tooltip>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel><Trans>Page</Trans></DropdownMenuLabel>
           {permissions.edit && (

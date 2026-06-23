@@ -48,6 +48,9 @@ import {
   shellClipboardWrite,
   naturalCompare,
   extractStatus,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from '@mochi/web'
 import {
   useAttachments,
@@ -336,16 +339,20 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
             className="ps-9"
           />
           {searchQuery && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
-              onClick={() => setSearchQuery('')}
-              aria-label={t`Clear search`}
-              title={t`Clear search`}
-            >
-              <X className="h-3 w-3" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
+                  onClick={() => setSearchQuery('')}
+                  aria-label={t`Clear search`}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t`Clear search`}</TooltipContent>
+            </Tooltip>
           )}
         </div>
 
@@ -376,26 +383,34 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
 
         {/* View toggle */}
         <div className="flex rounded-md border">
-          <Button
-            variant={viewMode === 'grid' ? 'default' : 'ghost'}
-            size="icon"
-            className="rounded-e-none"
-            onClick={() => setViewMode('grid')}
-            aria-label={t`Grid view`}
-            title={t`Grid view`}
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === 'list' ? 'default' : 'ghost'}
-            size="icon"
-            className="rounded-s-none"
-            onClick={() => setViewMode('list')}
-            aria-label={t`List view`}
-            title={t`List view`}
-          >
-            <List className="h-4 w-4" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                size="icon"
+                className="rounded-e-none"
+                onClick={() => setViewMode('grid')}
+                aria-label={t`Grid view`}
+              >
+                <Grid3X3 className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t`Grid view`}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                size="icon"
+                className="rounded-s-none"
+                onClick={() => setViewMode('list')}
+                aria-label={t`List view`}
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t`List view`}</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
@@ -539,33 +554,41 @@ function AttachmentGridItem({
         className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
         onClick={() => onOpen(attachment)}
       >
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={(e) => { e.stopPropagation(); onCopy(attachment) }}
-          aria-label={t`Copy embed link`}
-          title={t`Copy embed link`}
-        >
-          {copiedId === attachment.id ? (
-            <Check className="h-4 w-4" />
-          ) : (
-            <Copy className="h-4 w-4" />
-          )}
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={(e) => { e.stopPropagation(); onDelete(attachment) }}
-          disabled={isDeleting}
-          aria-label={t`Delete attachment`}
-          title={t`Delete`}
-        >
-          {isDeleting ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Trash2 className="h-4 w-4" />
-          )}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={(e) => { e.stopPropagation(); onCopy(attachment) }}
+              aria-label={t`Copy embed link`}
+            >
+              {copiedId === attachment.id ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t`Copy embed link`}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={(e) => { e.stopPropagation(); onDelete(attachment) }}
+              disabled={isDeleting}
+              aria-label={t`Delete attachment`}
+            >
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t`Delete attachment`}</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   )
@@ -621,43 +644,55 @@ function AttachmentListItem({
 
       {/* Actions */}
       <div className="flex gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onOpen(attachment)}
-          aria-label={t`Open attachment`}
-          title={t`Open`}
-        >
-          <ExternalLink className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onCopy(attachment)}
-          aria-label={t`Copy embed link`}
-          title={t`Copy embed link`}
-        >
-          {copiedId === attachment.id ? (
-            <Check className="h-4 w-4" />
-          ) : (
-            <Copy className="h-4 w-4" />
-          )}
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onDelete(attachment)}
-          disabled={isDeleting}
-          className="text-muted-foreground"
-          aria-label={t`Delete attachment`}
-          title={t`Delete`}
-        >
-          {isDeleting ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Trash2 className="h-4 w-4" />
-          )}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onOpen(attachment)}
+              aria-label={t`Open attachment`}
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t`Open attachment`}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onCopy(attachment)}
+              aria-label={t`Copy embed link`}
+            >
+              {copiedId === attachment.id ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t`Copy embed link`}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onDelete(attachment)}
+              disabled={isDeleting}
+              className="text-muted-foreground"
+              aria-label={t`Delete attachment`}
+            >
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t`Delete attachment`}</TooltipContent>
+        </Tooltip>
       </div>
     </div>
   )

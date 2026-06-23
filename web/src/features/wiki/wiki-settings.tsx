@@ -72,6 +72,9 @@ import {
   requestHelpers,
   getErrorMessage,
   useFormat,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from '@mochi/web'
 import endpoints from '@/api/endpoints'
 import { ValueLinkChip } from '@/components/value-link-chip'
@@ -752,18 +755,22 @@ function ReplicasTab() {
                   </TableCell>
                   <TableCell>
                     <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          disabled={isRemoving}
-                          aria-label={t`Remove replica ${replica.name || replica.id}`}
-                          title={t`Remove replica ${replica.name || replica.id}`}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              disabled={isRemoving}
+                              aria-label={t`Remove replica ${replica.name || replica.id}`}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>{t`Remove replica ${replica.name || replica.id}`}</TooltipContent>
+                      </Tooltip>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle><Trans>Remove replica?</Trans></AlertDialogTitle>
@@ -901,18 +908,22 @@ function RedirectsTab() {
                   </TableCell>
                   <TableCell>
                     <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-muted-foreground"
-                          disabled={isDeleting}
-                          aria-label={t`Delete redirect ${redirect.source}`}
-                          title={t`Delete redirect ${redirect.source}`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-muted-foreground"
+                              disabled={isDeleting}
+                              aria-label={t`Delete redirect ${redirect.source}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>{t`Delete redirect ${redirect.source}`}</TooltipContent>
+                      </Tooltip>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle><Trans>Delete redirect?</Trans></AlertDialogTitle>

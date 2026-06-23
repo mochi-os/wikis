@@ -15,6 +15,9 @@ import {
   IconButton,
   useFormat,
   getAppPath,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
@@ -227,9 +230,14 @@ export function WikiCommentThread({
                   )}
                   <Paperclip className="text-muted-foreground size-3 shrink-0" />
                   <span className="max-w-40 truncate">{file.name}</span>
-                  <button type="button" onClick={() => setReplyFiles((prev) => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-foreground ms-0.5">
-                    <X className="size-3.5" />
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button type="button" onClick={() => setReplyFiles((prev) => prev.filter((_, idx) => idx !== i))} className="text-muted-foreground hover:text-foreground ms-0.5" aria-label={t`Remove`}>
+                        <X className="size-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t`Remove`}</TooltipContent>
+                  </Tooltip>
                 </div>
               ))}
             </div>

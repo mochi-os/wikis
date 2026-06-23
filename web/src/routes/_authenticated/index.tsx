@@ -37,6 +37,9 @@ import {
   usePageTitle,
   shellClipboardWrite,
   naturalCompare,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from '@mochi/web'
 import {
   BookMarked,
@@ -370,17 +373,21 @@ function WikiHomePage({
   if (data && 'page' in data && typeof data.page === 'object') {
     const actionsMenu = (
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant='ghost'
-            size='icon'
-            aria-label={t`Page actions`}
-            title={t`Page actions`}
-            className='size-11 md:size-9'
-          >
-            <Ellipsis className='size-4' />
-          </Button>
-        </DropdownMenuTrigger>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant='ghost'
+                size='icon'
+                aria-label={t`Page actions`}
+                className='size-11 md:size-9'
+              >
+                <Ellipsis className='size-4' />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>{t`Page actions`}</TooltipContent>
+        </Tooltip>
         <DropdownMenuContent align='end'>
           <DropdownMenuLabel><Trans>Page</Trans></DropdownMenuLabel>
           {permissions.edit && (
@@ -637,17 +644,21 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
         showSidebarTrigger
         menuAction={
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                aria-label={t`Wiki actions`}
-                title={t`Wiki actions`}
-                className='size-11 md:size-9'
-              >
-                <Ellipsis className='size-4' />
-              </Button>
-            </DropdownMenuTrigger>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    aria-label={t`Wiki actions`}
+                    className='size-11 md:size-9'
+                  >
+                    <Ellipsis className='size-4' />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>{t`Wiki actions`}</TooltipContent>
+            </Tooltip>
             <DropdownMenuContent align='end'>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
@@ -799,16 +810,21 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                   menu={
                     isSubscribed && (
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant='ghost'
-                            size='icon'
-                            aria-label={t`Wiki actions`}
-                            className='size-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100'
-                          >
-                            <Ellipsis className='size-4' />
-                          </Button>
-                        </DropdownMenuTrigger>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                aria-label={t`Wiki actions`}
+                                className='size-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100'
+                              >
+                                <Ellipsis className='size-4' />
+                              </Button>
+                            </DropdownMenuTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent>{t`Wiki actions`}</TooltipContent>
+                        </Tooltip>
                         <DropdownMenuContent align='end'>
                           <DropdownMenuItem
                             onSelect={() => setUnsubscribeId(wiki.id)}

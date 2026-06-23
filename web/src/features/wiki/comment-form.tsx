@@ -5,7 +5,7 @@
 
 import { useState, useRef } from 'react'
 import { Trans } from '@lingui/react/macro'
-import { Button, IconButton, useImageObjectUrls } from '@mochi/web'
+import { Button, IconButton, useImageObjectUrls, Tooltip, TooltipTrigger, TooltipContent } from '@mochi/web'
 import { Paperclip, Send, X } from 'lucide-react'
 import { t } from '@lingui/core/macro'
 
@@ -75,9 +75,14 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
               )}
               <Paperclip className="text-muted-foreground size-3 shrink-0" />
               <span className="max-w-40 truncate">{file.name}</span>
-              <button type="button" onClick={() => removeFile(i)} className="text-muted-foreground hover:text-foreground ms-0.5">
-                <X className="size-3.5" />
-              </button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button type="button" onClick={() => removeFile(i)} className="text-muted-foreground hover:text-foreground ms-0.5" aria-label={t`Remove`}>
+                    <X className="size-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>{t`Remove`}</TooltipContent>
+              </Tooltip>
             </div>
           ))}
         </div>

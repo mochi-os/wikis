@@ -3,7 +3,7 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { Button, DataChip, cn } from '@mochi/web'
+import { Button, DataChip, cn, Tooltip, TooltipTrigger, TooltipContent } from '@mochi/web'
 import { Trans } from '@lingui/react/macro'
 import { ExternalLink } from 'lucide-react'
 import { t } from '@lingui/core/macro'
@@ -31,12 +31,17 @@ export function ValueLinkChip({
         chipClassName={chipClassName}
         truncate='middle'
       />
-      <Button variant='ghost' size='icon' className='size-8 shrink-0' asChild aria-label={t`Open link in new tab`} title={t`Open link in new tab`}>
-        <a href={targetHref} target='_blank' rel='noopener noreferrer'>
-          <ExternalLink className='h-3.5 w-3.5' />
-          <span className='sr-only'><Trans>Open link</Trans></span>
-        </a>
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant='ghost' size='icon' className='size-8 shrink-0' asChild aria-label={t`Open link in new tab`}>
+            <a href={targetHref} target='_blank' rel='noopener noreferrer'>
+              <ExternalLink className='h-3.5 w-3.5' />
+              <span className='sr-only'><Trans>Open link</Trans></span>
+            </a>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{t`Open link in new tab`}</TooltipContent>
+      </Tooltip>
     </div>
   )
 }

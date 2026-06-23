@@ -16,6 +16,9 @@ import {
   PopoverTrigger,
   getErrorMessage,
   toast,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from '@mochi/web'
 import { useAddTag, useRemoveTag } from '@/hooks/use-wiki'
 import { usePermissions } from '@/context/wiki-context'
@@ -96,13 +99,19 @@ export function TagManager({ slug, tags }: TagManagerProps) {
             {tag}
           </Link>
           {canEdit && (
-            <button
-              onClick={() => handleRemoveTag(tag)}
-              className="text-muted-foreground hover:text-foreground ms-1 rounded-full p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
-              disabled={removeTag.isPending}
-            >
-              <X className="h-3 w-3" />
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => handleRemoveTag(tag)}
+                  className="text-muted-foreground hover:text-foreground ms-1 rounded-full p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+                  disabled={removeTag.isPending}
+                  aria-label={t`Remove`}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>{t`Remove`}</TooltipContent>
+            </Tooltip>
           )}
         </Badge>
       ))}
@@ -110,11 +119,16 @@ export function TagManager({ slug, tags }: TagManagerProps) {
       {/* Add tag button */}
       {canEdit && (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
-          <PopoverTrigger asChild>
-            <button className="text-muted-foreground hover:text-foreground rounded p-0.5 transition-colors">
-              <Plus className="h-4 w-4" />
-            </button>
-          </PopoverTrigger>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>
+                <button className="text-muted-foreground hover:text-foreground rounded p-0.5 transition-colors" aria-label={t`Add`}>
+                  <Plus className="h-4 w-4" />
+                </button>
+              </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent>{t`Add`}</TooltipContent>
+          </Tooltip>
           <PopoverContent className="w-64 p-3" align="start">
             <div className="space-y-2">
               <Input
