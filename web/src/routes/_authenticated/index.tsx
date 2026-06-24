@@ -33,6 +33,7 @@ import {
   isDomainEntityRouting,
   getAppPath,
   toast,
+  toastAction,
   useFormat,
   usePageTitle,
   shellClipboardWrite,
@@ -294,17 +295,18 @@ function WikiHomePage({
   ) : null
 
   // Unsubscribe handler
-  const handleUnsubscribe = useCallback(() => {
-    unsubscribeWiki.mutate(undefined, {
-      onSuccess: () => {
-        toast.success(t`Unsubscribed`)
-        setUnsubscribeConfirmOpen(false)
-        void navigate({ to: '/' })
-      },
-      onError: (error) => {
-        toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
-      },
-    })
+  const handleUnsubscribe = useCallback(async () => {
+    try {
+      await toastAction(unsubscribeWiki.mutateAsync(), {
+        loading: t`Unsubscribing...`,
+        success: t`Unsubscribed`,
+        error: (error) => getErrorMessage(error, t`Failed to unsubscribe`),
+      })
+      setUnsubscribeConfirmOpen(false)
+      void navigate({ to: '/' })
+    } catch {
+      // toast already shown
+    }
   }, [unsubscribeWiki, navigate])
 
   // Can unsubscribe if viewing a subscribed wiki (has source)
@@ -562,9 +564,6 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       setUnsubscribeId(null)
       void navigate({ to: '/' })
     },
-    onError: (error) => {
-      toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
-    },
   })
 
   // RSS feed handler for all wikis
@@ -627,11 +626,16 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
     if (pendingWikiId === wiki.id) return
     setPendingWikiId(wiki.id)
     try {
-      await wikisRequest.post(endpoints.wiki.join, { target: wiki.id, server: wiki.server || undefined })
-      // Reload page to refresh wikis list
+      await toastAction(
+        wikisRequest.post(endpoints.wiki.join, { target: wiki.id, server: wiki.server || undefined }),
+        {
+          loading: t`Subscribing...`,
+          success: t`Subscribed to ${wiki.name}`,
+          error: (error) => getErrorMessage(error, t`Failed to subscribe`),
+        }
+      )
       window.location.reload()
-    } catch (error) {
-      toast.error(getErrorMessage(error, t`Failed to subscribe`))
+    } catch {
       setPendingWikiId(null)
     }
   }
@@ -873,9 +877,18 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
         confirmText={t`Unsubscribe`}
         destructive
         isLoading={unsubscribeMutation.isPending}
-        handleConfirm={() => {
+        handleConfirm={async () => {
           const wiki = allWikis.find((w) => w.id === unsubscribeId)
-          if (wiki) unsubscribeMutation.mutate(wiki)
+          if (!wiki) return
+          try {
+            await toastAction(unsubscribeMutation.mutateAsync(wiki), {
+              loading: t`Unsubscribing...`,
+              success: t`Unsubscribed`,
+              error: (error) => getErrorMessage(error, t`Failed to unsubscribe`),
+            })
+          } catch {
+            // toast already shown
+          }
         }}
       />
     </>

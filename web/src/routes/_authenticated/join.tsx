@@ -20,6 +20,7 @@ import {
   Main,
   getErrorMessage,
   toast,
+  toastAction,
 } from '@mochi/web'
 import { useJoinWiki } from '@/hooks/use-wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
@@ -36,21 +37,22 @@ function JoinWikiPage() {
   const [target, setTarget] = useState('')
   const joinWiki = useJoinWiki()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!target.trim()) {
       toast.error(t`Wiki ID is required`)
       return
     }
-    joinWiki.mutate({ target: target.trim() }, {
-      onSuccess: () => {
-        toast.success(t`Joined wiki`)
-        navigate({ to: '/' })
-      },
-      onError: (error) => {
-        toast.error(getErrorMessage(error, t`Failed to join wiki`))
-      },
-    })
+    try {
+      await toastAction(joinWiki.mutateAsync({ target: target.trim() }), {
+        loading: t`Replicating...`,
+        success: t`Joined wiki`,
+        error: (error) => getErrorMessage(error, t`Failed to join wiki`),
+      })
+      void navigate({ to: '/' })
+    } catch {
+      // toast already shown
+    }
   }
 
   const handleCancel = () => {

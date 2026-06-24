@@ -39,6 +39,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
   toast,
+  toastAction,
   getErrorMessage,
   useFormat,
   Tooltip,
@@ -111,15 +112,16 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
   const { formatTimestamp } = useFormat()
   const deleteRedirect = useDeleteRedirect()
 
-  const handleDelete = () => {
-    deleteRedirect.mutate(redirect.source, {
-      onSuccess: () => {
-        toast.success(t`Redirect "${redirect.source}" deleted`)
-      },
-      onError: (error) => {
-        toast.error(getErrorMessage(error, t`Failed to delete redirect`))
-      },
-    })
+  const handleDelete = async () => {
+    try {
+      await toastAction(deleteRedirect.mutateAsync(redirect.source), {
+        loading: t`Deleting redirect...`,
+        success: t`Redirect "${redirect.source}" deleted`,
+        error: (error) => getErrorMessage(error, t`Failed to delete redirect`),
+      })
+    } catch {
+      // toast already shown
+    }
   }
 
   return (
@@ -170,7 +172,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
             <AlertDialogFooter>
               <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
               <AlertDialogAction
-                onClick={handleDelete}
+                onClick={() => void handleDelete()}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 <Trans>Delete</Trans>
@@ -190,7 +192,7 @@ function AddRedirectDialog() {
   const [target, setTarget] = useState('')
   const setRedirect = useSetRedirect()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!source.trim() || !target.trim()) {
@@ -198,20 +200,21 @@ function AddRedirectDialog() {
       return
     }
 
-    setRedirect.mutate(
-      { source: source.trim(), target: target.trim() },
-      {
-        onSuccess: () => {
-          toast.success(t`Redirect created`)
-          setSource('')
-          setTarget('')
-          setOpen(false)
-        },
-        onError: (error) => {
-          toast.error(getErrorMessage(error, t`Failed to create redirect`))
-        },
-      }
-    )
+    try {
+      await toastAction(
+        setRedirect.mutateAsync({ source: source.trim(), target: target.trim() }),
+        {
+          loading: t`Creating redirect...`,
+          success: t`Redirect created`,
+          error: (error) => getErrorMessage(error, t`Failed to create redirect`),
+        }
+      )
+      setSource('')
+      setTarget('')
+      setOpen(false)
+    } catch {
+      // toast already shown
+    }
   }
 
   return (
@@ -223,7 +226,7 @@ function AddRedirectDialog() {
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={(e) => void handleSubmit(e)}>
           <DialogHeader>
             <DialogTitle><Trans>Create redirect</Trans></DialogTitle>
             <DialogDescription>

@@ -7,7 +7,8 @@ import { useEffect, useState } from 'react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { useNavigate } from '@tanstack/react-router'
 import { Search, Loader2, BookOpen } from 'lucide-react'
-import { Button, GeneralError, Input, toast, getErrorMessage } from '@mochi/web'
+import { Button, GeneralError, Input, toastAction, getErrorMessage } from '@mochi/web'
+import { useJoinWiki } from '@/hooks/use-wiki'
 import { wikisRequest } from '@/api/request'
 import endpoints from '@/api/endpoints'
 
@@ -37,6 +38,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
   const [retryTick, setRetryTick] = useState(0)
   const navigate = useNavigate()
+  const joinWiki = useJoinWiki()
 
   // Debounce search query
   useEffect(() => {
@@ -77,12 +79,28 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
 
   const handleSubscribe = async (wiki: DirectoryEntry) => {
     setPendingWikiId(wiki.id)
+    const joinWithRetry = async () => {
+      try {
+        return await joinWiki.mutateAsync({ target: wiki.id, server: wiki.location || undefined })
+      } catch (error) {
+        const status = (error as { status?: number })?.status
+        if (status === 502 && wiki.location) {
+          return await joinWiki.mutateAsync({ target: wiki.id })
+        }
+        throw error
+      }
+    }
     try {
-      const result = await wikisRequest.post<{ id: string; fingerprint: string; home: string }>(endpoints.wiki.join, { target: wiki.id, server: wiki.location || undefined })
+      const result = await toastAction(joinWithRetry(), {
+        loading: t`Subscribing...`,
+        success: t`Subscribed`,
+        error: (e) => getErrorMessage(e, t`Failed to subscribe`),
+      })
       onRefresh?.()
       void navigate({ to: '/$wikiId/$page', params: { wikiId: result.fingerprint || result.id, page: result.home || 'home' } })
-    } catch (error) {
-      toast.error(getErrorMessage(error, t`Failed to subscribe`))
+    } catch {
+      // toast already shown
+    } finally {
       setPendingWikiId(null)
     }
   }

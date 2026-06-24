@@ -9,10 +9,10 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import {
   AuthenticatedLayout,
+  toastAction,
   getErrorMessage,
   type SidebarData,
   type NavItem,
-  toast,
   CreateEntityDialog,
   type CreateEntityValues, naturalCompare,} from '@mochi/web'
 import {
@@ -66,24 +66,17 @@ function WikiLayoutInner() {
   const wikiName = info?.wiki?.name
 
   const handleCreateWiki = async (values: CreateEntityValues) => {
-    return new Promise<void>((resolve, reject) => {
-      createWiki.mutate(
-        { name: values.name, privacy: values.privacy },
-        {
-          onSuccess: (data) => {
-            toast.success(t`Wiki created`)
-            closeCreateDialog()
-            const wikiId = data.fingerprint ?? data.id
-            navigate({ to: '/$wikiId/$page', params: { wikiId, page: data.home } })
-            resolve()
-          },
-          onError: (error) => {
-            toast.error(getErrorMessage(error, t`Failed to create wiki`))
-            reject(error)
-          },
-        }
-      )
-    })
+    const data = await toastAction(
+      createWiki.mutateAsync({ name: values.name, privacy: values.privacy }),
+      {
+        loading: t`Creating wiki...`,
+        success: t`Wiki created`,
+        error: (e) => getErrorMessage(e, t`Failed to create wiki`),
+      }
+    )
+    closeCreateDialog()
+    const wikiId = data.fingerprint ?? data.id
+    void navigate({ to: '/$wikiId/$page', params: { wikiId, page: data.home } })
   }
 
   const sidebarData: SidebarData = useMemo(() => {

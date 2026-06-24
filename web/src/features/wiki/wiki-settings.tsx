@@ -69,6 +69,7 @@ import {
   AccessList,
   type AccessLevel,
   toast,
+  toastAction,
   requestHelpers,
   getErrorMessage,
   useFormat,
@@ -270,16 +271,18 @@ function SettingsTab() {
   }
 
   const handleRenameWiki = async (trimmedName: string) => {
+    const url = settingsContext.baseURL
+      ? `${settingsContext.baseURL}${endpoints.wiki.rename}`
+      : endpoints.wiki.rename
     try {
-      const url = settingsContext.baseURL
-        ? `${settingsContext.baseURL}${endpoints.wiki.rename}`
-        : endpoints.wiki.rename
-      await requestHelpers.post(url, { name: trimmedName })
+      await toastAction(requestHelpers.post(url, { name: trimmedName }), {
+        loading: t`Saving...`,
+        success: t`Wiki renamed`,
+        error: (err) => getErrorMessage(err, t`Failed to rename wiki`),
+      })
       setCurrentName(trimmedName)
-      toast.success(t`Wiki renamed`)
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
+      void queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     } catch (err) {
-      toast.error(getErrorMessage(err, t`Failed to rename wiki`))
       throw err
     }
   }
@@ -290,84 +293,70 @@ function SettingsTab() {
   }
 
   const handleSave = async () => {
-    if (settingsContext.baseURL) {
-      // Use direct API call with baseURL
-      setIsSaving(true)
-      try {
-        await requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.settingsSet}`, {
-          name: 'home',
-          value: homePage.trim() || 'home',
-        })
-        toast.success(t`Settings saved`)
-        setHasChanges(false)
-        queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
-      } catch (err) {
-        toast.error(getErrorMessage(err, t`Failed to save settings`))
-      } finally {
-        setIsSaving(false)
-      }
-    } else {
-      setSetting.mutate(
-        { name: 'home', value: homePage.trim() || 'home' },
+    setIsSaving(true)
+    try {
+      await toastAction(
+        settingsContext.baseURL
+          ? requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.settingsSet}`, {
+              name: 'home',
+              value: homePage.trim() || 'home',
+            })
+          : setSetting.mutateAsync({ name: 'home', value: homePage.trim() || 'home' }),
         {
-          onSuccess: () => {
-            toast.success(t`Settings saved`)
-            setHasChanges(false)
-          },
-          onError: (error) => {
-            toast.error(getErrorMessage(error, t`Failed to save settings`))
-          },
+          loading: t`Saving...`,
+          success: t`Settings saved`,
+          error: (err) => getErrorMessage(err, t`Failed to save settings`),
         }
       )
+      setHasChanges(false)
+      void queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
+    } catch {
+      // toast already shown
+    } finally {
+      setIsSaving(false)
     }
   }
 
   const handleSync = async () => {
-    if (settingsContext.baseURL) {
-      setIsSyncing(true)
-      try {
-        await requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.sync}`, {})
-        toast.success(t`Wiki synced`)
-        queryClient.invalidateQueries({ queryKey: ['wiki'] })
-      } catch (err) {
-        toast.error(getErrorMessage(err, t`Failed to sync wiki`))
-      } finally {
-        setIsSyncing(false)
-      }
-    } else {
-      syncWiki.mutate(undefined, {
-        onSuccess: () => {
-          toast.success(t`Wiki synced`)
-        },
-        onError: (error) => {
-          toast.error(getErrorMessage(error, t`Failed to sync wiki`))
-        },
-      })
+    setIsSyncing(true)
+    try {
+      await toastAction(
+        settingsContext.baseURL
+          ? requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.sync}`, {})
+          : syncWiki.mutateAsync(),
+        {
+          loading: t`Syncing...`,
+          success: t`Wiki synced`,
+          error: (err) => getErrorMessage(err, t`Failed to sync wiki`),
+        }
+      )
+      void queryClient.invalidateQueries({ queryKey: ['wiki'] })
+    } catch {
+      // toast already shown
+    } finally {
+      setIsSyncing(false)
     }
   }
 
   const handleDelete = async () => {
-    if (settingsContext.baseURL) {
-      setIsDeleting(true)
-      try {
-        await requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.delete}`, {})
-        toast.success(t`Wiki deleted`)
-        void navigate({ to: '/' })
-      } catch (err) {
-        toast.error(getErrorMessage(err, t`Failed to delete wiki`))
-      } finally {
-        setIsDeleting(false)
-      }
-    } else {
-      deleteWiki.mutate(undefined, {
-        onSuccess: () => {
-          toast.success(t`Wiki deleted`)
-          void navigate({ to: '/' })
-        },
-        onError: (error) => {
-          toast.error(getErrorMessage(error, t`Failed to delete wiki`))
-        },
-      })
+    setIsDeleting(true)
+    try {
+      await toastAction(
+        settingsContext.baseURL
+          ? requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.delete}`, {})
+          : deleteWiki.mutateAsync(),
+        {
+          loading: t`Deleting wiki...`,
+          success: t`Wiki deleted`,
+          error: (err) => getErrorMessage(err, t`Failed to delete wiki`),
+        }
+      )
+      setDeleteConfirmOpen(false)
+      void navigate({ to: '/' })
+    } catch {
+      // toast already shown
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -557,32 +546,49 @@ function AccessTab() {
 
   const handleAdd = async (subject: string, subjectName: string, level: string) => {
     try {
-      await requestHelpers.post(apiUrl(endpoints.wiki.accessSet), { subject, level })
-      toast.success(t`Access set for ${subjectName}`)
+      await toastAction(
+        requestHelpers.post(apiUrl(endpoints.wiki.accessSet), { subject, level }),
+        {
+          loading: t`Setting access...`,
+          success: t`Access set for ${subjectName}`,
+          error: (err) => getErrorMessage(err, t`Failed to set access level`),
+        }
+      )
       void loadRules()
     } catch (err) {
-      toast.error(getErrorMessage(err, t`Failed to set access level`))
       throw err
     }
   }
 
   const handleLevelChange = async (subject: string, level: string) => {
     try {
-      await requestHelpers.post(apiUrl(endpoints.wiki.accessSet), { subject, level })
-      toast.success(t`Access updated`)
+      await toastAction(
+        requestHelpers.post(apiUrl(endpoints.wiki.accessSet), { subject, level }),
+        {
+          loading: t`Updating access...`,
+          success: t`Access level updated`,
+          error: (err) => getErrorMessage(err, t`Failed to update access level`),
+        }
+      )
       void loadRules()
-    } catch (err) {
-      toast.error(getErrorMessage(err, t`Failed to update access level`))
+    } catch {
+      // toast already shown
     }
   }
 
   const handleRevoke = async (subject: string) => {
     try {
-      await requestHelpers.post(apiUrl(endpoints.wiki.accessRevoke), { subject })
-      toast.success(t`Access removed`)
+      await toastAction(
+        requestHelpers.post(apiUrl(endpoints.wiki.accessRevoke), { subject }),
+        {
+          loading: t`Removing access...`,
+          success: t`Access removed`,
+          error: (err) => getErrorMessage(err, t`Failed to remove access`),
+        }
+      )
       void loadRules()
-    } catch (err) {
-      toast.error(getErrorMessage(err, t`Failed to remove access`))
+    } catch {
+      // toast already shown
     }
   }
 
@@ -667,14 +673,19 @@ function ReplicasTab() {
 
   const handleRemove = async (replicaId: string, name: string) => {
     setIsRemoving(true)
+    const displayName = name || `${replicaId.slice(0, 12)}...`
     try {
-      await requestHelpers.post(apiUrl(endpoints.wiki.replicaRemove), {
-        replica: replicaId,
-      })
-      toast.success(t`Replica "${name || `${replicaId.slice(0, 12)}...`}" removed`)
+      await toastAction(
+        requestHelpers.post(apiUrl(endpoints.wiki.replicaRemove), { replica: replicaId }),
+        {
+          loading: t`Removing replica...`,
+          success: t`Replica "${displayName}" removed`,
+          error: (err) => getErrorMessage(err, t`Failed to remove replica`),
+        }
+      )
       void loadReplicas()
-    } catch (err) {
-      toast.error(getErrorMessage(err, t`Failed to remove replica`))
+    } catch {
+      // toast already shown
     } finally {
       setIsRemoving(false)
     }
@@ -850,11 +861,17 @@ function RedirectsTab() {
   const handleDelete = async (source: string) => {
     setIsDeleting(true)
     try {
-      await requestHelpers.post(apiUrl(endpoints.wiki.redirectDelete), { source })
-      toast.success(t`Redirect "${source}" deleted`)
+      await toastAction(
+        requestHelpers.post(apiUrl(endpoints.wiki.redirectDelete), { source }),
+        {
+          loading: t`Deleting redirect...`,
+          success: t`Redirect "${source}" deleted`,
+          error: (err) => getErrorMessage(err, t`Failed to delete redirect`),
+        }
+      )
       void loadRedirects()
-    } catch (err) {
-      toast.error(getErrorMessage(err, t`Failed to delete redirect`))
+    } catch {
+      // toast already shown
     } finally {
       setIsDeleting(false)
     }
@@ -982,17 +999,23 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
 
     setIsCreating(true)
     try {
-      await requestHelpers.post(apiUrl(endpoints.wiki.redirectSet), {
-        source: source.trim(),
-        target: target.trim(),
-      })
-      toast.success(t`Redirect created`)
+      await toastAction(
+        requestHelpers.post(apiUrl(endpoints.wiki.redirectSet), {
+          source: source.trim(),
+          target: target.trim(),
+        }),
+        {
+          loading: t`Creating redirect...`,
+          success: t`Redirect created`,
+          error: (err) => getErrorMessage(err, t`Failed to create redirect`),
+        }
+      )
       setSource('')
       setTarget('')
       setOpen(false)
       onSuccess()
-    } catch (err) {
-      toast.error(getErrorMessage(err, t`Failed to create redirect`))
+    } catch {
+      // toast already shown
     } finally {
       setIsCreating(false)
     }

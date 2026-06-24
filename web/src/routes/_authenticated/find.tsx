@@ -8,7 +8,7 @@ import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { BookOpen } from 'lucide-react'
-import { FindEntityPage, requestHelpers, getAppPath } from '@mochi/web'
+import { FindEntityPage, toastAction, getErrorMessage, requestHelpers, getAppPath } from '@mochi/web'
 import { useWikiContext } from '@/context/wiki-context'
 import { useJoinWiki } from '@/hooks/use-wiki'
 import endpoints from '@/api/endpoints'
@@ -55,31 +55,30 @@ function FindWikisPage() {
     [info?.wikis]
   )
 
-  // Subscribe handler with retry logic for 502 errors
   const handleSubscribe = useCallback(async (wikiId: string, entity?: { location?: string; fingerprint?: string }) => {
-    return new Promise<void>((resolve, reject) => {
-      const onSuccess = (data: { fingerprint: string; home: string }) => {
-        navigate({ to: '/$wikiId/$page', params: { wikiId: data.fingerprint, page: data.home } })
-        resolve()
+    const joinWithRetry = async () => {
+      try {
+        return await joinWiki.mutateAsync({ target: wikiId, server: entity?.location || undefined })
+      } catch (error) {
+        const status = (error as { status?: number })?.status
+        if (status === 502 && entity?.location) {
+          return await joinWiki.mutateAsync({ target: wikiId })
+        }
+        throw error
       }
+    }
 
-      // Try with server location first, retry without if connection fails
-      joinWiki.mutate({ target: wikiId, server: entity?.location || undefined }, {
-        onSuccess,
-        onError: (error) => {
-          const status = (error as { status?: number })?.status
-          if (status === 502 && entity?.location) {
-            joinWiki.mutate({ target: wikiId }, {
-              onSuccess,
-              onError: reject,
-            })
-          } else {
-            reject(error)
-          }
-        },
+    try {
+      const data = await toastAction(joinWithRetry(), {
+        loading: t`Subscribing...`,
+        success: t`Subscribed`,
+        error: (e) => getErrorMessage(e, t`Failed to subscribe`),
       })
-    })
-  }, [joinWiki, navigate])
+      void navigate({ to: '/$wikiId/$page', params: { wikiId: data.fingerprint, page: data.home } })
+    } catch {
+      // toast already shown
+    }
+  }, [joinWiki, navigate, t])
 
   return (
     <FindEntityPage

@@ -25,6 +25,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
   toast,
+  toastAction,
   getErrorMessage,
   getAppPath,
   shellClipboardWrite,
@@ -69,12 +70,14 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   const handleUnsubscribe = useCallback(async () => {
     setIsUnsubscribing(true)
     try {
-      await requestHelpers.post(`${baseURL}unsubscribe`, {})
-      toast.success(t`Unsubscribed`)
+      await toastAction(requestHelpers.post(`${baseURL}unsubscribe`, {}), {
+        loading: t`Unsubscribing...`,
+        success: t`Unsubscribed`,
+        error: (error) => getErrorMessage(error, t`Failed to unsubscribe`),
+      })
       setUnsubscribeConfirmOpen(false)
       void navigate({ to: '/' })
-    } catch (error) {
-      toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
+    } catch {
       setIsUnsubscribing(false)
     }
   }, [baseURL, navigate, t])

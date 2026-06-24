@@ -8,7 +8,7 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { plural } from '@lingui/core/macro'
 import { useCallback, useEffect, useState } from 'react'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
-import { Button, ConfirmDialog, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, GeneralError, usePageTitle, toast, getErrorMessage, Main, Tooltip, TooltipTrigger, TooltipContent } from '@mochi/web'
+import { Button, ConfirmDialog, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, GeneralError, usePageTitle, toastAction, getErrorMessage, Main, Tooltip, TooltipTrigger, TooltipContent } from '@mochi/web'
 import {
   PageView,
   PageNotFound,
@@ -62,17 +62,18 @@ function WikiPageRoute() {
   const [unsubscribeConfirmOpen, setUnsubscribeConfirmOpen] = useState(false)
 
   // Unsubscribe handler
-  const handleUnsubscribe = useCallback(() => {
-    unsubscribeWiki.mutate(undefined, {
-      onSuccess: () => {
-        toast.success(t`Unsubscribed`)
-        setUnsubscribeConfirmOpen(false)
-        void navigate({ to: '/' })
-      },
-      onError: (error) => {
-        toast.error(getErrorMessage(error, t`Failed to unsubscribe`))
-      },
-    })
+  const handleUnsubscribe = useCallback(async () => {
+    try {
+      await toastAction(unsubscribeWiki.mutateAsync(), {
+        loading: t`Unsubscribing...`,
+        success: t`Unsubscribed`,
+        error: (error) => getErrorMessage(error, t`Failed to unsubscribe`),
+      })
+      setUnsubscribeConfirmOpen(false)
+      void navigate({ to: '/' })
+    } catch {
+      // toast already shown
+    }
   }, [unsubscribeWiki, navigate, t])
 
   // Can unsubscribe if viewing a subscribed wiki (has source)
