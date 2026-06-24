@@ -62,7 +62,7 @@ import { wikisRequest, getRssToken } from '@/api/request'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { usePermissions, useWikiContext } from '@/context/wiki-context'
-import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
+import { usePage, useUnsubscribeWiki, useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 import {
   cacheWikisList,
   setLastLocation,
@@ -553,6 +553,8 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
   const { openCreateDialog } = useSidebarContext()
   const queryClient = useQueryClient()
   const navigate = useNavigate()
+  const router = useRouter()
+  const joinWiki = useJoinWiki()
   const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
   const [unsubscribeId, setUnsubscribeId] = useState<string | null>(null)
 
@@ -627,15 +629,18 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
     setPendingWikiId(wiki.id)
     try {
       await toastAction(
-        wikisRequest.post(endpoints.wiki.join, { target: wiki.id, server: wiki.server || undefined }),
+        joinWikiWithRetry(joinWiki, wiki.id, wiki.server || undefined),
         {
           loading: t`Subscribing...`,
           success: t`Subscribed to ${wiki.name}`,
           error: (error) => getErrorMessage(error, t`Failed to subscribe`),
         }
       )
-      window.location.reload()
+      void router.invalidate()
+      void queryClient.invalidateQueries({ queryKey: ['wikis', 'recommendations'] })
     } catch {
+      // toast already shown
+    } finally {
       setPendingWikiId(null)
     }
   }

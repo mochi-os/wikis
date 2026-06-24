@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 import { BookOpen } from 'lucide-react'
 import { FindEntityPage, toastAction, getErrorMessage, requestHelpers, getAppPath } from '@mochi/web'
 import { useWikiContext } from '@/context/wiki-context'
-import { useJoinWiki } from '@/hooks/use-wiki'
+import { useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 import endpoints from '@/api/endpoints'
 
 interface RecommendedWiki {
@@ -56,25 +56,19 @@ function FindWikisPage() {
   )
 
   const handleSubscribe = useCallback(async (wikiId: string, entity?: { location?: string; fingerprint?: string }) => {
-    const joinWithRetry = async () => {
-      try {
-        return await joinWiki.mutateAsync({ target: wikiId, server: entity?.location || undefined })
-      } catch (error) {
-        const status = (error as { status?: number })?.status
-        if (status === 502 && entity?.location) {
-          return await joinWiki.mutateAsync({ target: wikiId })
-        }
-        throw error
-      }
-    }
-
     try {
-      const data = await toastAction(joinWithRetry(), {
-        loading: t`Subscribing...`,
-        success: t`Subscribed`,
-        error: (e) => getErrorMessage(e, t`Failed to subscribe`),
+      const data = await toastAction(
+        joinWikiWithRetry(joinWiki, wikiId, entity?.location || undefined),
+        {
+          loading: t`Subscribing...`,
+          success: t`Subscribed`,
+          error: (e) => getErrorMessage(e, t`Failed to subscribe`),
+        }
+      )
+      void navigate({
+        to: '/$wikiId/$page',
+        params: { wikiId: data.fingerprint ?? data.id, page: data.home },
       })
-      void navigate({ to: '/$wikiId/$page', params: { wikiId: data.fingerprint, page: data.home } })
     } catch {
       // toast already shown
     }

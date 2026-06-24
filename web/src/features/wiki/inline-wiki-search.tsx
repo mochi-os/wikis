@@ -8,7 +8,7 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { useNavigate } from '@tanstack/react-router'
 import { Search, Loader2, BookOpen } from 'lucide-react'
 import { Button, GeneralError, Input, toastAction, getErrorMessage } from '@mochi/web'
-import { useJoinWiki } from '@/hooks/use-wiki'
+import { useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 import { wikisRequest } from '@/api/request'
 import endpoints from '@/api/endpoints'
 
@@ -79,25 +79,23 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
 
   const handleSubscribe = async (wiki: DirectoryEntry) => {
     setPendingWikiId(wiki.id)
-    const joinWithRetry = async () => {
-      try {
-        return await joinWiki.mutateAsync({ target: wiki.id, server: wiki.location || undefined })
-      } catch (error) {
-        const status = (error as { status?: number })?.status
-        if (status === 502 && wiki.location) {
-          return await joinWiki.mutateAsync({ target: wiki.id })
-        }
-        throw error
-      }
-    }
     try {
-      const result = await toastAction(joinWithRetry(), {
-        loading: t`Subscribing...`,
-        success: t`Subscribed`,
-        error: (e) => getErrorMessage(e, t`Failed to subscribe`),
-      })
+      const result = await toastAction(
+        joinWikiWithRetry(joinWiki, wiki.id, wiki.location || undefined),
+        {
+          loading: t`Subscribing...`,
+          success: t`Subscribed`,
+          error: (e) => getErrorMessage(e, t`Failed to subscribe`),
+        }
+      )
       onRefresh?.()
-      void navigate({ to: '/$wikiId/$page', params: { wikiId: result.fingerprint || result.id, page: result.home || 'home' } })
+      void navigate({
+        to: '/$wikiId/$page',
+        params: {
+          wikiId: result.fingerprint ?? result.id,
+          page: result.home || 'home',
+        },
+      })
     } catch {
       // toast already shown
     } finally {

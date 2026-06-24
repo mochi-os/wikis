@@ -689,12 +689,33 @@ export function useCreateWiki() {
 
 // Join a remote wiki
 
-interface JoinWikiResponse {
+export interface JoinWikiResponse {
   id: string
   name: string
   fingerprint: string
   home: string
   message: string
+}
+
+type JoinWikiMutation = {
+  mutateAsync: (args: { target: string; server?: string }) => Promise<JoinWikiResponse>
+}
+
+/** Join with server; on 502 retry without server (same as find page). */
+export async function joinWikiWithRetry(
+  joinWiki: JoinWikiMutation,
+  target: string,
+  server?: string,
+): Promise<JoinWikiResponse> {
+  try {
+    return await joinWiki.mutateAsync({ target, server })
+  } catch (error) {
+    const status = (error as { status?: number })?.status
+    if (status === 502 && server) {
+      return await joinWiki.mutateAsync({ target })
+    }
+    throw error
+  }
 }
 
 export function useJoinWiki() {
