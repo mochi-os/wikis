@@ -74,6 +74,11 @@ export function WikiCommentThread({
 
   const timeAgo = formatTimestamp(comment.created)
 
+  // The author's display name is denormalised onto the comment when it syncs.
+  // If it hasn't arrived yet, fall back to a generic label — never the raw
+  // entity ID, which reads as corrupt data.
+  const authorName = comment.name || t`Unknown`
+
   const assetUrl = (slot: string) =>
     `${getAppPath()}/${comment.wiki}/-/comment/${comment.id}/asset/${slot}`
   const avatar = (
@@ -81,7 +86,7 @@ export function WikiCommentThread({
       src={assetUrl('avatar')}
       styleUrl={assetUrl('style')}
       seed={comment.author}
-      name={comment.name || comment.author}
+      name={authorName}
       size="xs"
       className="z-10"
     />
@@ -89,7 +94,7 @@ export function WikiCommentThread({
 
   const collapsedContent = (
     <div className="flex h-5 items-center gap-2 py-0.5 text-xs select-none">
-      <span className="text-muted-foreground font-medium">{comment.name || comment.author}</span>
+      <span className="text-muted-foreground font-medium">{authorName}</span>
       <span className="text-muted-foreground">&middot;</span>
       <span className="text-muted-foreground">{timeAgo}</span>
       <button
@@ -109,7 +114,7 @@ export function WikiCommentThread({
     <div className="space-y-1.5">
       <div className="group/row">
         <div className="flex h-5 items-center gap-2 text-xs">
-          <span className="text-foreground font-medium">{comment.name || comment.author}</span>
+          <span className="text-foreground font-medium">{authorName}</span>
           <span className="text-muted-foreground">&middot;</span>
           <span className="text-muted-foreground">{timeAgo}</span>
           {comment.edited > 0 && (

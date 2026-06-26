@@ -288,6 +288,18 @@ def broadcast_event(wiki, event, data, exclude=None):
         recipients.append(r["id"])
     mochi.broadcast.send(wiki, wiki, recipients, "wikis", event, data, exclude or "")
 
+# notify_websocket: tell any locally-open wiki UI that this wiki's content
+# changed, so the web refreshes pages/comments/tags the moment remote sync data
+# (the initial dump or a live broadcast) lands locally instead of staying stale
+# until a manual reload. The key is the wiki's fingerprint, matching the web's
+# websocket connection key. Distinct from notify(), which sends push/email.
+def notify_websocket(wiki):
+    if not wiki:
+        return
+    fp = mochi.entity.fingerprint(wiki)
+    if fp:
+        mochi.websocket.write(fp, {"type": "wiki/update", "wiki": wiki})
+
 # Helper: Remove attachment references from content
 def remove_attachment_refs(content, attachment_id):
     ref = "attachments/" + attachment_id
@@ -2288,6 +2300,8 @@ def event_page_create(e):
         notify_body = mochi.app.label("notifications.page_create.body", author=name or author[:9])
         notify("page/create", id, notify_title, notify_body, "/wikis/" + wiki + "/" + page, title, event_id="page/create:" + id)
 
+    notify_websocket(wiki)
+
 # Receive page/update event
 def event_page_update(e):
     wiki = e.header("to")
@@ -2367,6 +2381,8 @@ def event_page_update(e):
         notify_body = mochi.app.label("notifications.page_update.body", author=name or author[:9])
         notify("page/update", id, notify_title, notify_body, "/wikis/" + wiki + "/" + page, title, event_id="page/update:" + id + ":" + str(version))
 
+    notify_websocket(wiki)
+
 # Receive page/delete event
 def event_page_delete(e):
     wiki = e.header("to")
@@ -2423,6 +2439,8 @@ def event_page_delete(e):
     notify_body = mochi.app.label("notifications.page_delete.body", page=page_title)
     notify("page/delete", id, notify_title, notify_body, "/wikis/" + wiki + (("/" + page_slug) if page_slug else ""), page_title, event_id="page/delete:" + id + ":" + str(version))
 
+    notify_websocket(wiki)
+
 # Receive redirect/set event
 def event_redirect_set(e):
     wiki = e.header("to")
@@ -2466,6 +2484,8 @@ def event_redirect_set(e):
     # Insert or update redirect
     mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, source, target, created)
 
+    notify_websocket(wiki)
+
 # Receive redirect/delete event
 def event_redirect_delete(e):
     wiki = e.header("to")
@@ -2491,6 +2511,8 @@ def event_redirect_delete(e):
         return
 
     mochi.db.execute("delete from redirects where wiki=? and source=?", wiki, source)
+
+    notify_websocket(wiki)
 
 # Receive tag/add event
 def event_tag_add(e):
@@ -2526,6 +2548,8 @@ def event_tag_add(e):
     # Insert tag (ignore if already exists)
     mochi.db.execute("insert or ignore into tags (page, tag) values (?, ?)", page, tag)
 
+    notify_websocket(wiki)
+
 # Receive tag/remove event
 def event_tag_remove(e):
     page = e.content("page")
@@ -2553,6 +2577,8 @@ def event_tag_remove(e):
         return
 
     mochi.db.execute("delete from tags where page=? and tag=?", page, tag)
+
+    notify_websocket(wiki)
 
 # Receive setting/set event
 def event_setting_set(e):
@@ -2583,6 +2609,7 @@ def event_setting_set(e):
     # Only allow known settings
     if name == "home":
         mochi.db.execute("update wikis set home=? where id=?", value, wiki)
+        notify_websocket(wiki)
 
 # Handle rename event from source wiki
 def event_rename(e):
@@ -2595,6 +2622,7 @@ def event_rename(e):
     wiki = mochi.db.row("select id from wikis where source=?", wiki_id)
     if wiki:
         mochi.db.execute("update wikis set name=? where id=?", name, wiki["id"])
+        notify_websocket(wiki["id"])
 
 # REPLICATION
 
@@ -3005,6 +3033,7 @@ def event_attachment_create(e):
 
     if attachment:
         mochi.log.debug("Created attachment %s from replica %s", attachment_id, replica)
+        notify_websocket(wiki)
 
 # Handle attachment/delete event - replica notifies source that they deleted an attachment
 # Source deletes locally and broadcasts to other replicas
@@ -3038,6 +3067,7 @@ def event_attachment_delete(e):
     mochi.attachment.delete(attachment_id, [])
     broadcast_event(wiki, "attachment/remove", {"id": attachment_id}, exclude=sender)
     mochi.log.debug("Deleted attachment %s from replica %s", attachment_id, sender)
+    notify_websocket(wiki)
 
 # Handle attachment/fetch event - serve attachment file data to requester via stream
 def event_attachment_fetch(e):
@@ -3093,6 +3123,8 @@ def event_attachment_add(e):
         source = wikirow.get("source") or sender
         mochi.attachment.store(attachments, source, wiki)
 
+    notify_websocket(wiki)
+
 # P2P event: attachment/remove — delete attachment metadata
 def event_attachment_remove(e):
     wiki = e.header("to")
@@ -3113,6 +3145,8 @@ def event_attachment_remove(e):
     attachment_id = e.content("id")
     if attachment_id:
         mochi.attachment.delete(attachment_id, [])
+
+    notify_websocket(wiki)
 
 # Helper: Import wiki dump from sync response
 def import_sync_dump(wiki, dump):
@@ -3168,6 +3202,7 @@ def import_sync_dump(wiki, dump):
             if c_atts:
                 mochi.attachment.store(c_atts, source, c["id"])
 
+    notify_websocket(wiki)
     return True
 
 # Subscribe to a wiki - request to be added to their replicas list
@@ -3554,6 +3589,8 @@ def event_comment_create(e):
         notify_body = mochi.app.label("notifications.comment_create.body", author=name or author[:9], excerpt=excerpt)
         notify("comment/create", id, notify_title, notify_body, "/wikis/" + wiki + "/" + page + "/comments", page_title, event_id="comment/create:" + id)
 
+    notify_websocket(wiki)
+
 # P2P event: comment/edit
 def event_comment_edit(e):
     wiki = e.header("to")
@@ -3599,6 +3636,8 @@ def event_comment_edit(e):
             "edited": edited,
         }, exclude=sender)
 
+    notify_websocket(wiki)
+
 # P2P event: comment/delete
 def event_comment_delete(e):
     wiki = e.header("to")
@@ -3633,6 +3672,8 @@ def event_comment_delete(e):
             "wiki": wiki,
             "page": comment["page"],
         }, exclude=sender)
+
+    notify_websocket(wiki)
 
 # ATTACHMENTS
 
