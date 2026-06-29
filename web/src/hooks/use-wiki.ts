@@ -35,7 +35,7 @@ import type {
   WikiPermissions,
 } from '@/types/wiki'
 import endpoints from '@/api/endpoints'
-import { requestHelpers } from '@mochi/web'
+import { callWithServerFallback, requestHelpers } from '@mochi/web'
 import { wikisRequest } from '@/api/request'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 
@@ -707,15 +707,10 @@ export async function joinWikiWithRetry(
   target: string,
   server?: string,
 ): Promise<JoinWikiResponse> {
-  try {
-    return await joinWiki.mutateAsync({ target, server })
-  } catch (error) {
-    const status = (error as { status?: number })?.status
-    if (status === 502 && server) {
-      return await joinWiki.mutateAsync({ target })
-    }
-    throw error
-  }
+  return callWithServerFallback(
+    (s) => joinWiki.mutateAsync({ target, server: s }),
+    server,
+  )
 }
 
 export function useJoinWiki() {
