@@ -35,7 +35,7 @@ import type {
   WikiPermissions,
 } from '@/types/wiki'
 import endpoints from '@/api/endpoints'
-import { requestHelpers } from '@mochi/web'
+import { requestHelpers, MUTATION_SKIPPED, isMutationSkipped, textUnchanged, type MutationFnResult } from '@mochi/web'
 import { wikisRequest } from '@/api/request'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 
@@ -111,22 +111,36 @@ export function usePageRevision(slug: string, version: number, opts?: { enabled?
 export function useEditPage() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
-  return useMutation({
-    mutationFn: (data: {
+  return useMutation<
+    MutationFnResult<PageEditResponse>,
+    Error,
+    {
       slug: string
       title: string
       content: string
       comment?: string
-    }) =>
-      requestHelpers.post<PageEditResponse>(
+      original?: { title: string; content: string }
+    }
+  >({
+    mutationFn: async (data) => {
+      if (data.original) {
+        const titleSame = textUnchanged(data.title, data.original.title)
+        const contentSame = data.content === data.original.content
+        if (titleSame && contentSame) {
+          return MUTATION_SKIPPED
+        }
+      }
+      return requestHelpers.post<PageEditResponse>(
         e(endpoints.wiki.pageEdit(data.slug)),
         {
           title: data.title,
           content: data.content,
           comment: data.comment,
         }
-      ),
-    onSuccess: (_, variables) => {
+      )
+    },
+    onSuccess: (result, variables) => {
+      if (isMutationSkipped(result)) return
       queryClient.invalidateQueries({
         queryKey: ['wiki', 'page', variables.slug],
       })
@@ -441,13 +455,30 @@ export function useCreateComment() {
 export function useEditComment() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
-  return useMutation({
-    mutationFn: (data: { slug: string; id: string; body: string }) =>
-      requestHelpers.post<CommentEditResponse>(
+  return useMutation<
+    MutationFnResult<CommentEditResponse>,
+    Error,
+    {
+      slug: string
+      id: string
+      body: string
+      originalBody?: string
+    }
+  >({
+    mutationFn: async (data) => {
+      if (
+        data.originalBody !== undefined &&
+        textUnchanged(data.body, data.originalBody)
+      ) {
+        return MUTATION_SKIPPED
+      }
+      return requestHelpers.post<CommentEditResponse>(
         e(endpoints.wiki.commentEdit(data.slug)),
         { id: data.id, body: data.body }
-      ),
-    onSuccess: (_, variables) => {
+      )
+    },
+    onSuccess: (result, variables) => {
+      if (isMutationSkipped(result)) return
       queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
     },
   })

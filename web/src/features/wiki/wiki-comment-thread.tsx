@@ -18,6 +18,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  textUnchanged,
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
@@ -133,9 +134,17 @@ export function WikiCommentThread({
               <Button
                 size="sm"
                 className="h-7 text-xs"
-                disabled={!editBody.trim()}
+                disabled={
+                  !editBody.trim() ||
+                  textUnchanged(editBody.trim(), comment.body)
+                }
                 onClick={() => {
-                  onEdit?.(comment.id, editBody.trim())
+                  const trimmed = editBody.trim()
+                  if (textUnchanged(trimmed, comment.body)) {
+                    setEditing(false)
+                    return
+                  }
+                  onEdit?.(comment.id, trimmed)
                   setEditing(false)
                 }}
               >

@@ -5,7 +5,7 @@
 
 import { useState } from 'react'
 import { MessageSquare } from 'lucide-react'
-import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage } from '@mochi/web'
+import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage, textUnchanged, findCommentTextInTree } from '@mochi/web'
 import {
   usePageComments,
   useCreateComment,
@@ -57,8 +57,16 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
   }
 
   const handleEdit = (commentId: string, body: string) => {
+    const original = findCommentTextInTree(data?.comments ?? [], commentId, {
+      getId: (c) => c.id,
+      getText: (c) => c.body,
+      getChildren: (c) => c.children,
+    })
+    if (original !== undefined && textUnchanged(body, original)) {
+      return
+    }
     editComment.mutate(
-      { slug, id: commentId, body },
+      { slug, id: commentId, body, originalBody: original },
       {
         onError: (err) => toast.error(getErrorMessage(err)),
       }
