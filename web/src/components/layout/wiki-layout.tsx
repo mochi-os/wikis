@@ -23,6 +23,7 @@ import {
 import { SidebarProvider, useSidebarContext } from '@/context/sidebar-context'
 import { WikiProvider, useWikiContext } from '@/context/wiki-context'
 import { useCreateWiki } from '@/hooks/use-wiki'
+import { useWikiWebsocket } from '@/hooks/use-wiki-websocket'
 
 // Check if a string looks like an entity ID (9-char fingerprint or 50-51 char full ID)
 const ENTITY_ID_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
@@ -49,6 +50,12 @@ function WikiLayoutInner() {
   const { info } = useWikiContext()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+
+  // Refresh wiki content the moment remote sync data (initial dump or live
+  // broadcast) lands locally, instead of waiting for a manual reload. The
+  // websocket key is the wiki's fingerprint, matching the server's
+  // mochi.websocket.write(mochi.entity.fingerprint(wiki), ...).
+  useWikiWebsocket(info?.wiki?.fingerprint)
 
   // Handle "All wikis" click - navigate and refresh the list
   const handleAllWikisClick = useCallback(() => {
