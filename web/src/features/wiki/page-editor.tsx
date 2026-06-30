@@ -3,7 +3,7 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
@@ -36,6 +36,8 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  textChanged,
+  isMutationSkipped,
 } from '@mochi/web'
 import {
   useEditPage,
@@ -117,6 +119,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   const attachmentPageSlug = (isNew ? newSlug : slug).trim()
 
   const isPending = editPage.isPending || createPage.isPending
+
+  const pageDirty = useMemo(() => {
+    if (isNew) return true
+    if (!page) return true
+    return textChanged(title, page.title) || content !== page.content
+  }, [isNew, page, title, content])
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value
@@ -272,10 +280,15 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
         }
       )
     } else {
+      if (!pageDirty) {
+        return
+      }
+      const original = { title: page?.title ?? '', content: page?.content ?? '' }
       editPage.mutate(
-        { slug, title: title.trim(), content, comment: comment.trim() },
+        { slug, title: title.trim(), content, comment: comment.trim(), original },
         {
-          onSuccess: () => {
+          onSuccess: (result) => {
+            if (isMutationSkipped(result)) return
             toast.success(t`Page saved`)
             if (wikiId) {
               navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
@@ -375,7 +388,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
             <X className="me-2 h-4 w-4" />
             <Trans>Cancel</Trans>
           </Button>
-          <Button size="sm" onClick={handleSave} disabled={isPending}>
+          <Button size="sm" onClick={handleSave} disabled={isPending || (!isNew && !pageDirty)}>
             {isNew ? (
               <>
                 {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
