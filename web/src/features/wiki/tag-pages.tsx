@@ -33,7 +33,7 @@ export function TagPages({ tag, pages }: TagPagesProps) {
           </h1>
         </div>
         <Button variant="outline" asChild>
-          <Link to="/tags">
+          <Link preload={false} to="/tags">
             <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
             <Trans>All tags</Trans>
           </Link>
@@ -57,7 +57,7 @@ export function TagPages({ tag, pages }: TagPagesProps) {
       ) : (
         <div className="space-y-2">
           {pages.map((page) => (
-            <Link
+            <Link preload={false}
               key={page.page}
               to="/$page"
               params={{ page: page.page }}

@@ -67,22 +67,22 @@ export function PageHistory({
                 <TableRow key={revision.id}>
                   <TableCell className="font-mono">
                     {wikiId ? (
-                      <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }} className="text-primary hover:underline">
+                      <Link preload={false} to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }} className="text-primary hover:underline">
                         {revision.version}
                       </Link>
                     ) : (
-                      <Link to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }} className="text-primary hover:underline">
+                      <Link preload={false} to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }} className="text-primary hover:underline">
                         {revision.version}
                       </Link>
                     )}
                   </TableCell>
                   <TableCell>
                     {wikiId ? (
-                      <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }} className="text-primary hover:underline">
+                      <Link preload={false} to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }} className="text-primary hover:underline">
                         {revision.title}
                       </Link>
                     ) : (
-                      <Link to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }} className="text-primary hover:underline">
+                      <Link preload={false} to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }} className="text-primary hover:underline">
                         {revision.title}
                       </Link>
                     )}
@@ -112,11 +112,11 @@ export function PageHistory({
                         <TooltipTrigger asChild>
                           <Button variant="ghost" size="icon" asChild aria-label={t({ message: 'View', context: 'action' })}>
                             {wikiId ? (
-                              <Link to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }}>
+                              <Link preload={false} to="/$wikiId/$page/history/$version" params={{ wikiId, page: slug, version: String(revision.version) }}>
                                 <Eye className="h-4 w-4" />
                               </Link>
                             ) : (
-                              <Link to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }}>
+                              <Link preload={false} to="/$page/history/$version" params={{ page: slug, version: String(revision.version) }}>
                                 <Eye className="h-4 w-4" />
                               </Link>
                             )}
@@ -134,11 +134,11 @@ export function PageHistory({
                               aria-label={t`Revert to this version`}
                             >
                               {wikiId ? (
-                                <Link to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>
+                                <Link preload={false} to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>
                                   <RotateCcw className="h-4 w-4" />
                                 </Link>
                               ) : (
-                                <Link to="/$page/revert" params={{ page: slug }} search={{ version: revision.version }}>
+                                <Link preload={false} to="/$page/revert" params={{ page: slug }} search={{ version: revision.version }}>
                                   <RotateCcw className="h-4 w-4" />
                                 </Link>
                               )}

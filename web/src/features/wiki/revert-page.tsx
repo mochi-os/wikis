@@ -85,12 +85,12 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
         <CardFooter className="flex justify-between pt-4">
           <Button variant="outline" asChild>
             {wikiId ? (
-              <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
+              <Link preload={false} to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
                 <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
                 <Trans>Cancel</Trans>
               </Link>
             ) : (
-              <Link to="/$page/history" params={{ page: slug }}>
+              <Link preload={false} to="/$page/history" params={{ page: slug }}>
                 <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
                 <Trans>Cancel</Trans>
               </Link>

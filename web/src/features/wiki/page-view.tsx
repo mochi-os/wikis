@@ -293,12 +293,12 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
       {permissions.edit && (
         <Button asChild>
           {wikiId ? (
-            <Link to='/$wikiId/$page/edit' params={{ wikiId, page: slug }}>
+            <Link preload={false} to='/$wikiId/$page/edit' params={{ wikiId, page: slug }}>
               <Plus className='me-2 h-4 w-4' />
               <Trans>Create this page</Trans>
             </Link>
           ) : (
-            <Link to='/$page/edit' params={{ page: slug }}>
+            <Link preload={false} to='/$page/edit' params={{ page: slug }}>
               <Plus className='me-2 h-4 w-4' />
               <Trans>Create this page</Trans>
             </Link>

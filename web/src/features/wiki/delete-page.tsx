@@ -66,12 +66,12 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
         <CardFooter className="flex justify-between pt-4">
           <Button variant="outline" asChild>
             {wikiId ? (
-              <Link to="/$wikiId/$page" params={{ wikiId, page: slug }}>
+              <Link preload={false} to="/$wikiId/$page" params={{ wikiId, page: slug }}>
                 <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
                 <Trans>Cancel</Trans>
               </Link>
             ) : (
-              <Link to="/$page" params={{ page: slug }}>
+              <Link preload={false} to="/$page" params={{ page: slug }}>
                 <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
                 <Trans>Cancel</Trans>
               </Link>

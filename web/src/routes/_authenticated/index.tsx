@@ -804,6 +804,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                   highlighted={isSubscribed}
                   renderLink={(className) => (
                     <Link
+                      preload={false}
                       to='/$wikiId/$page'
                       params={{
                         wikiId: wiki.fingerprint ?? wiki.id,

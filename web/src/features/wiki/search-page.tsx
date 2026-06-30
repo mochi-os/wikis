@@ -99,7 +99,7 @@ interface SearchResultItemProps {
 function SearchResultItem({ result, wikiId }: SearchResultItemProps) {
   const { formatTimestamp } = useFormat()
   return (
-    <Link
+    <Link preload={false}
       to={wikiId ? '/$wikiId/$page' : '/$page'}
       params={wikiId ? { wikiId, page: result.page } : { page: result.page }}
       className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors"

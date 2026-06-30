@@ -210,8 +210,7 @@ const router = createRouter({
   routeTree,
   context: { queryClient },
   basepath: getBasepath(),
-  defaultPreload: 'intent',
-  defaultPreloadStaleTime: 0,
+  defaultPreload: false,
 })
 
 // Register the router instance for type safety

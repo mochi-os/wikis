@@ -56,7 +56,7 @@ export function ChangesList({ changes, wikiId, total, offset = 0, onLoadMore }: 
                 <TableRow key={change.id}>
                   <TableCell>
                     {wikiId ? (
-                      <Link
+                      <Link preload={false}
                         to="/$wikiId/$page"
                         params={{ wikiId, page: change.slug }}
                         className="font-medium hover:underline"
@@ -64,7 +64,7 @@ export function ChangesList({ changes, wikiId, total, offset = 0, onLoadMore }: 
                         {change.title}
                       </Link>
                     ) : (
-                      <Link
+                      <Link preload={false}
                         to="/$page"
                         params={{ page: change.slug }}
                         className="font-medium hover:underline"

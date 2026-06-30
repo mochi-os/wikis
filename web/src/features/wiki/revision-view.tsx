@@ -98,12 +98,12 @@ export function RevisionView({
             )}
             <Button variant="outline" size="sm" asChild>
               {wikiId ? (
-                <Link to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
+                <Link preload={false} to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
                   <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
                   <Trans>Back to history</Trans>
                 </Link>
               ) : (
-                <Link to="/$page/history" params={{ page: slug }}>
+                <Link preload={false} to="/$page/history" params={{ page: slug }}>
                   <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
                   <Trans>Back to history</Trans>
                 </Link>
@@ -112,12 +112,12 @@ export function RevisionView({
             {!isCurrentVersion && (
               <Button variant="outline" size="sm" asChild>
                 {wikiId ? (
-                  <Link to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>
+                  <Link preload={false} to="/$wikiId/$page/revert" params={{ wikiId, page: slug }} search={{ version: revision.version }}>
                     <RotateCcw className="me-2 h-4 w-4" />
                     <Trans>Revert to this version</Trans>
                   </Link>
                 ) : (
-                  <Link to="/$page/revert" params={{ page: slug }} search={{ version: revision.version }}>
+                  <Link preload={false} to="/$page/revert" params={{ page: slug }} search={{ version: revision.version }}>
                     <RotateCcw className="me-2 h-4 w-4" />
                     <Trans>Revert to this version</Trans>
                   </Link>

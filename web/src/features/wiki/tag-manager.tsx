@@ -95,7 +95,7 @@ export function TagManager({ slug, tags }: TagManagerProps) {
       {/* Existing tags */}
       {tags.map((tag) => (
         <Badge key={tag} variant="secondary" className={canEdit ? "group gap-1 pe-1" : ""}>
-          <Link to="/tag/$tag" params={{ tag }} className="hover:underline">
+          <Link preload={false} to="/tag/$tag" params={{ tag }} className="hover:underline">
             {tag}
           </Link>
           {canEdit && (

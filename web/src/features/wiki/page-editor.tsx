@@ -351,12 +351,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
         {attachmentPageSlug ? (
           <Button variant="outline" size="sm" asChild>
             {wikiId ? (
-              <Link to="/$wikiId/$page/attachments" params={{ wikiId, page: attachmentPageSlug }}>
+              <Link preload={false} to="/$wikiId/$page/attachments" params={{ wikiId, page: attachmentPageSlug }}>
                 <Image className="me-2 h-4 w-4" />
                 <Trans>Attachments</Trans>
               </Link>
             ) : (
-              <Link to="/$page/attachments" params={{ page: attachmentPageSlug }}>
+              <Link preload={false} to="/$page/attachments" params={{ page: attachmentPageSlug }}>
                 <Image className="me-2 h-4 w-4" />
                 <Trans>Attachments</Trans>
               </Link>
@@ -372,12 +372,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           {!isNew && permissions.delete && (
             <Button variant="outline" size="sm" asChild>
               {wikiId ? (
-                <Link to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
+                <Link preload={false} to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
                   <Trash2 className="me-2 h-4 w-4" />
                   <Trans>Delete page</Trans>
                 </Link>
               ) : (
-                <Link to="/$page/delete" params={{ page: slug }}>
+                <Link preload={false} to="/$page/delete" params={{ page: slug }}>
                   <Trash2 className="me-2 h-4 w-4" />
                   <Trans>Delete page</Trans>
                 </Link>

@@ -41,7 +41,7 @@ export function TagsList({ tags }: TagsListProps) {
       ) : (
         <div className="flex flex-wrap gap-3">
           {tags.map((tag) => (
-            <Link
+            <Link preload={false}
               key={tag.tag}
               to="/tag/$tag"
               params={{ tag: tag.tag }}
