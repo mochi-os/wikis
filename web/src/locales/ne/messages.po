@@ -13,11 +13,11 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/features/wiki/wiki-comment-thread.tsx:121
+#: src/features/wiki/wiki-comment-thread.tsx:122
 msgid "(edited)"
 msgstr "(सम्पादित)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:107
+#: src/features/wiki/wiki-comment-thread.tsx:108
 msgid "(expand)"
 msgstr "(विस्तार गर्नुहोस्)"
 
@@ -44,11 +44,11 @@ msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:858
+#: src/routes/_authenticated/index.tsx:859
 msgid "{0} pages"
 msgstr "{0} पृष्ठहरू"
 
-#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
+#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
 #: src/features/wiki/tag-pages.tsx:44
 msgid "{0} with this tag."
 msgstr "यो ट्यागको साथ {0}।"
@@ -63,7 +63,7 @@ msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# कागजात} other {# कागजातहरू}}"
 
 #: src/features/wiki/attachments-page.tsx:179
-#: src/features/wiki/page-editor.tsx:219
+#: src/features/wiki/page-editor.tsx:227
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# फाइल अपलोड भयो} other {# फाइलहरू अपलोड भए}}"
 
@@ -86,7 +86,7 @@ msgstr "{pageTitle} - टिप्पणीहरू"
 msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
 msgstr "{renamedCount, plural, one {१ पृष्ठको नाम परिवर्तन गरियो} other {# पृष्ठहरूको नाम परिवर्तन गरियो}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:105
+#: src/features/wiki/wiki-comment-thread.tsx:106
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# जवाफ} other {+# थप जवाफहरू}}"
 
@@ -97,7 +97,7 @@ msgstr "{totalDescendants, plural, one {# जवाफ} other {+# थप जव�
 msgid "{wikiName} settings"
 msgstr "{wikiName} सेटिङहरू"
 
-#: src/features/wiki/page-editor.tsx:400
+#: src/features/wiki/page-editor.tsx:413
 msgid "*No content*"
 msgstr "*सामग्री छैन*"
 
@@ -193,7 +193,7 @@ msgstr "नयाँ खाता थप्नुहोस्"
 msgid "Add redirect"
 msgstr "रिडाइरेक्ट थप्नुहोस्"
 
-#: ../../../lib/web/src/components/post-tags.tsx:129
+#: ../../../lib/web/src/components/post-tags.tsx:133
 msgid "Add tag..."
 msgstr "ट्याग थप्नुहोस्..."
 
@@ -251,11 +251,11 @@ msgstr "सबै wiki"
 msgid "Allow anyone to search for wiki"
 msgstr "जोसुकैलाई wiki खोज्न अनुमति दिनुहोस्"
 
-#: ../../../lib/web/src/lib/api-client.ts:192
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:159
 msgid "An error occurred"
 msgstr "त्रुटि भयो"
 
-#: ../../../lib/web/src/lib/api-client.ts:255
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:241
 msgid "An unexpected error occurred"
 msgstr "अनपेक्षित त्रुटि भयो"
 
@@ -263,7 +263,7 @@ msgstr "अनपेक्षित त्रुटि भयो"
 msgid "Are you absolutely sure?"
 msgstr "के तपाईं पूर्ण रूपमा निश्चित हुनुहुन्छ?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:293
+#: src/features/wiki/wiki-comment-thread.tsx:302
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "के तपाईं यो टिप्पणी मेटाउन निश्चित हुनुहुन्छ? यसले सबै जवाफहरू पनि मेटाउनेछ। यो कार्य फिर्ता गर्न सकिँदैन।"
 
@@ -274,7 +274,7 @@ msgstr "के तपाईं लग आउट गर्न निश्चि�
 #: src/features/wiki/wiki-page-content.tsx:366
 #: src/routes/_authenticated/$page/index.tsx:285
 #: src/routes/_authenticated/index.tsx:507
-#: src/routes/_authenticated/index.tsx:881
+#: src/routes/_authenticated/index.tsx:882
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "के तपाईं यो wiki बाट सदस्यता रद्द गर्न निश्चित हुनुहुन्छ?"
 
@@ -290,18 +290,18 @@ msgstr "बढ्दो क्रम"
 msgid "Attach files"
 msgstr "फाइलहरू एट्याच गर्नुहोस्"
 
-#: src/features/wiki/wiki-comment-thread.tsx:263
+#: src/features/wiki/wiki-comment-thread.tsx:272
 msgid "Attach reply files"
 msgstr "जवाफ फाइलहरू एट्याच गर्नुहोस्"
 
 #: src/features/wiki/attachments-page.tsx:243
-#: src/features/wiki/page-editor.tsx:236
+#: src/features/wiki/page-editor.tsx:244
 msgid "Attachment deleted"
 msgstr "एट्याचमेन्ट मेटाइयो"
 
-#: src/features/wiki/page-editor.tsx:343
-#: src/features/wiki/page-editor.tsx:348
-#: src/features/wiki/page-editor.tsx:355
+#: src/features/wiki/page-editor.tsx:356
+#: src/features/wiki/page-editor.tsx:361
+#: src/features/wiki/page-editor.tsx:368
 #: src/routes/_authenticated/$page/attachments.tsx:31
 #: src/routes/_authenticated/$page/attachments.tsx:42
 #: src/routes/_authenticated/$wikiId/$page/attachments.tsx:40
@@ -401,12 +401,12 @@ msgstr "पृष्ठमा फर्कनुहोस्"
 msgid "Back to wikis"
 msgstr "wiki हरूमा फर्कनुहोस्"
 
-#: src/features/wiki/page-comments.tsx:96
+#: src/features/wiki/page-comments.tsx:104
 msgid "Be the first to comment on this page."
 msgstr "यो पृष्ठमा टिप्पणी गर्ने पहिलो व्यक्ति बन्नुहोस्।"
 
-#: ../../../lib/web/src/components/post-tags.tsx:172
-#: ../../../lib/web/src/components/post-tags.tsx:184
+#: ../../../lib/web/src/components/post-tags.tsx:176
+#: ../../../lib/web/src/components/post-tags.tsx:188
 msgid "Boost interest"
 msgstr "रुचि बढाउनुहोस्"
 
@@ -415,7 +415,7 @@ msgstr "रुचि बढाउनुहोस्"
 msgid "Both source and target are required"
 msgstr "स्रोत र लक्ष्य दुवै आवश्यक छन्"
 
-#: src/features/wiki/page-editor.tsx:475
+#: src/features/wiki/page-editor.tsx:488
 msgid "Briefly describe your changes"
 msgstr "तपाईंका परिवर्तनहरू संक्षेपमा वर्णन गर्नुहोस्"
 
@@ -435,14 +435,14 @@ msgstr "ट्यागद्वारा पृष्ठहरू ब्रा�
 #: src/features/wiki/comment-form.tsx:109
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
-#: src/features/wiki/page-editor.tsx:376
+#: src/features/wiki/page-editor.tsx:389
 #: src/features/wiki/redirects-page.tsx:173
 #: src/features/wiki/redirects-page.tsx:271
 #: src/features/wiki/rename-page-dialog.tsx:128
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:136
+#: src/features/wiki/wiki-comment-thread.tsx:137
 #: src/features/wiki/wiki-settings.tsx:796
 #: src/features/wiki/wiki-settings.tsx:955
 #: src/features/wiki/wiki-settings.tsx:1068
@@ -450,7 +450,7 @@ msgstr "ट्यागद्वारा पृष्ठहरू ब्रा�
 msgid "Cancel"
 msgstr "रद्द गर्नुहोस्"
 
-#: src/features/wiki/wiki-comment-thread.tsx:272
+#: src/features/wiki/wiki-comment-thread.tsx:281
 msgid "Cancel reply"
 msgstr "जवाफ रद्द गर्नुहोस्"
 
@@ -560,8 +560,8 @@ msgstr "खोजी बन्द गर्नुहोस्"
 
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:101
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:110
-#: ../../../lib/web/src/components/tree-row.tsx:253
-#: ../../../lib/web/src/components/tree-row.tsx:267
+#: ../../../lib/web/src/components/tree-row.tsx:338
+#: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Collapse"
 msgstr "संक्षिप्त गर्नुहोस्"
 
@@ -602,7 +602,7 @@ msgstr "परिवर्तनहरू तुलना गर्नुहो�
 msgid "Confirm"
 msgstr "पुष्टि गर्नुहोस्"
 
-#: src/features/wiki/page-editor.tsx:456
+#: src/features/wiki/page-editor.tsx:469
 msgid "Content"
 msgstr "सामग्री"
 
@@ -666,7 +666,7 @@ msgstr "एउटा URL बाट अर्कोमा रिडाइरे�
 msgid "Create a redirect to forward one URL to another."
 msgstr "एक URL लाई अर्कोमा फरवार्ड गर्न रिडाइरेक्ट सिर्जना गर्नुहोस्।"
 
-#: src/features/wiki/page-editor.tsx:382
+#: src/features/wiki/page-editor.tsx:395
 msgid "Create page"
 msgstr "पृष्ठ सिर्जना गर्नुहोस्"
 
@@ -708,7 +708,7 @@ msgstr "रिडिरेक्ट सिर्जना गर्दै..."
 msgid "Creating wiki..."
 msgstr "विकि सिर्जना गर्दै..."
 
-#: src/features/wiki/page-editor.tsx:382
+#: src/features/wiki/page-editor.tsx:395
 #: src/features/wiki/redirects-page.tsx:274
 #: src/features/wiki/wiki-settings.tsx:1071
 msgid "Creating..."
@@ -751,10 +751,10 @@ msgstr "पूर्वनिर्धारित AI खाता"
 
 #: src/features/wiki/attachments-page.tsx:491
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/page-editor.tsx:625
+#: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:200
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/wiki-comment-thread.tsx:209
+#: src/features/wiki/wiki-comment-thread.tsx:303
 #: src/features/wiki/wiki-page-content.tsx:285
 #: src/features/wiki/wiki-settings.tsx:960
 msgid "Delete"
@@ -762,7 +762,7 @@ msgstr "मेटाउनुहोस्"
 
 #. placeholder {0}: pendingDelete.name
 #: src/features/wiki/attachments-page.tsx:490
-#: src/features/wiki/page-editor.tsx:622
+#: src/features/wiki/page-editor.tsx:635
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "«{0}» मेटाउने हो? यो पूर्ववत गर्न सकिँदैन।"
 
@@ -771,19 +771,19 @@ msgstr "«{0}» मेटाउने हो? यो पूर्ववत ग�
 #: src/features/wiki/attachments-page.tsx:590
 #: src/features/wiki/attachments-page.tsx:685
 #: src/features/wiki/attachments-page.tsx:694
-#: src/features/wiki/page-editor.tsx:575
-#: src/features/wiki/page-editor.tsx:584
-#: src/features/wiki/page-editor.tsx:619
+#: src/features/wiki/page-editor.tsx:588
+#: src/features/wiki/page-editor.tsx:597
+#: src/features/wiki/page-editor.tsx:632
 msgid "Delete attachment"
 msgstr "एट्याचमेन्ट मेटाउनुहोस्"
 
-#: src/features/wiki/wiki-comment-thread.tsx:292
+#: src/features/wiki/wiki-comment-thread.tsx:301
 msgid "Delete comment"
 msgstr "टिप्पणी मेटाउनुहोस्"
 
 #: src/features/wiki/delete-page.tsx:56
-#: src/features/wiki/page-editor.tsx:364
-#: src/features/wiki/page-editor.tsx:369
+#: src/features/wiki/page-editor.tsx:377
+#: src/features/wiki/page-editor.tsx:382
 msgid "Delete page"
 msgstr "पृष्ठ मेटाउनुहोस्"
 
@@ -894,8 +894,8 @@ msgstr "यहाँ फाइलहरू तान्नुहोस् र �
 msgid "Dyslexia-friendly"
 msgstr "डिस्लेक्सिया-मैत्रीपूर्ण"
 
-#: src/features/wiki/page-editor.tsx:321
-#: src/features/wiki/wiki-comment-thread.tsx:189
+#: src/features/wiki/page-editor.tsx:334
+#: src/features/wiki/wiki-comment-thread.tsx:198
 #: src/features/wiki/wiki-page-content.tsx:259
 #: src/routes/_authenticated/$page/index.tsx:200
 #: src/routes/_authenticated/index.tsx:399
@@ -910,7 +910,7 @@ msgstr "{label} सम्पादन गर्नुहोस्"
 msgid "Edit and view"
 msgstr "सम्पादन र हेर्नुहोस्"
 
-#: src/features/wiki/page-editor.tsx:470
+#: src/features/wiki/page-editor.tsx:483
 msgid "Edit summary (optional)"
 msgstr "सम्पादन सारांश (वैकल्पिक)"
 
@@ -965,8 +965,8 @@ msgstr "उदाहरण: «home», «welcome», «index»"
 
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:101
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:110
-#: ../../../lib/web/src/components/tree-row.tsx:253
-#: ../../../lib/web/src/components/tree-row.tsx:267
+#: ../../../lib/web/src/components/tree-row.tsx:338
+#: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Expand"
 msgstr "विस्तार गर्नुहोस्"
 
@@ -990,7 +990,7 @@ msgstr "ट्याग थप्न असफल"
 msgid "Failed to copy"
 msgstr "प्रतिलिपि गर्न असफल"
 
-#: src/features/wiki/page-editor.tsx:270
+#: src/features/wiki/page-editor.tsx:278
 msgid "Failed to create page"
 msgstr "पृष्ठ सिर्जना गर्न असफल"
 
@@ -1004,7 +1004,7 @@ msgid "Failed to create wiki"
 msgstr "विकी सिर्जना गर्न असफल"
 
 #: src/features/wiki/attachments-page.tsx:247
-#: src/features/wiki/page-editor.tsx:240
+#: src/features/wiki/page-editor.tsx:248
 msgid "Failed to delete attachment"
 msgstr "एट्याचमेन्ट मेटाउन असफल"
 
@@ -1079,7 +1079,7 @@ msgstr "विकीको नाम परिवर्तन गर्न अ�
 msgid "Failed to revert page"
 msgstr "पृष्ठ रिभर्ट गर्न असफल"
 
-#: src/features/wiki/page-editor.tsx:287
+#: src/features/wiki/page-editor.tsx:300
 msgid "Failed to save page"
 msgstr "पृष्ठ सुरक्षित गर्न असफल"
 
@@ -1112,7 +1112,7 @@ msgstr "विकी सिङ्क गर्न असफल"
 #: src/features/wiki/wiki-page-content.tsx:76
 #: src/routes/_authenticated/$page/index.tsx:70
 #: src/routes/_authenticated/index.tsx:303
-#: src/routes/_authenticated/index.tsx:892
+#: src/routes/_authenticated/index.tsx:893
 msgid "Failed to unsubscribe"
 msgstr "सदस्यता हटाउन असफल"
 
@@ -1125,7 +1125,7 @@ msgid "Failed to update category"
 msgstr "वर्ग अद्यावधिक गर्न असफल"
 
 #: src/features/wiki/attachments-page.tsx:148
-#: src/features/wiki/page-editor.tsx:188
+#: src/features/wiki/page-editor.tsx:196
 msgid "Failed to upload files"
 msgstr "फाइलहरू अपलोड गर्न असफल"
 
@@ -1154,7 +1154,7 @@ msgstr "सम्म"
 msgid "Floating"
 msgstr "फ्लोटिङ"
 
-#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
+#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link preload={false} to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
 #: src/features/wiki/search-page.tsx:81
 msgid "Found {0} for \"{debouncedQuery}\""
 msgstr "«{debouncedQuery}» का लागि {0} फेला पर्‍यो"
@@ -1272,7 +1272,7 @@ msgstr "तस्बिर"
 msgid "Images"
 msgstr "छविहरू"
 
-#: src/features/wiki/page-editor.tsx:495
+#: src/features/wiki/page-editor.tsx:508
 msgid "images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration."
 msgstr "छविहरू, PDF, DOC, DOCX, TXT, र MD। ठूला अपलोडहरू पनि तपाईंको सर्भर वा प्रोक्सी कन्फिगरेसनद्वारा सीमित हुन सक्छन्।"
 
@@ -1280,11 +1280,11 @@ msgstr "छविहरू, PDF, DOC, DOCX, TXT, र MD। ठूला अप�
 msgid "Imperial"
 msgstr "इम्पेरियल"
 
-#: src/features/wiki/page-editor.tsx:336
+#: src/features/wiki/page-editor.tsx:349
 msgid "Insert"
 msgstr "घुसाउनुहोस्"
 
-#: src/features/wiki/page-editor.tsx:486
+#: src/features/wiki/page-editor.tsx:499
 msgid "Insert attachment"
 msgstr "एट्याचमेन्ट घुसाउनुहोस्"
 
@@ -1355,6 +1355,10 @@ msgstr "सूची दृश्य"
 msgid "Load more"
 msgstr "थप लोड गर्नुहोस्"
 
+#: ../../../lib/web/src/components/ui/loading-content.tsx:29
+msgid "Loading content…"
+msgstr "सामग्री लोड हुँदैछ…"
+
 #: ../../../lib/web/src/components/ui/load-more.tsx:35
 #: ../../../lib/web/src/features/document/document-page.tsx:90
 msgid "Loading…"
@@ -1404,7 +1408,7 @@ msgstr "मेट्रिक"
 msgid "Monday"
 msgstr "सोमबार"
 
-#: src/features/wiki/page-editor.tsx:425
+#: src/features/wiki/page-editor.tsx:438
 msgid "my-page-name"
 msgstr "my-page-name"
 
@@ -1421,7 +1425,7 @@ msgstr "नाममा < वा > वर्णहरू हुन सक्द�
 msgid "Name must be 100 characters or less"
 msgstr "नाम १०० वर्ण वा सोभन्दा कम हुनुपर्छ"
 
-#: ../../../lib/web/src/lib/api-client.ts:300
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:288
 msgid "Network error"
 msgstr "नेटवर्क त्रुटि"
 
@@ -1479,7 +1483,7 @@ msgid "No attachments match your search"
 msgstr "तपाईंको खोजसँग मेल खाने कुनै पनि संलग्नक छैनन्"
 
 #: src/features/wiki/attachments-page.tsx:438
-#: src/features/wiki/page-editor.tsx:548
+#: src/features/wiki/page-editor.tsx:561
 msgid "No attachments yet"
 msgstr "अहिलेसम्म कुनै एट्याचमेन्ट छैन"
 
@@ -1487,7 +1491,7 @@ msgstr "अहिलेसम्म कुनै एट्याचमेन्�
 msgid "No changes yet"
 msgstr "अहिलेसम्म कुनै परिवर्तन छैन"
 
-#: src/features/wiki/page-comments.tsx:95
+#: src/features/wiki/page-comments.tsx:103
 msgid "No comments yet"
 msgstr "अहिलेसम्म कुनै टिप्पणी छैन"
 
@@ -1596,7 +1600,7 @@ msgid "Oops! Page Not Found!"
 msgstr "ओहो! पृष्ठ भेटिएन!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:815
+#: src/routes/_authenticated/index.tsx:816
 msgid "Open {0}"
 msgstr "{0} खोल्नुहोस्"
 
@@ -1680,7 +1684,7 @@ msgstr "«{title}» पृष्ठ मेटाइयो"
 msgid "Page actions"
 msgstr "पृष्ठ कार्यहरू"
 
-#: src/features/wiki/page-editor.tsx:262
+#: src/features/wiki/page-editor.tsx:270
 msgid "Page created"
 msgstr "पृष्ठ सिर्जना गरियो"
 
@@ -1691,19 +1695,19 @@ msgstr "पृष्ठ सिर्जना गरियो"
 msgid "Page not found"
 msgstr "पृष्ठ भेटिएन"
 
-#: src/features/wiki/page-editor.tsx:279
+#: src/features/wiki/page-editor.tsx:292
 msgid "Page saved"
 msgstr "पृष्ठ बचत गरियो"
 
-#: src/features/wiki/page-editor.tsx:412
+#: src/features/wiki/page-editor.tsx:425
 msgid "Page title"
 msgstr "पृष्ठ शीर्षक"
 
-#: src/features/wiki/page-editor.tsx:419
+#: src/features/wiki/page-editor.tsx:432
 msgid "Page URL"
 msgstr "पृष्ठ URL"
 
-#: src/features/wiki/page-editor.tsx:254
+#: src/features/wiki/page-editor.tsx:262
 msgid "Page URL is required"
 msgstr "पृष्ठ URL आवश्यक छ"
 
@@ -1727,11 +1731,11 @@ msgstr "पासकीहरू"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "यो विकी र यसका सम्पूर्ण सामग्री स्थायी रूपमा मेटाउनुहोस्। यो पूर्ववत गर्न सकिँदैन।"
 
-#: ../../../lib/web/src/lib/api-client.ts:301
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:289
 msgid "Please check your internet connection and try again."
 msgstr "कृपया आफ्नो इन्टरनेट जडान जाँच गरी पुनः प्रयास गर्नुहोस्।"
 
-#: src/features/wiki/page-editor.tsx:326
+#: src/features/wiki/page-editor.tsx:339
 msgid "Preview"
 msgstr "पूर्वावलोकन"
 
@@ -1754,8 +1758,8 @@ msgstr "प्रोफाइल"
 msgid "Raised"
 msgstr "उठाइएको"
 
-#: src/features/wiki/page-editor.tsx:435
-#: src/features/wiki/page-editor.tsx:441
+#: src/features/wiki/page-editor.tsx:448
+#: src/features/wiki/page-editor.tsx:454
 msgid "Re-derive from title"
 msgstr "शीर्षकबाट पुनः व्युत्पन्न गर्नुहोस्"
 
@@ -1824,8 +1828,8 @@ msgstr "लग इनमा रिडाइरेक्ट गर्दै।"
 msgid "Redirects"
 msgstr "रिडाइरेक्टहरू"
 
-#: ../../../lib/web/src/components/post-tags.tsx:192
-#: ../../../lib/web/src/components/post-tags.tsx:204
+#: ../../../lib/web/src/components/post-tags.tsx:196
+#: ../../../lib/web/src/components/post-tags.tsx:208
 msgid "Reduce interest"
 msgstr "रुचि घटाउनुहोस्"
 
@@ -1843,8 +1847,8 @@ msgstr "२४ घण्टाभित्र सापेक्ष, अन्�
 #: src/features/wiki/comment-form.tsx:84
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
-#: src/features/wiki/wiki-comment-thread.tsx:240
-#: src/features/wiki/wiki-comment-thread.tsx:244
+#: src/features/wiki/wiki-comment-thread.tsx:249
+#: src/features/wiki/wiki-comment-thread.tsx:253
 #: src/features/wiki/wiki-settings.tsx:801
 msgid "Remove"
 msgstr "हटाउनुहोस्"
@@ -1858,8 +1862,8 @@ msgstr "पहुँच नियम हटाउनुहोस्"
 msgid "Remove access?"
 msgstr "पहुँच हटाउने?"
 
-#: ../../../lib/web/src/components/post-tags.tsx:212
-#: ../../../lib/web/src/components/post-tags.tsx:224
+#: ../../../lib/web/src/components/post-tags.tsx:216
+#: ../../../lib/web/src/components/post-tags.tsx:228
 msgid "Remove interest"
 msgstr "रुचि हटाउनुहोस्"
 
@@ -1921,12 +1925,12 @@ msgstr "विकी रेप्लिकेट गर्नुहोस्"
 msgid "Replicating..."
 msgstr "रेप्लिकेट गर्दै..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:176
+#: src/features/wiki/wiki-comment-thread.tsx:185
 msgid "Reply"
 msgstr "जवाफ दिनुहोस्"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:210
+#: src/features/wiki/wiki-comment-thread.tsx:219
 msgid "Reply to {0}..."
 msgstr "{0} लाई जवाफ..."
 
@@ -2010,8 +2014,8 @@ msgstr "शनिबार"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
-#: src/features/wiki/page-editor.tsx:387
-#: src/features/wiki/wiki-comment-thread.tsx:148
+#: src/features/wiki/page-editor.tsx:400
+#: src/features/wiki/wiki-comment-thread.tsx:157
 msgid "Save"
 msgstr "सुरक्षित गर्नुहोस्"
 
@@ -2019,7 +2023,7 @@ msgstr "सुरक्षित गर्नुहोस्"
 msgid "Save changes"
 msgstr "परिवर्तनहरू सुरक्षित गर्नुहोस्"
 
-#: src/features/wiki/page-editor.tsx:387
+#: src/features/wiki/page-editor.tsx:400
 #: src/features/wiki/wiki-settings.tsx:279
 #: src/features/wiki/wiki-settings.tsx:306
 #: src/features/wiki/wiki-settings.tsx:454
@@ -2107,7 +2111,7 @@ msgstr "पहुँच नियम छान्नुहोस्"
 msgid "Select account type"
 msgstr "खाता प्रकार छान्नुहोस्"
 
-#: src/features/wiki/page-editor.tsx:488
+#: src/features/wiki/page-editor.tsx:501
 msgid "Select an attachment to insert into your page, or upload a new file."
 msgstr "आफ्नो पृष्ठमा सम्मिलित गर्न एट्याचमेन्ट छान्नुहोस्, वा नयाँ फाइल अपलोड गर्नुहोस्।"
 
@@ -2143,7 +2147,7 @@ msgstr "टिप्पणी पठाउनुहोस्"
 msgid "Send email"
 msgstr "इमेल पठाउनुहोस्"
 
-#: src/features/wiki/wiki-comment-thread.tsx:281
+#: src/features/wiki/wiki-comment-thread.tsx:290
 msgid "Send reply"
 msgstr "जवाफ पठाउनुहोस्"
 
@@ -2151,8 +2155,8 @@ msgstr "जवाफ पठाउनुहोस्"
 msgid "Serif"
 msgstr "सेरिफ"
 
-#: ../../../lib/web/src/lib/api-client.ts:259
-#: ../../../lib/web/src/lib/api-client.ts:284
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:245
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:271
 msgid "Server error"
 msgstr "सर्भर त्रुटि"
 
@@ -2161,7 +2165,7 @@ msgstr "सर्भर त्रुटि"
 msgid "Server rules"
 msgstr "सर्भर नियमहरू"
 
-#: ../../../lib/web/src/lib/api-client.ts:227
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:209
 msgid "Session expired"
 msgstr "सेसनको म्याद सकियो"
 
@@ -2290,7 +2294,7 @@ msgstr "सदस्यता"
 msgid "Sunday"
 msgstr "आइतबार"
 
-#: src/features/wiki/page-editor.tsx:493
+#: src/features/wiki/page-editor.tsx:506
 msgid "Supported files"
 msgstr "समर्थित फाइलहरू"
 
@@ -2340,8 +2344,8 @@ msgstr "ट्याग पहिले नै अवस्थित छ"
 msgid "Tag: {tag}"
 msgstr "ट्याग: {tag}"
 
-#: ../../../lib/web/src/components/post-tags.tsx:96
-#: ../../../lib/web/src/components/post-tags.tsx:107
+#: ../../../lib/web/src/components/post-tags.tsx:100
+#: ../../../lib/web/src/components/post-tags.tsx:111
 #: src/features/wiki/wiki-page-content.tsx:300
 #: src/routes/_authenticated/$page/index.tsx:242
 #: src/routes/_authenticated/index.tsx:426
@@ -2412,12 +2416,12 @@ msgid "This action cannot be undone. This will permanently delete the wiki and a
 msgstr "यो कार्य फिर्ता गर्न सकिँदैन। यसले विकि र यसका सबै सामग्रीहरूलाई स्थायी रूपमा मेटाउनेछ।"
 
 #: src/features/wiki/attachments-page.tsx:145
-#: src/features/wiki/page-editor.tsx:185
+#: src/features/wiki/page-editor.tsx:193
 msgid "This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit."
 msgstr "यो फाइल हालको सर्भर अपलोड सीमाका लागि निकै ठूलो छ। सानो फाइल प्रयास गर्नुहोस् वा सर्भर वा प्रोक्सी अपलोड आकार सीमा बढाउनुहोस्।"
 
 #: src/features/wiki/attachments-page.tsx:156
-#: src/features/wiki/page-editor.tsx:196
+#: src/features/wiki/page-editor.tsx:204
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "यो फाइल अपलोड गर्न निकै ठूलो छ। सानो फाइल प्रयास गर्नुहोस्।"
 
@@ -2425,7 +2429,7 @@ msgstr "यो फाइल अपलोड गर्न निकै ठूल�
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "यो विकिले स्रोत विकिमा सदस्यता लिएको छ र त्यसबाट अद्यावधिक प्राप्त गर्छ।"
 
-#: src/features/wiki/page-editor.tsx:446
+#: src/features/wiki/page-editor.tsx:459
 msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
 msgstr "यो पृष्ठको मार्ग हुनेछ। साना अक्षर, संख्या, र हाइफन प्रयोग गर्नुहोस्।"
 
@@ -2450,12 +2454,12 @@ msgstr "यसले «{0}» मा अपडेट पठाउन रोक्
 msgid "Thursday"
 msgstr "बिहीबार"
 
-#: src/features/wiki/page-editor.tsx:407
+#: src/features/wiki/page-editor.tsx:420
 #: src/features/wiki/page-history.tsx:56
 msgid "Title"
 msgstr "शीर्षक"
 
-#: src/features/wiki/page-editor.tsx:248
+#: src/features/wiki/page-editor.tsx:256
 msgid "Title is required"
 msgstr "शीर्षक आवश्यक छ"
 
@@ -2537,7 +2541,7 @@ msgstr "प्रयोगकर्ता खोज्न टाइप गर्
 msgid "Type to search..."
 msgstr "खोज्न टाइप गर्नुहोस्..."
 
-#: ../../../lib/web/src/lib/api-client.ts:280
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:267
 msgid "Unable to connect to remote server"
 msgstr "रिमोट सर्भरमा जडान गर्न सकिएन"
 
@@ -2562,7 +2566,7 @@ msgstr "यो विकिका लागि अद्वितीय पह�
 msgid "United States"
 msgstr "संयुक्त राज्य अमेरिका"
 
-#: src/features/wiki/wiki-comment-thread.tsx:80
+#: src/features/wiki/wiki-comment-thread.tsx:81
 msgid "Unknown"
 msgstr "अज्ञात"
 
@@ -2575,16 +2579,16 @@ msgstr "अज्ञात"
 #: src/routes/_authenticated/index.tsx:479
 #: src/routes/_authenticated/index.tsx:506
 #: src/routes/_authenticated/index.tsx:508
-#: src/routes/_authenticated/index.tsx:848
-#: src/routes/_authenticated/index.tsx:880
-#: src/routes/_authenticated/index.tsx:882
+#: src/routes/_authenticated/index.tsx:849
+#: src/routes/_authenticated/index.tsx:881
+#: src/routes/_authenticated/index.tsx:883
 msgid "Unsubscribe"
 msgstr "सदस्यता हटाउनुहोस्"
 
 #: src/features/wiki/wiki-page-content.tsx:75
 #: src/routes/_authenticated/$page/index.tsx:69
 #: src/routes/_authenticated/index.tsx:302
-#: src/routes/_authenticated/index.tsx:891
+#: src/routes/_authenticated/index.tsx:892
 msgid "Unsubscribed"
 msgstr "सदस्यता हटाइयो"
 
@@ -2594,22 +2598,22 @@ msgstr "सदस्यता हटाइयो"
 #: src/routes/_authenticated/$page/index.tsx:228
 #: src/routes/_authenticated/index.tsx:301
 #: src/routes/_authenticated/index.tsx:479
-#: src/routes/_authenticated/index.tsx:847
-#: src/routes/_authenticated/index.tsx:890
+#: src/routes/_authenticated/index.tsx:848
+#: src/routes/_authenticated/index.tsx:891
 msgid "Unsubscribing..."
 msgstr "सदस्यता हटाउँदै..."
 
 #: src/features/wiki/attachments-page.tsx:138
-#: src/features/wiki/page-editor.tsx:178
+#: src/features/wiki/page-editor.tsx:186
 msgid "Unsupported file type: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "असमर्थित फाइल प्रकार: {names}। समर्थित फाइलहरू: छविहरू, PDF, DOC, DOCX, TXT, र MD।"
 
 #: src/features/wiki/attachments-page.tsx:139
-#: src/features/wiki/page-editor.tsx:179
+#: src/features/wiki/page-editor.tsx:187
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "असमर्थित फाइल प्रकारहरू: {names}। समर्थित फाइलहरू: छविहरू, PDF, DOC, DOCX, TXT, र MD।"
 
-#: src/features/wiki/page-editor.tsx:399
+#: src/features/wiki/page-editor.tsx:412
 msgid "Untitled"
 msgstr "शीर्षकविहीन"
 
@@ -2623,7 +2627,7 @@ msgstr "अप्रमाणित"
 #: src/features/wiki/page-view.tsx:261
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:72
-#: src/routes/_authenticated/index.tsx:864
+#: src/routes/_authenticated/index.tsx:865
 msgid "Updated {0}"
 msgstr "अद्यावधिक गरियो {0}"
 
@@ -2631,22 +2635,22 @@ msgstr "अद्यावधिक गरियो {0}"
 msgid "Updating access..."
 msgstr "पहुँच अद्यावधिक गर्दै..."
 
-#: src/features/wiki/page-editor.tsx:549
+#: src/features/wiki/page-editor.tsx:562
 msgid "Upload a file to get started."
 msgstr "सुरु गर्न फाइल अपलोड गर्नुहोस्।"
 
 #: src/features/wiki/attachments-page.tsx:323
-#: src/features/wiki/page-editor.tsx:529
+#: src/features/wiki/page-editor.tsx:542
 msgid "Upload failed"
 msgstr "अपलोड असफल भयो"
 
 #: src/features/wiki/attachments-page.tsx:153
-#: src/features/wiki/page-editor.tsx:193
+#: src/features/wiki/page-editor.tsx:201
 msgid "Upload failed because this account has reached its storage limit."
 msgstr "यो खाताले आफ्नो भण्डारण सीमा पुगेकाले अपलोड असफल भयो।"
 
 #: src/features/wiki/attachments-page.tsx:150
-#: src/features/wiki/page-editor.tsx:190
+#: src/features/wiki/page-editor.tsx:198
 msgid "Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again."
 msgstr "अपलोड असफल भयो। फाइल हालको सर्भर वा प्रोक्सी अपलोड सीमाका लागि निकै ठूलो हुन सक्छ। फाइल सानो छ भने, तपाईंको जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।"
 
@@ -2658,7 +2662,7 @@ msgstr "फाइलहरू अपलोड गर्नुहोस्"
 msgid "Upload guidance"
 msgstr "अपलोड मार्गदर्शन"
 
-#: src/features/wiki/page-editor.tsx:523
+#: src/features/wiki/page-editor.tsx:536
 msgid "Upload new"
 msgstr "नयाँ अपलोड गर्नुहोस्"
 
@@ -2767,8 +2771,8 @@ msgstr "विकि"
 
 #: src/routes/_authenticated/index.tsx:662
 #: src/routes/_authenticated/index.tsx:669
-#: src/routes/_authenticated/index.tsx:828
-#: src/routes/_authenticated/index.tsx:835
+#: src/routes/_authenticated/index.tsx:829
+#: src/routes/_authenticated/index.tsx:836
 msgid "Wiki actions"
 msgstr "विकि कार्यहरू"
 
@@ -2819,11 +2823,11 @@ msgstr "विकि सिङ्क गरियो"
 msgid "Wikis"
 msgstr "विकिहरू"
 
-#: src/features/wiki/page-comments.tsx:90
+#: src/features/wiki/page-comments.tsx:98
 msgid "Write a comment..."
 msgstr "टिप्पणी लेख्नुहोस्..."
 
-#: src/features/wiki/page-editor.tsx:462
+#: src/features/wiki/page-editor.tsx:475
 msgid "Write your content here using Markdown..."
 msgstr "Markdown प्रयोग गरेर यहाँ आफ्नो सामग्री लेख्नुहोस्..."
 

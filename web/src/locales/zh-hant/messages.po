@@ -13,11 +13,11 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/features/wiki/wiki-comment-thread.tsx:121
+#: src/features/wiki/wiki-comment-thread.tsx:122
 msgid "(edited)"
 msgstr "(已編輯)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:107
+#: src/features/wiki/wiki-comment-thread.tsx:108
 msgid "(expand)"
 msgstr "(展開)"
 
@@ -44,11 +44,11 @@ msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:858
+#: src/routes/_authenticated/index.tsx:859
 msgid "{0} pages"
 msgstr "{0} 個頁面"
 
-#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
+#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
 #: src/features/wiki/tag-pages.tsx:44
 msgid "{0} with this tag."
 msgstr "{0}有此標籤。"
@@ -63,7 +63,7 @@ msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# 個文件} other {# 個文件}}"
 
 #: src/features/wiki/attachments-page.tsx:179
-#: src/features/wiki/page-editor.tsx:219
+#: src/features/wiki/page-editor.tsx:227
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, other {已上傳 # 個檔案}}"
 
@@ -86,7 +86,7 @@ msgstr "{pageTitle} - 留言"
 msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
 msgstr "{renamedCount, plural, other {已重新命名 # 個頁面}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:105
+#: src/features/wiki/wiki-comment-thread.tsx:106
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# 則回覆} other {+# 則更多回覆}}"
 
@@ -97,7 +97,7 @@ msgstr "{totalDescendants, plural, one {# 則回覆} other {+# 則更多回覆}}
 msgid "{wikiName} settings"
 msgstr "{wikiName} 設定"
 
-#: src/features/wiki/page-editor.tsx:400
+#: src/features/wiki/page-editor.tsx:413
 msgid "*No content*"
 msgstr "*無內容*"
 
@@ -193,7 +193,7 @@ msgstr "新增帳戶"
 msgid "Add redirect"
 msgstr "新增重新導向"
 
-#: ../../../lib/web/src/components/post-tags.tsx:129
+#: ../../../lib/web/src/components/post-tags.tsx:133
 msgid "Add tag..."
 msgstr "新增標籤..."
 
@@ -251,11 +251,11 @@ msgstr "所有維基"
 msgid "Allow anyone to search for wiki"
 msgstr "允許任何人搜尋維基"
 
-#: ../../../lib/web/src/lib/api-client.ts:192
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:159
 msgid "An error occurred"
 msgstr "發生錯誤"
 
-#: ../../../lib/web/src/lib/api-client.ts:255
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:241
 msgid "An unexpected error occurred"
 msgstr "發生未預期的錯誤"
 
@@ -263,7 +263,7 @@ msgstr "發生未預期的錯誤"
 msgid "Are you absolutely sure?"
 msgstr "您確定嗎?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:293
+#: src/features/wiki/wiki-comment-thread.tsx:302
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "您確定要刪除此留言嗎?這也會刪除所有回覆。此操作無法復原。"
 
@@ -274,7 +274,7 @@ msgstr "您確定要登出嗎?您將需要再次登入才能存取您的帳戶�
 #: src/features/wiki/wiki-page-content.tsx:366
 #: src/routes/_authenticated/$page/index.tsx:285
 #: src/routes/_authenticated/index.tsx:507
-#: src/routes/_authenticated/index.tsx:881
+#: src/routes/_authenticated/index.tsx:882
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "您確定要取消訂閱此維基嗎?"
 
@@ -290,18 +290,18 @@ msgstr "升冪"
 msgid "Attach files"
 msgstr "附加檔案"
 
-#: src/features/wiki/wiki-comment-thread.tsx:263
+#: src/features/wiki/wiki-comment-thread.tsx:272
 msgid "Attach reply files"
 msgstr "附加回覆檔案"
 
 #: src/features/wiki/attachments-page.tsx:243
-#: src/features/wiki/page-editor.tsx:236
+#: src/features/wiki/page-editor.tsx:244
 msgid "Attachment deleted"
 msgstr "附件已刪除"
 
-#: src/features/wiki/page-editor.tsx:343
-#: src/features/wiki/page-editor.tsx:348
-#: src/features/wiki/page-editor.tsx:355
+#: src/features/wiki/page-editor.tsx:356
+#: src/features/wiki/page-editor.tsx:361
+#: src/features/wiki/page-editor.tsx:368
 #: src/routes/_authenticated/$page/attachments.tsx:31
 #: src/routes/_authenticated/$page/attachments.tsx:42
 #: src/routes/_authenticated/$wikiId/$page/attachments.tsx:40
@@ -401,12 +401,12 @@ msgstr "返回頁面"
 msgid "Back to wikis"
 msgstr "返回維基列表"
 
-#: src/features/wiki/page-comments.tsx:96
+#: src/features/wiki/page-comments.tsx:104
 msgid "Be the first to comment on this page."
 msgstr "成為第一個在此頁面留言的人。"
 
-#: ../../../lib/web/src/components/post-tags.tsx:172
-#: ../../../lib/web/src/components/post-tags.tsx:184
+#: ../../../lib/web/src/components/post-tags.tsx:176
+#: ../../../lib/web/src/components/post-tags.tsx:188
 msgid "Boost interest"
 msgstr "提升興趣"
 
@@ -415,7 +415,7 @@ msgstr "提升興趣"
 msgid "Both source and target are required"
 msgstr "來源與目標皆為必填"
 
-#: src/features/wiki/page-editor.tsx:475
+#: src/features/wiki/page-editor.tsx:488
 msgid "Briefly describe your changes"
 msgstr "簡要描述您的變更"
 
@@ -435,14 +435,14 @@ msgstr "依標籤瀏覽頁面。點選標籤以查看所有具有該標籤的頁
 #: src/features/wiki/comment-form.tsx:109
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
-#: src/features/wiki/page-editor.tsx:376
+#: src/features/wiki/page-editor.tsx:389
 #: src/features/wiki/redirects-page.tsx:173
 #: src/features/wiki/redirects-page.tsx:271
 #: src/features/wiki/rename-page-dialog.tsx:128
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:136
+#: src/features/wiki/wiki-comment-thread.tsx:137
 #: src/features/wiki/wiki-settings.tsx:796
 #: src/features/wiki/wiki-settings.tsx:955
 #: src/features/wiki/wiki-settings.tsx:1068
@@ -450,7 +450,7 @@ msgstr "依標籤瀏覽頁面。點選標籤以查看所有具有該標籤的頁
 msgid "Cancel"
 msgstr "取消"
 
-#: src/features/wiki/wiki-comment-thread.tsx:272
+#: src/features/wiki/wiki-comment-thread.tsx:281
 msgid "Cancel reply"
 msgstr "取消回覆"
 
@@ -560,8 +560,8 @@ msgstr "關閉搜尋"
 
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:101
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:110
-#: ../../../lib/web/src/components/tree-row.tsx:253
-#: ../../../lib/web/src/components/tree-row.tsx:267
+#: ../../../lib/web/src/components/tree-row.tsx:338
+#: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Collapse"
 msgstr "收合"
 
@@ -602,7 +602,7 @@ msgstr "比較變更"
 msgid "Confirm"
 msgstr "確認"
 
-#: src/features/wiki/page-editor.tsx:456
+#: src/features/wiki/page-editor.tsx:469
 msgid "Content"
 msgstr "內容"
 
@@ -666,7 +666,7 @@ msgstr "建立從一個 URL 到另一個 URL 的重新導向。來源 URL 不能
 msgid "Create a redirect to forward one URL to another."
 msgstr "建立重新導向以將某個 URL 轉發至另一個 URL。"
 
-#: src/features/wiki/page-editor.tsx:382
+#: src/features/wiki/page-editor.tsx:395
 msgid "Create page"
 msgstr "建立頁面"
 
@@ -708,7 +708,7 @@ msgstr "正在建立重新導向..."
 msgid "Creating wiki..."
 msgstr "正在建立 wiki..."
 
-#: src/features/wiki/page-editor.tsx:382
+#: src/features/wiki/page-editor.tsx:395
 #: src/features/wiki/redirects-page.tsx:274
 #: src/features/wiki/wiki-settings.tsx:1071
 msgid "Creating..."
@@ -751,10 +751,10 @@ msgstr "預設 AI 帳戶"
 
 #: src/features/wiki/attachments-page.tsx:491
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/page-editor.tsx:625
+#: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:200
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/wiki-comment-thread.tsx:209
+#: src/features/wiki/wiki-comment-thread.tsx:303
 #: src/features/wiki/wiki-page-content.tsx:285
 #: src/features/wiki/wiki-settings.tsx:960
 msgid "Delete"
@@ -762,7 +762,7 @@ msgstr "刪除"
 
 #. placeholder {0}: pendingDelete.name
 #: src/features/wiki/attachments-page.tsx:490
-#: src/features/wiki/page-editor.tsx:622
+#: src/features/wiki/page-editor.tsx:635
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "刪除「{0}」?此動作無法復原。"
 
@@ -771,19 +771,19 @@ msgstr "刪除「{0}」?此動作無法復原。"
 #: src/features/wiki/attachments-page.tsx:590
 #: src/features/wiki/attachments-page.tsx:685
 #: src/features/wiki/attachments-page.tsx:694
-#: src/features/wiki/page-editor.tsx:575
-#: src/features/wiki/page-editor.tsx:584
-#: src/features/wiki/page-editor.tsx:619
+#: src/features/wiki/page-editor.tsx:588
+#: src/features/wiki/page-editor.tsx:597
+#: src/features/wiki/page-editor.tsx:632
 msgid "Delete attachment"
 msgstr "刪除附件"
 
-#: src/features/wiki/wiki-comment-thread.tsx:292
+#: src/features/wiki/wiki-comment-thread.tsx:301
 msgid "Delete comment"
 msgstr "刪除留言"
 
 #: src/features/wiki/delete-page.tsx:56
-#: src/features/wiki/page-editor.tsx:364
-#: src/features/wiki/page-editor.tsx:369
+#: src/features/wiki/page-editor.tsx:377
+#: src/features/wiki/page-editor.tsx:382
 msgid "Delete page"
 msgstr "刪除頁面"
 
@@ -894,8 +894,8 @@ msgstr "將檔案拖曳到這裡,或點擊「上傳檔案」開始。"
 msgid "Dyslexia-friendly"
 msgstr "閱讀障礙友善"
 
-#: src/features/wiki/page-editor.tsx:321
-#: src/features/wiki/wiki-comment-thread.tsx:189
+#: src/features/wiki/page-editor.tsx:334
+#: src/features/wiki/wiki-comment-thread.tsx:198
 #: src/features/wiki/wiki-page-content.tsx:259
 #: src/routes/_authenticated/$page/index.tsx:200
 #: src/routes/_authenticated/index.tsx:399
@@ -910,7 +910,7 @@ msgstr "編輯 {label}"
 msgid "Edit and view"
 msgstr "編輯和檢視"
 
-#: src/features/wiki/page-editor.tsx:470
+#: src/features/wiki/page-editor.tsx:483
 msgid "Edit summary (optional)"
 msgstr "編輯摘要(選填)"
 
@@ -965,8 +965,8 @@ msgstr "範例:「home」、「welcome」、「index」"
 
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:101
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:110
-#: ../../../lib/web/src/components/tree-row.tsx:253
-#: ../../../lib/web/src/components/tree-row.tsx:267
+#: ../../../lib/web/src/components/tree-row.tsx:338
+#: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Expand"
 msgstr "展開"
 
@@ -990,7 +990,7 @@ msgstr "新增標籤失敗"
 msgid "Failed to copy"
 msgstr "複製失敗"
 
-#: src/features/wiki/page-editor.tsx:270
+#: src/features/wiki/page-editor.tsx:278
 msgid "Failed to create page"
 msgstr "建立頁面失敗"
 
@@ -1004,7 +1004,7 @@ msgid "Failed to create wiki"
 msgstr "建立 wiki 失敗"
 
 #: src/features/wiki/attachments-page.tsx:247
-#: src/features/wiki/page-editor.tsx:240
+#: src/features/wiki/page-editor.tsx:248
 msgid "Failed to delete attachment"
 msgstr "刪除附件失敗"
 
@@ -1079,7 +1079,7 @@ msgstr "重新命名 wiki 失敗"
 msgid "Failed to revert page"
 msgstr "還原頁面失敗"
 
-#: src/features/wiki/page-editor.tsx:287
+#: src/features/wiki/page-editor.tsx:300
 msgid "Failed to save page"
 msgstr "儲存頁面失敗"
 
@@ -1112,7 +1112,7 @@ msgstr "同步 wiki 失敗"
 #: src/features/wiki/wiki-page-content.tsx:76
 #: src/routes/_authenticated/$page/index.tsx:70
 #: src/routes/_authenticated/index.tsx:303
-#: src/routes/_authenticated/index.tsx:892
+#: src/routes/_authenticated/index.tsx:893
 msgid "Failed to unsubscribe"
 msgstr "取消訂閱失敗"
 
@@ -1125,7 +1125,7 @@ msgid "Failed to update category"
 msgstr "更新類別失敗"
 
 #: src/features/wiki/attachments-page.tsx:148
-#: src/features/wiki/page-editor.tsx:188
+#: src/features/wiki/page-editor.tsx:196
 msgid "Failed to upload files"
 msgstr "上傳檔案失敗"
 
@@ -1154,7 +1154,7 @@ msgstr "扁平"
 msgid "Floating"
 msgstr "浮動"
 
-#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
+#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link preload={false} to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
 #: src/features/wiki/search-page.tsx:81
 msgid "Found {0} for \"{debouncedQuery}\""
 msgstr "找到 {0},查詢「{debouncedQuery}」"
@@ -1272,7 +1272,7 @@ msgstr "圖片"
 msgid "Images"
 msgstr "圖片"
 
-#: src/features/wiki/page-editor.tsx:495
+#: src/features/wiki/page-editor.tsx:508
 msgid "images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration."
 msgstr "圖片、PDF、DOC、DOCX、TXT 和 MD。大型上傳還可能受伺服器或代理設定的限制。"
 
@@ -1280,11 +1280,11 @@ msgstr "圖片、PDF、DOC、DOCX、TXT 和 MD。大型上傳還可能受伺服�
 msgid "Imperial"
 msgstr "英制"
 
-#: src/features/wiki/page-editor.tsx:336
+#: src/features/wiki/page-editor.tsx:349
 msgid "Insert"
 msgstr "插入"
 
-#: src/features/wiki/page-editor.tsx:486
+#: src/features/wiki/page-editor.tsx:499
 msgid "Insert attachment"
 msgstr "插入附件"
 
@@ -1355,6 +1355,10 @@ msgstr "清單檢視"
 msgid "Load more"
 msgstr "載入更多"
 
+#: ../../../lib/web/src/components/ui/loading-content.tsx:29
+msgid "Loading content…"
+msgstr "正在載入內容…"
+
 #: ../../../lib/web/src/components/ui/load-more.tsx:35
 #: ../../../lib/web/src/features/document/document-page.tsx:90
 msgid "Loading…"
@@ -1404,7 +1408,7 @@ msgstr "公制"
 msgid "Monday"
 msgstr "星期一"
 
-#: src/features/wiki/page-editor.tsx:425
+#: src/features/wiki/page-editor.tsx:438
 msgid "my-page-name"
 msgstr "my-page-name"
 
@@ -1421,7 +1425,7 @@ msgstr "名稱不能包含 < 或 > 字元"
 msgid "Name must be 100 characters or less"
 msgstr "名稱必須為 100 個字元或更少"
 
-#: ../../../lib/web/src/lib/api-client.ts:300
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:288
 msgid "Network error"
 msgstr "網路錯誤"
 
@@ -1479,7 +1483,7 @@ msgid "No attachments match your search"
 msgstr "沒有符合搜尋的附件"
 
 #: src/features/wiki/attachments-page.tsx:438
-#: src/features/wiki/page-editor.tsx:548
+#: src/features/wiki/page-editor.tsx:561
 msgid "No attachments yet"
 msgstr "尚無附件"
 
@@ -1487,7 +1491,7 @@ msgstr "尚無附件"
 msgid "No changes yet"
 msgstr "尚無變更"
 
-#: src/features/wiki/page-comments.tsx:95
+#: src/features/wiki/page-comments.tsx:103
 msgid "No comments yet"
 msgstr "尚無留言"
 
@@ -1596,7 +1600,7 @@ msgid "Oops! Page Not Found!"
 msgstr "糟糕!找不到頁面!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:815
+#: src/routes/_authenticated/index.tsx:816
 msgid "Open {0}"
 msgstr "開啟 {0}"
 
@@ -1680,7 +1684,7 @@ msgstr "已刪除頁面「{title}」"
 msgid "Page actions"
 msgstr "頁面動作"
 
-#: src/features/wiki/page-editor.tsx:262
+#: src/features/wiki/page-editor.tsx:270
 msgid "Page created"
 msgstr "已建立頁面"
 
@@ -1691,19 +1695,19 @@ msgstr "已建立頁面"
 msgid "Page not found"
 msgstr "找不到頁面"
 
-#: src/features/wiki/page-editor.tsx:279
+#: src/features/wiki/page-editor.tsx:292
 msgid "Page saved"
 msgstr "已儲存頁面"
 
-#: src/features/wiki/page-editor.tsx:412
+#: src/features/wiki/page-editor.tsx:425
 msgid "Page title"
 msgstr "頁面標題"
 
-#: src/features/wiki/page-editor.tsx:419
+#: src/features/wiki/page-editor.tsx:432
 msgid "Page URL"
 msgstr "頁面 URL"
 
-#: src/features/wiki/page-editor.tsx:254
+#: src/features/wiki/page-editor.tsx:262
 msgid "Page URL is required"
 msgstr "需要頁面 URL"
 
@@ -1727,11 +1731,11 @@ msgstr "Passkey"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "永久刪除此 Wiki 及其所有內容。此操作無法復原。"
 
-#: ../../../lib/web/src/lib/api-client.ts:301
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:289
 msgid "Please check your internet connection and try again."
 msgstr "請檢查您的網際網路連線後再試一次。"
 
-#: src/features/wiki/page-editor.tsx:326
+#: src/features/wiki/page-editor.tsx:339
 msgid "Preview"
 msgstr "預覽"
 
@@ -1754,8 +1758,8 @@ msgstr "個人檔案"
 msgid "Raised"
 msgstr "凸起"
 
-#: src/features/wiki/page-editor.tsx:435
-#: src/features/wiki/page-editor.tsx:441
+#: src/features/wiki/page-editor.tsx:448
+#: src/features/wiki/page-editor.tsx:454
 msgid "Re-derive from title"
 msgstr "從標題重新產生"
 
@@ -1824,8 +1828,8 @@ msgstr "重新導向至登入。"
 msgid "Redirects"
 msgstr "重新導向"
 
-#: ../../../lib/web/src/components/post-tags.tsx:192
-#: ../../../lib/web/src/components/post-tags.tsx:204
+#: ../../../lib/web/src/components/post-tags.tsx:196
+#: ../../../lib/web/src/components/post-tags.tsx:208
 msgid "Reduce interest"
 msgstr "降低興趣"
 
@@ -1843,8 +1847,8 @@ msgstr "24 小時內相對,否則絕對"
 #: src/features/wiki/comment-form.tsx:84
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
-#: src/features/wiki/wiki-comment-thread.tsx:240
-#: src/features/wiki/wiki-comment-thread.tsx:244
+#: src/features/wiki/wiki-comment-thread.tsx:249
+#: src/features/wiki/wiki-comment-thread.tsx:253
 #: src/features/wiki/wiki-settings.tsx:801
 msgid "Remove"
 msgstr "移除"
@@ -1858,8 +1862,8 @@ msgstr "移除存取規則"
 msgid "Remove access?"
 msgstr "移除存取權?"
 
-#: ../../../lib/web/src/components/post-tags.tsx:212
-#: ../../../lib/web/src/components/post-tags.tsx:224
+#: ../../../lib/web/src/components/post-tags.tsx:216
+#: ../../../lib/web/src/components/post-tags.tsx:228
 msgid "Remove interest"
 msgstr "移除興趣"
 
@@ -1921,12 +1925,12 @@ msgstr "複製 Wiki"
 msgid "Replicating..."
 msgstr "複製中..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:176
+#: src/features/wiki/wiki-comment-thread.tsx:185
 msgid "Reply"
 msgstr "回覆"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:210
+#: src/features/wiki/wiki-comment-thread.tsx:219
 msgid "Reply to {0}..."
 msgstr "回覆 {0}..."
 
@@ -2010,8 +2014,8 @@ msgstr "星期六"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
-#: src/features/wiki/page-editor.tsx:387
-#: src/features/wiki/wiki-comment-thread.tsx:148
+#: src/features/wiki/page-editor.tsx:400
+#: src/features/wiki/wiki-comment-thread.tsx:157
 msgid "Save"
 msgstr "儲存"
 
@@ -2019,7 +2023,7 @@ msgstr "儲存"
 msgid "Save changes"
 msgstr "儲存變更"
 
-#: src/features/wiki/page-editor.tsx:387
+#: src/features/wiki/page-editor.tsx:400
 #: src/features/wiki/wiki-settings.tsx:279
 #: src/features/wiki/wiki-settings.tsx:306
 #: src/features/wiki/wiki-settings.tsx:454
@@ -2107,7 +2111,7 @@ msgstr "選擇存取規則"
 msgid "Select account type"
 msgstr "選擇帳戶類型"
 
-#: src/features/wiki/page-editor.tsx:488
+#: src/features/wiki/page-editor.tsx:501
 msgid "Select an attachment to insert into your page, or upload a new file."
 msgstr "選擇要插入頁面的附件,或上傳新檔案。"
 
@@ -2143,7 +2147,7 @@ msgstr "傳送留言"
 msgid "Send email"
 msgstr "傳送郵件"
 
-#: src/features/wiki/wiki-comment-thread.tsx:281
+#: src/features/wiki/wiki-comment-thread.tsx:290
 msgid "Send reply"
 msgstr "傳送回覆"
 
@@ -2151,8 +2155,8 @@ msgstr "傳送回覆"
 msgid "Serif"
 msgstr "襯線體"
 
-#: ../../../lib/web/src/lib/api-client.ts:259
-#: ../../../lib/web/src/lib/api-client.ts:284
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:245
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:271
 msgid "Server error"
 msgstr "伺服器錯誤"
 
@@ -2161,7 +2165,7 @@ msgstr "伺服器錯誤"
 msgid "Server rules"
 msgstr "伺服器規則"
 
-#: ../../../lib/web/src/lib/api-client.ts:227
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:209
 msgid "Session expired"
 msgstr "工作階段已過期"
 
@@ -2290,7 +2294,7 @@ msgstr "訂閱"
 msgid "Sunday"
 msgstr "星期日"
 
-#: src/features/wiki/page-editor.tsx:493
+#: src/features/wiki/page-editor.tsx:506
 msgid "Supported files"
 msgstr "支援的檔案"
 
@@ -2340,8 +2344,8 @@ msgstr "標籤已存在"
 msgid "Tag: {tag}"
 msgstr "標籤:{tag}"
 
-#: ../../../lib/web/src/components/post-tags.tsx:96
-#: ../../../lib/web/src/components/post-tags.tsx:107
+#: ../../../lib/web/src/components/post-tags.tsx:100
+#: ../../../lib/web/src/components/post-tags.tsx:111
 #: src/features/wiki/wiki-page-content.tsx:300
 #: src/routes/_authenticated/$page/index.tsx:242
 #: src/routes/_authenticated/index.tsx:426
@@ -2412,12 +2416,12 @@ msgid "This action cannot be undone. This will permanently delete the wiki and a
 msgstr "此動作無法復原。這將永久刪除此 wiki 及其所有內容。"
 
 #: src/features/wiki/attachments-page.tsx:145
-#: src/features/wiki/page-editor.tsx:185
+#: src/features/wiki/page-editor.tsx:193
 msgid "This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit."
 msgstr "此檔案超出目前伺服器的上傳限制。請嘗試較小的檔案，或提高伺服器或代理的上傳大小限制。"
 
 #: src/features/wiki/attachments-page.tsx:156
-#: src/features/wiki/page-editor.tsx:196
+#: src/features/wiki/page-editor.tsx:204
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "此檔案太大，無法上傳。請嘗試較小的檔案。"
 
@@ -2425,7 +2429,7 @@ msgstr "此檔案太大，無法上傳。請嘗試較小的檔案。"
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "此 wiki 已訂閱來源 wiki 並接收其更新。"
 
-#: src/features/wiki/page-editor.tsx:446
+#: src/features/wiki/page-editor.tsx:459
 msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
 msgstr "這將是頁面的路徑。請使用小寫字母、數字和連字號。"
 
@@ -2450,12 +2454,12 @@ msgstr "這將停止向「{0}」傳送更新。如果他們願意,可以再次�
 msgid "Thursday"
 msgstr "星期四"
 
-#: src/features/wiki/page-editor.tsx:407
+#: src/features/wiki/page-editor.tsx:420
 #: src/features/wiki/page-history.tsx:56
 msgid "Title"
 msgstr "標題"
 
-#: src/features/wiki/page-editor.tsx:248
+#: src/features/wiki/page-editor.tsx:256
 msgid "Title is required"
 msgstr "標題為必填"
 
@@ -2537,7 +2541,7 @@ msgstr "輸入以搜尋使用者"
 msgid "Type to search..."
 msgstr "輸入以搜尋..."
 
-#: ../../../lib/web/src/lib/api-client.ts:280
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:267
 msgid "Unable to connect to remote server"
 msgstr "無法連線至遠端伺服器"
 
@@ -2562,7 +2566,7 @@ msgstr "此 wiki 的唯一識別碼。"
 msgid "United States"
 msgstr "美國"
 
-#: src/features/wiki/wiki-comment-thread.tsx:80
+#: src/features/wiki/wiki-comment-thread.tsx:81
 msgid "Unknown"
 msgstr "未知"
 
@@ -2575,16 +2579,16 @@ msgstr "未知"
 #: src/routes/_authenticated/index.tsx:479
 #: src/routes/_authenticated/index.tsx:506
 #: src/routes/_authenticated/index.tsx:508
-#: src/routes/_authenticated/index.tsx:848
-#: src/routes/_authenticated/index.tsx:880
-#: src/routes/_authenticated/index.tsx:882
+#: src/routes/_authenticated/index.tsx:849
+#: src/routes/_authenticated/index.tsx:881
+#: src/routes/_authenticated/index.tsx:883
 msgid "Unsubscribe"
 msgstr "取消訂閱"
 
 #: src/features/wiki/wiki-page-content.tsx:75
 #: src/routes/_authenticated/$page/index.tsx:69
 #: src/routes/_authenticated/index.tsx:302
-#: src/routes/_authenticated/index.tsx:891
+#: src/routes/_authenticated/index.tsx:892
 msgid "Unsubscribed"
 msgstr "已取消訂閱"
 
@@ -2594,22 +2598,22 @@ msgstr "已取消訂閱"
 #: src/routes/_authenticated/$page/index.tsx:228
 #: src/routes/_authenticated/index.tsx:301
 #: src/routes/_authenticated/index.tsx:479
-#: src/routes/_authenticated/index.tsx:847
-#: src/routes/_authenticated/index.tsx:890
+#: src/routes/_authenticated/index.tsx:848
+#: src/routes/_authenticated/index.tsx:891
 msgid "Unsubscribing..."
 msgstr "取消訂閱中..."
 
 #: src/features/wiki/attachments-page.tsx:138
-#: src/features/wiki/page-editor.tsx:178
+#: src/features/wiki/page-editor.tsx:186
 msgid "Unsupported file type: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "不支援的檔案類型：{names}。支援的檔案：圖片、PDF、DOC、DOCX、TXT 和 MD。"
 
 #: src/features/wiki/attachments-page.tsx:139
-#: src/features/wiki/page-editor.tsx:179
+#: src/features/wiki/page-editor.tsx:187
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "不支援的檔案類型：{names}。支援的檔案：圖片、PDF、DOC、DOCX、TXT 和 MD。"
 
-#: src/features/wiki/page-editor.tsx:399
+#: src/features/wiki/page-editor.tsx:412
 msgid "Untitled"
 msgstr "未命名"
 
@@ -2623,7 +2627,7 @@ msgstr "未驗證"
 #: src/features/wiki/page-view.tsx:261
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:72
-#: src/routes/_authenticated/index.tsx:864
+#: src/routes/_authenticated/index.tsx:865
 msgid "Updated {0}"
 msgstr "更新於 {0}"
 
@@ -2631,22 +2635,22 @@ msgstr "更新於 {0}"
 msgid "Updating access..."
 msgstr "正在更新存取權..."
 
-#: src/features/wiki/page-editor.tsx:549
+#: src/features/wiki/page-editor.tsx:562
 msgid "Upload a file to get started."
 msgstr "上傳檔案以開始使用。"
 
 #: src/features/wiki/attachments-page.tsx:323
-#: src/features/wiki/page-editor.tsx:529
+#: src/features/wiki/page-editor.tsx:542
 msgid "Upload failed"
 msgstr "上傳失敗"
 
 #: src/features/wiki/attachments-page.tsx:153
-#: src/features/wiki/page-editor.tsx:193
+#: src/features/wiki/page-editor.tsx:201
 msgid "Upload failed because this account has reached its storage limit."
 msgstr "上傳失敗，因為此帳戶已達到其儲存限制。"
 
 #: src/features/wiki/attachments-page.tsx:150
-#: src/features/wiki/page-editor.tsx:190
+#: src/features/wiki/page-editor.tsx:198
 msgid "Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again."
 msgstr "上傳失敗。該檔案可能超出目前伺服器或代理的上傳限制。如果檔案較小，請檢查您的網路連線後再試一次。"
 
@@ -2658,7 +2662,7 @@ msgstr "上傳檔案"
 msgid "Upload guidance"
 msgstr "上傳指引"
 
-#: src/features/wiki/page-editor.tsx:523
+#: src/features/wiki/page-editor.tsx:536
 msgid "Upload new"
 msgstr "上傳新檔案"
 
@@ -2767,8 +2771,8 @@ msgstr "Wiki"
 
 #: src/routes/_authenticated/index.tsx:662
 #: src/routes/_authenticated/index.tsx:669
-#: src/routes/_authenticated/index.tsx:828
-#: src/routes/_authenticated/index.tsx:835
+#: src/routes/_authenticated/index.tsx:829
+#: src/routes/_authenticated/index.tsx:836
 msgid "Wiki actions"
 msgstr "Wiki 動作"
 
@@ -2819,11 +2823,11 @@ msgstr "Wiki 已同步"
 msgid "Wikis"
 msgstr "Wiki"
 
-#: src/features/wiki/page-comments.tsx:90
+#: src/features/wiki/page-comments.tsx:98
 msgid "Write a comment..."
 msgstr "撰寫留言..."
 
-#: src/features/wiki/page-editor.tsx:462
+#: src/features/wiki/page-editor.tsx:475
 msgid "Write your content here using Markdown..."
 msgstr "在此使用 Markdown 撰寫您的內容..."
 

@@ -13,11 +13,11 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/features/wiki/wiki-comment-thread.tsx:121
+#: src/features/wiki/wiki-comment-thread.tsx:122
 msgid "(edited)"
 msgstr "(uređeno)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:107
+#: src/features/wiki/wiki-comment-thread.tsx:108
 msgid "(expand)"
 msgstr "(proširi)"
 
@@ -44,11 +44,11 @@ msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:858
+#: src/routes/_authenticated/index.tsx:859
 msgid "{0} pages"
 msgstr "{0} stranica"
 
-#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
+#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
 #: src/features/wiki/tag-pages.tsx:44
 msgid "{0} with this tag."
 msgstr "{0} s ovom oznakom."
@@ -63,7 +63,7 @@ msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# dokument} few {# dokumenta} other {# dokumenata}}"
 
 #: src/features/wiki/attachments-page.tsx:179
-#: src/features/wiki/page-editor.tsx:219
+#: src/features/wiki/page-editor.tsx:227
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {Preneseno # datoteka} few {Prenesene # datoteke} other {Preneseno # datoteka}}"
 
@@ -86,7 +86,7 @@ msgstr "{pageTitle} - Komentari"
 msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
 msgstr "{renamedCount, plural, one {Preimenovana 1 stranica} few {Preimenovane # stranice} other {Preimenovano # stranica}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:105
+#: src/features/wiki/wiki-comment-thread.tsx:106
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# odgovor} few {+# još odgovora} other {+# još odgovora}}"
 
@@ -97,7 +97,7 @@ msgstr "{totalDescendants, plural, one {# odgovor} few {+# još odgovora} other 
 msgid "{wikiName} settings"
 msgstr "Postavke za {wikiName}"
 
-#: src/features/wiki/page-editor.tsx:400
+#: src/features/wiki/page-editor.tsx:413
 msgid "*No content*"
 msgstr "*Nema sadržaja*"
 
@@ -193,7 +193,7 @@ msgstr "Dodaj novi račun"
 msgid "Add redirect"
 msgstr "Dodaj preusmjeravanje"
 
-#: ../../../lib/web/src/components/post-tags.tsx:129
+#: ../../../lib/web/src/components/post-tags.tsx:133
 msgid "Add tag..."
 msgstr "Dodaj oznaku..."
 
@@ -251,11 +251,11 @@ msgstr "Svi wikiji"
 msgid "Allow anyone to search for wiki"
 msgstr "Dopusti svima pretraživanje wikija"
 
-#: ../../../lib/web/src/lib/api-client.ts:192
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:159
 msgid "An error occurred"
 msgstr "Došlo je do pogreške"
 
-#: ../../../lib/web/src/lib/api-client.ts:255
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:241
 msgid "An unexpected error occurred"
 msgstr "Došlo je do neočekivane pogreške"
 
@@ -263,7 +263,7 @@ msgstr "Došlo je do neočekivane pogreške"
 msgid "Are you absolutely sure?"
 msgstr "Jeste li potpuno sigurni?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:293
+#: src/features/wiki/wiki-comment-thread.tsx:302
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Jeste li sigurni da želite obrisati ovaj komentar? Ovo će također obrisati sve odgovore. Ova radnja se ne može poništiti."
 
@@ -274,7 +274,7 @@ msgstr "Jeste li sigurni da se želite odjaviti? Morat ćete se ponovno prijavit
 #: src/features/wiki/wiki-page-content.tsx:366
 #: src/routes/_authenticated/$page/index.tsx:285
 #: src/routes/_authenticated/index.tsx:507
-#: src/routes/_authenticated/index.tsx:881
+#: src/routes/_authenticated/index.tsx:882
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "Jeste li sigurni da se želite odjaviti s ovog wikija?"
 
@@ -290,18 +290,18 @@ msgstr "Uzlazno"
 msgid "Attach files"
 msgstr "Priloži datoteke"
 
-#: src/features/wiki/wiki-comment-thread.tsx:263
+#: src/features/wiki/wiki-comment-thread.tsx:272
 msgid "Attach reply files"
 msgstr "Priloži datoteke odgovora"
 
 #: src/features/wiki/attachments-page.tsx:243
-#: src/features/wiki/page-editor.tsx:236
+#: src/features/wiki/page-editor.tsx:244
 msgid "Attachment deleted"
 msgstr "Privitak obrisan"
 
-#: src/features/wiki/page-editor.tsx:343
-#: src/features/wiki/page-editor.tsx:348
-#: src/features/wiki/page-editor.tsx:355
+#: src/features/wiki/page-editor.tsx:356
+#: src/features/wiki/page-editor.tsx:361
+#: src/features/wiki/page-editor.tsx:368
 #: src/routes/_authenticated/$page/attachments.tsx:31
 #: src/routes/_authenticated/$page/attachments.tsx:42
 #: src/routes/_authenticated/$wikiId/$page/attachments.tsx:40
@@ -401,12 +401,12 @@ msgstr "Natrag na stranicu"
 msgid "Back to wikis"
 msgstr "Natrag na wikije"
 
-#: src/features/wiki/page-comments.tsx:96
+#: src/features/wiki/page-comments.tsx:104
 msgid "Be the first to comment on this page."
 msgstr "Budite prvi koji će komentirati ovu stranicu."
 
-#: ../../../lib/web/src/components/post-tags.tsx:172
-#: ../../../lib/web/src/components/post-tags.tsx:184
+#: ../../../lib/web/src/components/post-tags.tsx:176
+#: ../../../lib/web/src/components/post-tags.tsx:188
 msgid "Boost interest"
 msgstr "Pojačaj interes"
 
@@ -415,7 +415,7 @@ msgstr "Pojačaj interes"
 msgid "Both source and target are required"
 msgstr "Oba izvor i odredište su obavezni"
 
-#: src/features/wiki/page-editor.tsx:475
+#: src/features/wiki/page-editor.tsx:488
 msgid "Briefly describe your changes"
 msgstr "Ukratko opišite svoje promjene"
 
@@ -435,14 +435,14 @@ msgstr "Pregledajte stranice prema oznaci. Kliknite oznaku da vidite sve stranic
 #: src/features/wiki/comment-form.tsx:109
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
-#: src/features/wiki/page-editor.tsx:376
+#: src/features/wiki/page-editor.tsx:389
 #: src/features/wiki/redirects-page.tsx:173
 #: src/features/wiki/redirects-page.tsx:271
 #: src/features/wiki/rename-page-dialog.tsx:128
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:136
+#: src/features/wiki/wiki-comment-thread.tsx:137
 #: src/features/wiki/wiki-settings.tsx:796
 #: src/features/wiki/wiki-settings.tsx:955
 #: src/features/wiki/wiki-settings.tsx:1068
@@ -450,7 +450,7 @@ msgstr "Pregledajte stranice prema oznaci. Kliknite oznaku da vidite sve stranic
 msgid "Cancel"
 msgstr "Odustani"
 
-#: src/features/wiki/wiki-comment-thread.tsx:272
+#: src/features/wiki/wiki-comment-thread.tsx:281
 msgid "Cancel reply"
 msgstr "Odustani od odgovora"
 
@@ -560,8 +560,8 @@ msgstr "Zatvori pretragu"
 
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:101
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:110
-#: ../../../lib/web/src/components/tree-row.tsx:253
-#: ../../../lib/web/src/components/tree-row.tsx:267
+#: ../../../lib/web/src/components/tree-row.tsx:338
+#: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Collapse"
 msgstr "Sažmi"
 
@@ -602,7 +602,7 @@ msgstr "Usporedi promjene"
 msgid "Confirm"
 msgstr "Potvrdi"
 
-#: src/features/wiki/page-editor.tsx:456
+#: src/features/wiki/page-editor.tsx:469
 msgid "Content"
 msgstr "Sadržaj"
 
@@ -666,7 +666,7 @@ msgstr "Stvori preusmjeravanje s jednog URL-a na drugi. Izvorni URL ne smije bit
 msgid "Create a redirect to forward one URL to another."
 msgstr "Stvori preusmjeravanje za prosljeđivanje jednog URL-a na drugi."
 
-#: src/features/wiki/page-editor.tsx:382
+#: src/features/wiki/page-editor.tsx:395
 msgid "Create page"
 msgstr "Stvori stranicu"
 
@@ -708,7 +708,7 @@ msgstr "Stvaranje preusmjeravanja..."
 msgid "Creating wiki..."
 msgstr "Stvaranje wikija..."
 
-#: src/features/wiki/page-editor.tsx:382
+#: src/features/wiki/page-editor.tsx:395
 #: src/features/wiki/redirects-page.tsx:274
 #: src/features/wiki/wiki-settings.tsx:1071
 msgid "Creating..."
@@ -751,10 +751,10 @@ msgstr "Zadani AI račun"
 
 #: src/features/wiki/attachments-page.tsx:491
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/page-editor.tsx:625
+#: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:200
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/wiki-comment-thread.tsx:209
+#: src/features/wiki/wiki-comment-thread.tsx:303
 #: src/features/wiki/wiki-page-content.tsx:285
 #: src/features/wiki/wiki-settings.tsx:960
 msgid "Delete"
@@ -762,7 +762,7 @@ msgstr "Obriši"
 
 #. placeholder {0}: pendingDelete.name
 #: src/features/wiki/attachments-page.tsx:490
-#: src/features/wiki/page-editor.tsx:622
+#: src/features/wiki/page-editor.tsx:635
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "Obrisati \"{0}\"? Ovo se ne može poništiti."
 
@@ -771,19 +771,19 @@ msgstr "Obrisati \"{0}\"? Ovo se ne može poništiti."
 #: src/features/wiki/attachments-page.tsx:590
 #: src/features/wiki/attachments-page.tsx:685
 #: src/features/wiki/attachments-page.tsx:694
-#: src/features/wiki/page-editor.tsx:575
-#: src/features/wiki/page-editor.tsx:584
-#: src/features/wiki/page-editor.tsx:619
+#: src/features/wiki/page-editor.tsx:588
+#: src/features/wiki/page-editor.tsx:597
+#: src/features/wiki/page-editor.tsx:632
 msgid "Delete attachment"
 msgstr "Obriši privitak"
 
-#: src/features/wiki/wiki-comment-thread.tsx:292
+#: src/features/wiki/wiki-comment-thread.tsx:301
 msgid "Delete comment"
 msgstr "Obriši komentar"
 
 #: src/features/wiki/delete-page.tsx:56
-#: src/features/wiki/page-editor.tsx:364
-#: src/features/wiki/page-editor.tsx:369
+#: src/features/wiki/page-editor.tsx:377
+#: src/features/wiki/page-editor.tsx:382
 msgid "Delete page"
 msgstr "Obriši stranicu"
 
@@ -894,8 +894,8 @@ msgstr "Povucite i ispustite datoteke ovdje ili kliknite \"Učitaj datoteke\" za
 msgid "Dyslexia-friendly"
 msgstr "Prilagođeno disleksiji"
 
-#: src/features/wiki/page-editor.tsx:321
-#: src/features/wiki/wiki-comment-thread.tsx:189
+#: src/features/wiki/page-editor.tsx:334
+#: src/features/wiki/wiki-comment-thread.tsx:198
 #: src/features/wiki/wiki-page-content.tsx:259
 #: src/routes/_authenticated/$page/index.tsx:200
 #: src/routes/_authenticated/index.tsx:399
@@ -910,7 +910,7 @@ msgstr "Uredi {label}"
 msgid "Edit and view"
 msgstr "Uredi i pregledaj"
 
-#: src/features/wiki/page-editor.tsx:470
+#: src/features/wiki/page-editor.tsx:483
 msgid "Edit summary (optional)"
 msgstr "Uredi sažetak (opcionalno)"
 
@@ -965,8 +965,8 @@ msgstr "Primjer: \"home\", \"welcome\", \"index\""
 
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:101
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:110
-#: ../../../lib/web/src/components/tree-row.tsx:253
-#: ../../../lib/web/src/components/tree-row.tsx:267
+#: ../../../lib/web/src/components/tree-row.tsx:338
+#: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Expand"
 msgstr "Proširi"
 
@@ -990,7 +990,7 @@ msgstr "Dodavanje oznake nije uspjelo"
 msgid "Failed to copy"
 msgstr "Kopiranje nije uspjelo"
 
-#: src/features/wiki/page-editor.tsx:270
+#: src/features/wiki/page-editor.tsx:278
 msgid "Failed to create page"
 msgstr "Stvaranje stranice nije uspjelo"
 
@@ -1004,7 +1004,7 @@ msgid "Failed to create wiki"
 msgstr "Stvaranje wikija nije uspjelo"
 
 #: src/features/wiki/attachments-page.tsx:247
-#: src/features/wiki/page-editor.tsx:240
+#: src/features/wiki/page-editor.tsx:248
 msgid "Failed to delete attachment"
 msgstr "Brisanje privitka nije uspjelo"
 
@@ -1079,7 +1079,7 @@ msgstr "Preimenovanje wikija nije uspjelo"
 msgid "Failed to revert page"
 msgstr "Vraćanje stranice nije uspjelo"
 
-#: src/features/wiki/page-editor.tsx:287
+#: src/features/wiki/page-editor.tsx:300
 msgid "Failed to save page"
 msgstr "Spremanje stranice nije uspjelo"
 
@@ -1112,7 +1112,7 @@ msgstr "Sinkronizacija wikija nije uspjela"
 #: src/features/wiki/wiki-page-content.tsx:76
 #: src/routes/_authenticated/$page/index.tsx:70
 #: src/routes/_authenticated/index.tsx:303
-#: src/routes/_authenticated/index.tsx:892
+#: src/routes/_authenticated/index.tsx:893
 msgid "Failed to unsubscribe"
 msgstr "Otkazivanje pretplate nije uspjelo"
 
@@ -1125,7 +1125,7 @@ msgid "Failed to update category"
 msgstr "Ažuriranje kategorije nije uspjelo"
 
 #: src/features/wiki/attachments-page.tsx:148
-#: src/features/wiki/page-editor.tsx:188
+#: src/features/wiki/page-editor.tsx:196
 msgid "Failed to upload files"
 msgstr "Učitavanje datoteka nije uspjelo"
 
@@ -1154,7 +1154,7 @@ msgstr "Ravna"
 msgid "Floating"
 msgstr "Plutajuće"
 
-#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
+#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link preload={false} to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
 #: src/features/wiki/search-page.tsx:81
 msgid "Found {0} for \"{debouncedQuery}\""
 msgstr "Pronađeno {0} za \"{debouncedQuery}\""
@@ -1272,7 +1272,7 @@ msgstr "Slika"
 msgid "Images"
 msgstr "Slike"
 
-#: src/features/wiki/page-editor.tsx:495
+#: src/features/wiki/page-editor.tsx:508
 msgid "images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration."
 msgstr "slike, PDF, DOC, DOCX, TXT i MD. Velika prenošenja mogu biti ograničena i konfiguracijom vašeg poslužitelja ili proxyja."
 
@@ -1280,11 +1280,11 @@ msgstr "slike, PDF, DOC, DOCX, TXT i MD. Velika prenošenja mogu biti ograničen
 msgid "Imperial"
 msgstr "Imperijalni"
 
-#: src/features/wiki/page-editor.tsx:336
+#: src/features/wiki/page-editor.tsx:349
 msgid "Insert"
 msgstr "Umetni"
 
-#: src/features/wiki/page-editor.tsx:486
+#: src/features/wiki/page-editor.tsx:499
 msgid "Insert attachment"
 msgstr "Umetni privitak"
 
@@ -1355,6 +1355,10 @@ msgstr "Prikaz popisa"
 msgid "Load more"
 msgstr "Učitaj više"
 
+#: ../../../lib/web/src/components/ui/loading-content.tsx:29
+msgid "Loading content…"
+msgstr "Učitavanje sadržaja…"
+
 #: ../../../lib/web/src/components/ui/load-more.tsx:35
 #: ../../../lib/web/src/features/document/document-page.tsx:90
 msgid "Loading…"
@@ -1404,7 +1408,7 @@ msgstr "Metrički"
 msgid "Monday"
 msgstr "Ponedjeljak"
 
-#: src/features/wiki/page-editor.tsx:425
+#: src/features/wiki/page-editor.tsx:438
 msgid "my-page-name"
 msgstr "moja-stranica"
 
@@ -1421,7 +1425,7 @@ msgstr "Naziv ne smije sadržavati znakove < ili >"
 msgid "Name must be 100 characters or less"
 msgstr "Naziv mora imati 100 znakova ili manje"
 
-#: ../../../lib/web/src/lib/api-client.ts:300
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:288
 msgid "Network error"
 msgstr "Pogreška mreže"
 
@@ -1479,7 +1483,7 @@ msgid "No attachments match your search"
 msgstr "Nijedan privitak ne odgovara vašoj pretrazi"
 
 #: src/features/wiki/attachments-page.tsx:438
-#: src/features/wiki/page-editor.tsx:548
+#: src/features/wiki/page-editor.tsx:561
 msgid "No attachments yet"
 msgstr "Još nema privitaka"
 
@@ -1487,7 +1491,7 @@ msgstr "Još nema privitaka"
 msgid "No changes yet"
 msgstr "Još nema promjena"
 
-#: src/features/wiki/page-comments.tsx:95
+#: src/features/wiki/page-comments.tsx:103
 msgid "No comments yet"
 msgstr "Još nema komentara"
 
@@ -1596,7 +1600,7 @@ msgid "Oops! Page Not Found!"
 msgstr "Ups! Stranica nije pronađena!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:815
+#: src/routes/_authenticated/index.tsx:816
 msgid "Open {0}"
 msgstr "Otvori {0}"
 
@@ -1680,7 +1684,7 @@ msgstr "Stranica \"{title}\" izbrisana"
 msgid "Page actions"
 msgstr "Akcije stranice"
 
-#: src/features/wiki/page-editor.tsx:262
+#: src/features/wiki/page-editor.tsx:270
 msgid "Page created"
 msgstr "Stranica kreirana"
 
@@ -1691,19 +1695,19 @@ msgstr "Stranica kreirana"
 msgid "Page not found"
 msgstr "Stranica nije pronađena"
 
-#: src/features/wiki/page-editor.tsx:279
+#: src/features/wiki/page-editor.tsx:292
 msgid "Page saved"
 msgstr "Stranica spremljena"
 
-#: src/features/wiki/page-editor.tsx:412
+#: src/features/wiki/page-editor.tsx:425
 msgid "Page title"
 msgstr "Naslov stranice"
 
-#: src/features/wiki/page-editor.tsx:419
+#: src/features/wiki/page-editor.tsx:432
 msgid "Page URL"
 msgstr "URL stranice"
 
-#: src/features/wiki/page-editor.tsx:254
+#: src/features/wiki/page-editor.tsx:262
 msgid "Page URL is required"
 msgstr "URL stranice je obavezan"
 
@@ -1727,11 +1731,11 @@ msgstr "Passkeyevi"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Trajno izbriši ovaj wiki i sav njegov sadržaj. Ovo se ne može poništiti."
 
-#: ../../../lib/web/src/lib/api-client.ts:301
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:289
 msgid "Please check your internet connection and try again."
 msgstr "Provjerite internetsku vezu i pokušajte ponovno."
 
-#: src/features/wiki/page-editor.tsx:326
+#: src/features/wiki/page-editor.tsx:339
 msgid "Preview"
 msgstr "Pregled"
 
@@ -1754,8 +1758,8 @@ msgstr "Profil"
 msgid "Raised"
 msgstr "Izdignuto"
 
-#: src/features/wiki/page-editor.tsx:435
-#: src/features/wiki/page-editor.tsx:441
+#: src/features/wiki/page-editor.tsx:448
+#: src/features/wiki/page-editor.tsx:454
 msgid "Re-derive from title"
 msgstr "Ponovno izvedi iz naslova"
 
@@ -1824,8 +1828,8 @@ msgstr "Preusmjeravanje na prijavu."
 msgid "Redirects"
 msgstr "Preusmjeravanja"
 
-#: ../../../lib/web/src/components/post-tags.tsx:192
-#: ../../../lib/web/src/components/post-tags.tsx:204
+#: ../../../lib/web/src/components/post-tags.tsx:196
+#: ../../../lib/web/src/components/post-tags.tsx:208
 msgid "Reduce interest"
 msgstr "Smanji interes"
 
@@ -1843,8 +1847,8 @@ msgstr "Relativno unutar 24 sata, inače apsolutno"
 #: src/features/wiki/comment-form.tsx:84
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
-#: src/features/wiki/wiki-comment-thread.tsx:240
-#: src/features/wiki/wiki-comment-thread.tsx:244
+#: src/features/wiki/wiki-comment-thread.tsx:249
+#: src/features/wiki/wiki-comment-thread.tsx:253
 #: src/features/wiki/wiki-settings.tsx:801
 msgid "Remove"
 msgstr "Ukloni"
@@ -1858,8 +1862,8 @@ msgstr "Ukloni pravilo pristupa"
 msgid "Remove access?"
 msgstr "Ukloniti pristup?"
 
-#: ../../../lib/web/src/components/post-tags.tsx:212
-#: ../../../lib/web/src/components/post-tags.tsx:224
+#: ../../../lib/web/src/components/post-tags.tsx:216
+#: ../../../lib/web/src/components/post-tags.tsx:228
 msgid "Remove interest"
 msgstr "Ukloni interes"
 
@@ -1921,12 +1925,12 @@ msgstr "Repliciraj wiki"
 msgid "Replicating..."
 msgstr "Repliciram..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:176
+#: src/features/wiki/wiki-comment-thread.tsx:185
 msgid "Reply"
 msgstr "Odgovori"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:210
+#: src/features/wiki/wiki-comment-thread.tsx:219
 msgid "Reply to {0}..."
 msgstr "Odgovori korisniku {0}..."
 
@@ -2010,8 +2014,8 @@ msgstr "Subota"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
-#: src/features/wiki/page-editor.tsx:387
-#: src/features/wiki/wiki-comment-thread.tsx:148
+#: src/features/wiki/page-editor.tsx:400
+#: src/features/wiki/wiki-comment-thread.tsx:157
 msgid "Save"
 msgstr "Spremi"
 
@@ -2019,7 +2023,7 @@ msgstr "Spremi"
 msgid "Save changes"
 msgstr "Spremi promjene"
 
-#: src/features/wiki/page-editor.tsx:387
+#: src/features/wiki/page-editor.tsx:400
 #: src/features/wiki/wiki-settings.tsx:279
 #: src/features/wiki/wiki-settings.tsx:306
 #: src/features/wiki/wiki-settings.tsx:454
@@ -2107,7 +2111,7 @@ msgstr "Odaberite pravilo pristupa"
 msgid "Select account type"
 msgstr "Odaberite tip računa"
 
-#: src/features/wiki/page-editor.tsx:488
+#: src/features/wiki/page-editor.tsx:501
 msgid "Select an attachment to insert into your page, or upload a new file."
 msgstr "Odaberite privitak za umetanje na vašu stranicu ili učitajte novu datoteku."
 
@@ -2143,7 +2147,7 @@ msgstr "Pošalji komentar"
 msgid "Send email"
 msgstr "Pošalji e-poštu"
 
-#: src/features/wiki/wiki-comment-thread.tsx:281
+#: src/features/wiki/wiki-comment-thread.tsx:290
 msgid "Send reply"
 msgstr "Pošalji odgovor"
 
@@ -2151,8 +2155,8 @@ msgstr "Pošalji odgovor"
 msgid "Serif"
 msgstr "Serif"
 
-#: ../../../lib/web/src/lib/api-client.ts:259
-#: ../../../lib/web/src/lib/api-client.ts:284
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:245
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:271
 msgid "Server error"
 msgstr "Pogreška poslužitelja"
 
@@ -2161,7 +2165,7 @@ msgstr "Pogreška poslužitelja"
 msgid "Server rules"
 msgstr "Pravila poslužitelja"
 
-#: ../../../lib/web/src/lib/api-client.ts:227
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:209
 msgid "Session expired"
 msgstr "Sesija je istekla"
 
@@ -2290,7 +2294,7 @@ msgstr "Pretplata"
 msgid "Sunday"
 msgstr "Nedjelja"
 
-#: src/features/wiki/page-editor.tsx:493
+#: src/features/wiki/page-editor.tsx:506
 msgid "Supported files"
 msgstr "Podržane datoteke"
 
@@ -2340,8 +2344,8 @@ msgstr "Oznaka već postoji"
 msgid "Tag: {tag}"
 msgstr "Oznaka: {tag}"
 
-#: ../../../lib/web/src/components/post-tags.tsx:96
-#: ../../../lib/web/src/components/post-tags.tsx:107
+#: ../../../lib/web/src/components/post-tags.tsx:100
+#: ../../../lib/web/src/components/post-tags.tsx:111
 #: src/features/wiki/wiki-page-content.tsx:300
 #: src/routes/_authenticated/$page/index.tsx:242
 #: src/routes/_authenticated/index.tsx:426
@@ -2412,12 +2416,12 @@ msgid "This action cannot be undone. This will permanently delete the wiki and a
 msgstr "Ova radnja se ne može poništiti. Ovo će trajno izbrisati wiki i sav njegov sadržaj."
 
 #: src/features/wiki/attachments-page.tsx:145
-#: src/features/wiki/page-editor.tsx:185
+#: src/features/wiki/page-editor.tsx:193
 msgid "This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit."
 msgstr "Ova je datoteka prevelika za trenutačno ograničenje prenošenja na poslužitelju. Pokušajte s manjom datotekom ili povećajte ograničenje veličine prenošenja na poslužitelju ili proxyju."
 
 #: src/features/wiki/attachments-page.tsx:156
-#: src/features/wiki/page-editor.tsx:196
+#: src/features/wiki/page-editor.tsx:204
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "Ova je datoteka prevelika za prenošenje. Pokušajte s manjom datotekom."
 
@@ -2425,7 +2429,7 @@ msgstr "Ova je datoteka prevelika za prenošenje. Pokušajte s manjom datotekom.
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Ovaj wiki je pretplaćen na izvorni wiki i prima ažuriranja od njega."
 
-#: src/features/wiki/page-editor.tsx:446
+#: src/features/wiki/page-editor.tsx:459
 msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
 msgstr "Ovo će biti putanja za stranicu. Koristite mala slova, brojeve i crtice."
 
@@ -2450,12 +2454,12 @@ msgstr "Ovo će zaustaviti slanje ažuriranja na \"{0}\". Mogu ponovno replicira
 msgid "Thursday"
 msgstr "Četvrtak"
 
-#: src/features/wiki/page-editor.tsx:407
+#: src/features/wiki/page-editor.tsx:420
 #: src/features/wiki/page-history.tsx:56
 msgid "Title"
 msgstr "Naslov"
 
-#: src/features/wiki/page-editor.tsx:248
+#: src/features/wiki/page-editor.tsx:256
 msgid "Title is required"
 msgstr "Naslov je obavezan"
 
@@ -2537,7 +2541,7 @@ msgstr "Tipkajte za pretragu korisnika"
 msgid "Type to search..."
 msgstr "Tipkajte za pretragu..."
 
-#: ../../../lib/web/src/lib/api-client.ts:280
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:267
 msgid "Unable to connect to remote server"
 msgstr "Nije moguće povezati se s udaljenim poslužiteljem"
 
@@ -2562,7 +2566,7 @@ msgstr "Jedinstveni identifikatori za ovaj wiki."
 msgid "United States"
 msgstr "Sjedinjene Američke Države"
 
-#: src/features/wiki/wiki-comment-thread.tsx:80
+#: src/features/wiki/wiki-comment-thread.tsx:81
 msgid "Unknown"
 msgstr "Nepoznato"
 
@@ -2575,16 +2579,16 @@ msgstr "Nepoznato"
 #: src/routes/_authenticated/index.tsx:479
 #: src/routes/_authenticated/index.tsx:506
 #: src/routes/_authenticated/index.tsx:508
-#: src/routes/_authenticated/index.tsx:848
-#: src/routes/_authenticated/index.tsx:880
-#: src/routes/_authenticated/index.tsx:882
+#: src/routes/_authenticated/index.tsx:849
+#: src/routes/_authenticated/index.tsx:881
+#: src/routes/_authenticated/index.tsx:883
 msgid "Unsubscribe"
 msgstr "Otkaži pretplatu"
 
 #: src/features/wiki/wiki-page-content.tsx:75
 #: src/routes/_authenticated/$page/index.tsx:69
 #: src/routes/_authenticated/index.tsx:302
-#: src/routes/_authenticated/index.tsx:891
+#: src/routes/_authenticated/index.tsx:892
 msgid "Unsubscribed"
 msgstr "Pretplata otkazana"
 
@@ -2594,22 +2598,22 @@ msgstr "Pretplata otkazana"
 #: src/routes/_authenticated/$page/index.tsx:228
 #: src/routes/_authenticated/index.tsx:301
 #: src/routes/_authenticated/index.tsx:479
-#: src/routes/_authenticated/index.tsx:847
-#: src/routes/_authenticated/index.tsx:890
+#: src/routes/_authenticated/index.tsx:848
+#: src/routes/_authenticated/index.tsx:891
 msgid "Unsubscribing..."
 msgstr "Otkazivanje pretplate..."
 
 #: src/features/wiki/attachments-page.tsx:138
-#: src/features/wiki/page-editor.tsx:178
+#: src/features/wiki/page-editor.tsx:186
 msgid "Unsupported file type: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Nepodržana vrsta datoteke: {names}. Podržane datoteke: slike, PDF, DOC, DOCX, TXT i MD."
 
 #: src/features/wiki/attachments-page.tsx:139
-#: src/features/wiki/page-editor.tsx:179
+#: src/features/wiki/page-editor.tsx:187
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Nepodržane vrste datoteka: {names}. Podržane datoteke: slike, PDF, DOC, DOCX, TXT i MD."
 
-#: src/features/wiki/page-editor.tsx:399
+#: src/features/wiki/page-editor.tsx:412
 msgid "Untitled"
 msgstr "Bez naslova"
 
@@ -2623,7 +2627,7 @@ msgstr "Neprovjereno"
 #: src/features/wiki/page-view.tsx:261
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:72
-#: src/routes/_authenticated/index.tsx:864
+#: src/routes/_authenticated/index.tsx:865
 msgid "Updated {0}"
 msgstr "Ažurirano {0}"
 
@@ -2631,22 +2635,22 @@ msgstr "Ažurirano {0}"
 msgid "Updating access..."
 msgstr "Ažuriranje pristupa..."
 
-#: src/features/wiki/page-editor.tsx:549
+#: src/features/wiki/page-editor.tsx:562
 msgid "Upload a file to get started."
 msgstr "Učitajte datoteku za početak."
 
 #: src/features/wiki/attachments-page.tsx:323
-#: src/features/wiki/page-editor.tsx:529
+#: src/features/wiki/page-editor.tsx:542
 msgid "Upload failed"
 msgstr "Prenošenje nije uspjelo"
 
 #: src/features/wiki/attachments-page.tsx:153
-#: src/features/wiki/page-editor.tsx:193
+#: src/features/wiki/page-editor.tsx:201
 msgid "Upload failed because this account has reached its storage limit."
 msgstr "Prenošenje nije uspjelo jer je ovaj račun dosegnuo ograničenje pohrane."
 
 #: src/features/wiki/attachments-page.tsx:150
-#: src/features/wiki/page-editor.tsx:190
+#: src/features/wiki/page-editor.tsx:198
 msgid "Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again."
 msgstr "Prenošenje nije uspjelo. Datoteka je možda prevelika za trenutačno ograničenje prenošenja na poslužitelju ili proxyju. Ako je datoteka mala, provjerite vezu i pokušajte ponovno."
 
@@ -2658,7 +2662,7 @@ msgstr "Učitaj datoteke"
 msgid "Upload guidance"
 msgstr "Smjernice za prenošenje"
 
-#: src/features/wiki/page-editor.tsx:523
+#: src/features/wiki/page-editor.tsx:536
 msgid "Upload new"
 msgstr "Učitaj novo"
 
@@ -2767,8 +2771,8 @@ msgstr "Wiki"
 
 #: src/routes/_authenticated/index.tsx:662
 #: src/routes/_authenticated/index.tsx:669
-#: src/routes/_authenticated/index.tsx:828
-#: src/routes/_authenticated/index.tsx:835
+#: src/routes/_authenticated/index.tsx:829
+#: src/routes/_authenticated/index.tsx:836
 msgid "Wiki actions"
 msgstr "Wiki akcije"
 
@@ -2819,11 +2823,11 @@ msgstr "Wiki sinkroniziran"
 msgid "Wikis"
 msgstr "Wikiji"
 
-#: src/features/wiki/page-comments.tsx:90
+#: src/features/wiki/page-comments.tsx:98
 msgid "Write a comment..."
 msgstr "Napišite komentar..."
 
-#: src/features/wiki/page-editor.tsx:462
+#: src/features/wiki/page-editor.tsx:475
 msgid "Write your content here using Markdown..."
 msgstr "Napišite svoj sadržaj ovdje koristeći Markdown..."
 

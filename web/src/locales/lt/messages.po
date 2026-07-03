@@ -13,11 +13,11 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/features/wiki/wiki-comment-thread.tsx:121
+#: src/features/wiki/wiki-comment-thread.tsx:122
 msgid "(edited)"
 msgstr "(redaguota)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:107
+#: src/features/wiki/wiki-comment-thread.tsx:108
 msgid "(expand)"
 msgstr "(išskleisti)"
 
@@ -44,11 +44,11 @@ msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:858
+#: src/routes/_authenticated/index.tsx:859
 msgid "{0} pages"
 msgstr "{0} puslapių"
 
-#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
+#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
 #: src/features/wiki/tag-pages.tsx:44
 msgid "{0} with this tag."
 msgstr "{0} su šia žyma."
@@ -63,7 +63,7 @@ msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# dokumentas} few {# dokumentai} many {# dokumentų} other {# dokumentų}}"
 
 #: src/features/wiki/attachments-page.tsx:179
-#: src/features/wiki/page-editor.tsx:219
+#: src/features/wiki/page-editor.tsx:227
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {Įkeltas # failas} few {Įkelti # failai} many {Įkelta # failo} other {Įkelta # failų}}"
 
@@ -86,7 +86,7 @@ msgstr "{pageTitle} - komentarai"
 msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
 msgstr "{renamedCount, plural, one {Pervadintas 1 puslapis} few {Pervadinti # puslapiai} many {Pervadinta # puslapių} other {Pervadinta # puslapių}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:105
+#: src/features/wiki/wiki-comment-thread.tsx:106
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# atsakymas} few {+# daugiau atsakymų} many {+# daugiau atsakymų} other {+# daugiau atsakymų}}"
 
@@ -97,7 +97,7 @@ msgstr "{totalDescendants, plural, one {# atsakymas} few {+# daugiau atsakymų} 
 msgid "{wikiName} settings"
 msgstr "{wikiName} nustatymai"
 
-#: src/features/wiki/page-editor.tsx:400
+#: src/features/wiki/page-editor.tsx:413
 msgid "*No content*"
 msgstr "*Nėra turinio*"
 
@@ -193,7 +193,7 @@ msgstr "Pridėti naują paskyrą"
 msgid "Add redirect"
 msgstr "Pridėti nukreipimą"
 
-#: ../../../lib/web/src/components/post-tags.tsx:129
+#: ../../../lib/web/src/components/post-tags.tsx:133
 msgid "Add tag..."
 msgstr "Pridėti žymą..."
 
@@ -251,11 +251,11 @@ msgstr "Visi wiki"
 msgid "Allow anyone to search for wiki"
 msgstr "Leisti bet kam ieškoti wiki"
 
-#: ../../../lib/web/src/lib/api-client.ts:192
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:159
 msgid "An error occurred"
 msgstr "Įvyko klaida"
 
-#: ../../../lib/web/src/lib/api-client.ts:255
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:241
 msgid "An unexpected error occurred"
 msgstr "Įvyko netikėta klaida"
 
@@ -263,7 +263,7 @@ msgstr "Įvyko netikėta klaida"
 msgid "Are you absolutely sure?"
 msgstr "Ar tikrai esate tikri?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:293
+#: src/features/wiki/wiki-comment-thread.tsx:302
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Ar tikrai norite ištrinti šį komentarą? Tai taip pat ištrins visus atsakymus. Šio veiksmo atšaukti negalima."
 
@@ -274,7 +274,7 @@ msgstr "Ar tikrai norite atsijungti? Norėdami pasiekti paskyrą, turėsite vėl
 #: src/features/wiki/wiki-page-content.tsx:366
 #: src/routes/_authenticated/$page/index.tsx:285
 #: src/routes/_authenticated/index.tsx:507
-#: src/routes/_authenticated/index.tsx:881
+#: src/routes/_authenticated/index.tsx:882
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "Ar tikrai norite atsisakyti šios wiki prenumeratos?"
 
@@ -290,18 +290,18 @@ msgstr "Didėjančiai"
 msgid "Attach files"
 msgstr "Pridėti failus"
 
-#: src/features/wiki/wiki-comment-thread.tsx:263
+#: src/features/wiki/wiki-comment-thread.tsx:272
 msgid "Attach reply files"
 msgstr "Pridėti atsakymo failus"
 
 #: src/features/wiki/attachments-page.tsx:243
-#: src/features/wiki/page-editor.tsx:236
+#: src/features/wiki/page-editor.tsx:244
 msgid "Attachment deleted"
 msgstr "Priedas ištrintas"
 
-#: src/features/wiki/page-editor.tsx:343
-#: src/features/wiki/page-editor.tsx:348
-#: src/features/wiki/page-editor.tsx:355
+#: src/features/wiki/page-editor.tsx:356
+#: src/features/wiki/page-editor.tsx:361
+#: src/features/wiki/page-editor.tsx:368
 #: src/routes/_authenticated/$page/attachments.tsx:31
 #: src/routes/_authenticated/$page/attachments.tsx:42
 #: src/routes/_authenticated/$wikiId/$page/attachments.tsx:40
@@ -401,12 +401,12 @@ msgstr "Atgal į puslapį"
 msgid "Back to wikis"
 msgstr "Atgal į wiki sąrašą"
 
-#: src/features/wiki/page-comments.tsx:96
+#: src/features/wiki/page-comments.tsx:104
 msgid "Be the first to comment on this page."
 msgstr "Būkite pirmas, komentuojantis šį puslapį."
 
-#: ../../../lib/web/src/components/post-tags.tsx:172
-#: ../../../lib/web/src/components/post-tags.tsx:184
+#: ../../../lib/web/src/components/post-tags.tsx:176
+#: ../../../lib/web/src/components/post-tags.tsx:188
 msgid "Boost interest"
 msgstr "Padidinti susidomėjimą"
 
@@ -415,7 +415,7 @@ msgstr "Padidinti susidomėjimą"
 msgid "Both source and target are required"
 msgstr "Reikalingi ir šaltinis, ir tikslas"
 
-#: src/features/wiki/page-editor.tsx:475
+#: src/features/wiki/page-editor.tsx:488
 msgid "Briefly describe your changes"
 msgstr "Trumpai aprašykite savo pakeitimus"
 
@@ -435,14 +435,14 @@ msgstr "Naršykite puslapius pagal žymą. Spustelėkite žymą, kad pamatytumė
 #: src/features/wiki/comment-form.tsx:109
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
-#: src/features/wiki/page-editor.tsx:376
+#: src/features/wiki/page-editor.tsx:389
 #: src/features/wiki/redirects-page.tsx:173
 #: src/features/wiki/redirects-page.tsx:271
 #: src/features/wiki/rename-page-dialog.tsx:128
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:136
+#: src/features/wiki/wiki-comment-thread.tsx:137
 #: src/features/wiki/wiki-settings.tsx:796
 #: src/features/wiki/wiki-settings.tsx:955
 #: src/features/wiki/wiki-settings.tsx:1068
@@ -450,7 +450,7 @@ msgstr "Naršykite puslapius pagal žymą. Spustelėkite žymą, kad pamatytumė
 msgid "Cancel"
 msgstr "Atšaukti"
 
-#: src/features/wiki/wiki-comment-thread.tsx:272
+#: src/features/wiki/wiki-comment-thread.tsx:281
 msgid "Cancel reply"
 msgstr "Atšaukti atsakymą"
 
@@ -560,8 +560,8 @@ msgstr "Uždaryti paiešką"
 
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:101
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:110
-#: ../../../lib/web/src/components/tree-row.tsx:253
-#: ../../../lib/web/src/components/tree-row.tsx:267
+#: ../../../lib/web/src/components/tree-row.tsx:338
+#: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Collapse"
 msgstr "Sutraukti"
 
@@ -602,7 +602,7 @@ msgstr "Palyginti pakeitimus"
 msgid "Confirm"
 msgstr "Patvirtinti"
 
-#: src/features/wiki/page-editor.tsx:456
+#: src/features/wiki/page-editor.tsx:469
 msgid "Content"
 msgstr "Turinys"
 
@@ -666,7 +666,7 @@ msgstr "Sukurkite nukreipimą iš vieno URL į kitą. Šaltinio URL neturi būti
 msgid "Create a redirect to forward one URL to another."
 msgstr "Sukurkite nukreipimą, kad perduotumėte vieną URL kitam."
 
-#: src/features/wiki/page-editor.tsx:382
+#: src/features/wiki/page-editor.tsx:395
 msgid "Create page"
 msgstr "Sukurti puslapį"
 
@@ -708,7 +708,7 @@ msgstr "Kuriamas peradresavimas..."
 msgid "Creating wiki..."
 msgstr "Kuriama wiki..."
 
-#: src/features/wiki/page-editor.tsx:382
+#: src/features/wiki/page-editor.tsx:395
 #: src/features/wiki/redirects-page.tsx:274
 #: src/features/wiki/wiki-settings.tsx:1071
 msgid "Creating..."
@@ -751,10 +751,10 @@ msgstr "Numatytoji DI paskyra"
 
 #: src/features/wiki/attachments-page.tsx:491
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/page-editor.tsx:625
+#: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:200
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/wiki-comment-thread.tsx:209
+#: src/features/wiki/wiki-comment-thread.tsx:303
 #: src/features/wiki/wiki-page-content.tsx:285
 #: src/features/wiki/wiki-settings.tsx:960
 msgid "Delete"
@@ -762,7 +762,7 @@ msgstr "Ištrinti"
 
 #. placeholder {0}: pendingDelete.name
 #: src/features/wiki/attachments-page.tsx:490
-#: src/features/wiki/page-editor.tsx:622
+#: src/features/wiki/page-editor.tsx:635
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "Ištrinti „{0}“? Šio veiksmo atšaukti negalima."
 
@@ -771,19 +771,19 @@ msgstr "Ištrinti „{0}“? Šio veiksmo atšaukti negalima."
 #: src/features/wiki/attachments-page.tsx:590
 #: src/features/wiki/attachments-page.tsx:685
 #: src/features/wiki/attachments-page.tsx:694
-#: src/features/wiki/page-editor.tsx:575
-#: src/features/wiki/page-editor.tsx:584
-#: src/features/wiki/page-editor.tsx:619
+#: src/features/wiki/page-editor.tsx:588
+#: src/features/wiki/page-editor.tsx:597
+#: src/features/wiki/page-editor.tsx:632
 msgid "Delete attachment"
 msgstr "Ištrinti priedą"
 
-#: src/features/wiki/wiki-comment-thread.tsx:292
+#: src/features/wiki/wiki-comment-thread.tsx:301
 msgid "Delete comment"
 msgstr "Ištrinti komentarą"
 
 #: src/features/wiki/delete-page.tsx:56
-#: src/features/wiki/page-editor.tsx:364
-#: src/features/wiki/page-editor.tsx:369
+#: src/features/wiki/page-editor.tsx:377
+#: src/features/wiki/page-editor.tsx:382
 msgid "Delete page"
 msgstr "Ištrinti puslapį"
 
@@ -894,8 +894,8 @@ msgstr "Vilkite ir paleiskite failus čia arba spustelėkite „Įkelti failus�
 msgid "Dyslexia-friendly"
 msgstr "Tinkama disleksijai"
 
-#: src/features/wiki/page-editor.tsx:321
-#: src/features/wiki/wiki-comment-thread.tsx:189
+#: src/features/wiki/page-editor.tsx:334
+#: src/features/wiki/wiki-comment-thread.tsx:198
 #: src/features/wiki/wiki-page-content.tsx:259
 #: src/routes/_authenticated/$page/index.tsx:200
 #: src/routes/_authenticated/index.tsx:399
@@ -910,7 +910,7 @@ msgstr "Redaguoti {label}"
 msgid "Edit and view"
 msgstr "Redaguoti ir peržiūrėti"
 
-#: src/features/wiki/page-editor.tsx:470
+#: src/features/wiki/page-editor.tsx:483
 msgid "Edit summary (optional)"
 msgstr "Redaguoti santrauką (neprivaloma)"
 
@@ -965,8 +965,8 @@ msgstr "Pavyzdys: „home“, „welcome“, „index“"
 
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:101
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:110
-#: ../../../lib/web/src/components/tree-row.tsx:253
-#: ../../../lib/web/src/components/tree-row.tsx:267
+#: ../../../lib/web/src/components/tree-row.tsx:338
+#: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Expand"
 msgstr "Išskleisti"
 
@@ -990,7 +990,7 @@ msgstr "Nepavyko pridėti žymos"
 msgid "Failed to copy"
 msgstr "Nepavyko nukopijuoti"
 
-#: src/features/wiki/page-editor.tsx:270
+#: src/features/wiki/page-editor.tsx:278
 msgid "Failed to create page"
 msgstr "Nepavyko sukurti puslapio"
 
@@ -1004,7 +1004,7 @@ msgid "Failed to create wiki"
 msgstr "Nepavyko sukurti wiki"
 
 #: src/features/wiki/attachments-page.tsx:247
-#: src/features/wiki/page-editor.tsx:240
+#: src/features/wiki/page-editor.tsx:248
 msgid "Failed to delete attachment"
 msgstr "Nepavyko ištrinti priedo"
 
@@ -1079,7 +1079,7 @@ msgstr "Nepavyko pervadinti wiki"
 msgid "Failed to revert page"
 msgstr "Nepavyko grąžinti puslapio"
 
-#: src/features/wiki/page-editor.tsx:287
+#: src/features/wiki/page-editor.tsx:300
 msgid "Failed to save page"
 msgstr "Nepavyko išsaugoti puslapio"
 
@@ -1112,7 +1112,7 @@ msgstr "Nepavyko sinchronizuoti wiki"
 #: src/features/wiki/wiki-page-content.tsx:76
 #: src/routes/_authenticated/$page/index.tsx:70
 #: src/routes/_authenticated/index.tsx:303
-#: src/routes/_authenticated/index.tsx:892
+#: src/routes/_authenticated/index.tsx:893
 msgid "Failed to unsubscribe"
 msgstr "Nepavyko atsisakyti prenumeratos"
 
@@ -1125,7 +1125,7 @@ msgid "Failed to update category"
 msgstr "Nepavyko atnaujinti kategorijos"
 
 #: src/features/wiki/attachments-page.tsx:148
-#: src/features/wiki/page-editor.tsx:188
+#: src/features/wiki/page-editor.tsx:196
 msgid "Failed to upload files"
 msgstr "Nepavyko įkelti failų"
 
@@ -1154,7 +1154,7 @@ msgstr "Plokščia"
 msgid "Floating"
 msgstr "Plaukiojantis"
 
-#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
+#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link preload={false} to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
 #: src/features/wiki/search-page.tsx:81
 msgid "Found {0} for \"{debouncedQuery}\""
 msgstr "Rasta {0} užklausai „{debouncedQuery}“"
@@ -1272,7 +1272,7 @@ msgstr "Vaizdas"
 msgid "Images"
 msgstr "Vaizdai"
 
-#: src/features/wiki/page-editor.tsx:495
+#: src/features/wiki/page-editor.tsx:508
 msgid "images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration."
 msgstr "vaizdai, PDF, DOC, DOCX, TXT ir MD. Didelius įkėlimus taip pat gali riboti jūsų serverio arba tarpinio serverio konfigūracija."
 
@@ -1280,11 +1280,11 @@ msgstr "vaizdai, PDF, DOC, DOCX, TXT ir MD. Didelius įkėlimus taip pat gali ri
 msgid "Imperial"
 msgstr "Imperinė"
 
-#: src/features/wiki/page-editor.tsx:336
+#: src/features/wiki/page-editor.tsx:349
 msgid "Insert"
 msgstr "Įterpti"
 
-#: src/features/wiki/page-editor.tsx:486
+#: src/features/wiki/page-editor.tsx:499
 msgid "Insert attachment"
 msgstr "Įterpti priedą"
 
@@ -1355,6 +1355,10 @@ msgstr "Sąrašo rodinys"
 msgid "Load more"
 msgstr "Įkelti daugiau"
 
+#: ../../../lib/web/src/components/ui/loading-content.tsx:29
+msgid "Loading content…"
+msgstr "Įkeliamas turinys…"
+
 #: ../../../lib/web/src/components/ui/load-more.tsx:35
 #: ../../../lib/web/src/features/document/document-page.tsx:90
 msgid "Loading…"
@@ -1404,7 +1408,7 @@ msgstr "Metrinė"
 msgid "Monday"
 msgstr "Pirmadienis"
 
-#: src/features/wiki/page-editor.tsx:425
+#: src/features/wiki/page-editor.tsx:438
 msgid "my-page-name"
 msgstr "my-page-name"
 
@@ -1421,7 +1425,7 @@ msgstr "Pavadinime negali būti < ar > simbolių"
 msgid "Name must be 100 characters or less"
 msgstr "Pavadinimas turi būti ne ilgesnis nei 100 simbolių"
 
-#: ../../../lib/web/src/lib/api-client.ts:300
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:288
 msgid "Network error"
 msgstr "Tinklo klaida"
 
@@ -1479,7 +1483,7 @@ msgid "No attachments match your search"
 msgstr "Pagal jūsų paiešką priedų nerasta"
 
 #: src/features/wiki/attachments-page.tsx:438
-#: src/features/wiki/page-editor.tsx:548
+#: src/features/wiki/page-editor.tsx:561
 msgid "No attachments yet"
 msgstr "Dar nėra priedų"
 
@@ -1487,7 +1491,7 @@ msgstr "Dar nėra priedų"
 msgid "No changes yet"
 msgstr "Dar nėra pakeitimų"
 
-#: src/features/wiki/page-comments.tsx:95
+#: src/features/wiki/page-comments.tsx:103
 msgid "No comments yet"
 msgstr "Dar nėra komentarų"
 
@@ -1596,7 +1600,7 @@ msgid "Oops! Page Not Found!"
 msgstr "Oi! Puslapis nerastas!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:815
+#: src/routes/_authenticated/index.tsx:816
 msgid "Open {0}"
 msgstr "Atidaryti {0}"
 
@@ -1680,7 +1684,7 @@ msgstr "Puslapis „{title}“ ištrintas"
 msgid "Page actions"
 msgstr "Puslapio veiksmai"
 
-#: src/features/wiki/page-editor.tsx:262
+#: src/features/wiki/page-editor.tsx:270
 msgid "Page created"
 msgstr "Puslapis sukurtas"
 
@@ -1691,19 +1695,19 @@ msgstr "Puslapis sukurtas"
 msgid "Page not found"
 msgstr "Puslapis nerastas"
 
-#: src/features/wiki/page-editor.tsx:279
+#: src/features/wiki/page-editor.tsx:292
 msgid "Page saved"
 msgstr "Puslapis išsaugotas"
 
-#: src/features/wiki/page-editor.tsx:412
+#: src/features/wiki/page-editor.tsx:425
 msgid "Page title"
 msgstr "Puslapio pavadinimas"
 
-#: src/features/wiki/page-editor.tsx:419
+#: src/features/wiki/page-editor.tsx:432
 msgid "Page URL"
 msgstr "Puslapio URL"
 
-#: src/features/wiki/page-editor.tsx:254
+#: src/features/wiki/page-editor.tsx:262
 msgid "Page URL is required"
 msgstr "Puslapio URL yra privalomas"
 
@@ -1727,11 +1731,11 @@ msgstr "Slaptarakčiai"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Visam laikui ištrinti šį wiki ir visą jo turinį. To nebus galima atšaukti."
 
-#: ../../../lib/web/src/lib/api-client.ts:301
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:289
 msgid "Please check your internet connection and try again."
 msgstr "Patikrinkite interneto ryšį ir bandykite dar kartą."
 
-#: src/features/wiki/page-editor.tsx:326
+#: src/features/wiki/page-editor.tsx:339
 msgid "Preview"
 msgstr "Peržiūra"
 
@@ -1754,8 +1758,8 @@ msgstr "Profilis"
 msgid "Raised"
 msgstr "Iškilus"
 
-#: src/features/wiki/page-editor.tsx:435
-#: src/features/wiki/page-editor.tsx:441
+#: src/features/wiki/page-editor.tsx:448
+#: src/features/wiki/page-editor.tsx:454
 msgid "Re-derive from title"
 msgstr "Iš naujo sudaryti pagal pavadinimą"
 
@@ -1824,8 +1828,8 @@ msgstr "Peradresuojama į prisijungimą."
 msgid "Redirects"
 msgstr "Peradresavimai"
 
-#: ../../../lib/web/src/components/post-tags.tsx:192
-#: ../../../lib/web/src/components/post-tags.tsx:204
+#: ../../../lib/web/src/components/post-tags.tsx:196
+#: ../../../lib/web/src/components/post-tags.tsx:208
 msgid "Reduce interest"
 msgstr "Sumažinti susidomėjimą"
 
@@ -1843,8 +1847,8 @@ msgstr "Santykinis per 24 val., kitaip absoliutus"
 #: src/features/wiki/comment-form.tsx:84
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
-#: src/features/wiki/wiki-comment-thread.tsx:240
-#: src/features/wiki/wiki-comment-thread.tsx:244
+#: src/features/wiki/wiki-comment-thread.tsx:249
+#: src/features/wiki/wiki-comment-thread.tsx:253
 #: src/features/wiki/wiki-settings.tsx:801
 msgid "Remove"
 msgstr "Šalinti"
@@ -1858,8 +1862,8 @@ msgstr "Šalinti prieigos taisyklę"
 msgid "Remove access?"
 msgstr "Šalinti prieigą?"
 
-#: ../../../lib/web/src/components/post-tags.tsx:212
-#: ../../../lib/web/src/components/post-tags.tsx:224
+#: ../../../lib/web/src/components/post-tags.tsx:216
+#: ../../../lib/web/src/components/post-tags.tsx:228
 msgid "Remove interest"
 msgstr "Šalinti susidomėjimą"
 
@@ -1921,12 +1925,12 @@ msgstr "Replikuoti wiki"
 msgid "Replicating..."
 msgstr "Replikuojama..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:176
+#: src/features/wiki/wiki-comment-thread.tsx:185
 msgid "Reply"
 msgstr "Atsakyti"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:210
+#: src/features/wiki/wiki-comment-thread.tsx:219
 msgid "Reply to {0}..."
 msgstr "Atsakyti {0}..."
 
@@ -2010,8 +2014,8 @@ msgstr "Šeštadienis"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
-#: src/features/wiki/page-editor.tsx:387
-#: src/features/wiki/wiki-comment-thread.tsx:148
+#: src/features/wiki/page-editor.tsx:400
+#: src/features/wiki/wiki-comment-thread.tsx:157
 msgid "Save"
 msgstr "Išsaugoti"
 
@@ -2019,7 +2023,7 @@ msgstr "Išsaugoti"
 msgid "Save changes"
 msgstr "Išsaugoti pakeitimus"
 
-#: src/features/wiki/page-editor.tsx:387
+#: src/features/wiki/page-editor.tsx:400
 #: src/features/wiki/wiki-settings.tsx:279
 #: src/features/wiki/wiki-settings.tsx:306
 #: src/features/wiki/wiki-settings.tsx:454
@@ -2107,7 +2111,7 @@ msgstr "Pasirinkite prieigos taisyklę"
 msgid "Select account type"
 msgstr "Pasirinkite paskyros tipą"
 
-#: src/features/wiki/page-editor.tsx:488
+#: src/features/wiki/page-editor.tsx:501
 msgid "Select an attachment to insert into your page, or upload a new file."
 msgstr "Pasirinkite priedą įterpti į puslapį arba įkelkite naują failą."
 
@@ -2143,7 +2147,7 @@ msgstr "Siųsti komentarą"
 msgid "Send email"
 msgstr "Siųsti el. laišką"
 
-#: src/features/wiki/wiki-comment-thread.tsx:281
+#: src/features/wiki/wiki-comment-thread.tsx:290
 msgid "Send reply"
 msgstr "Siųsti atsakymą"
 
@@ -2151,8 +2155,8 @@ msgstr "Siųsti atsakymą"
 msgid "Serif"
 msgstr "Serifinis"
 
-#: ../../../lib/web/src/lib/api-client.ts:259
-#: ../../../lib/web/src/lib/api-client.ts:284
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:245
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:271
 msgid "Server error"
 msgstr "Serverio klaida"
 
@@ -2161,7 +2165,7 @@ msgstr "Serverio klaida"
 msgid "Server rules"
 msgstr "Serverio taisyklės"
 
-#: ../../../lib/web/src/lib/api-client.ts:227
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:209
 msgid "Session expired"
 msgstr "Sesija pasibaigė"
 
@@ -2290,7 +2294,7 @@ msgstr "Prenumerata"
 msgid "Sunday"
 msgstr "Sekmadienis"
 
-#: src/features/wiki/page-editor.tsx:493
+#: src/features/wiki/page-editor.tsx:506
 msgid "Supported files"
 msgstr "Palaikomi failai"
 
@@ -2340,8 +2344,8 @@ msgstr "Žyma jau egzistuoja"
 msgid "Tag: {tag}"
 msgstr "Žyma: {tag}"
 
-#: ../../../lib/web/src/components/post-tags.tsx:96
-#: ../../../lib/web/src/components/post-tags.tsx:107
+#: ../../../lib/web/src/components/post-tags.tsx:100
+#: ../../../lib/web/src/components/post-tags.tsx:111
 #: src/features/wiki/wiki-page-content.tsx:300
 #: src/routes/_authenticated/$page/index.tsx:242
 #: src/routes/_authenticated/index.tsx:426
@@ -2412,12 +2416,12 @@ msgid "This action cannot be undone. This will permanently delete the wiki and a
 msgstr "Šio veiksmo negalima atšaukti. Tai visam laikui ištrins wiki ir visą jo turinį."
 
 #: src/features/wiki/attachments-page.tsx:145
-#: src/features/wiki/page-editor.tsx:185
+#: src/features/wiki/page-editor.tsx:193
 msgid "This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit."
 msgstr "Šis failas per didelis dabartiniam serverio įkėlimo limitui. Pabandykite mažesnį failą arba padidinkite serverio ar tarpinio serverio įkėlimo dydžio limitą."
 
 #: src/features/wiki/attachments-page.tsx:156
-#: src/features/wiki/page-editor.tsx:196
+#: src/features/wiki/page-editor.tsx:204
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "Šis failas per didelis įkelti. Pabandykite mažesnį failą."
 
@@ -2425,7 +2429,7 @@ msgstr "Šis failas per didelis įkelti. Pabandykite mažesnį failą."
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Šis wiki yra prenumeruojamas iš šaltinio wiki ir gauna iš jo atnaujinimus."
 
-#: src/features/wiki/page-editor.tsx:446
+#: src/features/wiki/page-editor.tsx:459
 msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
 msgstr "Tai bus puslapio kelias. Naudokite mažąsias raides, skaičius ir brūkšnelius."
 
@@ -2450,12 +2454,12 @@ msgstr "Tai sustabdys atnaujinimų siuntimą į „{0}“. Jie gali vėl kopijuo
 msgid "Thursday"
 msgstr "Ketvirtadienis"
 
-#: src/features/wiki/page-editor.tsx:407
+#: src/features/wiki/page-editor.tsx:420
 #: src/features/wiki/page-history.tsx:56
 msgid "Title"
 msgstr "Pavadinimas"
 
-#: src/features/wiki/page-editor.tsx:248
+#: src/features/wiki/page-editor.tsx:256
 msgid "Title is required"
 msgstr "Pavadinimas yra privalomas"
 
@@ -2537,7 +2541,7 @@ msgstr "Įveskite, kad surastumėte vartotojus"
 msgid "Type to search..."
 msgstr "Įveskite, kad ieškotumėte..."
 
-#: ../../../lib/web/src/lib/api-client.ts:280
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:267
 msgid "Unable to connect to remote server"
 msgstr "Nepavyko prisijungti prie nuotolinio serverio"
 
@@ -2562,7 +2566,7 @@ msgstr "Unikalūs šio wiki identifikatoriai."
 msgid "United States"
 msgstr "Jungtinės Valstijos"
 
-#: src/features/wiki/wiki-comment-thread.tsx:80
+#: src/features/wiki/wiki-comment-thread.tsx:81
 msgid "Unknown"
 msgstr "Nežinoma"
 
@@ -2575,16 +2579,16 @@ msgstr "Nežinoma"
 #: src/routes/_authenticated/index.tsx:479
 #: src/routes/_authenticated/index.tsx:506
 #: src/routes/_authenticated/index.tsx:508
-#: src/routes/_authenticated/index.tsx:848
-#: src/routes/_authenticated/index.tsx:880
-#: src/routes/_authenticated/index.tsx:882
+#: src/routes/_authenticated/index.tsx:849
+#: src/routes/_authenticated/index.tsx:881
+#: src/routes/_authenticated/index.tsx:883
 msgid "Unsubscribe"
 msgstr "Atšaukti prenumeratą"
 
 #: src/features/wiki/wiki-page-content.tsx:75
 #: src/routes/_authenticated/$page/index.tsx:69
 #: src/routes/_authenticated/index.tsx:302
-#: src/routes/_authenticated/index.tsx:891
+#: src/routes/_authenticated/index.tsx:892
 msgid "Unsubscribed"
 msgstr "Prenumerata atšaukta"
 
@@ -2594,22 +2598,22 @@ msgstr "Prenumerata atšaukta"
 #: src/routes/_authenticated/$page/index.tsx:228
 #: src/routes/_authenticated/index.tsx:301
 #: src/routes/_authenticated/index.tsx:479
-#: src/routes/_authenticated/index.tsx:847
-#: src/routes/_authenticated/index.tsx:890
+#: src/routes/_authenticated/index.tsx:848
+#: src/routes/_authenticated/index.tsx:891
 msgid "Unsubscribing..."
 msgstr "Atšaukiama prenumerata..."
 
 #: src/features/wiki/attachments-page.tsx:138
-#: src/features/wiki/page-editor.tsx:178
+#: src/features/wiki/page-editor.tsx:186
 msgid "Unsupported file type: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Nepalaikomas failo tipas: {names}. Palaikomi failai: vaizdai, PDF, DOC, DOCX, TXT ir MD."
 
 #: src/features/wiki/attachments-page.tsx:139
-#: src/features/wiki/page-editor.tsx:179
+#: src/features/wiki/page-editor.tsx:187
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Nepalaikomi failų tipai: {names}. Palaikomi failai: vaizdai, PDF, DOC, DOCX, TXT ir MD."
 
-#: src/features/wiki/page-editor.tsx:399
+#: src/features/wiki/page-editor.tsx:412
 msgid "Untitled"
 msgstr "Be pavadinimo"
 
@@ -2623,7 +2627,7 @@ msgstr "Nepatvirtinta"
 #: src/features/wiki/page-view.tsx:261
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:72
-#: src/routes/_authenticated/index.tsx:864
+#: src/routes/_authenticated/index.tsx:865
 msgid "Updated {0}"
 msgstr "Atnaujinta {0}"
 
@@ -2631,22 +2635,22 @@ msgstr "Atnaujinta {0}"
 msgid "Updating access..."
 msgstr "Atnaujinama prieiga..."
 
-#: src/features/wiki/page-editor.tsx:549
+#: src/features/wiki/page-editor.tsx:562
 msgid "Upload a file to get started."
 msgstr "Įkelkite failą, kad pradėtumėte."
 
 #: src/features/wiki/attachments-page.tsx:323
-#: src/features/wiki/page-editor.tsx:529
+#: src/features/wiki/page-editor.tsx:542
 msgid "Upload failed"
 msgstr "Įkėlimas nepavyko"
 
 #: src/features/wiki/attachments-page.tsx:153
-#: src/features/wiki/page-editor.tsx:193
+#: src/features/wiki/page-editor.tsx:201
 msgid "Upload failed because this account has reached its storage limit."
 msgstr "Įkėlimas nepavyko, nes ši paskyra pasiekė savo saugyklos limitą."
 
 #: src/features/wiki/attachments-page.tsx:150
-#: src/features/wiki/page-editor.tsx:190
+#: src/features/wiki/page-editor.tsx:198
 msgid "Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again."
 msgstr "Įkėlimas nepavyko. Failas gali būti per didelis dabartiniam serverio ar tarpinio serverio įkėlimo limitui. Jei failas mažas, patikrinkite ryšį ir bandykite dar kartą."
 
@@ -2658,7 +2662,7 @@ msgstr "Įkelti failus"
 msgid "Upload guidance"
 msgstr "Įkėlimo gairės"
 
-#: src/features/wiki/page-editor.tsx:523
+#: src/features/wiki/page-editor.tsx:536
 msgid "Upload new"
 msgstr "Įkelti naują"
 
@@ -2767,8 +2771,8 @@ msgstr "Wiki"
 
 #: src/routes/_authenticated/index.tsx:662
 #: src/routes/_authenticated/index.tsx:669
-#: src/routes/_authenticated/index.tsx:828
-#: src/routes/_authenticated/index.tsx:835
+#: src/routes/_authenticated/index.tsx:829
+#: src/routes/_authenticated/index.tsx:836
 msgid "Wiki actions"
 msgstr "Wiki veiksmai"
 
@@ -2819,11 +2823,11 @@ msgstr "Wiki sinchronizuotas"
 msgid "Wikis"
 msgstr "Wiki"
 
-#: src/features/wiki/page-comments.tsx:90
+#: src/features/wiki/page-comments.tsx:98
 msgid "Write a comment..."
 msgstr "Parašykite komentarą..."
 
-#: src/features/wiki/page-editor.tsx:462
+#: src/features/wiki/page-editor.tsx:475
 msgid "Write your content here using Markdown..."
 msgstr "Rašykite savo turinį čia naudodami Markdown..."
 

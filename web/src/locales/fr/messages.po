@@ -13,11 +13,11 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/features/wiki/wiki-comment-thread.tsx:121
+#: src/features/wiki/wiki-comment-thread.tsx:122
 msgid "(edited)"
 msgstr "(modifié)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:107
+#: src/features/wiki/wiki-comment-thread.tsx:108
 msgid "(expand)"
 msgstr "(développer)"
 
@@ -44,11 +44,11 @@ msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:858
+#: src/routes/_authenticated/index.tsx:859
 msgid "{0} pages"
 msgstr "{0} pages"
 
-#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
+#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
 #: src/features/wiki/tag-pages.tsx:44
 msgid "{0} with this tag."
 msgstr "{0} avec cette étiquette."
@@ -63,7 +63,7 @@ msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# document} other {# documents}}"
 
 #: src/features/wiki/attachments-page.tsx:179
-#: src/features/wiki/page-editor.tsx:219
+#: src/features/wiki/page-editor.tsx:227
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# fichier envoyé} other {# fichiers envoyés}}"
 
@@ -86,7 +86,7 @@ msgstr "{pageTitle} - Commentaires"
 msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
 msgstr "{renamedCount, plural, one {1 page renommée} other {# pages renommées}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:105
+#: src/features/wiki/wiki-comment-thread.tsx:106
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# réponse} other {+# autres réponses}}"
 
@@ -97,7 +97,7 @@ msgstr "{totalDescendants, plural, one {# réponse} other {+# autres réponses}}
 msgid "{wikiName} settings"
 msgstr "Paramètres de {wikiName}"
 
-#: src/features/wiki/page-editor.tsx:400
+#: src/features/wiki/page-editor.tsx:413
 msgid "*No content*"
 msgstr "*Aucun contenu*"
 
@@ -193,7 +193,7 @@ msgstr "Ajouter un nouveau compte"
 msgid "Add redirect"
 msgstr "Ajouter une redirection"
 
-#: ../../../lib/web/src/components/post-tags.tsx:129
+#: ../../../lib/web/src/components/post-tags.tsx:133
 msgid "Add tag..."
 msgstr "Ajouter un tag…"
 
@@ -251,11 +251,11 @@ msgstr "Tous les wikis"
 msgid "Allow anyone to search for wiki"
 msgstr "Autoriser tout le monde à rechercher le wiki"
 
-#: ../../../lib/web/src/lib/api-client.ts:192
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:159
 msgid "An error occurred"
 msgstr "Une erreur s'est produite"
 
-#: ../../../lib/web/src/lib/api-client.ts:255
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:241
 msgid "An unexpected error occurred"
 msgstr "Une erreur inattendue s'est produite"
 
@@ -263,7 +263,7 @@ msgstr "Une erreur inattendue s'est produite"
 msgid "Are you absolutely sure?"
 msgstr "Êtes-vous absolument sûr ?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:293
+#: src/features/wiki/wiki-comment-thread.tsx:302
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Voulez-vous vraiment supprimer ce commentaire ? Toutes les réponses seront également supprimées. Cette action est irréversible."
 
@@ -274,7 +274,7 @@ msgstr "Voulez-vous vraiment vous déconnecter ? Vous devrez vous reconnecter po
 #: src/features/wiki/wiki-page-content.tsx:366
 #: src/routes/_authenticated/$page/index.tsx:285
 #: src/routes/_authenticated/index.tsx:507
-#: src/routes/_authenticated/index.tsx:881
+#: src/routes/_authenticated/index.tsx:882
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "Voulez-vous vraiment vous désabonner de ce wiki ?"
 
@@ -290,18 +290,18 @@ msgstr "Croissant"
 msgid "Attach files"
 msgstr "Joindre des fichiers"
 
-#: src/features/wiki/wiki-comment-thread.tsx:263
+#: src/features/wiki/wiki-comment-thread.tsx:272
 msgid "Attach reply files"
 msgstr "Joindre des fichiers à la réponse"
 
 #: src/features/wiki/attachments-page.tsx:243
-#: src/features/wiki/page-editor.tsx:236
+#: src/features/wiki/page-editor.tsx:244
 msgid "Attachment deleted"
 msgstr "Pièce jointe supprimée"
 
-#: src/features/wiki/page-editor.tsx:343
-#: src/features/wiki/page-editor.tsx:348
-#: src/features/wiki/page-editor.tsx:355
+#: src/features/wiki/page-editor.tsx:356
+#: src/features/wiki/page-editor.tsx:361
+#: src/features/wiki/page-editor.tsx:368
 #: src/routes/_authenticated/$page/attachments.tsx:31
 #: src/routes/_authenticated/$page/attachments.tsx:42
 #: src/routes/_authenticated/$wikiId/$page/attachments.tsx:40
@@ -401,12 +401,12 @@ msgstr "Retour à la page"
 msgid "Back to wikis"
 msgstr "Retour aux wikis"
 
-#: src/features/wiki/page-comments.tsx:96
+#: src/features/wiki/page-comments.tsx:104
 msgid "Be the first to comment on this page."
 msgstr "Soyez le premier à commenter cette page."
 
-#: ../../../lib/web/src/components/post-tags.tsx:172
-#: ../../../lib/web/src/components/post-tags.tsx:184
+#: ../../../lib/web/src/components/post-tags.tsx:176
+#: ../../../lib/web/src/components/post-tags.tsx:188
 msgid "Boost interest"
 msgstr "Augmenter l'intérêt"
 
@@ -415,7 +415,7 @@ msgstr "Augmenter l'intérêt"
 msgid "Both source and target are required"
 msgstr "La source et la cible sont obligatoires"
 
-#: src/features/wiki/page-editor.tsx:475
+#: src/features/wiki/page-editor.tsx:488
 msgid "Briefly describe your changes"
 msgstr "Décrivez brièvement vos modifications"
 
@@ -435,14 +435,14 @@ msgstr "Parcourir les pages par étiquette. Cliquez sur une étiquette pour voir
 #: src/features/wiki/comment-form.tsx:109
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
-#: src/features/wiki/page-editor.tsx:376
+#: src/features/wiki/page-editor.tsx:389
 #: src/features/wiki/redirects-page.tsx:173
 #: src/features/wiki/redirects-page.tsx:271
 #: src/features/wiki/rename-page-dialog.tsx:128
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:136
+#: src/features/wiki/wiki-comment-thread.tsx:137
 #: src/features/wiki/wiki-settings.tsx:796
 #: src/features/wiki/wiki-settings.tsx:955
 #: src/features/wiki/wiki-settings.tsx:1068
@@ -450,7 +450,7 @@ msgstr "Parcourir les pages par étiquette. Cliquez sur une étiquette pour voir
 msgid "Cancel"
 msgstr "Annuler"
 
-#: src/features/wiki/wiki-comment-thread.tsx:272
+#: src/features/wiki/wiki-comment-thread.tsx:281
 msgid "Cancel reply"
 msgstr "Annuler la réponse"
 
@@ -560,8 +560,8 @@ msgstr "Fermer la recherche"
 
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:101
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:110
-#: ../../../lib/web/src/components/tree-row.tsx:253
-#: ../../../lib/web/src/components/tree-row.tsx:267
+#: ../../../lib/web/src/components/tree-row.tsx:338
+#: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Collapse"
 msgstr "Réduire"
 
@@ -602,7 +602,7 @@ msgstr "Comparer les modifications"
 msgid "Confirm"
 msgstr "Confirmer"
 
-#: src/features/wiki/page-editor.tsx:456
+#: src/features/wiki/page-editor.tsx:469
 msgid "Content"
 msgstr "Contenu"
 
@@ -666,7 +666,7 @@ msgstr "Créer une redirection d'une URL vers une autre. L'URL source ne doit pa
 msgid "Create a redirect to forward one URL to another."
 msgstr "Créer une redirection pour transférer une URL vers une autre."
 
-#: src/features/wiki/page-editor.tsx:382
+#: src/features/wiki/page-editor.tsx:395
 msgid "Create page"
 msgstr "Créer la page"
 
@@ -708,7 +708,7 @@ msgstr "Création de la redirection..."
 msgid "Creating wiki..."
 msgstr "Création du wiki..."
 
-#: src/features/wiki/page-editor.tsx:382
+#: src/features/wiki/page-editor.tsx:395
 #: src/features/wiki/redirects-page.tsx:274
 #: src/features/wiki/wiki-settings.tsx:1071
 msgid "Creating..."
@@ -751,10 +751,10 @@ msgstr "Compte IA par défaut"
 
 #: src/features/wiki/attachments-page.tsx:491
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/page-editor.tsx:625
+#: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:200
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/wiki-comment-thread.tsx:209
+#: src/features/wiki/wiki-comment-thread.tsx:303
 #: src/features/wiki/wiki-page-content.tsx:285
 #: src/features/wiki/wiki-settings.tsx:960
 msgid "Delete"
@@ -762,7 +762,7 @@ msgstr "Supprimer"
 
 #. placeholder {0}: pendingDelete.name
 #: src/features/wiki/attachments-page.tsx:490
-#: src/features/wiki/page-editor.tsx:622
+#: src/features/wiki/page-editor.tsx:635
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "Supprimer « {0} » ? Cette action est irréversible."
 
@@ -771,19 +771,19 @@ msgstr "Supprimer « {0} » ? Cette action est irréversible."
 #: src/features/wiki/attachments-page.tsx:590
 #: src/features/wiki/attachments-page.tsx:685
 #: src/features/wiki/attachments-page.tsx:694
-#: src/features/wiki/page-editor.tsx:575
-#: src/features/wiki/page-editor.tsx:584
-#: src/features/wiki/page-editor.tsx:619
+#: src/features/wiki/page-editor.tsx:588
+#: src/features/wiki/page-editor.tsx:597
+#: src/features/wiki/page-editor.tsx:632
 msgid "Delete attachment"
 msgstr "Supprimer la pièce jointe"
 
-#: src/features/wiki/wiki-comment-thread.tsx:292
+#: src/features/wiki/wiki-comment-thread.tsx:301
 msgid "Delete comment"
 msgstr "Supprimer le commentaire"
 
 #: src/features/wiki/delete-page.tsx:56
-#: src/features/wiki/page-editor.tsx:364
-#: src/features/wiki/page-editor.tsx:369
+#: src/features/wiki/page-editor.tsx:377
+#: src/features/wiki/page-editor.tsx:382
 msgid "Delete page"
 msgstr "Supprimer la page"
 
@@ -894,8 +894,8 @@ msgstr "Glissez-déposez des fichiers ici ou cliquez sur « Téléverser des fic
 msgid "Dyslexia-friendly"
 msgstr "Adapté à la dyslexie"
 
-#: src/features/wiki/page-editor.tsx:321
-#: src/features/wiki/wiki-comment-thread.tsx:189
+#: src/features/wiki/page-editor.tsx:334
+#: src/features/wiki/wiki-comment-thread.tsx:198
 #: src/features/wiki/wiki-page-content.tsx:259
 #: src/routes/_authenticated/$page/index.tsx:200
 #: src/routes/_authenticated/index.tsx:399
@@ -910,7 +910,7 @@ msgstr "Modifier {label}"
 msgid "Edit and view"
 msgstr "Modifier et consulter"
 
-#: src/features/wiki/page-editor.tsx:470
+#: src/features/wiki/page-editor.tsx:483
 msgid "Edit summary (optional)"
 msgstr "Résumé de la modification (facultatif)"
 
@@ -965,8 +965,8 @@ msgstr "Exemple : « home », « welcome », « index »"
 
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:101
 #: ../../../lib/web/src/components/comment-tree-layout.tsx:110
-#: ../../../lib/web/src/components/tree-row.tsx:253
-#: ../../../lib/web/src/components/tree-row.tsx:267
+#: ../../../lib/web/src/components/tree-row.tsx:338
+#: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Expand"
 msgstr "Développer"
 
@@ -990,7 +990,7 @@ msgstr "Échec de l'ajout de l'étiquette"
 msgid "Failed to copy"
 msgstr "Échec de la copie"
 
-#: src/features/wiki/page-editor.tsx:270
+#: src/features/wiki/page-editor.tsx:278
 msgid "Failed to create page"
 msgstr "Échec de la création de la page"
 
@@ -1004,7 +1004,7 @@ msgid "Failed to create wiki"
 msgstr "Échec de la création du wiki"
 
 #: src/features/wiki/attachments-page.tsx:247
-#: src/features/wiki/page-editor.tsx:240
+#: src/features/wiki/page-editor.tsx:248
 msgid "Failed to delete attachment"
 msgstr "Échec de la suppression de la pièce jointe"
 
@@ -1079,7 +1079,7 @@ msgstr "Échec du renommage du wiki"
 msgid "Failed to revert page"
 msgstr "Échec du retour à l'ancienne version"
 
-#: src/features/wiki/page-editor.tsx:287
+#: src/features/wiki/page-editor.tsx:300
 msgid "Failed to save page"
 msgstr "Échec de l'enregistrement de la page"
 
@@ -1112,7 +1112,7 @@ msgstr "Échec de la synchronisation du wiki"
 #: src/features/wiki/wiki-page-content.tsx:76
 #: src/routes/_authenticated/$page/index.tsx:70
 #: src/routes/_authenticated/index.tsx:303
-#: src/routes/_authenticated/index.tsx:892
+#: src/routes/_authenticated/index.tsx:893
 msgid "Failed to unsubscribe"
 msgstr "Échec du désabonnement"
 
@@ -1125,7 +1125,7 @@ msgid "Failed to update category"
 msgstr "Échec de la mise à jour de la catégorie"
 
 #: src/features/wiki/attachments-page.tsx:148
-#: src/features/wiki/page-editor.tsx:188
+#: src/features/wiki/page-editor.tsx:196
 msgid "Failed to upload files"
 msgstr "Échec du téléversement des fichiers"
 
@@ -1154,7 +1154,7 @@ msgstr "Plat"
 msgid "Floating"
 msgstr "Flottant"
 
-#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
+#. placeholder {0}: // Copyright © 2026 Mochi OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link preload={false} to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
 #: src/features/wiki/search-page.tsx:81
 msgid "Found {0} for \"{debouncedQuery}\""
 msgstr "{0} trouvé(s) pour « {debouncedQuery} »"
@@ -1272,7 +1272,7 @@ msgstr "Image"
 msgid "Images"
 msgstr "Images"
 
-#: src/features/wiki/page-editor.tsx:495
+#: src/features/wiki/page-editor.tsx:508
 msgid "images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration."
 msgstr "images, PDF, DOC, DOCX, TXT et MD. Les envois volumineux peuvent aussi être limités par la configuration de votre serveur ou de votre proxy."
 
@@ -1280,11 +1280,11 @@ msgstr "images, PDF, DOC, DOCX, TXT et MD. Les envois volumineux peuvent aussi �
 msgid "Imperial"
 msgstr "Impérial"
 
-#: src/features/wiki/page-editor.tsx:336
+#: src/features/wiki/page-editor.tsx:349
 msgid "Insert"
 msgstr "Insérer"
 
-#: src/features/wiki/page-editor.tsx:486
+#: src/features/wiki/page-editor.tsx:499
 msgid "Insert attachment"
 msgstr "Insérer une pièce jointe"
 
@@ -1355,6 +1355,10 @@ msgstr "Vue en liste"
 msgid "Load more"
 msgstr "Charger plus"
 
+#: ../../../lib/web/src/components/ui/loading-content.tsx:29
+msgid "Loading content…"
+msgstr "Chargement du contenu…"
+
 #: ../../../lib/web/src/components/ui/load-more.tsx:35
 #: ../../../lib/web/src/features/document/document-page.tsx:90
 msgid "Loading…"
@@ -1404,7 +1408,7 @@ msgstr "Métrique"
 msgid "Monday"
 msgstr "Lundi"
 
-#: src/features/wiki/page-editor.tsx:425
+#: src/features/wiki/page-editor.tsx:438
 msgid "my-page-name"
 msgstr "nom-de-ma-page"
 
@@ -1421,7 +1425,7 @@ msgstr "Le nom ne peut pas contenir les caractères < ou >"
 msgid "Name must be 100 characters or less"
 msgstr "Le nom doit comporter 100 caractères ou moins"
 
-#: ../../../lib/web/src/lib/api-client.ts:300
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:288
 msgid "Network error"
 msgstr "Erreur réseau"
 
@@ -1479,7 +1483,7 @@ msgid "No attachments match your search"
 msgstr "Aucune pièce jointe ne correspond à votre recherche"
 
 #: src/features/wiki/attachments-page.tsx:438
-#: src/features/wiki/page-editor.tsx:548
+#: src/features/wiki/page-editor.tsx:561
 msgid "No attachments yet"
 msgstr "Aucune pièce jointe pour le moment"
 
@@ -1487,7 +1491,7 @@ msgstr "Aucune pièce jointe pour le moment"
 msgid "No changes yet"
 msgstr "Aucune modification pour le moment"
 
-#: src/features/wiki/page-comments.tsx:95
+#: src/features/wiki/page-comments.tsx:103
 msgid "No comments yet"
 msgstr "Aucun commentaire pour le moment"
 
@@ -1596,7 +1600,7 @@ msgid "Oops! Page Not Found!"
 msgstr "Oups ! Page introuvable !"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:815
+#: src/routes/_authenticated/index.tsx:816
 msgid "Open {0}"
 msgstr "Ouvrir {0}"
 
@@ -1680,7 +1684,7 @@ msgstr "Page « {title} » supprimée"
 msgid "Page actions"
 msgstr "Actions de la page"
 
-#: src/features/wiki/page-editor.tsx:262
+#: src/features/wiki/page-editor.tsx:270
 msgid "Page created"
 msgstr "Page créée"
 
@@ -1691,19 +1695,19 @@ msgstr "Page créée"
 msgid "Page not found"
 msgstr "Page introuvable"
 
-#: src/features/wiki/page-editor.tsx:279
+#: src/features/wiki/page-editor.tsx:292
 msgid "Page saved"
 msgstr "Page enregistrée"
 
-#: src/features/wiki/page-editor.tsx:412
+#: src/features/wiki/page-editor.tsx:425
 msgid "Page title"
 msgstr "Titre de la page"
 
-#: src/features/wiki/page-editor.tsx:419
+#: src/features/wiki/page-editor.tsx:432
 msgid "Page URL"
 msgstr "URL de la page"
 
-#: src/features/wiki/page-editor.tsx:254
+#: src/features/wiki/page-editor.tsx:262
 msgid "Page URL is required"
 msgstr "L'URL de la page est obligatoire"
 
@@ -1727,11 +1731,11 @@ msgstr "Clés d'accès"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Supprimer définitivement ce wiki et tout son contenu. Cette action est irréversible."
 
-#: ../../../lib/web/src/lib/api-client.ts:301
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:289
 msgid "Please check your internet connection and try again."
 msgstr "Veuillez vérifier votre connexion Internet et réessayer."
 
-#: src/features/wiki/page-editor.tsx:326
+#: src/features/wiki/page-editor.tsx:339
 msgid "Preview"
 msgstr "Aperçu"
 
@@ -1754,8 +1758,8 @@ msgstr "Profil"
 msgid "Raised"
 msgstr "Surélevé"
 
-#: src/features/wiki/page-editor.tsx:435
-#: src/features/wiki/page-editor.tsx:441
+#: src/features/wiki/page-editor.tsx:448
+#: src/features/wiki/page-editor.tsx:454
 msgid "Re-derive from title"
 msgstr "Régénérer à partir du titre"
 
@@ -1824,8 +1828,8 @@ msgstr "Redirection vers la connexion."
 msgid "Redirects"
 msgstr "Redirections"
 
-#: ../../../lib/web/src/components/post-tags.tsx:192
-#: ../../../lib/web/src/components/post-tags.tsx:204
+#: ../../../lib/web/src/components/post-tags.tsx:196
+#: ../../../lib/web/src/components/post-tags.tsx:208
 msgid "Reduce interest"
 msgstr "Réduire l'intérêt"
 
@@ -1843,8 +1847,8 @@ msgstr "Relatif dans les 24 heures, sinon absolu"
 #: src/features/wiki/comment-form.tsx:84
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
-#: src/features/wiki/wiki-comment-thread.tsx:240
-#: src/features/wiki/wiki-comment-thread.tsx:244
+#: src/features/wiki/wiki-comment-thread.tsx:249
+#: src/features/wiki/wiki-comment-thread.tsx:253
 #: src/features/wiki/wiki-settings.tsx:801
 msgid "Remove"
 msgstr "Retirer"
@@ -1858,8 +1862,8 @@ msgstr "Supprimer la règle d'accès"
 msgid "Remove access?"
 msgstr "Supprimer l'accès ?"
 
-#: ../../../lib/web/src/components/post-tags.tsx:212
-#: ../../../lib/web/src/components/post-tags.tsx:224
+#: ../../../lib/web/src/components/post-tags.tsx:216
+#: ../../../lib/web/src/components/post-tags.tsx:228
 msgid "Remove interest"
 msgstr "Supprimer l'intérêt"
 
@@ -1921,12 +1925,12 @@ msgstr "Répliquer le wiki"
 msgid "Replicating..."
 msgstr "Réplication..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:176
+#: src/features/wiki/wiki-comment-thread.tsx:185
 msgid "Reply"
 msgstr "Répondre"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:210
+#: src/features/wiki/wiki-comment-thread.tsx:219
 msgid "Reply to {0}..."
 msgstr "Répondre à {0}..."
 
@@ -2010,8 +2014,8 @@ msgstr "Samedi"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
-#: src/features/wiki/page-editor.tsx:387
-#: src/features/wiki/wiki-comment-thread.tsx:148
+#: src/features/wiki/page-editor.tsx:400
+#: src/features/wiki/wiki-comment-thread.tsx:157
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -2019,7 +2023,7 @@ msgstr "Enregistrer"
 msgid "Save changes"
 msgstr "Enregistrer les modifications"
 
-#: src/features/wiki/page-editor.tsx:387
+#: src/features/wiki/page-editor.tsx:400
 #: src/features/wiki/wiki-settings.tsx:279
 #: src/features/wiki/wiki-settings.tsx:306
 #: src/features/wiki/wiki-settings.tsx:454
@@ -2107,7 +2111,7 @@ msgstr "Sélectionner une règle d'accès"
 msgid "Select account type"
 msgstr "Sélectionner le type de compte"
 
-#: src/features/wiki/page-editor.tsx:488
+#: src/features/wiki/page-editor.tsx:501
 msgid "Select an attachment to insert into your page, or upload a new file."
 msgstr "Sélectionnez une pièce jointe à insérer dans votre page, ou téléversez un nouveau fichier."
 
@@ -2143,7 +2147,7 @@ msgstr "Envoyer le commentaire"
 msgid "Send email"
 msgstr "Envoyer l'e-mail"
 
-#: src/features/wiki/wiki-comment-thread.tsx:281
+#: src/features/wiki/wiki-comment-thread.tsx:290
 msgid "Send reply"
 msgstr "Envoyer la réponse"
 
@@ -2151,8 +2155,8 @@ msgstr "Envoyer la réponse"
 msgid "Serif"
 msgstr "Serif"
 
-#: ../../../lib/web/src/lib/api-client.ts:259
-#: ../../../lib/web/src/lib/api-client.ts:284
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:245
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:271
 msgid "Server error"
 msgstr "Erreur du serveur"
 
@@ -2161,7 +2165,7 @@ msgstr "Erreur du serveur"
 msgid "Server rules"
 msgstr "Règles du serveur"
 
-#: ../../../lib/web/src/lib/api-client.ts:227
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:209
 msgid "Session expired"
 msgstr "Session expirée"
 
@@ -2290,7 +2294,7 @@ msgstr "Abonnement"
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: src/features/wiki/page-editor.tsx:493
+#: src/features/wiki/page-editor.tsx:506
 msgid "Supported files"
 msgstr "Fichiers pris en charge"
 
@@ -2340,8 +2344,8 @@ msgstr "L'étiquette existe déjà"
 msgid "Tag: {tag}"
 msgstr "Étiquette : {tag}"
 
-#: ../../../lib/web/src/components/post-tags.tsx:96
-#: ../../../lib/web/src/components/post-tags.tsx:107
+#: ../../../lib/web/src/components/post-tags.tsx:100
+#: ../../../lib/web/src/components/post-tags.tsx:111
 #: src/features/wiki/wiki-page-content.tsx:300
 #: src/routes/_authenticated/$page/index.tsx:242
 #: src/routes/_authenticated/index.tsx:426
@@ -2412,12 +2416,12 @@ msgid "This action cannot be undone. This will permanently delete the wiki and a
 msgstr "Cette action est irréversible. Le wiki et tout son contenu seront supprimés définitivement."
 
 #: src/features/wiki/attachments-page.tsx:145
-#: src/features/wiki/page-editor.tsx:185
+#: src/features/wiki/page-editor.tsx:193
 msgid "This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit."
 msgstr "Ce fichier est trop volumineux pour la limite d'envoi actuelle du serveur. Essayez un fichier plus petit ou augmentez la limite de taille d'envoi du serveur ou du proxy."
 
 #: src/features/wiki/attachments-page.tsx:156
-#: src/features/wiki/page-editor.tsx:196
+#: src/features/wiki/page-editor.tsx:204
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "Ce fichier est trop volumineux pour être envoyé. Essayez un fichier plus petit."
 
@@ -2425,7 +2429,7 @@ msgstr "Ce fichier est trop volumineux pour être envoyé. Essayez un fichier pl
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Ce wiki est abonné à un wiki source et reçoit ses mises à jour."
 
-#: src/features/wiki/page-editor.tsx:446
+#: src/features/wiki/page-editor.tsx:459
 msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
 msgstr "Ce sera le chemin de la page. Utilisez des lettres minuscules, des chiffres et des tirets."
 
@@ -2450,12 +2454,12 @@ msgstr "Cela arrêtera l'envoi des mises à jour à « {0} ». Cette personne po
 msgid "Thursday"
 msgstr "Jeudi"
 
-#: src/features/wiki/page-editor.tsx:407
+#: src/features/wiki/page-editor.tsx:420
 #: src/features/wiki/page-history.tsx:56
 msgid "Title"
 msgstr "Titre"
 
-#: src/features/wiki/page-editor.tsx:248
+#: src/features/wiki/page-editor.tsx:256
 msgid "Title is required"
 msgstr "Le titre est obligatoire"
 
@@ -2537,7 +2541,7 @@ msgstr "Tapez pour rechercher des utilisateurs"
 msgid "Type to search..."
 msgstr "Tapez pour rechercher…"
 
-#: ../../../lib/web/src/lib/api-client.ts:280
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:267
 msgid "Unable to connect to remote server"
 msgstr "Impossible de se connecter au serveur distant"
 
@@ -2562,7 +2566,7 @@ msgstr "Identifiants uniques pour ce wiki."
 msgid "United States"
 msgstr "États-Unis"
 
-#: src/features/wiki/wiki-comment-thread.tsx:80
+#: src/features/wiki/wiki-comment-thread.tsx:81
 msgid "Unknown"
 msgstr "Inconnu"
 
@@ -2575,16 +2579,16 @@ msgstr "Inconnu"
 #: src/routes/_authenticated/index.tsx:479
 #: src/routes/_authenticated/index.tsx:506
 #: src/routes/_authenticated/index.tsx:508
-#: src/routes/_authenticated/index.tsx:848
-#: src/routes/_authenticated/index.tsx:880
-#: src/routes/_authenticated/index.tsx:882
+#: src/routes/_authenticated/index.tsx:849
+#: src/routes/_authenticated/index.tsx:881
+#: src/routes/_authenticated/index.tsx:883
 msgid "Unsubscribe"
 msgstr "Se désabonner"
 
 #: src/features/wiki/wiki-page-content.tsx:75
 #: src/routes/_authenticated/$page/index.tsx:69
 #: src/routes/_authenticated/index.tsx:302
-#: src/routes/_authenticated/index.tsx:891
+#: src/routes/_authenticated/index.tsx:892
 msgid "Unsubscribed"
 msgstr "Désabonné"
 
@@ -2594,22 +2598,22 @@ msgstr "Désabonné"
 #: src/routes/_authenticated/$page/index.tsx:228
 #: src/routes/_authenticated/index.tsx:301
 #: src/routes/_authenticated/index.tsx:479
-#: src/routes/_authenticated/index.tsx:847
-#: src/routes/_authenticated/index.tsx:890
+#: src/routes/_authenticated/index.tsx:848
+#: src/routes/_authenticated/index.tsx:891
 msgid "Unsubscribing..."
 msgstr "Désabonnement..."
 
 #: src/features/wiki/attachments-page.tsx:138
-#: src/features/wiki/page-editor.tsx:178
+#: src/features/wiki/page-editor.tsx:186
 msgid "Unsupported file type: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Type de fichier non pris en charge : {names}. Fichiers pris en charge : images, PDF, DOC, DOCX, TXT et MD."
 
 #: src/features/wiki/attachments-page.tsx:139
-#: src/features/wiki/page-editor.tsx:179
+#: src/features/wiki/page-editor.tsx:187
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Types de fichier non pris en charge : {names}. Fichiers pris en charge : images, PDF, DOC, DOCX, TXT et MD."
 
-#: src/features/wiki/page-editor.tsx:399
+#: src/features/wiki/page-editor.tsx:412
 msgid "Untitled"
 msgstr "Sans titre"
 
@@ -2623,7 +2627,7 @@ msgstr "Non vérifié"
 #: src/features/wiki/page-view.tsx:261
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:72
-#: src/routes/_authenticated/index.tsx:864
+#: src/routes/_authenticated/index.tsx:865
 msgid "Updated {0}"
 msgstr "Mis à jour {0}"
 
@@ -2631,22 +2635,22 @@ msgstr "Mis à jour {0}"
 msgid "Updating access..."
 msgstr "Mise à jour de l'accès..."
 
-#: src/features/wiki/page-editor.tsx:549
+#: src/features/wiki/page-editor.tsx:562
 msgid "Upload a file to get started."
 msgstr "Téléchargez un fichier pour commencer."
 
 #: src/features/wiki/attachments-page.tsx:323
-#: src/features/wiki/page-editor.tsx:529
+#: src/features/wiki/page-editor.tsx:542
 msgid "Upload failed"
 msgstr "Échec de l'envoi"
 
 #: src/features/wiki/attachments-page.tsx:153
-#: src/features/wiki/page-editor.tsx:193
+#: src/features/wiki/page-editor.tsx:201
 msgid "Upload failed because this account has reached its storage limit."
 msgstr "L'envoi a échoué car ce compte a atteint sa limite de stockage."
 
 #: src/features/wiki/attachments-page.tsx:150
-#: src/features/wiki/page-editor.tsx:190
+#: src/features/wiki/page-editor.tsx:198
 msgid "Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again."
 msgstr "Échec de l'envoi. Le fichier est peut-être trop volumineux pour la limite d'envoi actuelle du serveur ou du proxy. Si le fichier est petit, vérifiez votre connexion et réessayez."
 
@@ -2658,7 +2662,7 @@ msgstr "Téléverser des fichiers"
 msgid "Upload guidance"
 msgstr "Conseils d'envoi"
 
-#: src/features/wiki/page-editor.tsx:523
+#: src/features/wiki/page-editor.tsx:536
 msgid "Upload new"
 msgstr "Téléverser"
 
@@ -2767,8 +2771,8 @@ msgstr "Wiki"
 
 #: src/routes/_authenticated/index.tsx:662
 #: src/routes/_authenticated/index.tsx:669
-#: src/routes/_authenticated/index.tsx:828
-#: src/routes/_authenticated/index.tsx:835
+#: src/routes/_authenticated/index.tsx:829
+#: src/routes/_authenticated/index.tsx:836
 msgid "Wiki actions"
 msgstr "Actions du wiki"
 
@@ -2819,11 +2823,11 @@ msgstr "Wiki synchronisé"
 msgid "Wikis"
 msgstr "Wikis"
 
-#: src/features/wiki/page-comments.tsx:90
+#: src/features/wiki/page-comments.tsx:98
 msgid "Write a comment..."
 msgstr "Écrire un commentaire…"
 
-#: src/features/wiki/page-editor.tsx:462
+#: src/features/wiki/page-editor.tsx:475
 msgid "Write your content here using Markdown..."
 msgstr "Écrivez votre contenu ici en utilisant Markdown…"
 
