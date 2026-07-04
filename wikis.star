@@ -57,25 +57,6 @@ def database_create():
     # RSS tokens table
     mochi.db.execute("create table if not exists rss (token text not null primary key, entity text not null, mode text not null, created integer not null, unique(entity, mode))")
 
-# Database upgrade
-def database_upgrade(to_version):
-    if to_version == 15:
-        # Add wikis.synced for throttled resync requests when an
-        # incoming event references a page or comment we haven't seen.
-        cols = [r["name"] for r in mochi.db.table("wikis") or []]
-        if "synced" not in cols:
-            mochi.db.execute("alter table wikis add column synced integer not null default 0")
-    if to_version == 16:
-        # Unreplicate tombstones: see the table comment in database_create.
-        mochi.db.execute("create table if not exists unreplicated (wiki text not null primary key, source text not null, synced integer not null default 0)")
-
-# Helper: Update replica's seen and synced timestamps
-    if to_version == 17:
-        # Schema alignment for the baseline squash: drop tables removed from
-        # create long ago without migrations, and heal missing tables/indexes.
-        mochi.db.execute("drop table if exists bookmarks")
-        mochi.db.execute("drop table if exists subscribers")
-        database_create()
 def update_replica_seen(wiki, replica_id):
     now = mochi.time.now()
     mochi.db.execute("update replicas set seen=?, synced=? where wiki=? and id=?", now, now, wiki, replica_id)
