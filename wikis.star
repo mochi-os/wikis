@@ -70,6 +70,12 @@ def database_upgrade(to_version):
         mochi.db.execute("create table if not exists unreplicated (wiki text not null primary key, source text not null, synced integer not null default 0)")
 
 # Helper: Update replica's seen and synced timestamps
+    if to_version == 17:
+        # Schema alignment for the baseline squash: drop tables removed from
+        # create long ago without migrations, and heal missing tables/indexes.
+        mochi.db.execute("drop table if exists bookmarks")
+        mochi.db.execute("drop table if exists subscribers")
+        database_create()
 def update_replica_seen(wiki, replica_id):
     now = mochi.time.now()
     mochi.db.execute("update replicas set seen=?, synced=? where wiki=? and id=?", now, now, wiki, replica_id)
