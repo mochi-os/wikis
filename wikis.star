@@ -507,14 +507,64 @@ def action_create(a):
     return {"data": {"id": entity, "name": name, "home": "home", "fingerprint": fingerprint}}
 
 # Join an existing remote wiki by creating a local copy
+# Produce a mochi://<server-peer>/<wiki> share link for a wiki the caller
+# owns. The link conveys location only - a private wiki still requires view
+# grants (the sync dump and the update fan-out are both access-gated) (#209).
+def action_share(a): # wikis_share
+    if not a.user:
+        a.error.label(401, "errors.not_logged_in")
+        return
+    wiki_id = a.input("wiki")
+    if not mochi.text.valid(wiki_id, "entity"):
+        a.error.label(400, "errors.wiki_id_is_required")
+        return
+    if not mochi.entity.get(wiki_id):  # gated on a.user above
+        a.error.label(403, "errors.access_denied")
+        return
+    peer = mochi.server.id()
+    return {"data": {"link": "mochi://" + peer + "/" + wiki_id, "peer": peer, "wiki": wiki_id}}
+
+# Resolve a pasted mochi://<peer>/<wiki> share link to the wiki's name, so the
+# find page can show the real wiki before joining (#209).
+def action_probe(a): # wikis_probe
+    if not a.user:
+        a.error.label(401, "errors.not_logged_in")
+        return
+    url = a.input("url", "")
+    if not url.startswith("mochi://"):
+        a.error.label(400, "errors.invalid_url")
+        return
+    rest = url[len("mochi://"):]
+    if "/" not in rest:
+        a.error.label(400, "errors.invalid_url")
+        return
+    link_peer, path = rest.split("/", 1)
+    link_wiki = path.split("/")[0]
+    if not link_peer or not mochi.text.valid(link_wiki, "entity"):
+        a.error.label(400, "errors.invalid_url")
+        return
+    response = mochi.remote.request(link_wiki, "wikis", "information", {"wiki": link_wiki}, link_peer)
+    if response.get("error"):
+        a.error(response.get("code", 404), response["error"])
+        return
+    return {"data": {
+        "id": link_wiki,
+        "name": response.get("name", ""),
+        "fingerprint": response.get("fingerprint", ""),
+        "class": "wiki",
+        "peer": link_peer,  # join pins the same peer for the sync
+        "remote": True
+    }}
+
 def action_join(a):
     if not a.user:
         a.error.label(401, "errors.not_logged_in")
         return
 
-    # Get the remote wiki entity ID and optional server
+    # Get the remote wiki entity ID and optional server or peer
     source = a.input("target")
     server = a.input("server")
+    peer = a.input("peer")  # from a mochi://<peer>/<wiki> share link
     if not source:
         a.error.label(400, "errors.target_wiki_entity_id_is_required")
         return
@@ -525,9 +575,8 @@ def action_join(a):
         a.error.label(400, "errors.already_joined_this_wiki")
         return
 
-    # Connect to specified server, or use directory lookup
-    peer = None
-    if server:
+    # Connect via the share link's peer, the specified server, or directory lookup
+    if not peer and server:
         peer = mochi.remote.peer(server)
 
     # Sync data from the remote wiki first to get the name
@@ -553,18 +602,27 @@ def action_join(a):
     # Import the synced data into the new local wiki
     import_sync_dump(entity, dump)
 
-    # Set up access rules - public view, authenticated edit, creator manages
+    # Set up access rules. The wildcard grants only apply when the SOURCE wiki
+    # is public - a private wiki's local replica must not become world-viewable
+    # on the subscriber's server just because it was joined by link.
     creator = a.user.identity.id
     resource = "wiki/" + entity
-    mochi.access.allow("*", resource, "view", creator)
-    mochi.access.allow("+", resource, "edit", creator)
+    if dump.get("privacy", "public") == "public":
+        mochi.access.allow("*", resource, "view", creator)
+        mochi.access.allow("+", resource, "edit", creator)
     mochi.access.allow(creator, resource, "*", creator)
 
-    # Register as a replica with the source wiki to receive updates
-    mochi.message.send(
-        {"from": entity, "to": source, "service": "wikis", "event": "replicate"},
-        {"name": name}
-    )
+    # Register as a replica with the source wiki to receive updates. A private
+    # source is not in the directory, so pin the peer we joined through.
+    if peer:
+        mochi.message.send.peer(peer,
+            {"from": entity, "to": source, "service": "wikis", "event": "replicate"},
+            {"name": name})
+    else:
+        mochi.message.send(
+            {"from": entity, "to": source, "service": "wikis", "event": "replicate"},
+            {"name": name}
+        )
     mochi.broadcast.touch(source)
 
     fingerprint = mochi.entity.fingerprint(entity)
@@ -2627,6 +2685,19 @@ def event_rename(e):
 # REPLICATION
 
 # Handle replication request - add requester to replicas list
+# Lightweight identity probe: name + fingerprint only (no content). Matches
+# feeds/forums information events; content stays behind the sync/broadcast gates.
+def event_information(e):
+    wiki = e.header("to")
+    if not wiki:
+        e.write({"error": "errors.wiki_id_is_required", "code": 400})
+        return
+    row = mochi.db.row("select name from wikis where id=?", wiki)
+    if not row:
+        e.write({"error": "errors.wiki_not_found", "code": 404})
+        return
+    e.write({"name": row["name"], "fingerprint": mochi.entity.fingerprint(wiki) or ""})
+
 def event_replicate(e):
     wiki = e.header("to")
     if not wiki:
@@ -2719,11 +2790,13 @@ def event_sync(e):
             c["attachments"] = c_atts
 
     # Send dump as a single payload (attachment files pulled on demand)
+    source_entity = mochi.entity.info(wiki)
     e.write({
         "status": "200",
         "source": wiki,  # Source wiki entity ID for attachment fetching
         "name": wikirow["name"] if wikirow else "",
         "home": wikirow["home"] if wikirow else "home",
+        "privacy": source_entity.get("privacy", "public") if source_entity else "public",
         "permissions": {"view": True, "edit": can_edit},
         "pages": pages,
         "revisions": revisions,

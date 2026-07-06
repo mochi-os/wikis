@@ -18,8 +18,9 @@ import { PageHeader } from '@/features/wiki/page-header'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiContext, usePermissions } from '@/context/wiki-context'
+import { useWikiLinkDialog } from '@/components/link-dialog'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
-import { Ellipsis, FileEdit, FilePlus, History, MessageSquare, Pencil, Search, Settings, Tags, Trash2 } from 'lucide-react'
+import { Ellipsis, FileEdit, FilePlus, History, Link as LinkIcon, MessageSquare, Pencil, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/')({
@@ -39,6 +40,7 @@ function WikiPageRoute() {
   const { info } = useWikiContext()
   const permissions = usePermissions()
   const unsubscribeWiki = useUnsubscribeWiki()
+  const { openLinkDialog, linkDialog } = useWikiLinkDialog(info?.wiki?.fingerprint ?? info?.wiki?.id)
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(pageTitle)
 
@@ -264,6 +266,12 @@ function WikiPageRoute() {
               </Link>
             </DropdownMenuItem>
           )}
+          {permissions.manage && (
+            <DropdownMenuItem onSelect={() => void openLinkDialog()}>
+              <LinkIcon className="size-4" />
+              <Trans>Link</Trans>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     )
@@ -278,6 +286,7 @@ function WikiPageRoute() {
         <Main className="pt-2">
           <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
         </Main>
+      {linkDialog}
         <ConfirmDialog
           open={unsubscribeConfirmOpen}
           onOpenChange={setUnsubscribeConfirmOpen}

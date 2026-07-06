@@ -15,6 +15,7 @@ const endpoints = {
     // Info
     info: '-/info',
     create: '-/create',
+    probe: '-/probe',
     join: '-/subscribe',
     directorySearch: '-/directory/search',
     recommendations: '-/recommendations',

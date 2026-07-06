@@ -729,7 +729,7 @@ export interface JoinWikiResponse {
 }
 
 type JoinWikiMutation = {
-  mutateAsync: (args: { target: string; server?: string }) => Promise<JoinWikiResponse>
+  mutateAsync: (args: { target: string; server?: string; peer?: string }) => Promise<JoinWikiResponse>
 }
 
 /** Join with server; on 502 retry without server (same as find page). */
@@ -737,12 +737,13 @@ export async function joinWikiWithRetry(
   joinWiki: JoinWikiMutation,
   target: string,
   server?: string,
+  peer?: string,
 ): Promise<JoinWikiResponse> {
   try {
-    return await joinWiki.mutateAsync({ target, server })
+    return await joinWiki.mutateAsync({ target, server, peer })
   } catch (error) {
     const status = (error as { status?: number })?.status
-    if (status === 502 && server) {
+    if (status === 502 && (server || peer)) {
       return await joinWiki.mutateAsync({ target })
     }
     throw error
@@ -752,8 +753,8 @@ export async function joinWikiWithRetry(
 export function useJoinWiki() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ target, server }: { target: string; server?: string }) =>
-      requestHelpers.post<JoinWikiResponse>(endpoints.wiki.join, { target, server }),
+    mutationFn: ({ target, server, peer }: { target: string; server?: string; peer?: string }) =>
+      requestHelpers.post<JoinWikiResponse>(endpoints.wiki.join, { target, server, peer }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },

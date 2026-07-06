@@ -5,7 +5,7 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 {
-	"version": "3.108",
+	"version": "3.109",
 	"label": "app.name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -29,6 +29,7 @@
 		"-/info": {"function": "action_info_class", "public": true},
 		"-/create": {"function": "action_create"},
 		"join": {"file": "web/dist/index.html", "public": true},
+		"-/probe": {"function": "action_probe"},
 		"-/subscribe": {"function": "action_join"},
 		"-/directory/search": {"function": "action_directory_search"},
 		"-/recommendations": {"function": "action_recommendations"},
@@ -36,6 +37,7 @@
 		"images": {"files": "web/dist/images", "public": true},
 		":wiki": {"file": "web/dist/index.html", "public": true, "opengraph": "opengraph_wiki"},
 		":wiki/new": {"file": "web/dist/index.html"},
+		":wiki/-/share": {"function": "action_share"},
 		":wiki/-/info": {"function": "action_info_entity", "public": true},
 		":wiki/-/resync": {"function": "action_resync"},
 		":wiki/-/new": {"file": "web/dist/index.html"},
@@ -98,6 +100,7 @@
 	},
 
 	"events": {
+		"information": {"function": "event_information"},
 		"replicate": {"function": "event_replicate"},
 		"unreplicate": {"function": "event_unreplicate"},
 		"rename": {"function": "event_rename"},

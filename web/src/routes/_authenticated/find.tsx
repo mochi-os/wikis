@@ -8,7 +8,7 @@ import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { BookOpen } from 'lucide-react'
-import { FindEntityPage, toastAction, getErrorMessage, requestHelpers, getAppPath } from '@mochi/web'
+import { FindEntityPage, toastAction, getErrorMessage, requestHelpers, getAppPath, type MochiEntityUri } from '@mochi/web'
 import { useWikiContext } from '@/context/wiki-context'
 import { useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 import endpoints from '@/api/endpoints'
@@ -55,10 +55,10 @@ function FindWikisPage() {
     [info?.wikis]
   )
 
-  const handleSubscribe = useCallback(async (wikiId: string, entity?: { location?: string; fingerprint?: string }) => {
+  const handleSubscribe = useCallback(async (wikiId: string, entity?: { location?: string; fingerprint?: string; peer?: string }) => {
     try {
       const data = await toastAction(
-        joinWikiWithRetry(joinWiki, wikiId, entity?.location || undefined),
+        joinWikiWithRetry(joinWiki, wikiId, entity?.location || undefined, entity?.peer || undefined),
         {
           loading: t`Subscribing...`,
           success: t`Subscribed`,
@@ -74,8 +74,23 @@ function FindWikisPage() {
     }
   }, [joinWiki, navigate, t])
 
+  // Resolve a pasted mochi:// share link to the wiki's name via probe, so the
+  // card shows the real wiki rather than a raw entity id.
+  const resolveUri = useCallback(async (uri: MochiEntityUri) => {
+    if (!uri.peer) return null
+    type ProbeEntry = { id: string; name: string; fingerprint?: string; peer?: string }
+    const response = await requestHelpers.post<{ data?: ProbeEntry } & Partial<ProbeEntry>>(
+      `${getAppPath()}/-/probe`,
+      { url: `mochi://${uri.peer}/${uri.entity}` }
+    )
+    const data: Partial<ProbeEntry> = response.data ?? response
+    if (!data.id) return null
+    return { id: data.id, name: data.name ?? '', fingerprint: data.fingerprint, peer: data.peer || uri.peer }
+  }, [])
+
   return (
     <FindEntityPage
+      resolveUri={resolveUri}
       onSubscribe={handleSubscribe}
       subscribedIds={subscribedWikiIds}
       entityClass="wiki"

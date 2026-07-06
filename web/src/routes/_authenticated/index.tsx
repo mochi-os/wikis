@@ -56,12 +56,14 @@ import {
   Search,
   Settings,
   Tags,
+  Link as LinkIcon,
 } from 'lucide-react'
 import endpoints from '@/api/endpoints'
 import { wikisRequest, getRssToken } from '@/api/request'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { usePermissions, useWikiContext } from '@/context/wiki-context'
+import { useWikiLinkDialog } from '@/components/link-dialog'
 import { usePage, useUnsubscribeWiki, useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 import {
   cacheWikisList,
@@ -263,6 +265,7 @@ function WikiHomePage({
   const { data, isLoading, error, refetch } = usePage(homeSlug)
   const permissions = usePermissions()
   const unsubscribeWiki = useUnsubscribeWiki()
+  const { openLinkDialog, linkDialog } = useWikiLinkDialog(wikiId)
   const pageTitle =
     data && 'page' in data && typeof data.page === 'object' && data.page?.title
       ? data.page.title
@@ -469,6 +472,12 @@ function WikiHomePage({
               </Link>
             </DropdownMenuItem>
           )}
+          {permissions.manage && (
+            <DropdownMenuItem onSelect={() => void openLinkDialog()}>
+              <LinkIcon className='size-4' />
+              <Trans>Link</Trans>
+            </DropdownMenuItem>
+          )}
           {canUnsubscribe && (
             <>
               <DropdownMenuSeparator />
@@ -491,6 +500,7 @@ function WikiHomePage({
           menuAction={actionsMenu}
           back={{ label: backLabel, onFallback: goBackToWikis }}
         />
+        {linkDialog}
         {infoErrorBanner}
         <Main className='pt-2'>
           <PageView
