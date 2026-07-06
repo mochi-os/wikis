@@ -117,6 +117,10 @@ msgstr "สัมบูรณ์ (วันที่และเวลา)"
 msgid "Access"
 msgstr "การเข้าถึง"
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:60
+msgid "Access denied"
+msgstr "ปฏิเสธการเข้าถึง"
+
 #: ../../../lib/web/src/features/errors/forbidden.tsx:16
 msgid "Access Forbidden"
 msgstr "ห้ามเข้าถึง"
@@ -255,7 +259,7 @@ msgstr "อนุญาตให้ใครก็ได้ค้นหา wiki"
 msgid "An error occurred"
 msgstr "เกิดข้อผิดพลาด"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:241
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:256
 msgid "An unexpected error occurred"
 msgstr "เกิดข้อผิดพลาดที่ไม่คาดคิด"
 
@@ -458,12 +462,12 @@ msgstr "ยกเลิก"
 msgid "Cancel reply"
 msgstr "ยกเลิกการตอบกลับ"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:144
+#: ../../../lib/web/src/components/notification-category-button.tsx:143
 msgid "Category for this notification"
 msgstr "หมวดหมู่สำหรับการแจ้งเตือนนี้"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:125
-#: ../../../lib/web/src/components/notification-category-button.tsx:136
+#: ../../../lib/web/src/components/notification-category-button.tsx:124
+#: ../../../lib/web/src/components/notification-category-button.tsx:135
 msgid "Change notification category"
 msgstr "เปลี่ยนหมวดหมู่การแจ้งเตือน"
 
@@ -738,6 +742,10 @@ msgstr "มืด"
 #: ../../../lib/web/src/components/profile-dropdown.tsx:123
 msgid "Dark mode"
 msgstr "โหมดมืด"
+
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:240
+msgid "Data conflict"
+msgstr "ข้อมูลขัดแย้งกัน"
 
 #: src/features/wiki/attachments-page.tsx:378
 #: src/features/wiki/changes-list.tsx:48
@@ -1132,7 +1140,7 @@ msgstr "ไม่สามารถยกเลิกการติดตาม
 msgid "Failed to update access level"
 msgstr "ไม่สามารถอัปเดตระดับการเข้าถึงได้"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:112
+#: ../../../lib/web/src/components/notification-category-button.tsx:111
 msgid "Failed to update category"
 msgstr "ไม่สามารถอัปเดตหมวดหมู่ได้"
 
@@ -1442,7 +1450,8 @@ msgstr "ชื่อต้องไม่มีอักขระ < หรือ
 msgid "Name must be 100 characters or less"
 msgstr "ชื่อต้องไม่เกิน 100 ตัวอักษร"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:288
+#: ../../../lib/web/src/features/errors/general-error.tsx:53
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:303
 msgid "Network error"
 msgstr "ข้อผิดพลาดของเครือข่าย"
 
@@ -1567,7 +1576,7 @@ msgstr "ไม่พบแท็ก"
 msgid "No time zone found."
 msgstr "ไม่พบเขตเวลา"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:148
+#: ../../../lib/web/src/components/notification-category-button.tsx:147
 msgid "No topic record yet — try again after the next notification."
 msgstr "ยังไม่มีบันทึกหัวข้อ — ลองอีกครั้งหลังการแจ้งเตือนครั้งถัดไป"
 
@@ -1589,6 +1598,10 @@ msgstr "ไม่มี"
 #: ../../../lib/web/src/lib/preference-utils.ts:134
 msgid "Normal"
 msgstr "ปกติ"
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:67
+msgid "Not found"
+msgstr "ไม่พบ"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:146
 msgid "Not set"
@@ -1748,9 +1761,19 @@ msgstr "Passkeys"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "ลบ wiki นี้และเนื้อหาทั้งหมดอย่างถาวร ไม่สามารถกู้คืนได้"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:289
+#: ../../../lib/web/src/features/errors/general-error.tsx:54
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:304
+#: ../../../lib/web/src/lib/error-normalizer.ts:201
 msgid "Please check your internet connection and try again."
 msgstr "โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณแล้วลองอีกครั้ง"
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:83
+msgid "Please try again."
+msgstr "โปรดลองอีกครั้ง"
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:75
+msgid "Please wait a moment and try again."
+msgstr "โปรดรอสักครู่แล้วลองอีกครั้ง"
 
 #: src/features/wiki/page-editor.tsx:339
 msgid "Preview"
@@ -1810,8 +1833,8 @@ msgstr "การเปลี่ยนแปลงล่าสุด"
 msgid "Recent edits across all pages in this wiki."
 msgstr "การแก้ไขล่าสุดในทุกหน้าของ wiki นี้"
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:219
-#: ../../../lib/web/src/components/search-entity-page.tsx:243
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:216
+#: ../../../lib/web/src/components/search-entity-page.tsx:240
 msgid "Recommended"
 msgstr "แนะนำ"
 
@@ -2110,8 +2133,8 @@ msgstr "ค้นหาผู้ใช้"
 msgid "Search..."
 msgstr "ค้นหา..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:177
-#: ../../../lib/web/src/components/search-entity-page.tsx:201
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/search-entity-page.tsx:198
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
 msgstr "กำลังค้นหา..."
@@ -2172,8 +2195,8 @@ msgstr "ส่งการตอบกลับ"
 msgid "Serif"
 msgstr "เซริฟ"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:245
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:271
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:260
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:286
 msgid "Server error"
 msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์"
 
@@ -2182,9 +2205,9 @@ msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์
 msgid "Server rules"
 msgstr "กฎของเซิร์ฟเวอร์"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:209
-msgid "Session expired"
-msgstr "เซสชันหมดอายุ"
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:210
+msgid "Session expired. Please log in again."
+msgstr "เซสชันหมดอายุ โปรดเข้าสู่ระบบอีกครั้ง"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:147
 msgid "Set origin and destination"
@@ -2412,6 +2435,10 @@ msgstr "หน้า «{slug}» ยังไม่มีอยู่"
 msgid "The page that users see when they first visit the wiki."
 msgstr "หน้าที่ผู้ใช้เห็นเมื่อเข้าวิกิครั้งแรก"
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:68
+msgid "The requested content could not be found."
+msgstr "ไม่พบเนื้อหาที่ร้องขอ"
+
 #: src/features/wiki/wiki-settings.tsx:1050
 msgid "The URL that will be redirected"
 msgstr "URL ที่จะถูกเปลี่ยนเส้นทาง"
@@ -2511,6 +2538,10 @@ msgstr "สลับแถบด้านข้าง"
 msgid "Toggle theme"
 msgstr "สลับธีม"
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:74
+msgid "Too many requests"
+msgstr "คำขอมากเกินไป"
+
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:45
 msgid "Top"
 msgstr "บนสุด"
@@ -2527,13 +2558,13 @@ msgstr "ลองคำค้นหาหรือฟิลเตอร์อื
 msgid "Try a different tag."
 msgstr "ลองแท็กอื่น"
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:193
-#: ../../../lib/web/src/components/search-entity-page.tsx:217
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:190
+#: ../../../lib/web/src/components/search-entity-page.tsx:214
 msgid "Try adjusting your search terms"
 msgstr "ลองปรับคำค้นหาของคุณ"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:128
-#: ../../../lib/web/src/features/errors/general-error.tsx:168
+#: ../../../lib/web/src/features/errors/general-error.tsx:140
+#: ../../../lib/web/src/features/errors/general-error.tsx:180
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:19
 msgid "Try again"
 msgstr "ลองอีกครั้ง"
@@ -2558,7 +2589,7 @@ msgstr "พิมพ์เพื่อค้นหาผู้ใช้"
 msgid "Type to search..."
 msgstr "พิมพ์เพื่อค้นหา..."
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:267
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:282
 msgid "Unable to connect to remote server"
 msgstr "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ระยะไกลได้"
 
@@ -2567,7 +2598,7 @@ msgstr "ไม่สามารถเชื่อมต่อกับเซิ
 msgid "Unable to redirect to login. Please try again."
 msgstr "ไม่สามารถเปลี่ยนเส้นทางไปยังการเข้าสู่ระบบได้ โปรดลองอีกครั้ง"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:156
+#: ../../../lib/web/src/components/notification-category-button.tsx:155
 msgid "Unassigned"
 msgstr "ยังไม่กำหนด"
 
@@ -2859,6 +2890,10 @@ msgstr "คุณกำลังจะลบหน้า <0>«{title}»</0> ({sl
 #: src/features/wiki/revert-page.tsx:66
 msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
 msgstr "คุณกำลังจะย้อน <0>{slug}</0> เป็นเวอร์ชัน <1>{version}</1> การนี้จะสร้างการแก้ไขใหม่ด้วยเนื้อหาจากเวอร์ชัน {version}"
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:61
+msgid "You do not have access to this section."
+msgstr "คุณไม่มีสิทธิ์เข้าถึงส่วนนี้"
 
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."

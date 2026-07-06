@@ -117,6 +117,10 @@ msgstr "مطلق (نېټه او وخت)"
 msgid "Access"
 msgstr "لاسرسی"
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:60
+msgid "Access denied"
+msgstr "لاسرسی رد شو"
+
 #: ../../../lib/web/src/features/errors/forbidden.tsx:16
 msgid "Access Forbidden"
 msgstr "لاسرسی منع دی"
@@ -255,7 +259,7 @@ msgstr "هر چا ته اجازه ورکړئ چې د ویکي لټون وکړي"
 msgid "An error occurred"
 msgstr "یوه تېروتنه رامنځته شوه"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:241
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:256
 msgid "An unexpected error occurred"
 msgstr "یوه ناڅاپي تېروتنه رامنځته شوه"
 
@@ -458,12 +462,12 @@ msgstr "لغوه کول"
 msgid "Cancel reply"
 msgstr "ځواب لغوه کړه"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:144
+#: ../../../lib/web/src/components/notification-category-button.tsx:143
 msgid "Category for this notification"
 msgstr "د دې خبرتیا لپاره کټګورۍ"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:125
-#: ../../../lib/web/src/components/notification-category-button.tsx:136
+#: ../../../lib/web/src/components/notification-category-button.tsx:124
+#: ../../../lib/web/src/components/notification-category-button.tsx:135
 msgid "Change notification category"
 msgstr "د خبرتیا کټګورۍ بدله کړه"
 
@@ -738,6 +742,10 @@ msgstr "تیاره"
 #: ../../../lib/web/src/components/profile-dropdown.tsx:123
 msgid "Dark mode"
 msgstr "تیاره حالت"
+
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:240
+msgid "Data conflict"
+msgstr "د ډېټا ټکر"
 
 #: src/features/wiki/attachments-page.tsx:378
 #: src/features/wiki/changes-list.tsx:48
@@ -1132,7 +1140,7 @@ msgstr "د ګډون لیرې کولو پاتې راغلل"
 msgid "Failed to update access level"
 msgstr "د لاسرسي د کچې تازه کولو پاتې راغلل"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:112
+#: ../../../lib/web/src/components/notification-category-button.tsx:111
 msgid "Failed to update category"
 msgstr "د کټګورۍ تازه کولو پاتې راغلل"
 
@@ -1442,7 +1450,8 @@ msgstr "نوم نشي کولی < یا > تورې ولري"
 msgid "Name must be 100 characters or less"
 msgstr "نوم باید 100 توري یا لږ وي"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:288
+#: ../../../lib/web/src/features/errors/general-error.tsx:53
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:303
 msgid "Network error"
 msgstr "د شبکې تېروتنه"
 
@@ -1567,7 +1576,7 @@ msgstr "هیڅ ټاګونه ونه موندل شول"
 msgid "No time zone found."
 msgstr "هیڅ وخت زون ونه موندل شو."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:148
+#: ../../../lib/web/src/components/notification-category-button.tsx:147
 msgid "No topic record yet — try again after the next notification."
 msgstr "تر اوسه د موضوع هیڅ ریکارډ نشته — د راتلونکې خبرتیا وروسته بیا هڅه وکړئ."
 
@@ -1589,6 +1598,10 @@ msgstr "هیڅوک"
 #: ../../../lib/web/src/lib/preference-utils.ts:134
 msgid "Normal"
 msgstr "عادي"
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:67
+msgid "Not found"
+msgstr "ونه موندل شو"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:146
 msgid "Not set"
@@ -1748,9 +1761,19 @@ msgstr "Passkeys"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "په همیشني ډول دا wiki او د هغه ټول مینځپانګه حذف کړئ. دا بیرته نشي راګرځیدلی."
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:289
+#: ../../../lib/web/src/features/errors/general-error.tsx:54
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:304
+#: ../../../lib/web/src/lib/error-normalizer.ts:201
 msgid "Please check your internet connection and try again."
 msgstr "مهرباني وکړئ خپل د انټرنیټ اړیکه وګورئ او بیا هڅه وکړئ."
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:83
+msgid "Please try again."
+msgstr "مهرباني وکړئ بیا هڅه وکړئ."
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:75
+msgid "Please wait a moment and try again."
+msgstr "مهرباني وکړئ یوه شېبه انتظار وکړئ او بیا هڅه وکړئ."
 
 #: src/features/wiki/page-editor.tsx:339
 msgid "Preview"
@@ -1810,8 +1833,8 @@ msgstr "وروستي بدلونونه"
 msgid "Recent edits across all pages in this wiki."
 msgstr "په دې wiki کې د ټولو پاڼو په اوږدو کې وروستي ترمیمونه."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:219
-#: ../../../lib/web/src/components/search-entity-page.tsx:243
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:216
+#: ../../../lib/web/src/components/search-entity-page.tsx:240
 msgid "Recommended"
 msgstr "سپارښتل شوی"
 
@@ -2110,8 +2133,8 @@ msgstr "کاروونکي وپلټئ"
 msgid "Search..."
 msgstr "لټون..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:177
-#: ../../../lib/web/src/components/search-entity-page.tsx:201
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/search-entity-page.tsx:198
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
 msgstr "د لټون په حال کې..."
@@ -2172,8 +2195,8 @@ msgstr "ځواب ولېږئ"
 msgid "Serif"
 msgstr "سيريف"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:245
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:271
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:260
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:286
 msgid "Server error"
 msgstr "د سرور تېروتنه"
 
@@ -2182,9 +2205,9 @@ msgstr "د سرور تېروتنه"
 msgid "Server rules"
 msgstr "د Server قواعد"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:209
-msgid "Session expired"
-msgstr "ناسته پای ته ورسېده"
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:210
+msgid "Session expired. Please log in again."
+msgstr "سیشن پای ته ورسېد. مهرباني وکړئ بیا ننوځئ."
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:147
 msgid "Set origin and destination"
@@ -2412,6 +2435,10 @@ msgstr "پاڼه \"{slug}\" لا تر اوسه شتون نه لري."
 msgid "The page that users see when they first visit the wiki."
 msgstr "هغه پاڼه چې کاروونکي یې د لومړي ځل لپاره د wiki لیدلو پر مهال ګوري."
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:68
+msgid "The requested content could not be found."
+msgstr "غوښتل شوې منځپانګه ونه موندل شوه."
+
 #: src/features/wiki/wiki-settings.tsx:1050
 msgid "The URL that will be redirected"
 msgstr "هغه URL چې لارښوونه به وکړي"
@@ -2511,6 +2538,10 @@ msgstr "سایډبار بدل کړئ"
 msgid "Toggle theme"
 msgstr "ښکارندوی بدل کړئ"
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:74
+msgid "Too many requests"
+msgstr "ډېرې زیاتې غوښتنې"
+
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:45
 msgid "Top"
 msgstr "بره"
@@ -2527,13 +2558,13 @@ msgstr "بل د لټون اصطلاح یا فلټر هڅه وکړئ."
 msgid "Try a different tag."
 msgstr "بل ټاګ هڅه وکړئ."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:193
-#: ../../../lib/web/src/components/search-entity-page.tsx:217
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:190
+#: ../../../lib/web/src/components/search-entity-page.tsx:214
 msgid "Try adjusting your search terms"
 msgstr "د خپل لټون اصطلاحات سمول هڅه وکړئ"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:128
-#: ../../../lib/web/src/features/errors/general-error.tsx:168
+#: ../../../lib/web/src/features/errors/general-error.tsx:140
+#: ../../../lib/web/src/features/errors/general-error.tsx:180
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:19
 msgid "Try again"
 msgstr "بیا هڅه وکړئ"
@@ -2558,7 +2589,7 @@ msgstr "د کاروونکو لټون لپاره ولیکئ"
 msgid "Type to search..."
 msgstr "د لټون لپاره ولیکئ..."
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:267
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:282
 msgid "Unable to connect to remote server"
 msgstr "له لرې پرتي سرور سره نښلېدل ونشول"
 
@@ -2567,7 +2598,7 @@ msgstr "له لرې پرتي سرور سره نښلېدل ونشول"
 msgid "Unable to redirect to login. Please try again."
 msgstr "ننوتلو ته لارښوونه نشي کیدلی. مهرباني وکړئ بیا هڅه وکړئ."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:156
+#: ../../../lib/web/src/components/notification-category-button.tsx:155
 msgid "Unassigned"
 msgstr "نه ګمارل شوی"
 
@@ -2859,6 +2890,10 @@ msgstr "تاسو غواړئ پاڼه <0>\"{title}\"</0> ({slug}) حذف کړئ. 
 #: src/features/wiki/revert-page.tsx:66
 msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
 msgstr "تاسو غواړئ <0>{slug}</0> د <1>{version}</1> نسخې ته بیرته راوګرځوئ. دا به د {version} نسخې له محتوا سره نوی کیکس جوړ کړي."
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:61
+msgid "You do not have access to this section."
+msgstr "تاسو دې برخې ته لاسرسی نه لرئ."
 
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."

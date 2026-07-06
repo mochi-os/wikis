@@ -117,6 +117,10 @@ msgstr "Mutleq (dîrok û saet)"
 msgid "Access"
 msgstr "Gihîştin"
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:60
+msgid "Access denied"
+msgstr "Gihîştin hat redkirin"
+
 #: ../../../lib/web/src/features/errors/forbidden.tsx:16
 msgid "Access Forbidden"
 msgstr "Gihîştin qedexe ye"
@@ -255,7 +259,7 @@ msgstr "Destûr bide her kesî ku li wiki bigere"
 msgid "An error occurred"
 msgstr "Çewtiyek çêbû"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:241
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:256
 msgid "An unexpected error occurred"
 msgstr "Çewtiyeke neçaverêkirî çêbû"
 
@@ -458,12 +462,12 @@ msgstr "Betal bike"
 msgid "Cancel reply"
 msgstr "Bersivê betal bike"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:144
+#: ../../../lib/web/src/components/notification-category-button.tsx:143
 msgid "Category for this notification"
 msgstr "Kategoriya vê agahdariyê"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:125
-#: ../../../lib/web/src/components/notification-category-button.tsx:136
+#: ../../../lib/web/src/components/notification-category-button.tsx:124
+#: ../../../lib/web/src/components/notification-category-button.tsx:135
 msgid "Change notification category"
 msgstr "Kategoriya agahdariyê biguherîne"
 
@@ -738,6 +742,10 @@ msgstr "Tarî"
 #: ../../../lib/web/src/components/profile-dropdown.tsx:123
 msgid "Dark mode"
 msgstr "Awayê tarî"
+
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:240
+msgid "Data conflict"
+msgstr "Nakokiya daneyan"
 
 #: src/features/wiki/attachments-page.tsx:378
 #: src/features/wiki/changes-list.tsx:48
@@ -1132,7 +1140,7 @@ msgstr "Vekişandina abonetiyê neserkeftî bû"
 msgid "Failed to update access level"
 msgstr "Rojanekirina asta gihiştinê neserkeftî bû"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:112
+#: ../../../lib/web/src/components/notification-category-button.tsx:111
 msgid "Failed to update category"
 msgstr "Rojanekirina kategoriyê neserkeftî bû"
 
@@ -1442,7 +1450,8 @@ msgstr "Nav nikare tîpên < an > bigire nav xwe"
 msgid "Name must be 100 characters or less"
 msgstr "Nav divê 100 tîp an kêmtir be"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:288
+#: ../../../lib/web/src/features/errors/general-error.tsx:53
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:303
 msgid "Network error"
 msgstr "Çewtiya torê"
 
@@ -1567,7 +1576,7 @@ msgstr "Tu tag nehatin dîtin"
 msgid "No time zone found."
 msgstr "Tu herêma demê nehat dîtin."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:148
+#: ../../../lib/web/src/components/notification-category-button.tsx:147
 msgid "No topic record yet — try again after the next notification."
 msgstr "Hêj tu tomarê mijarê tune — piştî agahdariya pêştir dîsa biceribîne."
 
@@ -1589,6 +1598,10 @@ msgstr "Tu"
 #: ../../../lib/web/src/lib/preference-utils.ts:134
 msgid "Normal"
 msgstr "Asayî"
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:67
+msgid "Not found"
+msgstr "Nehat dîtin"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:146
 msgid "Not set"
@@ -1748,9 +1761,19 @@ msgstr "Passkey"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Vê wikiyê û tevahiya naveroka wê her û her jêbibe. Vegerandina vê ne mumkin e."
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:289
+#: ../../../lib/web/src/features/errors/general-error.tsx:54
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:304
+#: ../../../lib/web/src/lib/error-normalizer.ts:201
 msgid "Please check your internet connection and try again."
 msgstr "Ji kerema xwe girêdana xwe ya înternetê kontrol bike û dîsa biceribîne."
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:83
+msgid "Please try again."
+msgstr "Ji kerema xwe dîsa biceribîne."
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:75
+msgid "Please wait a moment and try again."
+msgstr "Ji kerema xwe kêliyekê bisekine û dîsa biceribîne."
 
 #: src/features/wiki/page-editor.tsx:339
 msgid "Preview"
@@ -1810,8 +1833,8 @@ msgstr "Guhertinên dawîn"
 msgid "Recent edits across all pages in this wiki."
 msgstr "Edîtkirinên dawîn li hemû rûpelên vê wikiyê."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:219
-#: ../../../lib/web/src/components/search-entity-page.tsx:243
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:216
+#: ../../../lib/web/src/components/search-entity-page.tsx:240
 msgid "Recommended"
 msgstr "Pêşniyarkirî"
 
@@ -2110,8 +2133,8 @@ msgstr "Li bikarhêneran bigere"
 msgid "Search..."
 msgstr "Bigere..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:177
-#: ../../../lib/web/src/components/search-entity-page.tsx:201
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/search-entity-page.tsx:198
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
 msgstr "Tê gerîn..."
@@ -2172,8 +2195,8 @@ msgstr "Bersivê bişîne"
 msgid "Serif"
 msgstr "Serîf"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:245
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:271
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:260
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:286
 msgid "Server error"
 msgstr "Çewtiya rajekarê"
 
@@ -2182,9 +2205,9 @@ msgstr "Çewtiya rajekarê"
 msgid "Server rules"
 msgstr "Qaîdeyên server"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:209
-msgid "Session expired"
-msgstr "Danişîn dawî bû"
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:210
+msgid "Session expired. Please log in again."
+msgstr "Danişîn bi dawî bû. Ji kerema xwe dîsa têkeve."
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:147
 msgid "Set origin and destination"
@@ -2412,6 +2435,10 @@ msgstr "Rûpela \"{slug}\" hîn tune ye."
 msgid "The page that users see when they first visit the wiki."
 msgstr "Rûpela ku bikarhêner dema yekem cara ku ziyaretî wîkîyê dikin dibînin."
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:68
+msgid "The requested content could not be found."
+msgstr "Naveroka xwestî nehat dîtin."
+
 #: src/features/wiki/wiki-settings.tsx:1050
 msgid "The URL that will be redirected"
 msgstr "URL ya ku dê were beralîkirin"
@@ -2511,6 +2538,10 @@ msgstr "Milê Alî biguherîne"
 msgid "Toggle theme"
 msgstr "Temayê biguherîne"
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:74
+msgid "Too many requests"
+msgstr "Daxwazên pir zêde"
+
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:45
 msgid "Top"
 msgstr "Jor"
@@ -2527,13 +2558,13 @@ msgstr "Peyveke lêgerînê an parzûneke cuda biceribîne."
 msgid "Try a different tag."
 msgstr "Tagê cuda biceribîne."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:193
-#: ../../../lib/web/src/components/search-entity-page.tsx:217
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:190
+#: ../../../lib/web/src/components/search-entity-page.tsx:214
 msgid "Try adjusting your search terms"
 msgstr "Peyvên lêgerîna xwe eyar bike"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:128
-#: ../../../lib/web/src/features/errors/general-error.tsx:168
+#: ../../../lib/web/src/features/errors/general-error.tsx:140
+#: ../../../lib/web/src/features/errors/general-error.tsx:180
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:19
 msgid "Try again"
 msgstr "Dîsa biceribîne"
@@ -2558,7 +2589,7 @@ msgstr "Ji bo lêgerîna bikarhêneran binivîse"
 msgid "Type to search..."
 msgstr "Ji bo lêgerînê binivîse..."
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:267
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:282
 msgid "Unable to connect to remote server"
 msgstr "Nikare bi rajekarê dûr ve girê bide"
 
@@ -2567,7 +2598,7 @@ msgstr "Nikare bi rajekarê dûr ve girê bide"
 msgid "Unable to redirect to login. Please try again."
 msgstr "Beralîkirina bo têketinê ne mumkin e. Ji kerema xwe dîsa biceribîne."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:156
+#: ../../../lib/web/src/components/notification-category-button.tsx:155
 msgid "Unassigned"
 msgstr "Nehatiye diyarkirin"
 
@@ -2859,6 +2890,10 @@ msgstr "Tu li ber jêbirina rûpelê <0>\"{title}\"</0> ({slug}) yî. Ev çalak�
 #: src/features/wiki/revert-page.tsx:66
 msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
 msgstr "Tu li ber vegerandina <0>{slug}</0> bo guhertoya <1>{version}</1> yî. Ev dê revîzyoneke nû bi naveroka guhertoya {version} biafirîne."
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:61
+msgid "You do not have access to this section."
+msgstr "Destûra te ya gihîştina vê beşê tune ye."
 
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."

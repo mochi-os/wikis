@@ -117,6 +117,10 @@ msgstr "Tuyệt đối (ngày và giờ)"
 msgid "Access"
 msgstr "Truy cập"
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:60
+msgid "Access denied"
+msgstr "Truy cập bị từ chối"
+
 #: ../../../lib/web/src/features/errors/forbidden.tsx:16
 msgid "Access Forbidden"
 msgstr "Truy cập bị cấm"
@@ -255,7 +259,7 @@ msgstr "Cho phép mọi người tìm kiếm wiki"
 msgid "An error occurred"
 msgstr "Đã xảy ra lỗi"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:241
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:256
 msgid "An unexpected error occurred"
 msgstr "Đã xảy ra lỗi không mong muốn"
 
@@ -458,12 +462,12 @@ msgstr "Hủy"
 msgid "Cancel reply"
 msgstr "Hủy phản hồi"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:144
+#: ../../../lib/web/src/components/notification-category-button.tsx:143
 msgid "Category for this notification"
 msgstr "Danh mục cho thông báo này"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:125
-#: ../../../lib/web/src/components/notification-category-button.tsx:136
+#: ../../../lib/web/src/components/notification-category-button.tsx:124
+#: ../../../lib/web/src/components/notification-category-button.tsx:135
 msgid "Change notification category"
 msgstr "Đổi danh mục thông báo"
 
@@ -738,6 +742,10 @@ msgstr "Tối"
 #: ../../../lib/web/src/components/profile-dropdown.tsx:123
 msgid "Dark mode"
 msgstr "Chế độ tối"
+
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:240
+msgid "Data conflict"
+msgstr "Xung đột dữ liệu"
 
 #: src/features/wiki/attachments-page.tsx:378
 #: src/features/wiki/changes-list.tsx:48
@@ -1132,7 +1140,7 @@ msgstr "Không huỷ đăng ký được"
 msgid "Failed to update access level"
 msgstr "Không cập nhật mức truy cập được"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:112
+#: ../../../lib/web/src/components/notification-category-button.tsx:111
 msgid "Failed to update category"
 msgstr "Không cập nhật danh mục được"
 
@@ -1442,7 +1450,8 @@ msgstr "Tên không được chứa ký tự < hoặc >"
 msgid "Name must be 100 characters or less"
 msgstr "Tên phải có 100 ký tự trở xuống"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:288
+#: ../../../lib/web/src/features/errors/general-error.tsx:53
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:303
 msgid "Network error"
 msgstr "Lỗi mạng"
 
@@ -1567,7 +1576,7 @@ msgstr "Không tìm thấy thẻ nào"
 msgid "No time zone found."
 msgstr "Không tìm thấy múi giờ."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:148
+#: ../../../lib/web/src/components/notification-category-button.tsx:147
 msgid "No topic record yet — try again after the next notification."
 msgstr "Chưa có bản ghi chủ đề — hãy thử lại sau thông báo tiếp theo."
 
@@ -1589,6 +1598,10 @@ msgstr "Không có"
 #: ../../../lib/web/src/lib/preference-utils.ts:134
 msgid "Normal"
 msgstr "Thường"
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:67
+msgid "Not found"
+msgstr "Không tìm thấy"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:146
 msgid "Not set"
@@ -1748,9 +1761,19 @@ msgstr "Passkey"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Xoá vĩnh viễn wiki này và toàn bộ nội dung của nó. Không thể hoàn tác."
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:289
+#: ../../../lib/web/src/features/errors/general-error.tsx:54
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:304
+#: ../../../lib/web/src/lib/error-normalizer.ts:201
 msgid "Please check your internet connection and try again."
 msgstr "Vui lòng kiểm tra kết nối internet và thử lại."
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:83
+msgid "Please try again."
+msgstr "Vui lòng thử lại."
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:75
+msgid "Please wait a moment and try again."
+msgstr "Vui lòng đợi một lát rồi thử lại."
 
 #: src/features/wiki/page-editor.tsx:339
 msgid "Preview"
@@ -1810,8 +1833,8 @@ msgstr "Thay đổi gần đây"
 msgid "Recent edits across all pages in this wiki."
 msgstr "Các chỉnh sửa gần đây trên tất cả trang trong wiki này."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:219
-#: ../../../lib/web/src/components/search-entity-page.tsx:243
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:216
+#: ../../../lib/web/src/components/search-entity-page.tsx:240
 msgid "Recommended"
 msgstr "Được đề xuất"
 
@@ -2110,8 +2133,8 @@ msgstr "Tìm kiếm người dùng"
 msgid "Search..."
 msgstr "Tìm kiếm..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:177
-#: ../../../lib/web/src/components/search-entity-page.tsx:201
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/search-entity-page.tsx:198
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
 msgstr "Đang tìm kiếm..."
@@ -2172,8 +2195,8 @@ msgstr "Gửi trả lời"
 msgid "Serif"
 msgstr "Có chân"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:245
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:271
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:260
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:286
 msgid "Server error"
 msgstr "Lỗi máy chủ"
 
@@ -2182,9 +2205,9 @@ msgstr "Lỗi máy chủ"
 msgid "Server rules"
 msgstr "Quy tắc máy chủ"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:209
-msgid "Session expired"
-msgstr "Phiên đã hết hạn"
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:210
+msgid "Session expired. Please log in again."
+msgstr "Phiên đã hết hạn. Vui lòng đăng nhập lại."
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:147
 msgid "Set origin and destination"
@@ -2412,6 +2435,10 @@ msgstr "Trang «{slug}» chưa tồn tại."
 msgid "The page that users see when they first visit the wiki."
 msgstr "Trang mà người dùng thấy khi truy cập wiki lần đầu."
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:68
+msgid "The requested content could not be found."
+msgstr "Không tìm thấy nội dung được yêu cầu."
+
 #: src/features/wiki/wiki-settings.tsx:1050
 msgid "The URL that will be redirected"
 msgstr "URL sẽ được chuyển hướng"
@@ -2511,6 +2538,10 @@ msgstr "Bật/tắt thanh bên"
 msgid "Toggle theme"
 msgstr "Bật/tắt giao diện"
 
+#: ../../../lib/web/src/features/errors/general-error.tsx:74
+msgid "Too many requests"
+msgstr "Quá nhiều yêu cầu"
+
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:45
 msgid "Top"
 msgstr "Đầu"
@@ -2527,13 +2558,13 @@ msgstr "Thử một từ khoá hoặc bộ lọc khác."
 msgid "Try a different tag."
 msgstr "Thử một thẻ khác."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:193
-#: ../../../lib/web/src/components/search-entity-page.tsx:217
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:190
+#: ../../../lib/web/src/components/search-entity-page.tsx:214
 msgid "Try adjusting your search terms"
 msgstr "Hãy thử điều chỉnh từ khóa tìm kiếm"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:128
-#: ../../../lib/web/src/features/errors/general-error.tsx:168
+#: ../../../lib/web/src/features/errors/general-error.tsx:140
+#: ../../../lib/web/src/features/errors/general-error.tsx:180
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:19
 msgid "Try again"
 msgstr "Thử lại"
@@ -2558,7 +2589,7 @@ msgstr "Nhập để tìm người dùng"
 msgid "Type to search..."
 msgstr "Nhập để tìm kiếm..."
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:267
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:282
 msgid "Unable to connect to remote server"
 msgstr "Không thể kết nối đến máy chủ từ xa"
 
@@ -2567,7 +2598,7 @@ msgstr "Không thể kết nối đến máy chủ từ xa"
 msgid "Unable to redirect to login. Please try again."
 msgstr "Không thể chuyển hướng đến trang đăng nhập. Vui lòng thử lại."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:156
+#: ../../../lib/web/src/components/notification-category-button.tsx:155
 msgid "Unassigned"
 msgstr "Chưa phân công"
 
@@ -2859,6 +2890,10 @@ msgstr "Bạn sắp xoá trang <0>«{title}»</0> ({slug}). Có thể hoàn tác
 #: src/features/wiki/revert-page.tsx:66
 msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
 msgstr "Bạn sắp hoàn nguyên <0>{slug}</0> về phiên bản <1>{version}</1>. Việc này sẽ tạo bản sửa đổi mới với nội dung của phiên bản {version}."
+
+#: ../../../lib/web/src/features/errors/general-error.tsx:61
+msgid "You do not have access to this section."
+msgstr "Bạn không có quyền truy cập vào phần này."
 
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
