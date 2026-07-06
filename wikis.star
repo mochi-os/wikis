@@ -38,7 +38,7 @@ def database_create():
     mochi.db.execute("create table if not exists redirects (wiki text not null references wikis(id), source text not null, target text not null, created integer not null, primary key (wiki, source))")
 
     # Replicas table - downstream wikis that replicate from this wiki
-    mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', peer text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
+    mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
 
     # Unreplicate tombstones - wikis we unreplicated as a replica, keyed by our
     # local (now-deleted) wiki id, recording the source to notify. Lets a dropped
@@ -56,6 +56,16 @@ def database_create():
 
     # RSS tokens table
     mochi.db.execute("create table if not exists rss (token text not null primary key, entity text not null, mode text not null, created integer not null, unique(entity, mode))")
+
+def database_upgrade(version):
+    # Schema 2: the replicas.peer column is gone - the core per-user directory
+    # now carries the route to a private replica, so the owner no longer stores
+    # each replica's peer (see #209 / #220). Drop the now-unused column.
+    if version == 2:
+        for c in mochi.db.table("replicas"):
+            if c["name"] == "peer":
+                mochi.db.execute("alter table replicas drop column peer")
+                break
 
 def update_replica_seen(wiki, replica_id):
     now = mochi.time.now()
@@ -259,16 +269,6 @@ def maybe_resubscribe(a, wiki_id):
     )
     mochi.broadcast.touch(source)
 
-# replica_peer_refresh: keep the stored delivery peer current. The replica is
-# a private entity, so its peer cannot be re-resolved from the directory - the
-# stored value from subscribe time is the only route, and it goes stale if the
-# subscriber's server changes libp2p identity (reinstall, key rotation). Any
-# inbound message from the replica carries the live peer; refresh on receipt.
-def replica_peer_refresh(wiki, replica, peer):
-    if not wiki or not replica or not peer:
-        return
-    mochi.db.execute("update replicas set peer=? where wiki=? and id=? and peer!=?", peer, wiki, replica, peer)
-
 # Helper: Broadcast event to all replicas of a wiki via the durable
 # broadcast log. Sequence + log + gap-detection live in core. Replicas
 # whose view access has been revoked are filtered out client-side
@@ -277,15 +277,15 @@ def broadcast_event(wiki, event, data, exclude=None):
     if not wiki:
         return
     resource = "wiki/" + wiki
-    replicas = mochi.db.rows("select id, peer from replicas where wiki=?", wiki)
+    replicas = mochi.db.rows("select id from replicas where wiki=?", wiki)
     recipients = []
     for r in replicas:
         if not mochi.access.check(r["id"], resource, "view"):
             continue
-        # A replica is a private entity on the subscriber's server - not
-        # directory-listed, so delivery must be pinned to the peer captured
-        # at subscribe time (and refreshed by replica_peer_refresh).
-        recipients.append({"id": r["id"], "peer": r["peer"]})
+        # A replica is a private entity on the subscriber's server, not
+        # directory-listed; the core per-user directory carries the route
+        # (learned when the replica registered), so no app-level peer pin.
+        recipients.append(r["id"])
     mochi.broadcast.send(wiki, wiki, recipients, "wikis", event, data, exclude or "")
 
 # notify_websocket: tell any locally-open wiki UI that this wiki's content
@@ -2710,23 +2710,22 @@ def event_replicate(e):
     if not wiki:
         return
 
-    # Get the replica's entity ID and peer from message header
+    # Get the replica's entity ID from the message header
     replica = e.header("from")
     if not replica:
         return
-    peer = e.header("peer") or ""
 
     # Get optional name from content
     name = e.content("name") or ""
 
     now = mochi.time.now()
 
-    # Use UPSERT to handle concurrent replicate requests atomically
-    # New replica: set subscribed to now, seen and synced to 0
-    # Existing replica: update name and peer (don't reset timestamps)
-    mochi.db.execute("""insert into replicas (wiki, id, name, peer, subscribed, seen, synced) values (?, ?, ?, ?, ?, 0, 0)
-        on conflict(wiki, id) do update set name=excluded.name, peer=excluded.peer""",
-        wiki, replica, name, peer, now)
+    # Use UPSERT to handle concurrent replicate requests atomically. The core
+    # per-user directory learns the replica's route from this (claim-verified)
+    # registration, so no peer is stored on the row.
+    mochi.db.execute("""insert into replicas (wiki, id, name, subscribed, seen, synced) values (?, ?, ?, ?, 0, 0)
+        on conflict(wiki, id) do update set name=excluded.name""",
+        wiki, replica, name, now)
 
 # Handle unreplication notification - remove replica and revoke access
 def event_unreplicate(e):
@@ -2816,7 +2815,6 @@ def event_sync(e):
 # Handle remote page edit request from a replica (stream-based)
 def event_page_edit_request(e):
     wiki = e.header("to")
-    replica_peer_refresh(wiki, e.header("from"), e.header("peer"))
     if not wiki:
         e.write({"status": "400", "error": "Missing wiki ID"})
         return
@@ -2927,7 +2925,6 @@ def event_page_edit_request(e):
 # Handle remote page delete request from a replica (stream-based)
 def event_page_delete_request(e):
     wiki = e.header("to")
-    replica_peer_refresh(wiki, e.header("from"), e.header("peer"))
     if not wiki:
         e.write({"status": "400", "error": "Missing wiki ID"})
         return
@@ -2981,7 +2978,6 @@ def event_page_delete_request(e):
 # Handle remote attachment upload request from a replica (stream-based)
 def event_attachment_upload_request(e):
     wiki = e.header("to")
-    replica_peer_refresh(wiki, e.header("from"), e.header("peer"))
     if not wiki:
         e.write({"status": "400", "error": "Missing wiki ID"})
         return
@@ -3604,7 +3600,6 @@ def action_comment_delete(a):
 # P2P event: comment/create
 def event_comment_create(e):
     wiki = e.header("to")
-    replica_peer_refresh(wiki, e.header("from"), e.header("peer"))
     if not wiki:
         return
 
@@ -3678,7 +3673,6 @@ def event_comment_create(e):
 # P2P event: comment/edit
 def event_comment_edit(e):
     wiki = e.header("to")
-    replica_peer_refresh(wiki, e.header("from"), e.header("peer"))
     if not wiki:
         return
 
@@ -3726,7 +3720,6 @@ def event_comment_edit(e):
 # P2P event: comment/delete
 def event_comment_delete(e):
     wiki = e.header("to")
-    replica_peer_refresh(wiki, e.header("from"), e.header("peer"))
     if not wiki:
         return
 
