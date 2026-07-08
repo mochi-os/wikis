@@ -221,15 +221,6 @@ function WikiPageRoute() {
               {plural(commentCount, { one: '1 comment', other: '# comments' })}
             </Link>
           </DropdownMenuItem>
-          {canUnsubscribe && (
-            <DropdownMenuItem
-              onSelect={() => setUnsubscribeConfirmOpen(true)}
-              disabled={unsubscribeWiki.isPending}
-            >
-              <Trash2 className="size-4" />
-              {unsubscribeWiki.isPending ? t`Unsubscribing...` : t`Unsubscribe`}
-            </DropdownMenuItem>
-          )}
           <DropdownMenuSeparator />
           <DropdownMenuLabel><Trans>Wiki</Trans></DropdownMenuLabel>
           <DropdownMenuItem asChild>
@@ -258,6 +249,13 @@ function WikiPageRoute() {
               </Link>
             </DropdownMenuItem>
           )}
+          {/* Canonical menu tail: Link, Design (n/a here), Settings, Unsubscribe. */}
+          {permissions.manage && (
+            <DropdownMenuItem onSelect={() => void openLinkDialog()}>
+              <LinkIcon className="size-4" />
+              <Trans>Link</Trans>
+            </DropdownMenuItem>
+          )}
           {permissions.manage && (
             <DropdownMenuItem asChild>
               <Link preload={false} to="/settings">
@@ -266,11 +264,17 @@ function WikiPageRoute() {
               </Link>
             </DropdownMenuItem>
           )}
-          {permissions.manage && (
-            <DropdownMenuItem onSelect={() => void openLinkDialog()}>
-              <LinkIcon className="size-4" />
-              <Trans>Link</Trans>
-            </DropdownMenuItem>
+          {canUnsubscribe && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => setUnsubscribeConfirmOpen(true)}
+                disabled={unsubscribeWiki.isPending}
+              >
+                <Trash2 className="size-4" />
+                {unsubscribeWiki.isPending ? t`Unsubscribing...` : t`Unsubscribe`}
+              </DropdownMenuItem>
+            </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>

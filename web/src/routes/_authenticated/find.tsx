@@ -8,7 +8,7 @@ import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { BookOpen } from 'lucide-react'
-import { FindEntityPage, toastAction, getErrorMessage, requestHelpers, getAppPath, type MochiEntityUri } from '@mochi/web'
+import { FindEntityPage, toastAction, getErrorMessage, requestHelpers, getAppPath } from '@mochi/web'
 import { useWikiContext } from '@/context/wiki-context'
 import { useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 import endpoints from '@/api/endpoints'
@@ -76,16 +76,15 @@ function FindWikisPage() {
 
   // Resolve a pasted mochi:// share link to the wiki's name via probe, so the
   // card shows the real wiki rather than a raw entity id.
-  const resolveUri = useCallback(async (uri: MochiEntityUri) => {
-    if (!uri.peer) return null
-    type ProbeEntry = { id: string; name: string; fingerprint?: string; peer?: string }
+  const resolveUri = useCallback(async (url: string) => {
+    type ProbeEntry = { id: string; name: string; fingerprint?: string; server?: string; peer?: string }
     const response = await requestHelpers.post<{ data?: ProbeEntry } & Partial<ProbeEntry>>(
       `${getAppPath()}/-/probe`,
-      { url: `mochi://${uri.peer}/${uri.entity}` }
+      { url }
     )
     const data: Partial<ProbeEntry> = response.data ?? response
     if (!data.id) return null
-    return { id: data.id, name: data.name ?? '', fingerprint: data.fingerprint, peer: data.peer || uri.peer }
+    return { id: data.id, name: data.name ?? '', fingerprint: data.fingerprint, location: data.server ?? '', peer: data.peer }
   }, [])
 
   return (

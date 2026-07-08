@@ -17,6 +17,8 @@ interface DirectoryEntry {
   name: string
   fingerprint: string
   location?: string
+  /** owner's peer from a mochi:// share-link probe; join pins the same peer. */
+  peer?: string
 }
 
 interface SearchResponse {
@@ -60,6 +62,20 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
       setIsLoading(true)
       setSearchError(null)
       try {
+        // A pasted link (mochi://<peer>/<wiki> or a web URL) resolves via probe -
+        // a directory search can't find a private/unlisted wiki or match a URL.
+        if (/^(mochi:|https?:\/\/)/i.test(debouncedQuery)) {
+          type ProbeEntry = { id: string; name: string; fingerprint?: string; server?: string; peer?: string }
+          const probe = await wikisRequest.post<{ data?: ProbeEntry } & Partial<ProbeEntry>>(
+            endpoints.wiki.probe, { url: debouncedQuery }
+          ).catch(() => null)
+          const data: Partial<ProbeEntry> = probe?.data ?? probe ?? {}
+          setResults(data.id
+            ? [{ id: data.id, name: data.name ?? '', fingerprint: data.fingerprint ?? '',
+                 location: data.server ?? '', peer: data.peer }]
+            : [])
+          return
+        }
         // wikisRequest already unwraps the outer data envelope
         // Response is {results: [...]}
         const response = await wikisRequest.get<SearchResponse>(
@@ -81,7 +97,7 @@ export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchP
     setPendingWikiId(wiki.id)
     try {
       const result = await toastAction(
-        joinWikiWithRetry(joinWiki, wiki.id, wiki.location || undefined),
+        joinWikiWithRetry(joinWiki, wiki.id, wiki.location || undefined, wiki.peer),
         {
           loading: t`Subscribing...`,
           success: t`Subscribed`,

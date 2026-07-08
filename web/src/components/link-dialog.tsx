@@ -10,7 +10,6 @@ import {
   Button,
   ResponsiveDialog,
   ResponsiveDialogContent,
-  ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
   getErrorMessage,
@@ -66,9 +65,6 @@ export function useWikiLinkDialog(wikiId: string | undefined) {
             {copied ? <Check className='size-4' /> : <Copy className='size-4' />}
           </Button>
         </div>
-        <ResponsiveDialogFooter>
-          <Button variant='outline' onClick={() => setOpen(false)}><Trans>Done</Trans></Button>
-        </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
   )

@@ -33,7 +33,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@mochi/web'
-import { Ellipsis, FileEdit, FilePlus, History, LogOut, MessageSquare, Pencil, Rss, Search, Settings, Tags, Trash2 } from 'lucide-react'
+import { Ellipsis, FileEdit, FilePlus, History, Link as LinkIcon, LogOut, MessageSquare, Pencil, Rss, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import {
   PageView,
   PageNotFound,
@@ -41,6 +41,7 @@ import {
 } from '@/features/wiki/page-view'
 import { PageHeader } from '@/features/wiki/page-header'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
+import { useWikiLinkDialog } from '@/components/link-dialog'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
@@ -61,6 +62,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   const goBackToWikis = () => navigate({ to: '/' })
   const { baseURL, wiki, permissions } = useWikiBaseURL()
   const backLabel = wiki.name ?? t`Back to wikis`
+  const { openLinkDialog, linkDialog } = useWikiLinkDialog(wiki.fingerprint ?? wiki.id)
 
   // Can unsubscribe if viewing a subscribed wiki (has source)
   const canUnsubscribe = !!wiki.source
@@ -203,6 +205,11 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           {permissions.manage && (
             <>
               <DropdownMenuSeparator />
+              {/* Canonical menu tail: Link, then Settings. */}
+              <DropdownMenuItem onSelect={() => void openLinkDialog()}>
+                <LinkIcon className="size-4" />
+                <Trans>Link</Trans>
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link preload={false} to="/$wikiId/settings" params={{ wikiId }}>
                   <Settings className="size-4" />
@@ -225,6 +232,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
         <Main>
           <PageNotFound slug={slug} wikiId={wikiId} />
         </Main>
+        {linkDialog}
       </>
     )
   }
@@ -325,6 +333,13 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
               </Link>
             </DropdownMenuItem>
           )}
+          {/* Canonical menu tail: Link, Design (n/a here), Settings, Unsubscribe. */}
+          {permissions.manage && (
+            <DropdownMenuItem onSelect={() => void openLinkDialog()}>
+              <LinkIcon className="size-4" />
+              <Trans>Link</Trans>
+            </DropdownMenuItem>
+          )}
           {permissions.manage && (
             <DropdownMenuItem asChild>
               <Link preload={false} to="/$wikiId/settings" params={{ wikiId }}>
@@ -376,6 +391,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           open={renameDialogOpen}
           onOpenChange={setRenameDialogOpen}
         />
+        {linkDialog}
       </>
     )
   }

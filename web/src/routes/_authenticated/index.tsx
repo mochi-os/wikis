@@ -464,18 +464,19 @@ function WikiHomePage({
               </Link>
             </DropdownMenuItem>
           )}
+          {/* Canonical menu tail: Link, Design (n/a here), Settings, Unsubscribe. */}
+          {permissions.manage && (
+            <DropdownMenuItem onSelect={() => void openLinkDialog()}>
+              <LinkIcon className='size-4' />
+              <Trans>Link</Trans>
+            </DropdownMenuItem>
+          )}
           {permissions.manage && (
             <DropdownMenuItem asChild>
               <Link preload={false} to='/settings'>
                 <Settings className='size-4' />
                 <Trans>Settings</Trans>
               </Link>
-            </DropdownMenuItem>
-          )}
-          {permissions.manage && (
-            <DropdownMenuItem onSelect={() => void openLinkDialog()}>
-              <LinkIcon className='size-4' />
-              <Trans>Link</Trans>
             </DropdownMenuItem>
           )}
           {canUnsubscribe && (
