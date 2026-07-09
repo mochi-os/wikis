@@ -18,6 +18,8 @@ import {
   AttachmentActions,
   AttachmentAction,
   useFormat,
+  pendingFileKey,
+  removePendingFile,
 } from '@mochi/web'
 import { Paperclip, Send, X } from 'lucide-react'
 import { t } from '@lingui/core/macro'
@@ -61,8 +63,8 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
     e.target.value = ''
   }
 
-  const removeFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index))
+  const removeFile = (file: File) => {
+    setFiles((prev) => removePendingFile(prev, file))
   }
 
   return (
@@ -81,7 +83,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
           {files.map((file, i) => {
             const isImage = file.type.startsWith('image/')
             return (
-              <Attachment key={i} state="uploading" size="sm">
+              <Attachment key={pendingFileKey(file)} state="uploading" size="sm">
                 <AttachmentMedia variant={isImage ? "image" : "icon"}>
                   {isImage && filePreviewUrls[i] ? (
                     <img src={filePreviewUrls[i] ?? undefined} alt={file.name} draggable={false} />
@@ -96,7 +98,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
                   </AttachmentDescription>
                 </AttachmentContent>
                 <AttachmentActions>
-                  <AttachmentAction onClick={() => removeFile(i)} aria-label={t`Remove`}>
+                  <AttachmentAction onClick={() => removeFile(file)} aria-label={t`Remove`}>
                     <X className="size-4" />
                   </AttachmentAction>
                 </AttachmentActions>
