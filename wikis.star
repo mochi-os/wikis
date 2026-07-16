@@ -14,6 +14,14 @@ def notify(topic, object="", title="", body="", url="", name="", event_id=""):
 
 # Database creation
 
+def database_upgrade(version):
+    if version == 3:
+        # Drop the pre-2026-07 broadcast tables left in the app data DB when
+        # broadcast state moved to the per-app system DB - inert, but stale
+        # sequence/log copies mislead diagnosis.
+        for table in ["sequence", "log", "acknowledged", "received"]:
+            mochi.db.execute("drop table if exists " + table)
+
 def database_create():
     # Wikis table - source is the upstream wiki entity ID for joined wikis, server is the remote server URL
     mochi.db.execute("create table if not exists wikis (id text primary key, name text not null, home text not null default 'home', source text not null default '', server text not null default '', created integer not null, synced integer not null default 0)")
