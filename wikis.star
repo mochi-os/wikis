@@ -195,6 +195,13 @@ def error_message_timeout(e):
         return
     mochi.db.execute("delete from replicas where id=?", e.entity)
 
+# error_subscriber_unreachable: core suspended this replica - every delivery
+# across the whole evict window failed with no contradicting success - and
+# asks us to drop them so fan-out stops paying for a dead host. If they
+# return, they re-replicate.
+def error_subscriber_unreachable(e):
+    mochi.db.execute("delete from replicas where id=?", e.entity)
+
 # unreplicate_stale: a broadcast arrived for a wiki we no longer hold. If we
 # kept an unreplicate tombstone for it, the source missed our original
 # unreplicate (offline past the queue age) and is still fanning out to us. Re-send
