@@ -3771,6 +3771,40 @@ def event_comment_delete(e):
 
 # ATTACHMENTS
 
+# HTTP handlers serving a wiki's attachments (and thumbnails). Public routes,
+# so anonymous viewers can load a public wiki's attachments; access is enforced
+# here on a.user, never on ambient ownership. Core's a.write.attachment serves
+# the bytes with no access check of its own, so this handler is the gate: it
+# reuses the action_attachments view check and additionally binds the
+# attachment to this wiki (attached to the wiki itself or to one of its
+# comments), so one wiki's attachment can't be fetched via another wiki's route.
+def action_attachment(a):
+    serve_attachment(a, False)
+
+def action_attachment_thumbnail(a):
+    serve_attachment(a, True)
+
+def serve_attachment(a, thumbnail):
+    attachment = a.input("id")
+    wiki = get_wiki(a)
+    if wiki and not wiki.get("source", ""):
+        # We own this wiki: enforce view access, then bind the attachment.
+        if not check_access(a, wiki["id"], "view"):
+            a.error.label(403, "errors.access_denied")
+            return
+        att = mochi.attachment.get(attachment)
+        if not att:
+            a.error.label(404, "errors.attachment_not_found")
+            return
+        obj = att.get("object")
+        if obj != wiki["id"] and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki["id"]):
+            a.error.label(404, "errors.attachment_not_found")
+            return
+    # Replica/remote wikis: the source enforces access when a.write.attachment
+    # fetches over P2P, and per-user databases isolate one local user's replica
+    # from another.
+    a.write.attachment(attachment, thumbnail=thumbnail)
+
 # List all wiki attachments
 def action_attachments(a):
     wiki = get_wiki(a)
