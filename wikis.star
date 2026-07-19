@@ -673,6 +673,14 @@ def action_resync(a):
     synced = request_resync(wiki["id"])
     return {"data": {"synced": synced}}
 
+# Revoke a wiki's RSS access tokens (the core tokens, not just the rss rows) so a
+# removed wiki's ?token= URL stops authenticating. No-op when the wiki has no RSS
+# tokens, so it is safe to call from every wiki-removal path.
+def rss_tokens_revoke(entity_id):
+    for r in mochi.db.rows("select token from rss where entity=?", entity_id) or []:
+        mochi.token.delete(r["token"])
+    mochi.db.execute("delete from rss where entity=?", entity_id)
+
 def action_delete(a):
     if not a.user:
         a.error.label(401, "errors.authentication_required")
@@ -716,12 +724,8 @@ def action_delete(a):
     # 6. Delete replicas
     mochi.db.execute("delete from replicas where wiki=?", wiki_id)
 
-    # 7. Delete RSS tokens — revoke the core tokens too, not just the rss rows,
-    # or ?token=<deleted-wiki-token> would still authenticate. mochi.token.delete
-    # accepts the stored token string.
-    for r in mochi.db.rows("select token from rss where entity=?", wiki_id) or []:
-        mochi.token.delete(r["token"])
-    mochi.db.execute("delete from rss where entity=?", wiki_id)
+    # 7. Delete RSS tokens (core tokens too, not just the rss rows).
+    rss_tokens_revoke(wiki_id)
 
     # 8. Delete wiki record
     mochi.db.execute("delete from wikis where id=?", wiki_id)
@@ -2090,6 +2094,7 @@ def action_unsubscribe(a):
     mochi.db.execute("delete from redirects where wiki=?", wiki_id)
     mochi.db.execute("delete from comments where wiki=?", wiki_id)
     mochi.db.execute("delete from replicas where wiki=?", wiki_id)
+    rss_tokens_revoke(wiki_id)
     mochi.db.execute("delete from wikis where id=?", wiki_id)
 
     # Clean up attachments, access rules, and entity registration
@@ -4049,6 +4054,35 @@ def action_rss_token(a):
     now = mochi.time.now()
     mochi.db.execute("insert into rss (token, entity, mode, created) values (?, ?, ?, ?)", token, wiki_id, mode, now)
     return {"data": {"token": token}}
+
+# Revoke a wiki's RSS access: delete the core token(s) and rss row(s) so the RSS
+# URL stops working. The next Copy RSS URL mints a fresh token.
+def action_rss_token_revoke(a):
+    if not a.user:
+        a.error.label(401, "errors.authentication_required")
+        return
+
+    entity = a.input("entity")
+    if not entity:
+        a.error.label(400, "errors.missing_entity_or_mode")
+        return
+
+    if entity == "*":
+        wiki_id = "*"
+    else:
+        wiki = mochi.db.row("select * from wikis where id=?", entity)
+        if not wiki:
+            for w in mochi.db.rows("select id from wikis") or []:
+                if mochi.entity.fingerprint(w["id"]) == entity:
+                    wiki = w
+                    break
+        if not wiki:
+            a.error.label(404, "errors.wiki_not_found")
+            return
+        wiki_id = wiki["id"]
+
+    rss_tokens_revoke(wiki_id)
+    return {"data": {"ok": True}}
 
 # Per-wiki RSS feed
 def action_rss(a):

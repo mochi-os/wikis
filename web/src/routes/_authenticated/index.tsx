@@ -59,7 +59,7 @@ import {
   Link as LinkIcon,
 } from 'lucide-react'
 import endpoints from '@/api/endpoints'
-import { wikisRequest, getRssToken } from '@/api/request'
+import { wikisRequest, getRssToken, revokeRssToken } from '@/api/request'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { usePermissions, useWikiContext } from '@/context/wiki-context'
@@ -328,6 +328,15 @@ function WikiHomePage({
     }
   }
 
+  const handleRevokeRss = async () => {
+    try {
+      await revokeRssToken(wikiId)
+      toast.success(t`RSS access revoked`)
+    } catch (error) {
+      toast.error(getErrorMessage(error, t`Failed to revoke RSS access`))
+    }
+  }
+
   if (isLoading) {
     return (
       <>
@@ -453,6 +462,9 @@ function WikiHomePage({
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>
                 <Trans>Changes and comments</Trans>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void handleRevokeRss()}>
+                <Trans>Revoke access</Trans>
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
@@ -591,6 +603,15 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
     }
   }
 
+  const handleRevokeRss = async () => {
+    try {
+      await revokeRssToken('*')
+      toast.success(t`RSS access revoked`)
+    } catch (error) {
+      toast.error(getErrorMessage(error, t`Failed to revoke RSS access`))
+    }
+  }
+
   // Clear last location when viewing "All wikis"
   useEffect(() => {
     clearLastLocation()
@@ -700,6 +721,9 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                     onSelect={() => void handleCopyRssUrl('all')}
                   >
                     <Trans>Changes and comments</Trans>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => void handleRevokeRss()}>
+                    <Trans>Revoke access</Trans>
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>

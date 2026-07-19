@@ -46,3 +46,8 @@ export async function getRssToken(
 ): Promise<{ token: string }> {
   return wikisRequest.post<{ token: string }>('-/rss/token', { entity, mode })
 }
+
+// Revoke a wiki's RSS access (deletes the token(s) so the RSS URL stops working)
+export async function revokeRssToken(entity: string): Promise<{ ok: boolean }> {
+  return wikisRequest.post<{ ok: boolean }>('-/rss/token/revoke', { entity })
+}
