@@ -716,7 +716,11 @@ def action_delete(a):
     # 6. Delete replicas
     mochi.db.execute("delete from replicas where wiki=?", wiki_id)
 
-    # 7. Delete RSS tokens
+    # 7. Delete RSS tokens — revoke the core tokens too, not just the rss rows,
+    # or ?token=<deleted-wiki-token> would still authenticate. mochi.token.delete
+    # accepts the stored token string.
+    for r in mochi.db.rows("select token from rss where entity=?", wiki_id) or []:
+        mochi.token.delete(r["token"])
     mochi.db.execute("delete from rss where entity=?", wiki_id)
 
     # 8. Delete wiki record
