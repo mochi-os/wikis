@@ -3203,6 +3203,21 @@ def event_attachment_fetch(e):
         e.write({"status": "400", "error": "Attachment ID is required"})
         return
 
+    # Bind the attachment to the requested wiki. The access check above only
+    # proved view access to `wiki`, but mochi.attachment.path resolves the id
+    # across the owner's whole wikis DB, so without this a viewer of one wiki
+    # could fetch a private sibling wiki's attachment by id. Mirrors the HTTP
+    # serve_attachment binding: attached to the wiki itself or one of its
+    # comments.
+    att = mochi.attachment.get(attachment_id)
+    if not att:
+        e.write({"status": "404", "error": "Attachment not found"})
+        return
+    obj = att.get("object")
+    if obj != wiki and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
+        e.write({"status": "404", "error": "Attachment not found"})
+        return
+
     # Get the attachment file path
     path = mochi.attachment.path(attachment_id)
     mochi.log.debug("attachment/fetch path=%s", path)
