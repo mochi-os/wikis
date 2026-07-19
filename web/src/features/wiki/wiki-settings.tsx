@@ -274,17 +274,13 @@ function SettingsTab() {
     const url = settingsContext.baseURL
       ? `${settingsContext.baseURL}${endpoints.wiki.rename}`
       : endpoints.wiki.rename
-    try {
-      await toastAction(requestHelpers.post(url, { name: trimmedName }), {
-        loading: t`Saving...`,
-        success: t`Wiki renamed`,
-        error: (err) => getErrorMessage(err, t`Failed to rename wiki`),
-      })
-      setCurrentName(trimmedName)
-      void queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
-    } catch (err) {
-      throw err
-    }
+    await toastAction(requestHelpers.post(url, { name: trimmedName }), {
+      loading: t`Saving...`,
+      success: t`Wiki renamed`,
+      error: (err) => getErrorMessage(err, t`Failed to rename wiki`),
+    })
+    setCurrentName(trimmedName)
+    void queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
   }
 
   const handleHomePageChange = (value: string) => {
@@ -388,7 +384,7 @@ function SettingsTab() {
   return (
     <div className="space-y-6">
       {wikiInfo && (
-        <Section title={t`Identity`} description={t`Unique identifiers for this wiki.`}>
+        <Section title={t`Identity`}>
           <div className="divide-y-0">
             <EditableFieldRow
               label={t`Name`}
@@ -545,19 +541,15 @@ function AccessTab() {
   }, [loadRules])
 
   const handleAdd = async (subject: string, subjectName: string, level: string) => {
-    try {
-      await toastAction(
-        requestHelpers.post(apiUrl(endpoints.wiki.accessSet), { subject, level }),
-        {
-          loading: t`Setting access...`,
-          success: t`Access set for ${subjectName}`,
-          error: (err) => getErrorMessage(err, t`Failed to set access level`),
-        }
-      )
-      void loadRules()
-    } catch (err) {
-      throw err
-    }
+    await toastAction(
+      requestHelpers.post(apiUrl(endpoints.wiki.accessSet), { subject, level }),
+      {
+        loading: t`Setting access...`,
+        success: t`Access set for ${subjectName}`,
+        error: (err) => getErrorMessage(err, t`Failed to set access level`),
+      }
+    )
+    void loadRules()
   }
 
   const handleLevelChange = async (subject: string, level: string) => {

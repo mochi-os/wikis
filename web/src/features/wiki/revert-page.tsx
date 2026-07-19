@@ -60,7 +60,7 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <RotateCcw className="h-5 w-5" />
-            <Trans>Revert Page</Trans>
+            <Trans>Revert page</Trans>
           </CardTitle>
           <CardDescription>
             <Trans>
