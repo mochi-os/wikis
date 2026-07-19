@@ -9,6 +9,17 @@
 # to the per-locale string in apps/wikis/labels/<lang>.conf under
 # `notifications.topic.<topic-with-dots>` so the notifications app can
 # render the topic header in the user's language.
+# remote_error surfaces a failed mochi.remote.request: core-authored
+# transport failures (marked "transport") become a translated generic
+# error with the detail kept in the server log; far-end app answers
+# pass through unchanged.
+def remote_error(a, response, code=502):
+    if response.get("transport"):
+        mochi.log.info("Remote transport error: %s", response.get("error", ""))
+        a.error.label(response.get("code", code), "errors.remote")
+    else:
+        a.error(response.get("code", code), response.get("error", "Error"))
+
 def notify(topic, object="", title="", body="", url="", name="", event_id=""):
 	mochi.service.call("notifications", "send", topic, object, title, body, url, mochi.app.label("notifications.topic." + topic.replace("/", ".")), name, "", None, event_id)
 
@@ -560,7 +571,7 @@ def action_probe(a): # wikis_probe
         return
     response = mochi.remote.request(link_wiki, "wikis", "information", {"wiki": link_wiki}, link_peer)
     if response.get("error"):
-        a.error(response.get("code", 404), response["error"])
+        remote_error(a, response, 404)
         return
     return {"data": {
         "id": link_wiki,
