@@ -3814,12 +3814,15 @@ def event_comment_delete(e):
 # attachment to this wiki (attached to the wiki itself or to one of its
 # comments), so one wiki's attachment can't be fetched via another wiki's route.
 def action_attachment(a):
-    serve_attachment(a, False)
+    serve_attachment(a, "")
 
 def action_attachment_thumbnail(a):
-    serve_attachment(a, True)
+    serve_attachment(a, "thumbnail")
 
-def serve_attachment(a, thumbnail):
+def action_attachment_preview(a):
+    serve_attachment(a, "preview")
+
+def serve_attachment(a, variant):
     attachment = a.input("id")
     wiki = get_wiki(a)
     if wiki and not wiki.get("source", ""):
@@ -3838,7 +3841,7 @@ def serve_attachment(a, thumbnail):
     # Replica/remote wikis: the source enforces access when a.write.attachment
     # fetches over P2P, and per-user databases isolate one local user's replica
     # from another.
-    a.write.attachment(attachment, thumbnail=thumbnail)
+    a.write.attachment(attachment, variant=variant)
 
 # List all wiki attachments
 def action_attachments(a):
