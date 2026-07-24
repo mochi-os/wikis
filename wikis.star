@@ -936,12 +936,26 @@ def action_info_entity(a):
 
     # Also include all wikis for sidebar display
     # Add fingerprint (without hyphens) to each for shorter URLs
-    wikis_raw = mochi.db.rows("""
+    columns = """
         select w.id, w.name, w.home, w.source, w.created,
             (select count(*) from pages p where p.wiki=w.id and p.deleted=0) as pages,
             (select max(p.updated) from pages p where p.wiki=w.id and p.deleted=0) as updated
         from wikis w
-    """)
+    """
+    if a.user and a.user.identity:
+        # Authenticated callers query their own database, so every row is
+        # already one of their own wikis or replicas.
+        wikis_raw = mochi.db.rows(columns)
+    else:
+        # Anonymous callers (this action is public) run as the entity owner, so
+        # the query would otherwise return every wiki the owner has, including
+        # private ones. Restrict to locally-owned wikis (source='') that grant
+        # public view access. Check access with mochi.access.check(None, ...)
+        # directly - NOT check_access(), which calls mochi.entity.get() and
+        # would treat the thread-local owner as the wiki owner and bypass the
+        # access rules. Mirrors action_info_class.
+        wikis_raw = mochi.db.rows(columns + " where w.source=''")
+        wikis_raw = [w for w in wikis_raw if mochi.access.check(None, "wiki/" + w["id"], "view")]
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
 
     return {"data": {"entity": True, "wiki": wiki, "wikis": wikis, "permissions": permissions, "fingerprint": fp}}
