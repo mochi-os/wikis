@@ -25,14 +25,6 @@ def notify(topic, object="", title="", body="", url="", name="", event_id=""):
 
 # Database creation
 
-def database_upgrade(version):
-    if version == 3:
-        # Drop the pre-2026-07 broadcast tables left in the app data DB when
-        # broadcast state moved to the per-app system DB - inert, but stale
-        # sequence/log copies mislead diagnosis.
-        for table in ["sequence", "log", "acknowledged", "received"]:
-            mochi.db.execute("drop table if exists " + table)
-
 def database_create():
     # Wikis table - source is the upstream wiki entity ID for joined wikis, server is the remote server URL
     mochi.db.execute("create table if not exists wikis (id text primary key, name text not null, home text not null default 'home', source text not null default '', server text not null default '', created integer not null, synced integer not null default 0)")
@@ -85,6 +77,14 @@ def database_upgrade(version):
             if c["name"] == "peer":
                 mochi.db.execute("alter table replicas drop column peer")
                 break
+    # Schema 3: drop the pre-2026-07 broadcast tables left in the app data DB
+    # when broadcast state moved to the per-app system DB - inert, but stale
+    # sequence/log copies mislead diagnosis. (This case previously lived in a
+    # second database_upgrade definition that shadowed this one, so it never
+    # ran; merged here.)
+    if version == 3:
+        for table in ["sequence", "log", "acknowledged", "received"]:
+            mochi.db.execute("drop table if exists " + table)
 
 def update_replica_seen(wiki, replica_id):
     now = mochi.time.now()
@@ -478,7 +478,9 @@ def action_comment_asset(a):
     if asset not in _PERSON_ASSETS:
         a.error.label(404, "errors.unknown_asset")
         return
-    row = mochi.db.row("select author from comments where id=?", a.input("comment"))
+    # Bind the comment to the route wiki so this can't resolve a comment (and
+    # its author) in a wiki the URL doesn't name.
+    row = mochi.db.row("select author from comments where id=? and wiki=?", a.input("comment"), a.input("wiki"))
     return stream_asset(a, row["author"] if row else "", "people", asset)
 
 # Proxy a revision author's person asset from the people service.
@@ -487,7 +489,9 @@ def action_revision_asset(a):
     if asset not in _PERSON_ASSETS:
         a.error.label(404, "errors.unknown_asset")
         return
-    row = mochi.db.row("select author from revisions where id=?", a.input("revision"))
+    # Bind the revision to the route wiki (via its page) so this can't resolve a
+    # revision author in a wiki the URL doesn't name.
+    row = mochi.db.row("select r.author from revisions r join pages p on r.page=p.id where r.id=? and p.wiki=?", a.input("revision"), a.input("wiki"))
     return stream_asset(a, row["author"] if row else "", "people", asset)
 
 # ACTIONS
@@ -2353,6 +2357,12 @@ def event_page_create(e):
     # Check if page already exists
     existing = mochi.db.row("select * from pages where id=?", id)
 
+    # The page id is a global uid; refuse to touch one that already belongs to a
+    # different wiki - a colliding id must never overwrite/reassign another
+    # wiki's page in this per-user DB.
+    if existing and existing["wiki"] != wiki:
+        return
+
     if existing:
         # Apply conflict resolution
         if not should_apply_update(existing, version, created, author):
@@ -2434,6 +2444,10 @@ def event_page_update(e):
     # Check if page exists
     existing = mochi.db.row("select * from pages where id=?", id)
 
+    # Never touch a page id that already belongs to a different wiki.
+    if existing and existing["wiki"] != wiki:
+        return
+
     if not existing:
         # Page doesn't exist locally - create it
         mochi.db.execute("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -2505,6 +2519,10 @@ def event_page_delete(e):
     # Check if page exists
     existing = mochi.db.row("select * from pages where id=?", id)
     if not existing:
+        return
+
+    # Never soft-delete a page id that belongs to a different wiki.
+    if existing["wiki"] != wiki:
         return
 
     # Only delete if incoming version is higher
@@ -3109,25 +3127,17 @@ def event_attachment_create(e):
 
     mochi.log.info("Fetching attachment %s from replica %s", attachment_id, replica)
 
-    # Look up peer for the replica (private entities can't be resolved via directory)
-    replica_row = mochi.db.row("select peer from replicas where wiki=? and id=?", wiki, replica)
-    peer = replica_row["peer"] if replica_row else ""
-
-    # Open stream to replica to fetch the file data
-    if peer:
-        stream = mochi.stream.peer(
-            peer,
-            {"from": wiki, "to": replica, "service": "wikis", "event": "attachment/fetch"},
-            {"id": attachment_id}
-        )
-    else:
-        stream = mochi.stream(
-            {"from": wiki, "to": replica, "service": "wikis", "event": "attachment/fetch"},
-            {"id": attachment_id}
-        )
+    # Open stream to the replica to fetch the file data. The replica's peer is no
+    # longer stored locally (the replicas.peer column was dropped in schema 2);
+    # the core per-user learned directory carries the route to a private replica
+    # now (#209 / #220), so a plain mochi.stream to the replica entity resolves it.
+    stream = mochi.stream(
+        {"from": wiki, "to": replica, "service": "wikis", "event": "attachment/fetch"},
+        {"id": attachment_id}
+    )
 
     if not stream:
-        mochi.log.error("Failed to open stream to replica %s (peer=%s)", replica, peer)
+        mochi.log.error("Failed to open stream to replica %s", replica)
         return
 
     # Read response status first
@@ -3175,6 +3185,17 @@ def event_attachment_delete(e):
     attachment_id = e.content("id")
 
     if not attachment_id:
+        return
+
+    # Bind the attachment to this wiki before deleting - mochi.attachment.delete
+    # resolves the id across the owner's whole wikis DB, so without this an
+    # edit-replica of one wiki could delete another wiki's attachment by id.
+    # Mirrors event_attachment_fetch / serve_attachment.
+    att = mochi.attachment.get(attachment_id)
+    if not att:
+        return
+    obj = att.get("object")
+    if obj != wiki and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
         return
 
     # Delete locally and broadcast removal to other replicas
@@ -3273,7 +3294,14 @@ def event_attachment_remove(e):
 
     attachment_id = e.content("id")
     if attachment_id:
-        mochi.attachment.delete(attachment_id, [])
+        # Bind the attachment to this wiki before deleting (see
+        # event_attachment_delete) so a colliding id can't reach another wiki's
+        # attachment.
+        att = mochi.attachment.get(attachment_id)
+        if att:
+            obj = att.get("object")
+            if obj == wiki or mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
+                mochi.attachment.delete(attachment_id, [])
 
     notify_websocket(wiki)
 
@@ -3436,13 +3464,15 @@ def delete_comment_tree(comment_id, wiki_id):
     pending = [comment_id]
     i = 0
     while i < len(pending):
-        for child in mochi.db.rows("select id from comments where parent=?", pending[i]):
+        # Scope the descendant walk to this wiki so a cross-wiki parent pointer
+        # can't drag another wiki's comments into the delete set.
+        for child in mochi.db.rows("select id from comments where parent=? and wiki=?", pending[i], wiki_id):
             pending.append(child["id"])
         i += 1
     for cid in pending:
         for att in (mochi.attachment.list(cid, wiki_id) or []):
             mochi.attachment.delete(att["id"])
-        mochi.db.execute("delete from comments where id=?", cid)
+        mochi.db.execute("delete from comments where id=? and wiki=?", cid, wiki_id)
 
 # List comments for a page
 def action_page_comments(a):
@@ -3679,6 +3709,14 @@ def event_comment_create(e):
     # oversized comment that we'd then store and replicate onward.
     if len(body) > 100000:
         return
+
+    # Don't thread onto a comment that belongs to a different wiki - a foreign
+    # parent lets deletes/rendering cross wiki boundaries. A parent not present
+    # yet is left as-is for out-of-order delivery.
+    if parent:
+        parent_row = mochi.db.row("select wiki from comments where id=?", parent)
+        if parent_row and parent_row["wiki"] != wiki:
+            parent = ""
 
     mochi.db.execute("insert or ignore into comments (id, wiki, page, parent, author, name, body, created) values (?, ?, ?, ?, ?, ?, ?, ?)",
         id, wiki, page, parent, author, name, body, created)
