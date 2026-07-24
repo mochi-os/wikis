@@ -4346,6 +4346,17 @@ def opengraph_wiki(params):
     if not wiki:
         return og
 
+    # OpenGraph is rendered for anonymous crawlers and link previews, and core
+    # runs it in the owner's database context with no caller identity, so treat
+    # every request as untrusted: a private wiki must leak nothing at all, not
+    # even its name. Check with mochi.access.check(None, ...) directly - NOT
+    # check_access(), whose mochi.entity.get() short-circuit resolves the
+    # thread-local owner and would pass. Entity privacy is the wrong test here:
+    # a joined replica's local entity is private whatever the source's privacy,
+    # so it would also suppress previews for public replicated wikis.
+    if not mochi.access.check(None, "wiki/" + wiki["id"], "view"):
+        return og
+
     og["title"] = wiki["name"]
     og["description"] = mochi.app.label("opengraph.wiki.description", name=wiki["name"])
 
