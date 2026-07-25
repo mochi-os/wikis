@@ -4110,6 +4110,23 @@ def action_attachment_delete(a):
 
     source = wiki.get("source")
 
+    # Bind the attachment to this wiki before deleting. mochi.attachment.delete
+    # resolves the id with a bare `where id = ?` across the owner's whole wikis
+    # database (core/server/attachments.go), and every wiki that user holds -
+    # owned and replicated - shares it. Without this, edit rights on ONE wiki
+    # let a caller destroy an attachment belonging to any other wiki of the same
+    # owner, including private ones they cannot view. Matches the binding
+    # event_attachment_delete, event_attachment_remove, event_attachment_fetch
+    # and serve_attachment all apply.
+    att = mochi.attachment.get(id)
+    if not att:
+        a.error.label(404, "errors.attachment_not_found")
+        return
+    obj = att.get("object")
+    if obj != wiki["id"] and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki["id"]):
+        a.error.label(404, "errors.attachment_not_found")
+        return
+
     # Delete locally (no push notification — metadata piggybacked)
     if not mochi.attachment.delete(id, []):
         a.error.label(404, "errors.attachment_not_found")
