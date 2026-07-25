@@ -548,9 +548,16 @@ def action_comment_asset(a):
     if asset not in _PERSON_ASSETS:
         a.error.label(404, "errors.unknown_asset")
         return
+    # The route is public, so gate it: without this, knowing a comment id let an
+    # anonymous caller confirm that identity participated in a private wiki, and
+    # the 200-vs-404 answer is itself an oracle for the id.
+    wiki = get_wiki(a)
+    if not wiki or not check_access(a, wiki["id"], "view"):
+        a.error.label(403, "errors.access_denied")
+        return
     # Bind the comment to the route wiki so this can't resolve a comment (and
     # its author) in a wiki the URL doesn't name.
-    row = mochi.db.row("select author from comments where id=? and wiki=?", a.input("comment"), a.input("wiki"))
+    row = mochi.db.row("select author from comments where id=? and wiki=?", a.input("comment"), wiki["id"])
     return stream_asset(a, row["author"] if row else "", "people", asset)
 
 # Proxy a revision author's person asset from the people service.
@@ -559,9 +566,14 @@ def action_revision_asset(a):
     if asset not in _PERSON_ASSETS:
         a.error.label(404, "errors.unknown_asset")
         return
+    # Public route - gate it before resolving anyone (see action_comment_asset).
+    wiki = get_wiki(a)
+    if not wiki or not check_access(a, wiki["id"], "view"):
+        a.error.label(403, "errors.access_denied")
+        return
     # Bind the revision to the route wiki (via its page) so this can't resolve a
     # revision author in a wiki the URL doesn't name.
-    row = mochi.db.row("select r.author from revisions r join pages p on r.page=p.id where r.id=? and p.wiki=?", a.input("revision"), a.input("wiki"))
+    row = mochi.db.row("select r.author from revisions r join pages p on r.page=p.id where r.id=? and p.wiki=?", a.input("revision"), wiki["id"])
     return stream_asset(a, row["author"] if row else "", "people", asset)
 
 # ACTIONS
@@ -2901,13 +2913,37 @@ def event_replicate(e):
     if not wiki:
         return
 
-    # Get the replica's entity ID from the message header
-    replica = e.header("from")
-    if not replica:
+    # Every sibling handler looks the wiki up before writing; this one relied on
+    # the replicas.wiki foreign key to reject an unknown target, which works but
+    # only by accident.
+    if not mochi.db.exists("select 1 from wikis where id=?", wiki):
         return
 
-    # Get optional name from content
+    # Get the replica's entity ID from the message header
+    replica = e.header("from")
+    if not replica or not mochi.text.valid(replica, "entity"):
+        return
+
+    # Get optional name from content. Bound it: an entity id IS an ed25519
+    # public key, so a caller mints unlimited claim-verifiable senders offline,
+    # (wiki, id) is the primary key so each is a new row, and core rate-limits
+    # per libp2p peer rather than per sender entity. With `name` bounded only by
+    # the 16MB wire frame, roughly 1,700 messages filled the victim's wikis
+    # database to its 26.8GB page cap, after which EVERY write to it fails.
+    # valid() caps "name" at 1000 characters.
     name = e.content("name") or ""
+    if name and not mochi.text.valid(name, "name"):
+        return
+
+    # NO view gate here, deliberately, and it must not be added by analogy with
+    # forums' event_subscribe_event. Wikis authorises the join one step earlier:
+    # action_join pulls the sync dump via mochi.remote.request, which core stamps
+    # with the PERSON's identity, and event_sync gates that on check_event_access.
+    # Only afterwards does the joiner create its local replica entity and send
+    # this registration - so the sender here is always brand new and cannot hold
+    # a grant yet (the owner grants it after it registers). Gating on the sender
+    # would break every private-wiki join. Fan-out stays safe regardless:
+    # broadcast_event filters recipients on view access at send time.
 
     now = mochi.time.now()
 
