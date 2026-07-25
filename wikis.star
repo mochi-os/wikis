@@ -858,6 +858,15 @@ def action_directory_search(a):
     return {"data": {"results": results}}
 
 # Action: Get wiki recommendations
+# Read the user's BCP 47 language tag, or "en" if unset / anonymous
+def user_language(a):
+    if not a.user:
+        return "en"
+    preference = a.user.preference.get("language")
+    if not preference:
+        return "en"
+    return str(preference).strip().lower()
+
 def action_recommendations(a):
     # Gather IDs of wikis the user already has (owned + subscribed)
     existing_ids = set()
@@ -869,7 +878,7 @@ def action_recommendations(a):
                 existing_ids.add(w["source"])
 
     # Request recommendations from the recommendations service
-    s = mochi.remote.stream("1JYmMpQU7fxvTrwHpNpiwKCgUg3odWqX7s9t1cLswSMAro5M2P", "recommendations", "list", {"type": "wiki", "language": "en"})
+    s = mochi.remote.stream("1JYmMpQU7fxvTrwHpNpiwKCgUg3odWqX7s9t1cLswSMAro5M2P", "recommendations", "list", {"type": "wiki", "language": user_language(a)})
     if not s:
         return {"data": {"wikis": []}}
 
