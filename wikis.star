@@ -468,6 +468,39 @@ def slug_reserved(slug):
         return False
     return slug.split("/")[0] in reserved_pages
 
+# Helpers: does this global id already belong to a DIFFERENT wiki?
+#
+# Page, comment and revision ids are global uids, and every wiki a user holds -
+# owned and replicated - shares one database. A sync dump is authored entirely
+# by the remote wiki, so without these checks a wiki you merely joined can name
+# your other wikis' ids and have its own rows written over them. That is not
+# only destructive: a page re-parented into the joined wiki's replica lands
+# inside an entity the remote party can read back via event_sync, so it
+# exfiltrates private pages as well as destroying them.
+#
+# Mirrors foreign_object / foreign_comment in projects and crm, and the guard
+# event_page_create already applies on the event path.
+def foreign_page(page_id, wiki_id):
+    if not page_id:
+        return False
+    row = mochi.db.row("select wiki from pages where id=?", page_id)
+    return row != None and row["wiki"] != wiki_id
+
+def foreign_comment(comment_id, wiki_id):
+    if not comment_id:
+        return False
+    row = mochi.db.row("select wiki from comments where id=?", comment_id)
+    return row != None and row["wiki"] != wiki_id
+
+# True unless the page is one we hold for this wiki. Used for rows that hang off
+# a page (revisions, tags): an unknown page id is refused outright, since the
+# dump's own pages are imported first and anything still missing is either
+# another wiki's or fabricated.
+def page_outside_wiki(page_id, wiki_id):
+    if not page_id:
+        return True
+    return not mochi.db.exists("select 1 from pages where id=? and wiki=?", page_id, wiki_id)
+
 # Helper: P2P version fields arrive as raw CBOR and are never type-checked by
 # core. A non-integer is stored verbatim in an INTEGER column and then poisons
 # every later comparison - Starlark refuses to order across types - which
@@ -3427,21 +3460,34 @@ def import_sync_dump(wiki, dump):
         # shadows a route would be planted here just as easily as over an event.
         if slug_reserved(p.get("page", "")):
             continue
+        # Never adopt or reassign a page that already belongs to another wiki.
+        # The version comparison below is NOT a substitute: it selects on id
+        # alone with no wiki filter, and the version it compares against comes
+        # from the dump, so a large value made the overwrite deterministic.
+        if foreign_page(p["id"], wiki):
+            continue
         existing = mochi.db.row("select version from pages where id=?", p["id"])
         if existing and existing["version"] >= p["version"]:
             continue
         mochi.db.execute("replace into pages (id, wiki, page, title, content, author, created, updated, version, deleted) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             p["id"], wiki, p["page"], p["title"], p["content"], p["author"], p["created"], p["updated"], p["version"], p.get("deleted", 0))
 
-    # Import revisions
+    # Import revisions. The page must be one this wiki holds - the foreign key
+    # alone is satisfied by ANY page in the database, so without this a dump can
+    # graft revisions onto another wiki's page, where they surface through the
+    # public history, changes and RSS endpoints and can be reverted into place.
     revisions = dump.get("revisions") or []
     for r in revisions:
+        if page_outside_wiki(r.get("page", ""), wiki):
+            continue
         mochi.db.execute("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             r["id"], r["page"], r["content"], r["title"], r["author"], r.get("name", ""), r["created"], r["version"], r.get("comment", ""))
 
-    # Import tags
+    # Import tags - same rule as revisions.
     tags = dump.get("tags") or []
     for t in tags:
+        if page_outside_wiki(t.get("page", ""), wiki):
+            continue
         mochi.db.execute("insert or ignore into tags (page, tag) values (?, ?)", t["page"], t["tag"])
 
     # Import redirects
@@ -3449,11 +3495,20 @@ def import_sync_dump(wiki, dump):
     for r in redirects:
         mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, r["source"], r["target"], r["created"])
 
-    # Import comments
+    # Import comments. Same rule as pages - never reassign a comment that
+    # already belongs to another wiki. A cross-wiki parent is dropped rather
+    # than rejecting the comment, matching event_comment_create.
     comments = dump.get("comments") or []
+    imported_comments = []
     for c in comments:
+        if foreign_comment(c["id"], wiki):
+            continue
+        parent = c.get("parent", "")
+        if parent and foreign_comment(parent, wiki):
+            parent = ""
         mochi.db.execute("replace into comments (id, wiki, page, parent, author, name, body, created, edited, deleted) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            c["id"], wiki, c["page"], c.get("parent", ""), c["author"], c.get("name", ""), c["body"], c["created"], c.get("edited", 0), c.get("deleted", 0))
+            c["id"], wiki, c["page"], parent, c["author"], c.get("name", ""), c["body"], c["created"], c.get("edited", 0), c.get("deleted", 0))
+        imported_comments.append(c)
 
     # Import wiki name and home setting. The dump is entirely controlled by the
     # remote wiki, so `home` gets the same route-shadowing check as every other
@@ -3472,7 +3527,12 @@ def import_sync_dump(wiki, dump):
         attachments = dump.get("attachments") or []
         if attachments:
             mochi.attachment.store(attachments, source, wiki)
-        for c in comments:
+        # Only for comments that actually landed under this wiki. core's
+        # api_attachment_store performs no object validation and uses
+        # `replace into`, so an unvalidated comment id would let a dump inject
+        # attachment rows against another wiki's comment - or overwrite its
+        # existing ones.
+        for c in imported_comments:
             c_atts = c.get("attachments") or []
             if c_atts:
                 mochi.attachment.store(c_atts, source, c["id"])
