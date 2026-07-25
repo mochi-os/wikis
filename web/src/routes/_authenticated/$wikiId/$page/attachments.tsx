@@ -8,6 +8,7 @@ import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { Main, usePageTitle, requestHelpers } from '@mochi/web'
+import endpoints from '@/api/endpoints'
 import { AttachmentsPage } from '@/features/wiki/attachments-page'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
@@ -29,7 +30,7 @@ function AttachmentsRoute() {
   const { data: pageData } = useQuery({
     queryKey: ['wiki', wikiId, 'page', slug, baseURL],
     queryFn: () =>
-      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
+      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${endpoints.wiki.page(slug)}`),
     enabled: !!slug,
   })
   const isValidResponse = pageData && typeof pageData === 'object'

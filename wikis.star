@@ -439,6 +439,43 @@ def find_missing_links(wiki, content):
                 missing.append(link)
     return missing
 
+# Page slugs and the `home` setting are interpolated straight into request paths
+# by the web and Android clients, so a slug that matches a route segment
+# resolves to that ACTION instead of the page. A page named "delete" made the
+# client's own page fetch hit :wiki/-/delete and destroy the wiki, with no
+# attacker involved. Reject those names on every write path, HTTP and P2P alike.
+#
+# Two groups, with different lifetimes:
+#  - API action segments: the first path component of every :wiki/-/... route.
+#    Needed only while the legacy :wiki/-/:page routes remain for older clients;
+#    once those are retired, the pages/ container makes collision impossible and
+#    this group can go.
+#  - Client screens: wiki-level routes owned by the web router plus the server's
+#    files routes. No route change frees these, so they stay reserved for good.
+reserved_pages = [
+    # API action segments - removable when the legacy :wiki/-/:page routes go
+    "access", "attachment", "attachments", "comment", "delete", "info", "page",
+    "pages", "redirect", "redirects", "rename", "replica", "replicas", "resync",
+    "revision", "rss", "share", "subscribe", "sync", "tag", "tags", "unsubscribe",
+    # Client screens and asset routes - permanent
+    "assets", "changes", "images", "new", "search", "settings",
+]
+
+# Helper: is this slug (or `home` value) safe to use as a page name?
+# `home` may carry slashes, so only the first segment can shadow a route.
+def slug_reserved(slug):
+    if not slug:
+        return False
+    return slug.split("/")[0] in reserved_pages
+
+# Helper: P2P version fields arrive as raw CBOR and are never type-checked by
+# core. A non-integer is stored verbatim in an INTEGER column and then poisons
+# every later comparison - Starlark refuses to order across types - which
+# permanently breaks that page for editing AND replication. Bound it too, so a
+# huge value can't pin a page above every future legitimate edit.
+def valid_version(value):
+    return type(value) == "int" and value > 0 and value < 1000000000
+
 # Helper: Create a revision for a page
 def create_revision(page, title, content, author, name, version, comment):
     id = mochi.uid()
@@ -1180,6 +1217,9 @@ def action_new(a):
         if not (c.isalnum() or c in "-_"):
             a.error.label(400, "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders")
             return
+    if slug_reserved(slug):
+        a.error.label(400, "errors.page_name_reserved", name=slug)
+        return
 
     if not title:
         a.error.label(400, "errors.title_is_required")
@@ -1498,6 +1538,9 @@ def action_page_rename(a):
             return
     if new_slug.startswith("-"):
         a.error.label(400, "errors.page_names_starting_with_are_reserved")
+        return
+    if slug_reserved(new_slug):
+        a.error.label(400, "errors.page_name_reserved", name=new_slug)
         return
 
     # Can't rename to itself
@@ -1984,6 +2027,12 @@ def action_settings_set(a):
             if not (c.isalnum() or c in "-_/"):
                 a.error.label(400, "errors.invalid_home_page")
                 return
+        # The home slug is fetched by the client exactly like any other page, so
+        # it can shadow a route the same way. A wiki whose home is "delete"
+        # destroys itself the moment anyone opens it.
+        if slug_reserved(value):
+            a.error.label(400, "errors.page_name_reserved", name=value)
+            return
         mochi.db.execute("update wikis set home=? where id=?", value, wiki["id"])
     else:
         a.error.label(400, "errors.unknown_setting", name=name)
@@ -2372,6 +2421,14 @@ def event_page_create(e):
     if len(title) > 255 or (content and len(content) > 1000000):
         return
 
+    # Same slug rules as action_new: a remote peer must not be able to plant a
+    # page whose name shadows a route on our side.
+    if len(page) > 100 or page.startswith("-") or slug_reserved(page):
+        return
+
+    if not valid_version(version):
+        return
+
     # Validate timestamp is within reasonable range (not more than 1 day in future or 1 year in past)
     now = mochi.time.now()
     if created > now + 86400 or created < now - 31536000:
@@ -2462,6 +2519,21 @@ def event_page_update(e):
     # Enforce the same length caps as action_page_edit, so a replica can't push
     # an oversized row that we'd then store and replicate onward.
     if len(title) > 255 or (content and len(content) > 1000000):
+        return
+
+    # Same slug rules as action_new - a rename arriving over P2P must not be
+    # able to move a page onto a route-shadowing name.
+    if len(page) > 100 or page.startswith("-") or slug_reserved(page):
+        return
+
+    if not valid_version(version):
+        return
+
+    # Same timestamp window event_page_create applies. Without it a far-future
+    # `updated` pins this page to the top of Recent Changes and the page lists
+    # permanently, since revision rows are never rewritten.
+    now = mochi.time.now()
+    if updated > now + 86400 or updated < now - 31536000:
         return
 
     # Check if page exists
@@ -2742,6 +2814,16 @@ def event_setting_set(e):
 
     # Only allow known settings
     if name == "home":
+        # Mirror action_settings_set's validation. This handler accepts the
+        # value straight from our source wiki (replica_can returns True
+        # unconditionally for source -> replica), so an unvalidated home let a
+        # wiki we joined point our client at a route: home="delete" destroyed
+        # the local replica the moment its owner opened it.
+        if len(value) > 100 or slug_reserved(value):
+            return
+        for c in value.elems():
+            if not (c.isalnum() or c in "-_/"):
+                return
         mochi.db.execute("update wikis set home=? where id=?", value, wiki)
         notify_websocket(wiki)
 
@@ -2921,6 +3003,11 @@ def event_page_edit_request(e):
 
     if not slug:
         e.write({"status": "400", "error": "Missing page parameter"})
+        return
+
+    # Same slug rules as action_new, including the route-shadowing check.
+    if len(slug) > 100 or slug.startswith("-") or slug_reserved(slug):
+        e.write({"status": "400", "error": "Invalid page name"})
         return
 
     if not title:
@@ -3336,6 +3423,10 @@ def import_sync_dump(wiki, dump):
     # Import pages
     pages = dump.get("pages") or []
     for p in pages:
+        # The dump comes from the remote wiki verbatim, so a page whose slug
+        # shadows a route would be planted here just as easily as over an event.
+        if slug_reserved(p.get("page", "")):
+            continue
         existing = mochi.db.row("select version from pages where id=?", p["id"])
         if existing and existing["version"] >= p["version"]:
             continue
@@ -3364,9 +3455,13 @@ def import_sync_dump(wiki, dump):
         mochi.db.execute("replace into comments (id, wiki, page, parent, author, name, body, created, edited, deleted) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             c["id"], wiki, c["page"], c.get("parent", ""), c["author"], c.get("name", ""), c["body"], c["created"], c.get("edited", 0), c.get("deleted", 0))
 
-    # Import wiki name and home setting
+    # Import wiki name and home setting. The dump is entirely controlled by the
+    # remote wiki, so `home` gets the same route-shadowing check as every other
+    # write path; fall back to "home" rather than trusting it.
     name = dump.get("name")
     home = dump.get("home")
+    if home and (len(home) > 100 or slug_reserved(home)):
+        home = None
     if name or home:
         mochi.db.execute("update wikis set name=?, home=? where id=?",
             name or "", home or "home", wiki)

@@ -16,6 +16,7 @@ import {
   usePageTitle,
 } from '@mochi/web'
 import { DeletePage } from '@/features/wiki/delete-page'
+import endpoints from '@/api/endpoints'
 import { FileX } from 'lucide-react'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
@@ -37,7 +38,7 @@ function DeletePageRoute() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['wiki', wikiId, 'page', slug, baseURL],
     queryFn: () =>
-      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
+      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${endpoints.wiki.page(slug)}`),
     enabled: !!slug,
   })
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug

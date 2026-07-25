@@ -8,6 +8,7 @@ import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { usePageHistory } from '@/hooks/use-wiki'
+import endpoints from '@/api/endpoints'
 import { GeneralError, Main, requestHelpers, usePageTitle } from '@mochi/web'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
 import { useSidebarContext } from '@/context/sidebar-context'
@@ -32,7 +33,7 @@ function PageHistoryRoute() {
   const { data: pageData } = useQuery({
     queryKey: ['wiki', wikiId, 'page', slug, baseURL],
     queryFn: () =>
-      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
+      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${endpoints.wiki.page(slug)}`),
     enabled: !!slug,
   })
   const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug

@@ -19,19 +19,22 @@ const endpoints = {
     join: '-/subscribe',
     directorySearch: '-/directory/search',
     recommendations: '-/recommendations',
-    // Pages
-    page: (slug: string) => `${slug}`,
-    pageEdit: (slug: string) => `${slug}/edit`,
-    pageHistory: (slug: string) => `${slug}/history`,
-    pageRevision: (slug: string, version: number) => `${slug}/history/${version}`,
-    pageRevert: (slug: string) => `${slug}/revert`,
-    pageDelete: (slug: string) => `${slug}/delete`,
-    pageRename: (slug: string) => `${slug}/rename`,
+    // Pages. The slug goes under a `pages/` container rather than straight into
+    // the action slot: baseURL already ends in `/-/`, so a bare slug made a page
+    // named after an action resolve to that action - fetching a page called
+    // 'delete' hit :wiki/-/delete and destroyed the wiki.
+    page: (slug: string) => `pages/${slug}`,
+    pageEdit: (slug: string) => `pages/${slug}/edit`,
+    pageHistory: (slug: string) => `pages/${slug}/history`,
+    pageRevision: (slug: string, version: number) => `pages/${slug}/history/${version}`,
+    pageRevert: (slug: string) => `pages/${slug}/revert`,
+    pageDelete: (slug: string) => `pages/${slug}/delete`,
+    pageRename: (slug: string) => `pages/${slug}/rename`,
     newPage: 'page/create',
     search: 'search',
     // Tags
-    tagAdd: (slug: string) => `${slug}/tag/add`,
-    tagRemove: (slug: string) => `${slug}/tag/remove`,
+    tagAdd: (slug: string) => `pages/${slug}/tag/add`,
+    tagRemove: (slug: string) => `pages/${slug}/tag/remove`,
     tags: 'tags',
     tagPages: (tag: string) => `tag/${tag}`,
     // Recent changes
@@ -58,10 +61,10 @@ const endpoints = {
     subscribe: 'subscribe',
     unsubscribe: 'unsubscribe',
     // Comments
-    pageComments: (slug: string) => `${slug}/comments`,
-    commentCreate: (slug: string) => `${slug}/comment/create`,
-    commentEdit: (slug: string) => `${slug}/comment/edit`,
-    commentDelete: (slug: string) => `${slug}/comment/delete`,
+    pageComments: (slug: string) => `pages/${slug}/comments`,
+    commentCreate: (slug: string) => `pages/${slug}/comment/create`,
+    commentEdit: (slug: string) => `pages/${slug}/comment/edit`,
+    commentDelete: (slug: string) => `pages/${slug}/comment/delete`,
     // RSS
     rssToken: 'rss/token',
     // Attachments

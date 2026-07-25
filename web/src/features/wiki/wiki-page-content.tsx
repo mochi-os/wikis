@@ -40,6 +40,7 @@ import {
   PageViewSkeleton,
 } from '@/features/wiki/page-view'
 import { PageHeader } from '@/features/wiki/page-header'
+import endpoints from '@/api/endpoints'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { useWikiLinkDialog } from '@/components/link-dialog'
 import { useSidebarContext } from '@/context/sidebar-context'
@@ -90,7 +91,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   const { data, isLoading, error: pageError, refetch } = useQuery({
     queryKey: ['wiki', wikiId, 'page', slug, baseURL],
     queryFn: () =>
-      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${slug}`),
+      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${endpoints.wiki.page(slug)}`),
     enabled: !shouldRedirect,
   })
 
