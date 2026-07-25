@@ -3886,22 +3886,32 @@ def action_attachment_preview(a):
 def serve_attachment(a, variant):
     attachment = a.input("id")
     wiki = get_wiki(a)
-    if wiki and not wiki.get("source", ""):
-        # We own this wiki: enforce view access, then bind the attachment.
-        if not check_access(a, wiki["id"], "view"):
-            a.error.label(403, "errors.access_denied")
-            return
-        att = mochi.attachment.get(attachment)
-        if not att:
-            a.error.label(404, "errors.attachment_not_found")
-            return
-        obj = att.get("object")
-        if obj != wiki["id"] and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki["id"]):
-            a.error.label(404, "errors.attachment_not_found")
-            return
-    # Replica/remote wikis: the source enforces access when a.write.attachment
-    # fetches over P2P, and per-user databases isolate one local user's replica
-    # from another.
+    if not wiki:
+        a.error.label(404, "errors.attachment_not_found")
+        return
+
+    # The gate and the binding both run for wikis we own AND for replicas.
+    # Never defer to "the source enforces access when a.write.attachment
+    # fetches over P2P": that holds only until the bytes are cached locally,
+    # after which core serves them from disk and the source is never consulted
+    # again - so a revoked or deleted source keeps serving.
+    # check_access derives its subject from a.user, so an anonymous caller is
+    # tested against the "*" grant alone: a public wiki carries it (granted at
+    # creation, and mirrored onto a replica by action_join only when the source
+    # is public), a private wiki does not.
+    if not check_access(a, wiki["id"], "view"):
+        a.error.label(403, "errors.access_denied")
+        return
+
+    att = mochi.attachment.get(attachment)
+    if not att:
+        a.error.label(404, "errors.attachment_not_found")
+        return
+    obj = att.get("object")
+    if obj != wiki["id"] and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki["id"]):
+        a.error.label(404, "errors.attachment_not_found")
+        return
+
     a.write.attachment(attachment, variant=variant)
 
 # List all wiki attachments
