@@ -656,6 +656,11 @@ def action_probe(a): # wikis_probe
         a.error.label(400, "errors.invalid_url")
         return
     response = mochi.remote.request(link_wiki, "wikis", "information", {"wiki": link_wiki}, link_peer)
+    # link_peer/link_wiki come from a user-pasted URL, so a hostile peer can
+    # answer with a non-dict; check before .get to avoid a raw-traceback 500.
+    if not response or type(response) != "dict":
+        a.error.label(502, "errors.unable_to_connect_to_server")
+        return
     if response.get("error"):
         remote_error(a, response, 404)
         return
@@ -693,7 +698,8 @@ def action_join(a):
 
     # Sync data from the remote wiki first to get the name
     dump = mochi.remote.request(source, "wikis", "sync", {}, peer)
-    if dump.get("error") or dump.get("status") != "200":
+    # source/peer are user-supplied; guard against a non-dict answer before .get.
+    if not dump or type(dump) != "dict" or dump.get("error") or dump.get("status") != "200":
         a.error.label(500, "errors.failed_to_sync_from_remote_wiki")
         return
 
@@ -3631,9 +3637,13 @@ def action_sync(a):
             a.error.label(502, "errors.unable_to_connect_to_server")
             return
 
-    # Request sync from target
+    # Request sync from target. target/server are user-supplied, so a hostile
+    # or non-Mochi peer can answer with a CBOR scalar or null rather than a
+    # dict; check for a dict BEFORE calling .get, or the .get aborts the whole
+    # action with a raw-traceback 500 instead of this labelled error. Also
+    # require status 200, matching request_resync and action_join.
     dump = mochi.remote.request(target, "wikis", "sync", {}, peer)
-    if dump.get("error") or not dump:
+    if not dump or type(dump) != "dict" or dump.get("error") or dump.get("status") != "200":
         a.error.label(500, "errors.failed_to_receive_sync_data")
         return
 
