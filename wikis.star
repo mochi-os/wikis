@@ -60,7 +60,10 @@ def database_create():
     mochi.db.execute("create table if not exists unreplicated (wiki text not null primary key, source text not null, synced integer not null default 0)")
 
     # Comments table
-    mochi.db.execute("create table if not exists comments (id text primary key, wiki text not null references wikis(id), page text not null, parent text not null default '', author text not null, name text not null default '', body text not null, created integer not null, edited integer not null default 0, deleted integer not null default 0)")
+    # origin: the replica entity that submitted this comment over P2P, empty for
+    # one authored locally. It is the authorisation key for remote edit/delete -
+    # a replica may only mutate what it submitted. See event_comment_edit.
+    mochi.db.execute("create table if not exists comments (id text primary key, wiki text not null references wikis(id), page text not null, parent text not null default '', author text not null, name text not null default '', body text not null, created integer not null, edited integer not null default 0, deleted integer not null default 0, origin text not null default '')")
     mochi.db.execute("create index if not exists comments_wiki on comments(wiki)")
     mochi.db.execute("create index if not exists comments_page on comments(page)")
     mochi.db.execute("create index if not exists comments_parent on comments(parent)")
@@ -86,6 +89,23 @@ def database_upgrade(version):
     if version == 3:
         for table in ["sequence", "log", "acknowledged", "received"]:
             mochi.db.execute("drop table if exists " + table)
+    # Schema 4: comments.origin records which replica submitted a comment, so a
+    # remote edit/delete can be confined to that replica's own submissions. The
+    # P2P handlers previously required only general wiki edit access, letting an
+    # edit-capable replica - or anyone at all on a public wiki, since
+    # event_replicate has no access gate and "+" grants edit - rewrite or hard
+    # delete ANY comment, including the owner's, and have the source rebroadcast
+    # it as authoritative. Comments carry no revision history, so that was
+    # unrecoverable. Existing rows default to '' and are therefore remotely
+    # immutable: the safe direction for rows whose origin we cannot know.
+    if version == 4:
+        found = False
+        for c in mochi.db.table("comments"):
+            if c["name"] == "origin":
+                found = True
+                break
+        if not found:
+            mochi.db.execute("alter table comments add column origin text not null default ''")
 
 def update_replica_seen(wiki, replica_id):
     now = mochi.time.now()
@@ -194,6 +214,11 @@ def validate_event_sender(wikirow, wiki, sender):
 # accepted upstream and replicated onward. Source->replica propagation (we are a
 # replica, sender is our authoritative source) is always allowed.
 def replica_can(wikirow, wiki, sender, operation):
+    # access-ok: source -> replica propagation. The caller IS consulted, just
+    # earlier and by a different means: validate_event_sender has already proved
+    # sender == our recorded source before this runs, so the authorisation is
+    # complete. Not the repositories owner==0 shape, where nothing had checked
+    # the caller at any point.
     if wikirow.get("source"):
         return True
     return check_event_access(sender, wiki, operation)
@@ -3556,8 +3581,13 @@ def import_sync_dump(wiki, dump):
         parent = c.get("parent", "")
         if parent and foreign_comment(parent, wiki):
             parent = ""
-        mochi.db.execute("replace into comments (id, wiki, page, parent, author, name, body, created, edited, deleted) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            c["id"], wiki, c["page"], parent, c["author"], c.get("name", ""), c["body"], c["created"], c.get("edited", 0), c.get("deleted", 0))
+        # origin = the wiki this dump came from. A dump is only ever imported on
+        # a replica, where replica_can already grants the source everything, so
+        # the value is not load-bearing for authorisation here - but recording
+        # it keeps the column meaningful rather than leaving these rows at ''
+        # and relying on that short-circuit to stay true.
+        mochi.db.execute("replace into comments (id, wiki, page, parent, author, name, body, created, edited, deleted, origin) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            c["id"], wiki, c["page"], parent, c["author"], c.get("name", ""), c["body"], c["created"], c.get("edited", 0), c.get("deleted", 0), dump.get("source") or "")
         imported_comments.append(c)
 
     # Import wiki name and home setting. The dump is entirely controlled by the
@@ -3950,8 +3980,13 @@ def event_comment_create(e):
         if parent_row and parent_row["wiki"] != wiki:
             parent = ""
 
-    mochi.db.execute("insert or ignore into comments (id, wiki, page, parent, author, name, body, created) values (?, ?, ?, ?, ?, ?, ?, ?)",
-        id, wiki, page, parent, author, name, body, created)
+    # Record the submitting replica as the comment's origin: it is the only
+    # party allowed to edit or delete this comment remotely (event_comment_edit
+    # / event_comment_delete). `author` is attacker-supplied on this path and
+    # cannot be verified - the sender is a wiki entity, not a person - so origin
+    # is the authorisation key, not author.
+    mochi.db.execute("insert or ignore into comments (id, wiki, page, parent, author, name, body, created, origin) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        id, wiki, page, parent, author, name, body, created, sender or "")
 
     # Store comment attachments from event (files pulled on demand)
     attachments = e.content("attachments") or []
@@ -4014,12 +4049,31 @@ def event_comment_edit(e):
     if not id or not body or not edited:
         return
 
+    # Clamp the sender-supplied timestamp to the window event_page_create uses.
+    # The LWW gate below compares it directly, so an edit stamped far in the
+    # future would outrank every later legitimate edit by the real author,
+    # permanently.
+    now = mochi.time.now()
+    if edited > now + 86400 or edited < now - 31536000:
+        return
+
     # LWW gate: skip if our locally-stored edit is at least as new.
     # `edited` is 0 for never-edited comments, so the first edit always
     # wins over the create-time state.
-    local = mochi.db.row("select edited from comments where id=? and wiki=?", id, wiki)
+    local = mochi.db.row("select edited, origin from comments where id=? and wiki=?", id, wiki)
     if not local:
         request_resync(wiki)
+        return
+
+    # A replica may only edit a comment IT submitted. replica_can above proves
+    # only that the sender holds general edit access on this wiki, which on a
+    # public wiki is everyone - without this, any replica could rewrite the
+    # owner's comment (or a third replica's) while keeping their name on it, and
+    # we would rebroadcast the forgery as authoritative. Comments have no
+    # revision history, so that is unrecoverable. A locally-authored comment has
+    # origin='' and is never remotely editable; the wiki's own manage-holders
+    # keep their moderation route.
+    if local["origin"] != sender and not replica_can(wikirow, wiki, sender, "manage"):
         return
     if local["edited"] >= edited:
         return
@@ -4060,6 +4114,13 @@ def event_comment_delete(e):
 
     comment = mochi.db.row("select * from comments where id=? and wiki=?", id, wiki)
     if not comment:
+        return
+
+    # Same rule as event_comment_edit: a replica may only delete a comment it
+    # submitted. delete_comment_tree is a HARD delete of the subtree and its
+    # attachments, so without this any edit-capable sender could destroy another
+    # user's comment thread irrecoverably.
+    if comment.get("origin", "") != sender and not replica_can(wikirow, wiki, sender, "manage"):
         return
 
     delete_comment_tree(id, wiki)
