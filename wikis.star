@@ -3074,8 +3074,15 @@ def event_page_edit_request(e):
     title = e.content("title")
     content = e.content("content")
     comment = e.content("comment") or ""
-    author = e.content("author") or remote_user
-    name = e.content("name") or ""
+    # The sender is the authenticated person (remote_user, gated on edit access
+    # above), so the author IS the sender - never a value from the event
+    # content. Accepting a caller-supplied author let an editor attribute a
+    # defacing edit to the wiki owner or any identity, in page history and in
+    # the edit notification. Resolve the display name from that same identity so
+    # a forged `name` can't ride along either; fall back to the supplied hint
+    # only when the name can't be resolved locally.
+    author = remote_user
+    name = mochi.entity.name(remote_user) or e.content("name") or ""
 
     if not slug:
         e.write({"status": "400", "error": "Missing page parameter"})
