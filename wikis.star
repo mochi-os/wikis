@@ -465,25 +465,22 @@ def find_missing_links(wiki, content):
                 missing.append(link)
     return missing
 
-# Page slugs and the `home` setting are interpolated straight into request paths
-# by the web and Android clients, so a slug that matches a route segment
-# resolves to that ACTION instead of the page. A page named "delete" made the
-# client's own page fetch hit :wiki/-/delete and destroy the wiki, with no
-# attacker involved. Reject those names on every write path, HTTP and P2P alike.
+# Page slugs and the `home` setting are interpolated into request paths by the
+# web and Android clients, so a slug matching a route segment resolves to that
+# route instead of the page.
 #
-# Two groups, with different lifetimes:
-#  - API action segments: the first path component of every :wiki/-/... route.
-#    Needed only while the legacy :wiki/-/:page routes remain for older clients;
-#    once those are retired, the pages/ container makes collision impossible and
-#    this group can go.
-#  - Client screens: wiki-level routes owned by the web router plus the server's
-#    files routes. No route change frees these, so they stay reserved for good.
+# The API side of that is now structural rather than a denylist: page reads live
+# under :wiki/-/pages/:page, so the slug always sits in a parameter position and
+# can never shadow an action - including actions added years from now. The API
+# action segments this list used to carry (delete, settings, tag, rss, ...) went
+# with the legacy :wiki/-/:page routes.
+#
+# What remains is owned by the CLIENT, not by app.json, so no route change frees
+# it: these are the web router's wiki-level screens plus the server's files
+# routes. A page named "settings" would still be shadowed by the settings screen
+# in the browser. Small and stable - it grows only when a new wiki-level screen
+# is added, which is rare and visible.
 reserved_pages = [
-    # API action segments - removable when the legacy :wiki/-/:page routes go
-    "access", "attachment", "attachments", "comment", "delete", "info", "page",
-    "pages", "redirect", "redirects", "rename", "replica", "replicas", "resync",
-    "revision", "rss", "share", "subscribe", "sync", "tag", "tags", "unsubscribe",
-    # Client screens and asset routes - permanent
     "assets", "changes", "images", "new", "search", "settings",
 ]
 

@@ -5,7 +5,7 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 {
-	"version": "3.122",
+	"version": "3.123",
 	"label": "app.name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -88,27 +88,6 @@
 		":wiki/-/pages/:page/tag/add": {"function": "action_tag_add"},
 		":wiki/-/pages/:page/tag/remove": {"function": "action_tag_remove"},
 
-		// Legacy page routes. The page slug used to sit directly in the action
-		// slot, so a page named after any action ("delete", "settings", ...)
-		// resolved to that ACTION - a page called "delete" made the client's own
-		// fetch destroy the wiki. The pages/ container above puts the slug in a
-		// parameter position where it can never shadow a route. These remain so
-		// already-installed Android builds keep working, and can be removed once
-		// those have rolled over; reserved_pages in wikis.star guards them until
-		// then.
-		":wiki/-/:page/comments": {"function": "action_page_comments", "public": true},
-		":wiki/-/:page/comment/create": {"function": "action_comment_create"},
-		":wiki/-/:page/comment/edit": {"function": "action_comment_edit"},
-		":wiki/-/:page/comment/delete": {"function": "action_comment_delete"},
-		":wiki/-/:page": {"function": "action_page", "public": true},
-		":wiki/-/:page/edit": {"function": "action_page_edit"},
-		":wiki/-/:page/history": {"function": "action_page_history", "public": true},
-		":wiki/-/:page/history/:version": {"function": "action_page_revision", "public": true},
-		":wiki/-/:page/revert": {"function": "action_page_revert"},
-		":wiki/-/:page/delete": {"function": "action_page_delete"},
-		":wiki/-/:page/rename": {"function": "action_page_rename"},
-		":wiki/-/:page/tag/add": {"function": "action_tag_add"},
-		":wiki/-/:page/tag/remove": {"function": "action_tag_remove"},
 		":wiki/:page": {"file": "web/dist/index.html", "public": true, "opengraph": "opengraph_wiki"},
 		"-/rss": {"function": "action_rss_all", "public": true},
 
