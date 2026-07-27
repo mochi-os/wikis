@@ -525,8 +525,24 @@ def find_missing_links(wiki, content):
 # routes. A page named "settings" would still be shadowed by the settings screen
 # in the browser. Small and stable - it grows only when a new wiki-level screen
 # is added, which is rare and visible.
+# Names a page may not take, because the client would route them to one of its
+# own screens instead and the page would be unreachable.
+#
+# The list is longer than the /<wiki>/<page> routes need, and deliberately so.
+# The SPA has two page-route families: /<wiki>/<page> for main-site routing,
+# whose only siblings are changes, new, search and settings, and a bare /<page>
+# for domain-entity routing (isDomainEntityRouting), where the slug sits at the
+# top level alongside every screen the app has. This list covers both, so do not
+# trim it back to the first family's siblings.
+#
+# assets and images are the server's own `files` routes rather than client ones.
+# Two-segment client routes (tag/<tag>, errors/<error>) need no entry: a slug
+# cannot contain a slash, so a page named "tag" resolves to /tag, which matches
+# no route and falls through correctly.
 reserved_pages = [
-    "assets", "changes", "images", "new", "search", "settings",
+    "401", "403", "404", "500", "503",
+    "assets", "changes", "find", "images", "join", "new",
+    "redirects", "search", "settings", "tags",
 ]
 
 # Helper: is this slug (or `home` value) safe to use as a page name?

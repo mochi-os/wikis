@@ -23,20 +23,27 @@ const endpoints = {
     // the action slot: baseURL already ends in `/-/`, so a bare slug made a page
     // named after an action resolve to that action - fetching a page called
     // 'delete' hit :wiki/-/delete and destroyed the wiki.
-    page: (slug: string) => `pages/${slug}`,
-    pageEdit: (slug: string) => `pages/${slug}/edit`,
-    pageHistory: (slug: string) => `pages/${slug}/history`,
-    pageRevision: (slug: string, version: number) => `pages/${slug}/history/${version}`,
-    pageRevert: (slug: string) => `pages/${slug}/revert`,
-    pageDelete: (slug: string) => `pages/${slug}/delete`,
-    pageRename: (slug: string) => `pages/${slug}/rename`,
+    //
+    // Every interpolated value is encoded. The server now restricts slugs to
+    // alphanumerics, hyphens and underscores on all write paths, local and
+    // remote, so nothing reaching these builders should need it - this is the
+    // second line of that defence, and the one place it still earns its keep is
+    // tagPages, since tags created before that rule can hold anything.
+    page: (slug: string) => `pages/${encodeURIComponent(slug)}`,
+    pageEdit: (slug: string) => `pages/${encodeURIComponent(slug)}/edit`,
+    pageHistory: (slug: string) => `pages/${encodeURIComponent(slug)}/history`,
+    pageRevision: (slug: string, version: number) =>
+      `pages/${encodeURIComponent(slug)}/history/${encodeURIComponent(String(version))}`,
+    pageRevert: (slug: string) => `pages/${encodeURIComponent(slug)}/revert`,
+    pageDelete: (slug: string) => `pages/${encodeURIComponent(slug)}/delete`,
+    pageRename: (slug: string) => `pages/${encodeURIComponent(slug)}/rename`,
     newPage: 'page/create',
     search: 'search',
     // Tags
-    tagAdd: (slug: string) => `pages/${slug}/tag/add`,
-    tagRemove: (slug: string) => `pages/${slug}/tag/remove`,
+    tagAdd: (slug: string) => `pages/${encodeURIComponent(slug)}/tag/add`,
+    tagRemove: (slug: string) => `pages/${encodeURIComponent(slug)}/tag/remove`,
     tags: 'tags',
-    tagPages: (tag: string) => `tag/${tag}`,
+    tagPages: (tag: string) => `tag/${encodeURIComponent(tag)}`,
     // Recent changes
     changes: 'changes',
     // Redirects
@@ -61,17 +68,17 @@ const endpoints = {
     subscribe: 'subscribe',
     unsubscribe: 'unsubscribe',
     // Comments
-    pageComments: (slug: string) => `pages/${slug}/comments`,
-    commentCreate: (slug: string) => `pages/${slug}/comment/create`,
-    commentEdit: (slug: string) => `pages/${slug}/comment/edit`,
-    commentDelete: (slug: string) => `pages/${slug}/comment/delete`,
+    pageComments: (slug: string) => `pages/${encodeURIComponent(slug)}/comments`,
+    commentCreate: (slug: string) => `pages/${encodeURIComponent(slug)}/comment/create`,
+    commentEdit: (slug: string) => `pages/${encodeURIComponent(slug)}/comment/edit`,
+    commentDelete: (slug: string) => `pages/${encodeURIComponent(slug)}/comment/delete`,
     // RSS
     rssToken: 'rss/token',
     // Attachments
     attachments: 'attachment/list',
     attachmentUpload: 'attachment/upload',
     attachmentDelete: 'attachment/delete',
-    attachment: (id: string) => `-/attachments/${id}`,
+    attachment: (id: string) => `-/attachments/${encodeURIComponent(id)}`,
   },
 } as const
 
