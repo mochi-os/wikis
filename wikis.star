@@ -70,7 +70,11 @@ def database_create():
     mochi.db.execute("create index if not exists comments_created on comments(created)")
 
     # RSS tokens table
-    mochi.db.execute("create table if not exists rss (token text not null primary key, entity text not null, mode text not null, created integer not null, unique(entity, mode))")
+    # The token itself is never stored - only its SHA256, the same digest core
+    # keeps. A feed URL in a backup would otherwise be a working remote
+    # credential long after the backup leaked, which content in the same backup
+    # is not: content is a one-time disclosure, a token keeps letting you back in.
+    mochi.db.execute("create table if not exists rss (hash text not null primary key, entity text not null, mode text not null, created integer not null, unique(entity, mode))")
 
     # Outbound-request throttle. Core rate-limits inbound P2P and outbound HTTP
     # but not outbound mochi.remote.request, so the app has to bound its own.
@@ -118,6 +122,16 @@ def database_upgrade(version):
     # fast as HTTP allowed.
     if version == 5:
         mochi.db.execute("create table if not exists throttle (key text not null primary key, last integer not null)")
+    # Schema 6: rss stores the token's SHA256 rather than the token. Existing
+    # rows are migrated by hashing what they hold, so every feed URL already in
+    # a reader keeps working - the plaintext simply stops being retained.
+    if version == 6:
+        rows = mochi.db.rows("select token, entity, mode, created from rss") or []
+        mochi.db.execute("drop table if exists rss")
+        mochi.db.execute("create table if not exists rss (hash text not null primary key, entity text not null, mode text not null, created integer not null, unique(entity, mode))")
+        for r in rows:
+            mochi.db.execute("insert or ignore into rss (hash, entity, mode, created) values (?, ?, ?, ?)",
+                mochi.crypto.hash.sha256(r["token"]), r["entity"], r["mode"], r["created"])
 
 # Helper: has this outbound operation run within `seconds`? Records the attempt
 # when it has not, so callers just guard on the return value.
@@ -920,8 +934,8 @@ def action_resync(a):
 # removed wiki's ?token= URL stops authenticating. No-op when the wiki has no RSS
 # tokens, so it is safe to call from every wiki-removal path.
 def rss_tokens_revoke(entity_id):
-    for r in mochi.db.rows("select token from rss where entity=?", entity_id) or []:
-        mochi.token.delete(r["token"])
+    for r in mochi.db.rows("select hash from rss where entity=?", entity_id) or []:
+        mochi.token.delete(r["hash"])
     mochi.db.execute("delete from rss where entity=?", entity_id)
 
 def action_delete(a):
@@ -1479,10 +1493,10 @@ def action_new(a):
     return {"data": {"id": id, "slug": slug}}
 
 # Parse and clamp limit/offset query parameters for paginated list actions
-def pagination(a):
+def pagination(a, default_limit=50):
     limit_input = a.input("limit")
     offset_input = a.input("offset")
-    limit = int(limit_input) if limit_input != None and str(limit_input).isdigit() else 50
+    limit = int(limit_input) if limit_input != None and str(limit_input).isdigit() else default_limit
     offset = int(offset_input) if offset_input != None and str(offset_input).isdigit() else 0
     return min(max(limit, 1), 200), max(offset, 0)
 
@@ -2101,12 +2115,20 @@ def action_redirect_set(a):
     now = mochi.time.now()
     mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki["id"], source, target, now)
 
-    # Send redirect/set event
-    broadcast_event(wiki["id"], "redirect/set", {
-        "source": source,
-        "target": target,
-        "created": now
-    })
+    # Source broadcasts to its replicas; a replica notifies its source, which
+    # re-broadcasts. Without the second branch a replica's change applied
+    # locally and reached nobody - broadcast_event walks the replicas table,
+    # which on a replica is empty, so it was a silent no-op. Matches how pages,
+    # comments, tags and attachments have always propagated.
+    event_data = {"source": source, "target": target, "created": now}
+    upstream = wiki.get("source")
+    if upstream:
+        mochi.message.send(
+            {"from": wiki["id"], "to": upstream, "service": "wikis", "event": "redirect/set"},
+            event_data
+        )
+    else:
+        broadcast_event(wiki["id"], "redirect/set", event_data)
 
     return {"data": {"ok": True}}
 
@@ -2134,10 +2156,15 @@ def action_redirect_delete(a):
     source = source.lower().strip()
     mochi.db.execute("delete from redirects where wiki=? and source=?", wiki["id"], source)
 
-    # Send redirect/delete event
-    broadcast_event(wiki["id"], "redirect/delete", {
-        "source": source
-    })
+    # Same routing as action_redirect_set.
+    upstream = wiki.get("source")
+    if upstream:
+        mochi.message.send(
+            {"from": wiki["id"], "to": upstream, "service": "wikis", "event": "redirect/delete"},
+            {"source": source}
+        )
+    else:
+        broadcast_event(wiki["id"], "redirect/delete", {"source": source})
 
     return {"data": {"ok": True}}
 
@@ -2217,11 +2244,15 @@ def action_settings_set(a):
         a.error.label(400, "errors.unknown_setting", name=name)
         return
 
-    # Send setting/set event
-    broadcast_event(wiki["id"], "setting/set", {
-        "name": name,
-        "value": value
-    })
+    # Settings are source-owned, like the wiki name and unlike redirects. There
+    # is deliberately no upstream route: event_setting_set gates on
+    # replica_can(..., "manage"), and manage is never grantable - ACCESS_LEVELS
+    # is ["view", "edit"] and action_access_set refuses anything else - so a
+    # replica could never satisfy it. A replica changing its own home page is a
+    # local preference, and this broadcast is a no-op there rather than a
+    # missing route.
+    if not wiki.get("source"):
+        broadcast_event(wiki["id"], "setting/set", {"name": name, "value": value})
 
     return {"data": {"ok": True}}
 
@@ -2255,8 +2286,15 @@ def action_rename(a):
     # Update local database
     mochi.db.execute("update wikis set name=? where id=?", name, wiki["id"])
 
-    # Broadcast to replicas
-    broadcast_event(wiki["id"], "rename", {"name": name})
+    # Rename is deliberately one-directional, unlike the redirect and settings
+    # actions beside it. event_rename resolves its target with
+    # `select id from wikis where source=?`, which only ever matches a wiki
+    # whose SOURCE is the sender - so a replica sending upstream would match
+    # nothing. A replica renaming its own copy is therefore a local label, and
+    # this broadcast is a no-op there (its replicas table is empty) rather than
+    # a missing route.
+    if not wiki.get("source"):
+        broadcast_event(wiki["id"], "rename", {"name": name})
 
     return {"data": {"success": True}}
 
@@ -3962,15 +4000,56 @@ def action_sync(a):
 # COMMENTS
 
 # Helper: Build comment tree recursively for a page
-def page_comments(wiki_id, page_slug, parent_id, depth):
-    if depth > 100:
-        return []
-    comments = mochi.db.rows("select * from comments where wiki=? and page=? and parent=? and deleted=0 order by created desc", wiki_id, page_slug, parent_id)
-    for i in range(len(comments)):
-        comments[i]["body_markdown"] = mochi.text.markdown(comments[i]["body"])
-        comments[i]["children"] = page_comments(wiki_id, page_slug, comments[i]["id"], depth + 1)
-        comments[i]["attachments"] = mochi.attachment.list(comments[i]["id"], wiki_id) or []
-    return comments
+# Build the comment tree from ONE query instead of one per parent, and return
+# (top-level slice, total top-level count).
+#
+# The old shape recursed per node, so a page with N comments cost N+1 queries
+# plus N attachment lookups - on a route that is public, so on a public wiki an
+# unauthenticated caller could trigger the whole traversal at will. The queries
+# are now a single read; the attachment lookups cannot be batched, because
+# mochi.attachment.list takes one object at a time, so they stay proportional to
+# the comments actually returned - which is what bounding the top level buys.
+#
+# Walked iteratively with a visited set rather than recursively. `parent` is not
+# a foreign key, so a corrupt or hostile chain can point anywhere; a cycle is
+# unreachable from the roots, but the guard costs nothing and the old code's
+# depth cap is kept for the same reason.
+def page_comments(wiki_id, page_slug, limit, offset):
+    rows = mochi.db.rows("select * from comments where wiki=? and page=? and deleted=0 order by created desc", wiki_id, page_slug) or []
+
+    by_parent = {}
+    for r in rows:
+        key = r["parent"] or ""
+        if key not in by_parent:
+            by_parent[key] = []
+        by_parent[key].append(r)
+
+    roots = by_parent.get("", [])
+    total = len(roots)
+    page = roots[offset:offset + limit]
+
+    seen = {}
+    pending = []
+    for c in page:
+        pending.append((c, 0))
+    i = 0
+    while i < len(pending):
+        node = pending[i][0]
+        depth = pending[i][1]
+        i += 1
+        if node["id"] in seen:
+            continue
+        seen[node["id"]] = True
+        node["body_markdown"] = mochi.text.markdown(node["body"])
+        node["attachments"] = mochi.attachment.list(node["id"], wiki_id) or []
+        kids = []
+        if depth < 100:
+            for k in by_parent.get(node["id"], []):
+                kids.append(k)
+                pending.append((k, depth + 1))
+        node["children"] = kids
+
+    return page, total
 
 # Helper: Count comments for a page
 def page_comment_count(wiki_id, page_slug):
@@ -4013,9 +4092,14 @@ def action_page_comments(a):
         a.error.label(400, "errors.missing_page_parameter")
         return
 
-    comments = page_comments(wiki["id"], slug, "", 0)
+    # Default generously rather than to pagination()'s 50: the web renders the
+    # whole tree with no "load more", so a small default would silently hide
+    # comments that load today. `truncated` says so explicitly when the cap bites.
+    limit, offset = pagination(a, 200)
+    comments, total = page_comments(wiki["id"], slug, limit, offset)
     count = page_comment_count(wiki["id"], slug)
-    return {"data": {"comments": comments, "count": count}}
+    return {"data": {"comments": comments, "count": count, "total": total,
+                     "truncated": offset + len(comments) < total}}
 
 # Create a comment on a page
 def action_comment_create(a):
@@ -4683,10 +4767,17 @@ def action_rss_token(a):
             return
         wiki_id = wiki["id"]
 
-    # Check existing token
-    existing = mochi.db.row("select token from rss where entity=? and mode=?", wiki_id, mode)
+    # Only the hash is kept, so an already-issued URL cannot be shown again.
+    # Report that it exists and let the caller decide: re-issuing silently would
+    # break whatever reader is already polling the old URL.
+    regenerate = a.input("regenerate") == "1"
+    existing = mochi.db.row("select hash from rss where entity=? and mode=?", wiki_id, mode)
+    if existing and not regenerate:
+        return {"data": {"exists": True}}
+
     if existing:
-        return {"data": {"token": existing["token"]}}
+        mochi.token.delete(existing["hash"])
+        mochi.db.execute("delete from rss where entity=? and mode=?", wiki_id, mode)
 
     # Create new token, bound to the feed action and this wiki alone. A feed
     # URL is shared casually and lives in reader histories and proxy logs, so
@@ -4700,7 +4791,8 @@ def action_rss_token(a):
         return
 
     now = mochi.time.now()
-    mochi.db.execute("insert into rss (token, entity, mode, created) values (?, ?, ?, ?)", token, wiki_id, mode, now)
+    mochi.db.execute("insert into rss (hash, entity, mode, created) values (?, ?, ?, ?)",
+        mochi.crypto.hash.sha256(token), wiki_id, mode, now)
     return {"data": {"token": token}}
 
 # Revoke a wiki's RSS access: delete the core token(s) and rss row(s) so the RSS
@@ -4744,7 +4836,7 @@ def action_rss(a):
     mode = "changes"
     rss_row = None
     if token:
-        rss_row = mochi.db.row("select mode from rss where token=? and entity=?", token, wiki["id"])
+        rss_row = mochi.db.row("select mode from rss where hash=? and entity=?", mochi.crypto.hash.sha256(token), wiki["id"])
         if rss_row:
             mode = rss_row["mode"]
 
@@ -4822,7 +4914,7 @@ def action_rss_all(a):
     mode = "changes"
     rss_row = None
     if token:
-        rss_row = mochi.db.row("select mode from rss where token=? and entity='*'", token)
+        rss_row = mochi.db.row("select mode from rss where hash=? and entity='*'", mochi.crypto.hash.sha256(token))
         if rss_row:
             mode = rss_row["mode"]
 

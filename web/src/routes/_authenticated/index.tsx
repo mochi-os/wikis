@@ -317,12 +317,24 @@ function WikiHomePage({
   const canUnsubscribe = !!info?.wiki?.source
 
   // RSS feed handler
-  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
+  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all', regenerate = false) => {
     try {
-      const { token } = await getRssToken(wikiId, mode)
+      const { token, exists } = await getRssToken(wikiId, mode, regenerate)
+      // Only the hash is stored, so an already-issued URL cannot be shown
+      // again. Offer to replace it rather than silently minting a new one,
+      // which would break whatever reader is polling the old URL.
+      if (exists) {
+        toast.info(t`This feed URL was already issued and cannot be shown again.`, {
+          action: {
+            label: t`Replace`,
+            onClick: () => void handleCopyRssUrl(mode, true),
+          },
+        })
+        return
+      }
       const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       const ok = await shellClipboardWrite(url)
-      if (ok) toast.success(t`RSS URL copied to clipboard`)
+      if (ok) toast.success(regenerate ? t`New RSS URL copied to clipboard` : t`RSS URL copied to clipboard`)
     } catch (error) {
       toast.error(getErrorMessage(error, t`Failed to get RSS token`))
     }
@@ -592,12 +604,24 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
   })
 
   // RSS feed handler for all wikis
-  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
+  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all', regenerate = false) => {
     try {
-      const { token } = await getRssToken('*', mode)
+      const { token, exists } = await getRssToken('*', mode, regenerate)
+      // Only the hash is stored, so an already-issued URL cannot be shown
+      // again. Offer to replace it rather than silently minting a new one,
+      // which would break whatever reader is polling the old URL.
+      if (exists) {
+        toast.info(t`This feed URL was already issued and cannot be shown again.`, {
+          action: {
+            label: t`Replace`,
+            onClick: () => void handleCopyRssUrl(mode, true),
+          },
+        })
+        return
+      }
       const url = `${window.location.origin}${getAppPath()}/-/rss?token=${token}`
       const ok = await shellClipboardWrite(url)
-      if (ok) toast.success(t`RSS URL copied to clipboard`)
+      if (ok) toast.success(regenerate ? t`New RSS URL copied to clipboard` : t`RSS URL copied to clipboard`)
     } catch (error) {
       toast.error(getErrorMessage(error, t`Failed to get RSS token`))
     }
