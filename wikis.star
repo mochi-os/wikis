@@ -517,6 +517,19 @@ def slug_problem(slug):
         return "errors.page_name_reserved"
     return None
 
+# Helper: what is wrong with this tag, as a label key, or None if it is usable?
+# Same shape and same reason as slug_problem: action_tag_add applied these two
+# rules and event_tag_add applied neither, so a peer could append rows to the
+# tags table without limit - the table is keyed (page, tag), so every distinct
+# value is another row. Callers check emptiness themselves.
+def tag_problem(tag):
+    if len(tag) > 50:
+        return "errors.tag_too_long_max_50_characters"
+    for c in tag.elems():
+        if not (c.isalnum() or c in "-_"):
+            return "errors.invalid_tag"
+    return None
+
 # Helpers: does this global id already belong to a DIFFERENT wiki?
 #
 # Page, comment and revision ids are global uids, and every wiki a user holds -
@@ -752,8 +765,12 @@ def action_join(a):
         a.error.label(500, "errors.failed_to_sync_from_remote_wiki")
         return
 
-    # Get the wiki name from the sync response
-    name = dump.get("name") or "Joined Wiki"
+    # Get the wiki name from the sync response. It is remote-authored and goes
+    # straight into an entity name and the sidebar, so hold it to the same rule
+    # action_rename applies locally.
+    name = dump.get("name") or ""
+    if not name or not mochi.text.valid(name, "name") or len(name) > 100:
+        name = "Joined Wiki"
 
     # Create a new local entity for this wiki (private so it's not added to directory)
     entity = mochi.entity.create("wiki", name, "private", "")
@@ -1776,14 +1793,10 @@ def action_tag_add(a):
     if not tag:
         a.error.label(400, "errors.tag_is_required")
         return
-    if len(tag) > 50:
-        a.error.label(400, "errors.tag_too_long_max_50_characters")
+    problem = tag_problem(tag)
+    if problem:
+        a.error.label(400, problem)
         return
-    # Only allow alphanumeric, hyphens, and underscores
-    for c in tag.elems():
-        if not (c.isalnum() or c in "-_"):
-            a.error.label(400, "errors.invalid_tag")
-            return
 
     page = mochi.db.row("select id from pages where wiki=? and page=? and deleted=0", wiki["id"], slug)
     if not page:
@@ -2498,8 +2511,13 @@ def event_page_create(e):
         return
 
     # Enforce the same length caps as action_page_edit, so a replica can't push
-    # an oversized row that we'd then store and replicate onward.
+    # an oversized row that we'd then store and replicate onward. `name` rides
+    # into a revisions row whose id is a fresh uid every time, so `insert or
+    # ignore` never ignores: unbounded here means one permanent oversized row
+    # per event, and a new page id per event skips the version gate entirely.
     if len(title) > 255 or (content and len(content) > 1000000):
+        return
+    if name and not mochi.text.valid(name, "name"):
         return
 
     # Same slug rules as the local actions: a remote peer must not be able to
@@ -2598,8 +2616,13 @@ def event_page_update(e):
         return
 
     # Enforce the same length caps as action_page_edit, so a replica can't push
-    # an oversized row that we'd then store and replicate onward.
+    # an oversized row that we'd then store and replicate onward. `name` rides
+    # into a revisions row whose id is a fresh uid every time, so `insert or
+    # ignore` never ignores: unbounded here means one permanent oversized row
+    # per event, and a new page id per event skips the version gate entirely.
     if len(title) > 255 or (content and len(content) > 1000000):
+        return
+    if name and not mochi.text.valid(name, "name"):
         return
 
     # Same slug rules as the local actions - a rename arriving over P2P must
@@ -2772,6 +2795,12 @@ def event_redirect_set(e):
     if not source or not target or not created:
         return
 
+    # Same 100-character caps action_redirect_set applies. redirects is keyed
+    # (wiki, source), so an unbounded source is both an unbounded string and an
+    # unbounded number of rows.
+    if len(source) > 100 or len(target) > 100:
+        return
+
     # Validate timestamp is within reasonable range (not more than 1 day in future or 1 year in past)
     now = mochi.time.now()
     if created > now + 86400 or created < now - 31536000:
@@ -2826,6 +2855,14 @@ def event_tag_add(e):
 
     # Validate required fields
     if not page or not tag:
+        return
+
+    # Same normalisation and limits action_tag_add applies. tags is keyed
+    # (page, tag), so without them every distinct value a peer sends is another
+    # permanent row, and the lowercasing keeps remote tags from splitting into
+    # case variants of the ones created locally.
+    tag = tag.lower().strip()
+    if not tag or tag_problem(tag):
         return
 
     # Check if page exists and get wiki
@@ -2931,6 +2968,13 @@ def event_rename(e):
     wiki_id = e.header("from")
     name = e.content("name")
     if not name:
+        return
+
+    # Same limits action_rename applies. This one writes a single wikis row
+    # rather than appending, so it is the mildest of the group - but a name is
+    # rendered in the sidebar and in notifications, so it still must not carry
+    # angle brackets, newlines, or a megabyte of text.
+    if not mochi.text.valid(name, "name") or len(name) > 100:
         return
 
     # Update subscribed wiki (source = sender)
@@ -3565,6 +3609,10 @@ def import_sync_dump(wiki, dump):
         # from the dump, so a large value made the overwrite deterministic.
         if foreign_page(p["id"], wiki):
             continue
+        # Same caps the event path applies. The dump is bulk and entirely
+        # remote-authored, so it is the cheapest way to plant oversized rows.
+        if len(p.get("title", "")) > 255 or len(p.get("content", "")) > 1000000:
+            continue
         existing = mochi.db.row("select version from pages where id=?", p["id"])
         if existing and existing["version"] >= p["version"]:
             continue
@@ -3579,6 +3627,12 @@ def import_sync_dump(wiki, dump):
     for r in revisions:
         if page_outside_wiki(r.get("page", ""), wiki):
             continue
+        # Revision ids come from the dump, so each distinct id is another
+        # permanent row; cap the strings it carries as the event path does.
+        if len(r.get("title", "")) > 255 or len(r.get("content", "")) > 1000000:
+            continue
+        if len(r.get("name", "")) > 1000 or len(r.get("comment", "")) > 1000:
+            continue
         mochi.db.execute("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             r["id"], r["page"], r["content"], r["title"], r["author"], r.get("name", ""), r["created"], r["version"], r.get("comment", ""))
 
@@ -3587,11 +3641,18 @@ def import_sync_dump(wiki, dump):
     for t in tags:
         if page_outside_wiki(t.get("page", ""), wiki):
             continue
-        mochi.db.execute("insert or ignore into tags (page, tag) values (?, ?)", t["page"], t["tag"])
+        tag = (t.get("tag") or "").lower().strip()
+        if not tag or tag_problem(tag):
+            continue
+        mochi.db.execute("insert or ignore into tags (page, tag) values (?, ?)", t["page"], tag)
 
     # Import redirects
     redirects = dump.get("redirects") or []
     for r in redirects:
+        # redirects is keyed (wiki, source): unbounded source means unbounded
+        # rows as well as an unbounded string.
+        if len(r.get("source", "")) > 100 or len(r.get("target", "")) > 100:
+            continue
         mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, r["source"], r["target"], r["created"])
 
     # Import comments. Same rule as pages - never reassign a comment that
@@ -3601,6 +3662,12 @@ def import_sync_dump(wiki, dump):
     imported_comments = []
     for c in comments:
         if foreign_comment(c["id"], wiki):
+            continue
+        # Same caps event_comment_create applies, for the same reason: the id
+        # is dump-supplied, so each one is another permanent row.
+        if len(c.get("body", "")) > 100000 or len(c.get("name", "")) > 1000:
+            continue
+        if slug_problem(c.get("page", "")):
             continue
         parent = c.get("parent", "")
         if parent and foreign_comment(parent, wiki):
@@ -3619,6 +3686,8 @@ def import_sync_dump(wiki, dump):
     # write path; fall back to "home" rather than trusting it.
     name = dump.get("name")
     home = dump.get("home")
+    if name and (not mochi.text.valid(name, "name") or len(name) > 100):
+        name = None
     if home and (len(home) > 100 or slug_reserved(home)):
         home = None
     if name or home:
@@ -3992,8 +4061,14 @@ def event_comment_create(e):
         return
 
     # Enforce the same cap as action_comment_create, so a replica can't push an
-    # oversized comment that we'd then store and replicate onward.
+    # oversized comment that we'd then store and replicate onward. The id is
+    # attacker-chosen, so each event is a new row: an unbounded name or slug
+    # here is unbounded permanent storage, per comment.
     if len(body) > 100000:
+        return
+    if name and not mochi.text.valid(name, "name"):
+        return
+    if slug_problem(page):
         return
 
     # Don't thread onto a comment that belongs to a different wiki - a foreign
