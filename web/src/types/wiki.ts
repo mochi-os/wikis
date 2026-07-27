@@ -26,8 +26,8 @@ export interface WikiPage {
 
 export interface PageResponse {
   page: WikiPage
-  missing_links?: string[]
-  comment_count?: number
+  links?: { missing?: string[] }
+  comments?: { count?: number }
 }
 
 export interface PageNotFoundResponse {
@@ -73,7 +73,7 @@ export interface PageHistoryResponse {
 export interface PageRevisionResponse {
   page: string
   revision: RevisionDetail
-  current_version: number
+  version: { current: number }
 }
 
 // Recent changes
@@ -98,7 +98,7 @@ export interface ChangesResponse {
 export interface PageRevertResponse {
   slug: string
   version: number
-  reverted_from: number
+  reverted: { from: number }
 }
 
 export interface PageDeleteResponse {
@@ -183,15 +183,7 @@ export interface SettingsSetResponse {
 }
 
 // Sync
-export interface SyncResponse {
-  ok: boolean
-  message: string
-}
 
-export interface SubscribeResponse {
-  ok: boolean
-  message: string
-}
 
 // Attachments
 export interface Attachment {
@@ -223,7 +215,7 @@ export interface WikiComment {
   author: string
   name: string
   body: string
-  body_markdown: string
+  markdown: string
   created: number
   edited: number
   children: WikiComment[]
@@ -265,7 +257,7 @@ export interface AccessRule {
   operation: string
   grant: number
   name?: string  // Resolved name for display
-  isOwner?: boolean  // True if this rule is for the resource owner
+  owner?: boolean  // True if this rule is for the resource owner
 }
 
 export interface AccessListResponse {

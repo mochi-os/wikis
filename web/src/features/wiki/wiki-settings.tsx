@@ -73,6 +73,7 @@ import {
   requestHelpers,
   getErrorMessage,
   useFormat,
+  naturalCompare,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
@@ -838,7 +839,11 @@ function RedirectsTab() {
       const response = await requestHelpers.get<import('@/types/wiki').RedirectsResponse>(
         apiUrl(endpoints.wiki.redirects)
       )
-      setRedirects(response?.redirects ?? [])
+      // The server no longer orders by `source`: it is a user-facing slug, so
+      // accents and locale belong to the consumer.
+      setRedirects(
+        [...(response?.redirects ?? [])].sort((a, b) => naturalCompare(a.source, b.source))
+      )
     } catch (err) {
       setError(new Error(getErrorMessage(err, t`Failed to load redirects`)))
     } finally {
@@ -1069,27 +1074,3 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
   )
 }
 
-export function WikiSettingsSkeleton() {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Skeleton className="h-6 w-6" />
-        <Skeleton className="h-8 w-40" />
-      </div>
-      <div className="flex gap-1 border-b">
-        {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} className="h-10 w-24" />
-        ))}
-      </div>
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-4 w-96" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-10 w-full" />
-        </CardContent>
-      </Card>
-    </div>
-  )
-}

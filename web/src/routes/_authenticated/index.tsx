@@ -531,7 +531,7 @@ function WikiHomePage({
           <PageView
             page={data.page}
             missingLinks={
-              'missing_links' in data ? data.missing_links : undefined
+              'links' in data ? data.links?.missing : undefined
             }
           />
         </Main>

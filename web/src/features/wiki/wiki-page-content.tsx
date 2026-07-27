@@ -252,7 +252,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
 
   // Page found
   if (isValidResponse && 'page' in data && typeof data.page === 'object') {
-    const commentCount = isValidResponse && 'comment_count' in data ? (data.comment_count ?? 0) : 0
+    const commentCount = isValidResponse && 'comments' in data ? (data.comments?.count ?? 0) : 0
 
     const actionsMenu = (
       <DropdownMenu>
@@ -385,7 +385,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           back={{ label: backLabel, onFallback: goBackToWikis }}
         />
         <Main className="pt-2">
-          <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
+          <PageView page={data.page} missingLinks={'links' in data ? data.links?.missing : undefined} />
         </Main>
         <ConfirmDialog
           open={unsubscribeConfirmOpen}

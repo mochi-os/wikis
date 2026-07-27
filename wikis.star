@@ -182,7 +182,7 @@ ACCESS_LEVELS = ["view", "edit"]
 # Uses hierarchical access levels: edit grants view, view is base level.
 # Users with "manage" or "*" permission automatically have all permissions.
 # The "delete" operation is treated as "edit" (edit includes delete).
-def check_access(a, wiki_id, operation, page=None):
+def check_access(a, wiki_id, operation):
     resource = "wiki/" + wiki_id
     user = None
     if a.user and a.user.identity:
@@ -215,7 +215,7 @@ def check_access(a, wiki_id, operation, page=None):
 
 # Helper: Check if remote user (from event header) has access to perform an operation
 # Uses same hierarchical levels as check_access.
-def check_event_access(user_id, wiki_id, operation, page=None):
+def check_event_access(user_id, wiki_id, operation):
     resource = "wiki/" + wiki_id
 
     # Owner has full access - check if requester owns the wiki entity
@@ -412,7 +412,7 @@ def notify_websocket(wiki):
         mochi.websocket.write(fp, {"type": "wiki/update", "wiki": wiki})
 
 # Helper: Remove attachment references from content
-def remove_attachment_refs(content, attachment_id):
+def remove_attachment_references(content, attachment_id):
     ref = "attachments/" + attachment_id
     if ref not in content:
         return content
@@ -1272,7 +1272,7 @@ def action_page(a):
     comment_count = page_comment_count(wiki["id"], slug)
 
     return {"data": {
-        "comment_count": comment_count,
+        "comments": {"count": comment_count},
         "page": {
             "id": page["id"],
             "slug": page["page"],
@@ -1284,7 +1284,7 @@ def action_page(a):
             "version": page["version"],
             "tags": taglist
         },
-        "missing_links": missing_links
+        "links": {"missing": missing_links}
     }}
 
 # Edit a page (create or update)
@@ -1603,7 +1603,7 @@ def action_page_revision(a):
             "version": revision["version"],
             "comment": revision_comment(revision["comment"])
         },
-        "current_version": page["version"]
+        "version": {"current": page["version"]}
     }}
 
 # Revert to a previous revision
@@ -1677,7 +1677,7 @@ def action_page_revert(a):
     else:
         broadcast_event(wiki["id"], "page/update", event_data)
 
-    return {"data": {"slug": slug, "version": newversion, "reverted_from": int(version)}}
+    return {"data": {"slug": slug, "version": newversion, "reverted": {"from": int(version)}}}
 
 # Delete a page (soft delete)
 def action_page_delete(a):
@@ -1880,7 +1880,7 @@ def action_page_rename(a):
                 else:
                     broadcast_event(wiki["id"], "page/update", event_data)
 
-    return {"data": {"renamed": renamed, "updated_links": updated_links}}
+    return {"data": {"renamed": renamed, "links": {"updated": updated_links}}}
 
 # Add a tag to a page
 def action_tag_add(a):
@@ -2200,7 +2200,11 @@ def action_redirects(a):
         a.error.label(403, "errors.access_denied")
         return
 
-    redirects = mochi.db.rows("select source, target, created from redirects where wiki=? order by source", wiki["id"])
+    # No ORDER BY on `source`: it is a user-facing slug, so accents and locale
+    # are the consumer's job (naturalCompare in the web). The tag list keeps its
+    # `order by count desc, t.tag asc` because there the name is only the
+    # tiebreaker within an equal count - the sort itself is intrinsic.
+    redirects = mochi.db.rows("select source, target, created from redirects where wiki=?", wiki["id"])
     return {"data": {"redirects": redirects}}
 
 # View wiki settings
@@ -2460,7 +2464,7 @@ def action_access_list(a):
         subject = rule.get("subject", "")
         # Mark owner rules
         if owner and subject == owner.get("id"):
-            rule["isOwner"] = True
+            rule["owner"] = True
         # Skip legacy #administrator rules
         if subject == "#administrator":
             continue
@@ -3151,6 +3155,9 @@ def event_rename(e):
     # Update subscribed wiki (source = sender)
     wiki = mochi.db.row("select id from wikis where source=?", wiki_id)
     if wiki:
+        # Both halves, as action_rename does: without the entity update
+        # mochi.entity.name() and the directory keep serving the old name.
+        mochi.entity.update(wiki["id"], name=name)
         mochi.db.execute("update wikis set name=? where id=?", name, wiki["id"])
         notify_websocket(wiki["id"])
 
@@ -3405,10 +3412,10 @@ def event_attachment_create(e):
 
     # Get replicas for notification (excluding the one who uploaded)
     replicas = mochi.db.rows("select id from replicas where wiki=? and id!=?", wiki, replica)
-    notify = [r["id"] for r in replicas]
+    recipients = [r["id"] for r in replicas]
 
     # Stream directly to attachment storage with the original ID (no temp file needed)
-    attachment = mochi.attachment.create.stream(wiki, name, stream, content_type, "", "", notify, attachment_id)
+    attachment = mochi.attachment.create.stream(wiki, name, stream, content_type, "", "", recipients, attachment_id)
 
     if attachment:
         mochi.log.debug("Created attachment %s from replica %s", attachment_id, replica)
@@ -3841,7 +3848,7 @@ def page_comments(wiki_id, page_slug, limit, offset):
         if node["id"] in seen:
             continue
         seen[node["id"]] = True
-        node["body_markdown"] = mochi.text.markdown(node["body"])
+        node["markdown"] = mochi.text.markdown(node["body"])
         node["attachments"] = mochi.attachment.list(node["id"], wiki_id) or []
         kids = []
         if depth < 100:
@@ -4471,7 +4478,7 @@ def action_attachment_delete(a):
     name = a.user.identity.name
 
     for page in pages:
-        new_content = remove_attachment_refs(page["content"], id)
+        new_content = remove_attachment_references(page["content"], id)
         if new_content != page["content"]:
             # Use atomic version increment to prevent race conditions
             mochi.db.execute("update pages set content=?, author=?, updated=?, version=version+1 where id=?",

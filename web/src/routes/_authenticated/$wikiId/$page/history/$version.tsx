@@ -63,7 +63,7 @@ function RevisionViewRoute() {
           <RevisionView
             slug={slug}
             revision={data.revision}
-            currentVersion={data.current_version}
+            currentVersion={data.version.current}
             wikiId={wikiId}
           />
         </Main>

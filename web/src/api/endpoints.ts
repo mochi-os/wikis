@@ -72,13 +72,10 @@ const endpoints = {
     commentCreate: (slug: string) => `pages/${encodeURIComponent(slug)}/comment/create`,
     commentEdit: (slug: string) => `pages/${encodeURIComponent(slug)}/comment/edit`,
     commentDelete: (slug: string) => `pages/${encodeURIComponent(slug)}/comment/delete`,
-    // RSS
-    rssToken: 'rss/token',
     // Attachments
     attachments: 'attachment/list',
     attachmentUpload: 'attachment/upload',
     attachmentDelete: 'attachment/delete',
-    attachment: (id: string) => `-/attachments/${encodeURIComponent(id)}`,
   },
 } as const
 

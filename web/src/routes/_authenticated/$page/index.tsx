@@ -174,7 +174,7 @@ function WikiPageRoute() {
 
   // Page found
   if (data && 'page' in data && typeof data.page === 'object') {
-    const commentCount = data && 'comment_count' in data ? (data.comment_count ?? 0) : 0
+    const commentCount = data && 'comments' in data ? (data.comments?.count ?? 0) : 0
 
     const actionsMenu = (
       <DropdownMenu>
@@ -288,7 +288,7 @@ function WikiPageRoute() {
           back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
         />
         <Main className="pt-2">
-          <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
+          <PageView page={data.page} missingLinks={'links' in data ? data.links?.missing : undefined} />
         </Main>
       {linkDialog}
         <ConfirmDialog

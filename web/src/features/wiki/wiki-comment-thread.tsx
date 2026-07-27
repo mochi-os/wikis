@@ -169,10 +169,10 @@ export function WikiCommentThread({
           </div>
         ) : (
           <>
-            {comment.body_markdown ? (
+            {comment.markdown ? (
               <div
                 className="text-foreground max-w-none text-sm leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:ps-6 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:ps-6 [&_li]:my-0.5"
-                dangerouslySetInnerHTML={{ __html: comment.body_markdown }}
+                dangerouslySetInnerHTML={{ __html: comment.markdown }}
               />
             ) : (
               <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">{comment.body}</p>
