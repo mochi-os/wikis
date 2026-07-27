@@ -491,6 +491,32 @@ def slug_reserved(slug):
         return False
     return slug.split("/")[0] in reserved_pages
 
+# Helper: what is wrong with this page slug, as a label key, or None if it is
+# usable? Every path that accepts a slug - local action and remote event alike -
+# must go through here. While the remote paths were more permissive than the
+# local ones, a slug no user could type was plantable over P2P, and the client's
+# own request for that page then resolved somewhere else: the web builds
+# `pages/<slug>` against a baseURL ending in `/-/`, and dot segments collapse
+# before the request is sent, so `../delete` selects the wiki's delete action
+# and `../../../<id>/-/delete` reaches a different wiki entirely (both confirmed
+# against a running server). Rejecting the characters is what closes that, so
+# the charset test cannot be folded into slug_reserved, which deliberately
+# tolerates slashes for the multi-segment `home` setting.
+#
+# The emptiness check stays with the callers: each one names the missing field
+# differently, and remote paths reject rather than report.
+def slug_problem(slug):
+    if len(slug) > 100:
+        return "errors.url_too_long"
+    if slug.startswith("-"):
+        return "errors.page_names_starting_with_are_reserved"
+    for c in slug.elems():
+        if not (c.isalnum() or c in "-_"):
+            return "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders"
+    if slug_reserved(slug):
+        return "errors.page_name_reserved"
+    return None
+
 # Helpers: does this global id already belong to a DIFFERENT wiki?
 #
 # Page, comment and revision ids are global uids, and every wiki a user holds -
@@ -1145,13 +1171,10 @@ def action_page_edit(a):
     if not slug:
         a.error.label(400, "errors.missing_page_parameter")
         return
-    if len(slug) > 100:
-        a.error.label(400, "errors.url_too_long")
+    problem = slug_problem(slug)
+    if problem:
+        a.error.label(400, problem, name=slug)
         return
-    for c in slug.elems():
-        if not (c.isalnum() or c in "-_"):
-            a.error.label(400, "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders")
-            return
 
     title = a.input("title")
     content = a.input("content")
@@ -1283,16 +1306,9 @@ def action_new(a):
     if not slug:
         a.error.label(400, "errors.slug_is_required")
         return
-    if len(slug) > 100:
-        a.error.label(400, "errors.url_too_long")
-        return
-    # Validate slug characters (alphanumeric, hyphens, underscores)
-    for c in slug.elems():
-        if not (c.isalnum() or c in "-_"):
-            a.error.label(400, "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders")
-            return
-    if slug_reserved(slug):
-        a.error.label(400, "errors.page_name_reserved", name=slug)
+    problem = slug_problem(slug)
+    if problem:
+        a.error.label(400, problem, name=slug)
         return
 
     if not title:
@@ -1603,18 +1619,9 @@ def action_page_rename(a):
         return
 
     # Validate new slug
-    if len(new_slug) > 100:
-        a.error.label(400, "errors.url_too_long")
-        return
-    for c in new_slug.elems():
-        if not (c.isalnum() or c in "-_"):
-            a.error.label(400, "errors.page_url_can_only_contain_letters_numbers_hyphens_and_unders")
-            return
-    if new_slug.startswith("-"):
-        a.error.label(400, "errors.page_names_starting_with_are_reserved")
-        return
-    if slug_reserved(new_slug):
-        a.error.label(400, "errors.page_name_reserved", name=new_slug)
+    problem = slug_problem(new_slug)
+    if problem:
+        a.error.label(400, problem, name=new_slug)
         return
 
     # Can't rename to itself
@@ -2495,9 +2502,9 @@ def event_page_create(e):
     if len(title) > 255 or (content and len(content) > 1000000):
         return
 
-    # Same slug rules as action_new: a remote peer must not be able to plant a
-    # page whose name shadows a route on our side.
-    if len(page) > 100 or page.startswith("-") or slug_reserved(page):
+    # Same slug rules as the local actions: a remote peer must not be able to
+    # plant a page whose name shadows or escapes a route on our side.
+    if slug_problem(page):
         return
 
     if not valid_version(version):
@@ -2595,9 +2602,9 @@ def event_page_update(e):
     if len(title) > 255 or (content and len(content) > 1000000):
         return
 
-    # Same slug rules as action_new - a rename arriving over P2P must not be
-    # able to move a page onto a route-shadowing name.
-    if len(page) > 100 or page.startswith("-") or slug_reserved(page):
+    # Same slug rules as the local actions - a rename arriving over P2P must
+    # not be able to move a page onto a route-shadowing or route-escaping name.
+    if slug_problem(page):
         return
 
     if not valid_version(version):
@@ -3110,8 +3117,9 @@ def event_page_edit_request(e):
         e.write({"status": "400", "error": "Missing page parameter"})
         return
 
-    # Same slug rules as action_new, including the route-shadowing check.
-    if len(slug) > 100 or slug.startswith("-") or slug_reserved(slug):
+    # Same slug rules as the local actions, including the route-shadowing and
+    # route-escaping checks.
+    if slug_problem(slug):
         e.write({"status": "400", "error": "Invalid page name"})
         return
 
@@ -3529,8 +3537,9 @@ def import_sync_dump(wiki, dump):
     pages = dump.get("pages") or []
     for p in pages:
         # The dump comes from the remote wiki verbatim, so a page whose slug
-        # shadows a route would be planted here just as easily as over an event.
-        if slug_reserved(p.get("page", "")):
+        # shadows or escapes a route would be planted here just as easily as
+        # over an event.
+        if slug_problem(p.get("page", "")):
             continue
         # Never adopt or reassign a page that already belongs to another wiki.
         # The version comparison below is NOT a substitute: it selects on id
