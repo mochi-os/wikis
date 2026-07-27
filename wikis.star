@@ -72,6 +72,10 @@ def database_create():
     # RSS tokens table
     mochi.db.execute("create table if not exists rss (token text not null primary key, entity text not null, mode text not null, created integer not null, unique(entity, mode))")
 
+    # Outbound-request throttle. Core rate-limits inbound P2P and outbound HTTP
+    # but not outbound mochi.remote.request, so the app has to bound its own.
+    mochi.db.execute("create table if not exists throttle (key text not null primary key, last integer not null)")
+
 def database_upgrade(version):
     # Schema 2: the replicas.peer column is gone - the core per-user directory
     # now carries the route to a private replica, so the owner no longer stores
@@ -106,6 +110,41 @@ def database_upgrade(version):
                 break
         if not found:
             mochi.db.execute("alter table comments add column origin text not null default ''")
+    # Schema 5: the outbound-request throttle table. Every action that reaches a
+    # third-party wiki over P2P was unbounded - request_resync had a 60-second
+    # gate but action_resync cleared it deliberately, and sync/probe/join/
+    # subscribe had none at all - so an authenticated user could point this
+    # server's outbound traffic at an entity of their choosing and repeat it as
+    # fast as HTTP allowed.
+    if version == 5:
+        mochi.db.execute("create table if not exists throttle (key text not null primary key, last integer not null)")
+
+# Helper: has this outbound operation run within `seconds`? Records the attempt
+# when it has not, so callers just guard on the return value.
+#
+# Core rate-limits inbound P2P and outbound HTTP, but NOT outbound
+# mochi.remote.request, so anything that reaches a third-party wiki has to
+# bound itself. Two keys are used together: a per-target one, which stops a
+# single victim being hammered, and a global "outbound" one, which stops the
+# same volume being spread across many targets instead.
+#
+# Old rows are pruned on write, so the table cannot grow without limit from
+# probing many distinct targets.
+def throttled(key, seconds):
+    now = mochi.time.now()
+    row = mochi.db.row("select last from throttle where key=?", key)
+    if row and now - row["last"] < seconds:
+        return True
+    mochi.db.execute("delete from throttle where last < ?", now - 3600)
+    mochi.db.execute("replace into throttle (key, last) values (?, ?)", key, now)
+    return False
+
+# Wraps throttled() for the actions that reach a named wiki: both the shared
+# outbound budget and the per-target one must allow the call.
+def outbound_throttled(operation, target):
+    if throttled("outbound", 2):
+        return True
+    return throttled(operation + ":" + (target or ""), 10)
 
 def update_replica_seen(wiki, replica_id):
     now = mochi.time.now()
@@ -289,8 +328,14 @@ def request_resync(wiki_id):
     peer = None
     if row["server"]:
         peer = mochi.remote.peer(row["server"])
+    # Guard the shape before .get, as action_join and action_sync already do.
+    # Their comment justifies it on source/peer being user-supplied, which is
+    # not true here - the source comes from our own row - but the answer is
+    # attacker-controlled either way, and a scalar or null reply raises and
+    # aborts whichever handler triggered the resync. event_redirect_set calls
+    # this on a missing target, so a peer can reach it on demand.
     dump = mochi.remote.request(row["source"], "wikis", "sync", {}, peer)
-    if not dump or dump.get("status") != "200":
+    if not dump or type(dump) != "dict" or dump.get("status") != "200":
         return False
     import_sync_dump(wiki_id, dump)
     mochi.broadcast.touch(row["source"])
@@ -542,26 +587,35 @@ def tag_problem(tag):
 #
 # Mirrors foreign_object / foreign_comment in projects and crm, and the guard
 # event_page_create already applies on the event path.
-def foreign_page(page_id, wiki_id):
+# `handle` is an open mochi.db.transaction when the caller has one. These run
+# inside import_sync_dump, which writes through a transaction, and a plain
+# mochi.db read would not see rows that import wrote but has not committed -
+# page_outside_wiki in particular relies on the dump's own pages being visible.
+def foreign_page(page_id, wiki_id, handle=None):
     if not page_id:
         return False
-    row = mochi.db.row("select wiki from pages where id=?", page_id)
+    query = "select wiki from pages where id=?"
+    row = handle.row(query, page_id) if handle else mochi.db.row(query, page_id)
     return row != None and row["wiki"] != wiki_id
 
-def foreign_comment(comment_id, wiki_id):
+def foreign_comment(comment_id, wiki_id, handle=None):
     if not comment_id:
         return False
-    row = mochi.db.row("select wiki from comments where id=?", comment_id)
+    query = "select wiki from comments where id=?"
+    row = handle.row(query, comment_id) if handle else mochi.db.row(query, comment_id)
     return row != None and row["wiki"] != wiki_id
 
 # True unless the page is one we hold for this wiki. Used for rows that hang off
 # a page (revisions, tags): an unknown page id is refused outright, since the
 # dump's own pages are imported first and anything still missing is either
 # another wiki's or fabricated.
-def page_outside_wiki(page_id, wiki_id):
+def page_outside_wiki(page_id, wiki_id, handle=None):
     if not page_id:
         return True
-    return not mochi.db.exists("select 1 from pages where id=? and wiki=?", page_id, wiki_id)
+    query = "select 1 from pages where id=? and wiki=?"
+    if handle:
+        return not handle.exists(query, page_id, wiki_id)
+    return not mochi.db.exists(query, page_id, wiki_id)
 
 # Helper: P2P version fields arrive as raw CBOR and are never type-checked by
 # core. A non-integer is stored verbatim in an INTEGER column and then poisons
@@ -717,6 +771,11 @@ def action_probe(a): # wikis_probe
     if not link_peer or not mochi.text.valid(link_wiki, "entity"):
         a.error.label(400, "errors.invalid_url")
         return
+    # The target comes from a pasted URL, so this is the easiest place to aim
+    # this server's outbound traffic at an entity of the caller's choosing.
+    if outbound_throttled("probe", link_wiki):
+        a.error.label(429, "errors.too_many_requests")
+        return
     response = mochi.remote.request(link_wiki, "wikis", "information", {"wiki": link_wiki}, link_peer)
     # link_peer/link_wiki come from a user-pasted URL, so a hostile peer can
     # answer with a non-dict; check before .get to avoid a raw-traceback 500.
@@ -752,6 +811,10 @@ def action_join(a):
     existing = mochi.db.row("select * from wikis where source=?", source)
     if existing:
         a.error.label(400, "errors.already_joined_this_wiki")
+        return
+
+    if outbound_throttled("join", source):
+        a.error.label(429, "errors.too_many_requests")
         return
 
     # Connect via the share link's peer, the specified server, or directory lookup
@@ -827,6 +890,12 @@ def action_resync(a):
     if not wiki.get("source"):
         # This wiki is itself the canonical source — nothing to resync from.
         return {"data": {"synced": False}}
+    # Clearing `synced` below deliberately defeats request_resync's own 60
+    # second gate, which is right for a user pressing Resync but leaves nothing
+    # bounding how often they can press it.
+    if outbound_throttled("resync", wiki["id"]):
+        a.error.label(429, "errors.too_many_requests")
+        return
     mochi.db.execute("update wikis set synced=0 where id=?", wiki["id"])
     synced = request_resync(wiki["id"])
     return {"data": {"synced": synced}}
@@ -3638,12 +3707,27 @@ def event_attachment_remove(e):
 
 # Helper: Import wiki dump from sync response
 def import_sync_dump(wiki, dump):
-    if not dump or dump.get("status") != "200":
+    if not dump or type(dump) != "dict" or dump.get("status") != "200":
         return False
+
+    # One transaction for the whole dump. Every row here is authored by the
+    # remote wiki, and Starlark has no try/except, so a single malformed entry
+    # aborts the handler mid-import; without this the pages already written
+    # stayed and the comments never arrived. Reads go through the handle too,
+    # or they would not see what this import has written but not committed -
+    # page_outside_wiki depends on exactly that.
+    #
+    # Fields are read with .get and defaults rather than [...] for the same
+    # reason: a missing key should skip its own row, not discard the dump.
+    handle = mochi.db.transaction()
 
     # Import pages
     pages = dump.get("pages") or []
     for p in pages:
+        id = p.get("id")
+        version = p.get("version")
+        if not id or not valid_version(version):
+            continue
         # The dump comes from the remote wiki verbatim, so a page whose slug
         # shadows or escapes a route would be planted here just as easily as
         # over an event.
@@ -3653,17 +3737,17 @@ def import_sync_dump(wiki, dump):
         # The version comparison below is NOT a substitute: it selects on id
         # alone with no wiki filter, and the version it compares against comes
         # from the dump, so a large value made the overwrite deterministic.
-        if foreign_page(p["id"], wiki):
+        if foreign_page(id, wiki, handle):
             continue
         # Same caps the event path applies. The dump is bulk and entirely
         # remote-authored, so it is the cheapest way to plant oversized rows.
         if len(p.get("title", "")) > 255 or len(p.get("content", "")) > 1000000:
             continue
-        existing = mochi.db.row("select version from pages where id=?", p["id"])
-        if existing and existing["version"] >= p["version"]:
+        existing = handle.row("select version from pages where id=?", id)
+        if existing and existing["version"] >= version:
             continue
-        mochi.db.execute("replace into pages (id, wiki, page, title, content, author, created, updated, version, deleted) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            p["id"], wiki, p["page"], p["title"], p["content"], p["author"], p["created"], p["updated"], p["version"], p.get("deleted", 0))
+        handle.execute("replace into pages (id, wiki, page, title, content, author, created, updated, version, deleted) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            id, wiki, p.get("page", ""), p.get("title", ""), p.get("content", ""), p.get("author", ""), p.get("created", 0), p.get("updated", 0), version, p.get("deleted", 0))
 
     # Import revisions. The page must be one this wiki holds - the foreign key
     # alone is satisfied by ANY page in the database, so without this a dump can
@@ -3671,7 +3755,10 @@ def import_sync_dump(wiki, dump):
     # public history, changes and RSS endpoints and can be reverted into place.
     revisions = dump.get("revisions") or []
     for r in revisions:
-        if page_outside_wiki(r.get("page", ""), wiki):
+        id = r.get("id")
+        if not id or not valid_version(r.get("version")):
+            continue
+        if page_outside_wiki(r.get("page", ""), wiki, handle):
             continue
         # Revision ids come from the dump, so each distinct id is another
         # permanent row; cap the strings it carries as the event path does.
@@ -3679,27 +3766,31 @@ def import_sync_dump(wiki, dump):
             continue
         if len(r.get("name", "")) > 1000 or len(r.get("comment", "")) > 1000:
             continue
-        mochi.db.execute("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            r["id"], r["page"], r["content"], r["title"], r["author"], r.get("name", ""), r["created"], r["version"], r.get("comment", ""))
+        handle.execute("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            id, r.get("page", ""), r.get("content", ""), r.get("title", ""), r.get("author", ""), r.get("name", ""), r.get("created", 0), r.get("version"), r.get("comment", ""))
 
     # Import tags - same rule as revisions.
     tags = dump.get("tags") or []
     for t in tags:
-        if page_outside_wiki(t.get("page", ""), wiki):
+        if page_outside_wiki(t.get("page", ""), wiki, handle):
             continue
         tag = (t.get("tag") or "").lower().strip()
         if not tag or tag_problem(tag):
             continue
-        mochi.db.execute("insert or ignore into tags (page, tag) values (?, ?)", t["page"], tag)
+        handle.execute("insert or ignore into tags (page, tag) values (?, ?)", t.get("page"), tag)
 
     # Import redirects
     redirects = dump.get("redirects") or []
     for r in redirects:
+        source_slug = (r.get("source") or "").lower().strip()
+        target_slug = (r.get("target") or "").lower().strip()
+        if not source_slug or not target_slug:
+            continue
         # redirects is keyed (wiki, source): unbounded source means unbounded
         # rows as well as an unbounded string.
-        if len(r.get("source", "")) > 100 or len(r.get("target", "")) > 100:
+        if len(source_slug) > 100 or len(target_slug) > 100:
             continue
-        mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, r["source"], r["target"], r["created"])
+        handle.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, source_slug, target_slug, r.get("created", 0))
 
     # Import comments. Same rule as pages - never reassign a comment that
     # already belongs to another wiki. A cross-wiki parent is dropped rather
@@ -3707,7 +3798,10 @@ def import_sync_dump(wiki, dump):
     comments = dump.get("comments") or []
     imported_comments = []
     for c in comments:
-        if foreign_comment(c["id"], wiki):
+        id = c.get("id")
+        if not id:
+            continue
+        if foreign_comment(id, wiki, handle):
             continue
         # Same caps event_comment_create applies, for the same reason: the id
         # is dump-supplied, so each one is another permanent row.
@@ -3716,15 +3810,15 @@ def import_sync_dump(wiki, dump):
         if slug_problem(c.get("page", "")):
             continue
         parent = c.get("parent", "")
-        if parent and foreign_comment(parent, wiki):
+        if parent and foreign_comment(parent, wiki, handle):
             parent = ""
         # origin = the wiki this dump came from. A dump is only ever imported on
         # a replica, where replica_can already grants the source everything, so
         # the value is not load-bearing for authorisation here - but recording
         # it keeps the column meaningful rather than leaving these rows at ''
         # and relying on that short-circuit to stay true.
-        mochi.db.execute("replace into comments (id, wiki, page, parent, author, name, body, created, edited, deleted, origin) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            c["id"], wiki, c["page"], parent, c["author"], c.get("name", ""), c["body"], c["created"], c.get("edited", 0), c.get("deleted", 0), dump.get("source") or "")
+        handle.execute("replace into comments (id, wiki, page, parent, author, name, body, created, edited, deleted, origin) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            id, wiki, c.get("page", ""), parent, c.get("author", ""), c.get("name", ""), c.get("body", ""), c.get("created", 0), c.get("edited", 0), c.get("deleted", 0), dump.get("source") or "")
         imported_comments.append(c)
 
     # Import wiki name and home setting. The dump is entirely controlled by the
@@ -3737,10 +3831,14 @@ def import_sync_dump(wiki, dump):
     if home and (len(home) > 100 or slug_reserved(home)):
         home = None
     if name or home:
-        mochi.db.execute("update wikis set name=?, home=? where id=?",
+        handle.execute("update wikis set name=?, home=? where id=?",
             name or "", home or "home", wiki)
 
-    # Store attachment metadata from sync dump (files pulled on demand)
+    handle.commit()
+
+    # Attachment metadata lives in app.db, on a different connection, so it is
+    # not covered by the transaction above - store it only once those rows are
+    # actually committed, or a rolled-back import would leave metadata behind.
     source = dump.get("source")
     if source:
         attachments = dump.get("attachments") or []
@@ -3754,7 +3852,7 @@ def import_sync_dump(wiki, dump):
         for c in imported_comments:
             c_atts = c.get("attachments") or []
             if c_atts:
-                mochi.attachment.store(c_atts, source, c["id"])
+                mochi.attachment.store(c_atts, source, c.get("id"))
 
     notify_websocket(wiki)
     return True
@@ -3774,6 +3872,10 @@ def action_subscribe(a):
     target = a.input("target")
     if not target:
         a.error.label(400, "errors.target_wiki_entity_is_required")
+        return
+
+    if outbound_throttled("subscribe", target):
+        a.error.label(429, "errors.too_many_requests")
         return
 
     # Send replicate request to target
@@ -3803,6 +3905,10 @@ def action_sync(a):
     target = a.input("target") or wiki.get("source")
     if not target:
         a.error.label(400, "errors.no_upstream_wiki")
+        return
+
+    if outbound_throttled("sync", target):
+        a.error.label(429, "errors.too_many_requests")
         return
 
     # Use stored server for the wiki, or accept override
