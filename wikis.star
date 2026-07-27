@@ -656,6 +656,25 @@ def valid_version(value):
     return type(value) == "int" and value > 0 and value < 1000000000
 
 # Helper: Create a revision for a page
+# System-generated revision comments are stored as a label key plus arguments
+# rather than English prose. The row is read back by whoever is looking at the
+# history, and it travels in sync dumps, so storing the key lets each reader -
+# and each peer - render it in their own language. A user-supplied comment is
+# plain text and passes through both helpers untouched.
+#
+# Rows written before this change keep their English text and cannot be
+# retranslated: the words are all that was ever stored.
+def system_comment(key, **args):
+    return json.encode({"key": key, "args": args})
+
+def revision_comment(stored):
+    if not stored or not stored.startswith("{"):
+        return stored
+    decoded = json.decode(stored, None)
+    if type(decoded) != "dict" or not decoded.get("key"):
+        return stored
+    return mochi.app.label(decoded["key"], **decoded.get("args", {}))
+
 def create_revision(page, title, content, author, name, version, comment):
     id = mochi.uid()
     now = mochi.time.now()
@@ -903,7 +922,7 @@ def action_join(a):
     mochi.broadcast.touch(source)
 
     fingerprint = mochi.entity.fingerprint(entity)
-    return {"data": {"id": entity, "name": name, "source": source, "fingerprint": fingerprint, "home": dump.get("home") or "home", "message": "Wiki joined successfully"}}
+    return {"data": {"id": entity, "name": name, "source": source, "fingerprint": fingerprint, "home": dump.get("home") or "home"}}
 
 # Delete a wiki and all its data
 def action_resync(a):
@@ -1462,14 +1481,14 @@ def action_new(a):
         version = existing["version"] + 1
         mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=?, deleted=0 where id=?",
             title, content, author, now, version, id)
-        create_revision(id, title, content, author, name, version, "Page restored")
+        create_revision(id, title, content, author, name, version, system_comment("revisions.restored"))
     else:
         # Create new page
         id = mochi.uid()
         version = 1
         mochi.db.execute("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
             id, wiki["id"], slug, title, content, author, now, now)
-        create_revision(id, title, content, author, name, 1, "Initial creation")
+        create_revision(id, title, content, author, name, 1, system_comment("revisions.created"))
 
     # Notify: source broadcasts to replicas, replica notifies source
     event_data = {
@@ -1526,6 +1545,8 @@ def action_page_history(a):
     total_row = mochi.db.row("select count(*) as cnt from revisions where page=?", page["id"])
     total = total_row["cnt"] if total_row else 0
     revisions = mochi.db.rows("select id, title, author, name, created, version, comment from revisions where page=? order by version desc limit ? offset ?", page["id"], limit, offset)
+    for r in revisions:
+        r["comment"] = revision_comment(r["comment"])
 
     # Resolve author names - use stored name if available, else try to resolve
     for rev in revisions:
@@ -1580,7 +1601,7 @@ def action_page_revision(a):
             "name": resolved_name,
             "created": revision["created"],
             "version": revision["version"],
-            "comment": revision["comment"]
+            "comment": revision_comment(revision["comment"])
         },
         "current_version": page["version"]
     }}
@@ -1631,7 +1652,7 @@ def action_page_revert(a):
     newversion = page["version"] + 1
 
     if not comment:
-        comment = "Reverted to version " + str(version)
+        comment = system_comment("revisions.reverted", version=version)
 
     mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=? where id=?",
         revision["title"], revision["content"], author, now, newversion, page["id"])
@@ -1785,7 +1806,7 @@ def action_page_rename(a):
         new_version = p["version"] + 1
 
         mochi.db.execute("update pages set page=?, version=?, updated=? where id=?", n, new_version, now, p["id"])
-        create_revision(p["id"], p["title"], p["content"], author, name, new_version, "Renamed from " + o)
+        create_revision(p["id"], p["title"], p["content"], author, name, new_version, system_comment("revisions.renamed", old=o))
         renamed.append({"old": o, "new": n})
 
         # Create redirect if requested
@@ -1837,7 +1858,7 @@ def action_page_rename(a):
                 new_version = p["version"] + 1
                 mochi.db.execute("update pages set content=?, version=?, updated=?, author=? where id=?",
                     new_content, new_version, now, author, p["id"])
-                create_revision(p["id"], p["title"], new_content, author, name, new_version, "Updated links: " + old + " → " + new)
+                create_revision(p["id"], p["title"], new_content, author, name, new_version, system_comment("revisions.links", old=old, new=new))
                 updated_links += 1
 
                 # Broadcast update
@@ -3227,18 +3248,18 @@ def event_unreplicate(e):
 def event_sync(e):
     wiki = e.header("to")
     if not wiki:
-        e.write({"status": "400", "error": "Missing wiki ID"})
+        e.write({"error": "errors.wiki_id_is_required", "code": 400})
         return
 
     # Verify wiki exists
     if not mochi.db.exists("select 1 from wikis where id=?", wiki):
-        e.write({"status": "404", "error": "Wiki not found"})
+        e.write({"error": "errors.wiki_not_found", "code": 404})
         return
 
     # Check if requester has view access
     requester = e.header("from")
     if not check_event_access(requester, wiki, "view"):
-        e.write({"status": "403", "error": "Access denied"})
+        e.write({"error": "errors.access_denied", "code": 403})
         return
 
     # Determine requester's permissions
@@ -3287,228 +3308,8 @@ def event_sync(e):
         "attachments": attachments,
     })
 
-# Handle remote page edit request from a replica (stream-based)
-def event_page_edit_request(e):
-    wiki = e.header("to")
-    if not wiki:
-        e.write({"status": "400", "error": "Missing wiki ID"})
-        return
-
-    # Verify wiki exists and is a source wiki (not a replica)
-    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
-    if not wikirow:
-        e.write({"status": "404", "error": "Wiki not found"})
-        return
-
-    if wikirow.get("source"):
-        e.write({"status": "400", "error": "Cannot edit a replica wiki remotely"})
-        return
-
-    # Check access for the remote user
-    remote_user = e.header("from")
-    if not check_event_access(remote_user, wiki, "edit"):
-        e.write({"status": "403", "error": "Access denied"})
-        return
-
-    # Get the edit request data from initial content (sent as second arg to mochi.stream)
-    slug = e.content("page")
-    title = e.content("title")
-    content = e.content("content")
-    comment = e.content("comment") or ""
-    # The sender is the authenticated person (remote_user, gated on edit access
-    # above), so the author IS the sender - never a value from the event
-    # content. Accepting a caller-supplied author let an editor attribute a
-    # defacing edit to the wiki owner or any identity, in page history and in
-    # the edit notification. Resolve the display name from that same identity so
-    # a forged `name` can't ride along either; fall back to the supplied hint
-    # only when the name can't be resolved locally.
-    author = remote_user
-    name = mochi.entity.name(remote_user) or e.content("name") or ""
-
-    if not slug:
-        e.write({"status": "400", "error": "Missing page parameter"})
-        return
-
-    # Same slug rules as the local actions, including the route-shadowing and
-    # route-escaping checks.
-    if slug_problem(slug):
-        e.write({"status": "400", "error": "Invalid page name"})
-        return
-
-    if not title:
-        e.write({"status": "400", "error": "Title is required"})
-        return
-    if len(title) > 255:
-        e.write({"status": "400", "error": "Title too long (max 255 characters)"})
-        return
-
-    if content == None:
-        content = ""
-    if len(content) > 1000000:
-        e.write({"status": "400", "error": "Content too long (max 1MB)"})
-        return
-
-    if len(comment) > 500:
-        e.write({"status": "400", "error": "Comment too long (max 500 characters)"})
-        return
-
-    now = mochi.time.now()
-
-    # Check if page exists
-    existing = mochi.db.row("select * from pages where wiki=? and page=?", wiki, slug)
-
-    if existing:
-        if existing["deleted"]:
-            # Restore deleted page
-            version = existing["version"] + 1
-            mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=?, deleted=0 where id=?",
-                title, content, author, now, version, existing["id"])
-            create_revision(existing["id"], title, content, author, name, version, comment)
-            broadcast_event(wiki, "page/create", {
-                "id": existing["id"],
-                "page": slug,
-                "title": title,
-                "content": content,
-                "author": author,
-                "name": name,
-                "created": now,
-                "version": version
-            })
-            e.write({"status": "200", "id": existing["id"], "slug": slug, "version": version, "created": False})
-        else:
-            # Update page
-            version = existing["version"] + 1
-            mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=? where id=?",
-                title, content, author, now, version, existing["id"])
-            create_revision(existing["id"], title, content, author, name, version, comment)
-            broadcast_event(wiki, "page/update", {
-                "id": existing["id"],
-                "page": slug,
-                "title": title,
-                "content": content,
-                "author": author,
-                "name": name,
-                "updated": now,
-                "version": version
-            })
-            e.write({"status": "200", "id": existing["id"], "slug": slug, "version": version, "created": False})
-    else:
-        # Create new page
-        id = mochi.uid()
-        mochi.db.execute("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
-            id, wiki, slug, title, content, author, now, now)
-        create_revision(id, title, content, author, name, 1, comment)
-        broadcast_event(wiki, "page/create", {
-            "id": id,
-            "page": slug,
-            "title": title,
-            "content": content,
-            "author": author,
-            "name": name,
-            "created": now,
-            "version": 1
-        })
-        e.write({"status": "200", "id": id, "slug": slug, "version": 1, "created": True})
-
-# Handle remote page delete request from a replica (stream-based)
-def event_page_delete_request(e):
-    wiki = e.header("to")
-    if not wiki:
-        e.write({"status": "400", "error": "Missing wiki ID"})
-        return
-
-    # Verify wiki exists and is a source wiki (not a replica)
-    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
-    if not wikirow:
-        e.write({"status": "404", "error": "Wiki not found"})
-        return
-
-    if wikirow.get("source"):
-        e.write({"status": "400", "error": "Cannot delete from a replica wiki remotely"})
-        return
-
-    # Check access for the remote user
-    remote_user = e.header("from")
-    if not check_event_access(remote_user, wiki, "edit"):
-        e.write({"status": "403", "error": "Access denied"})
-        return
-
-    # Get the delete request data from initial content (sent as second arg to mochi.stream)
-    slug = e.content("page")
-    if not slug:
-        e.write({"status": "400", "error": "Missing page parameter"})
-        return
-
-    # Check if page exists
-    page = mochi.db.row("select * from pages where wiki=? and page=?", wiki, slug)
-    if not page:
-        e.write({"status": "404", "error": "Page not found"})
-        return
-
-    if page["deleted"]:
-        e.write({"status": "400", "error": "Page already deleted"})
-        return
-
-    # Mark page as deleted with timestamp and increment version
-    now = mochi.time.now()
-    version = page["version"] + 1
-    mochi.db.execute("update pages set deleted=?, version=?, updated=? where id=?", now, version, now, page["id"])
-
-    # Broadcast delete event to replicas
-    broadcast_event(wiki, "page/delete", {
-        "id": page["id"],
-        "deleted": now,
-        "version": version,
-    })
-
-    e.write({"status": "200", "deleted": slug})
-
-# Handle remote attachment upload request from a replica (stream-based)
-def event_attachment_upload_request(e):
-    wiki = e.header("to")
-    if not wiki:
-        e.write({"status": "400", "error": "Missing wiki ID"})
-        return
-
-    # Verify wiki exists and is a source wiki (not a replica)
-    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
-    if not wikirow:
-        e.write({"status": "404", "error": "Wiki not found"})
-        return
-
-    if wikirow.get("source"):
-        e.write({"status": "400", "error": "Cannot upload to a replica wiki remotely"})
-        return
-
-    # Check access for the remote user
-    remote_user = e.header("from")
-    if not check_event_access(remote_user, wiki, "edit"):
-        e.write({"status": "403", "error": "Access denied"})
-        return
-
-    # Get upload metadata from message content
-    name = e.content("name")
-    content_type = e.content("content_type") or ""
-
-    if not name:
-        e.write({"status": "400", "error": "File name is required"})
-        return
-
-    # Get replicas for notification
-    replicas = mochi.db.rows("select id from replicas where wiki=? and id!=?", wiki, wiki)
-    notify = [r["id"] for r in replicas]
-
-    # Stream directly to attachment storage (no temp file needed)
-    attachment = mochi.attachment.create.stream(wiki, name, e.stream, content_type, "", "", notify)
-
-    if not attachment:
-        e.write({"status": "500", "error": "Failed to create attachment"})
-        return
-
-    e.write({"status": "200", "attachment": attachment})
-
-# Handle attachment/create event - replica notifies source that they uploaded an attachment
-# Source fetches the file from replica via stream and saves locally
+# Handle attachment/create - replica notifies source that it uploaded a file.
+# Source fetches the file from the replica via stream and saves locally.
 def event_attachment_create(e):
     wiki = e.header("to")
     mochi.log.debug("attachment/create: to=%s", wiki)
@@ -3662,20 +3463,20 @@ def event_attachment_delete(e):
 def event_attachment_fetch(e):
     wiki = e.header("to")
     if not wiki:
-        e.write({"status": "400", "error": "Missing wiki ID"})
+        e.write({"error": "errors.wiki_id_is_required", "code": 400})
         return
 
     # Check if requester has view access
     requester = e.header("from")
     if not check_event_access(requester, wiki, "view"):
-        e.write({"status": "403", "error": "Access denied"})
+        e.write({"error": "errors.access_denied", "code": 403})
         return
 
     # Get attachment ID from event content (sent as second arg to mochi.stream)
     attachment_id = e.content("id")
     mochi.log.debug("attachment/fetch request for id=%s", attachment_id)
     if not attachment_id:
-        e.write({"status": "400", "error": "Attachment ID is required"})
+        e.write({"error": "errors.attachment_id_is_required", "code": 400})
         return
 
     # Bind the attachment to the requested wiki. The access check above only
@@ -3686,18 +3487,18 @@ def event_attachment_fetch(e):
     # comments.
     att = mochi.attachment.get(attachment_id)
     if not att:
-        e.write({"status": "404", "error": "Attachment not found"})
+        e.write({"error": "errors.attachment_not_found", "code": 404})
         return
     obj = att.get("object")
     if obj != wiki and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
-        e.write({"status": "404", "error": "Attachment not found"})
+        e.write({"error": "errors.attachment_not_found", "code": 404})
         return
 
     # Get the attachment file path
     path = mochi.attachment.path(attachment_id)
     mochi.log.debug("attachment/fetch path=%s", path)
     if not path:
-        e.write({"status": "404", "error": "Attachment not found"})
+        e.write({"error": "errors.attachment_not_found", "code": 404})
         return
 
     # Send success status, then file data
@@ -3938,7 +3739,7 @@ def action_subscribe(a):
         {"name": a.user.identity.name or ""}
     )
 
-    return {"data": {"ok": True, "message": "Replication request sent"}}
+    return {"data": {"ok": True}}
 
 # Request sync from upstream wiki
 def action_sync(a):
@@ -3995,7 +3796,7 @@ def action_sync(a):
         {"name": wiki.get("name") or ""}
     )
 
-    return {"data": {"ok": True, "message": "Sync completed successfully"}}
+    return {"data": {"ok": True}}
 
 # COMMENTS
 
@@ -4676,7 +4477,7 @@ def action_attachment_delete(a):
             mochi.db.execute("update pages set content=?, author=?, updated=?, version=version+1 where id=?",
                 new_content, author, now, page["id"])
             version = mochi.db.row("select version from pages where id=?", page["id"])["version"]
-            create_revision(page["id"], page["title"], new_content, author, name, version, "Removed deleted attachment")
+            create_revision(page["id"], page["title"], new_content, author, name, version, system_comment("revisions.attachment"))
             # Notify: source broadcasts to replicas, replica notifies source
             event_data = {
                 "id": page["id"],
@@ -4886,12 +4687,12 @@ def action_rss(a):
 
     for row in rows:
         if row["type"] == "comment":
-            title = "Comment on \"" + row["title"] + "\" by " + row["name"]
+            title = mochi.app.label("rss.comment", title=row["title"], name=row["name"])
             desc = row["description"]
             if len(desc) > 500:
                 desc = desc[:500] + "..."
         else:
-            title = "\"" + row["title"] + "\" edited by " + row["name"]
+            title = mochi.app.label("rss.edited", title=row["title"], name=row["name"])
             desc = row["description"] if row["description"] else "Version " + str(row["version"])
 
         link = "/wikis/" + fingerprint + "/" + row["slug"]
@@ -4975,12 +4776,12 @@ def action_rss_all(a):
         wiki_fp = wiki_fps.get(wiki_id, wiki_id)
 
         if row["type"] == "comment":
-            title = wiki_name + ": Comment on \"" + row["title"] + "\" by " + row["name"]
+            title = wiki_name + ": " + mochi.app.label("rss.comment", title=row["title"], name=row["name"])
             desc = row["description"]
             if len(desc) > 500:
                 desc = desc[:500] + "..."
         else:
-            title = wiki_name + ": \"" + row["title"] + "\" edited by " + row["name"]
+            title = wiki_name + ": " + mochi.app.label("rss.edited", title=row["title"], name=row["name"])
             desc = row["description"] if row["description"] else "Version " + str(row["version"])
 
         link = "/wikis/" + wiki_fp + "/" + row["slug"]
