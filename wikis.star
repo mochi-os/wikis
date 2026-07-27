@@ -2795,10 +2795,37 @@ def event_redirect_set(e):
     if not source or not target or not created:
         return
 
+    # Same normalisation action_redirect_set applies, so a remote redirect
+    # cannot sit alongside a locally-created one differing only in case.
+    source = source.lower().strip()
+    target = target.lower().strip()
+    if not source or not target:
+        return
+
     # Same 100-character caps action_redirect_set applies. redirects is keyed
     # (wiki, source), so an unbounded source is both an unbounded string and an
     # unbounded number of rows.
     if len(source) > 100 or len(target) > 100:
+        return
+
+    if source == target or source.startswith("-"):
+        return
+
+    # A redirect must not shadow a live page. get_page consults redirects
+    # BEFORE pages, so a redirect whose source is an existing page's slug hides
+    # that page from every reader while deleting nothing - the page simply
+    # stops resolving under its own name. action_redirect_set refuses this;
+    # the event path did not, and the write is a `replace`, so it also
+    # overwrote any redirect already there.
+    if mochi.db.exists("select 1 from pages where wiki=? and page=? and deleted=0", wiki, source):
+        return
+
+    # The target must be a page we hold. Unlike the checks above this is
+    # convergence rather than safety: a redirect can legitimately arrive before
+    # the page it points at, so resync instead of dropping it, matching the
+    # out-of-order handling in event_tag_add.
+    if not mochi.db.exists("select 1 from pages where wiki=? and page=? and deleted=0", wiki, target):
+        request_resync(wiki)
         return
 
     # Validate timestamp is within reasonable range (not more than 1 day in future or 1 year in past)
@@ -3361,56 +3388,75 @@ def event_attachment_upload_request(e):
 # Source fetches the file from replica via stream and saves locally
 def event_attachment_create(e):
     wiki = e.header("to")
-    mochi.log.info("attachment/create: to=%s", wiki)
+    mochi.log.debug("attachment/create: to=%s", wiki)
     if not wiki:
-        mochi.log.info("attachment/create: no wiki header, returning")
+        mochi.log.debug("attachment/create: no wiki header, returning")
         return
 
     # Verify wiki exists and is a source wiki (not a replica)
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        mochi.log.info("attachment/create: wiki not found in db")
+        mochi.log.debug("attachment/create: wiki not found in db")
         return
 
     if wikirow.get("source"):
-        mochi.log.info("attachment/create: wiki is replica, ignoring")
+        mochi.log.debug("attachment/create: wiki is replica, ignoring")
         return
 
     sender = e.header("from")
     if not validate_event_sender(wikirow, wiki, sender):
-        mochi.log.info("attachment/create: sender %s not valid", sender)
+        mochi.log.debug("attachment/create: sender %s not valid", sender)
         return
     if not replica_can(wikirow, wiki, sender, "edit"):
-        mochi.log.info("attachment/create: sender %s lacks edit access", sender)
+        mochi.log.debug("attachment/create: sender %s lacks edit access", sender)
         return
 
     # Get attachment metadata from event content
     attachment_id = e.content("id")
     name = e.content("name")
-    size = e.content("size")
     content_type = e.content("content_type") or ""
     created = e.content("created")
     replica = e.content("replica")
 
-    mochi.log.info("attachment/create: id=%s name=%s replica=%s", attachment_id, name, replica)
+    mochi.log.debug("attachment/create: id=%s name=%s replica=%s", attachment_id, name, replica)
 
     if not attachment_id or not name or not replica:
-        mochi.log.info("attachment/create: missing required fields")
+        mochi.log.debug("attachment/create: missing required fields")
+        return
+
+    # The stream target must be the peer that sent this event. `replica` is
+    # event content, so without this an authorised replica could name any
+    # entity and make us open an outbound stream to it, storing whatever came
+    # back under an id of its choosing - the source acting as a deputy against
+    # a third party. The legitimate sender sets replica to its own wiki id,
+    # which is exactly the `from` header, so this rejects nothing real.
+    if replica != sender:
+        mochi.log.debug("attachment/create: replica %s is not the sender %s", replica, sender)
+        return
+
+    # Bound the metadata: it lands in the attachment store and is rendered to
+    # readers. Length and control characters only - the charset stays open so
+    # non-ASCII filenames keep working.
+    if len(name) > 255 or not mochi.text.valid(name, "line"):
+        mochi.log.debug("attachment/create: rejecting name")
+        return
+    if len(content_type) > 100:
+        mochi.log.debug("attachment/create: rejecting content type")
         return
 
     # Validate timestamp is within reasonable range (not more than 1 day in future or 1 year in past)
     if created:
         now = mochi.time.now()
         if created > now + 86400 or created < now - 31536000:
-            mochi.log.info("attachment/create: timestamp out of range: %s", created)
+            mochi.log.debug("attachment/create: timestamp out of range: %s", created)
             return
 
     # Check if we already have this attachment
     if mochi.attachment.exists(attachment_id):
-        mochi.log.info("attachment/create: attachment %s already exists, skipping", attachment_id)
+        mochi.log.debug("attachment/create: attachment %s already exists, skipping", attachment_id)
         return
 
-    mochi.log.info("Fetching attachment %s from replica %s", attachment_id, replica)
+    mochi.log.debug("Fetching attachment %s from replica %s", attachment_id, replica)
 
     # Open stream to the replica to fetch the file data. The replica's peer is no
     # longer stored locally (the replicas.peer column was dropped in schema 2);
