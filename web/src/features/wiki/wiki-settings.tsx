@@ -739,7 +739,7 @@ function ReplicasTab() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
+                <TableHead><Trans>ID</Trans></TableHead>
                 <TableHead><Trans>Subscribed</Trans></TableHead>
                 <TableHead><Trans>Last synced</Trans></TableHead>
                 <TableHead className="w-20"><Trans>Actions</Trans></TableHead>
