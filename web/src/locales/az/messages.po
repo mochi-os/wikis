@@ -61,16 +61,16 @@ msgstr "{0} səhifə"
 #. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
 #: src/features/wiki/tag-pages.tsx:44
 msgid "{0} with this tag."
-msgstr "{colorName} heç bir fiqur tutmayıb"
+msgstr "Bu etiketlə {0}."
 
 #: src/features/wiki/wiki-page-content.tsx:299
 #: src/routes/_authenticated/$page/index.tsx:221
 msgid "{commentCount, plural, one {1 comment} other {# comments}}"
-msgstr "{count, plural, one {# at} other {# at}}"
+msgstr "{commentCount, plural, one {1 şərh} other {# şərh}}"
 
 #: src/features/wiki/attachments-page.tsx:287
 msgid "{documentCount, plural, one {# document} other {# documents}}"
-msgstr "{h, plural, one {1 saat} other {# saat}}"
+msgstr "{documentCount, plural, one {# sənəd} other {# sənəd}}"
 
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:173
 msgid "{entityLabel} name"
@@ -83,22 +83,22 @@ msgstr "{fileCount, plural, one {# fayl yükləndi} other {# fayl yükləndi}}"
 
 #: src/features/wiki/attachments-page.tsx:287
 msgid "{imageCount, plural, one {# image} other {# images}}"
-msgstr "{m, plural, one {1 dəqiqə} other {# dəqiqə}}"
+msgstr "{imageCount, plural, one {# şəkil} other {# şəkil}}"
 
 #: src/features/wiki/rename-page-dialog.tsx:76
 msgid "{linksUpdated, plural, one {, updated 1 link} other {, updated # links}}"
-msgstr "{m}d {s}san"
+msgstr "{linksUpdated, plural, one {, 1 keçid yeniləndi} other {, # keçid yeniləndi}}"
 
 #: src/routes/_authenticated/$page/comments.tsx:34
 #: src/routes/_authenticated/$page/comments.tsx:46
 #: src/routes/_authenticated/$wikiId/$page/comments.tsx:41
 #: src/routes/_authenticated/$wikiId/$page/comments.tsx:53
 msgid "{pageTitle} - Comments"
-msgstr "ildə {price}"
+msgstr "{pageTitle} - Şərhlər"
 
 #: src/features/wiki/rename-page-dialog.tsx:74
 msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
-msgstr "{reviewer} → {subject} {0}-də"
+msgstr "{renamedCount, plural, one {1 səhifənin adı dəyişdirildi} other {# səhifənin adı dəyişdirildi}}"
 
 #: ../../../lib/web/src/components/data-table/bulk-actions.tsx:210
 msgid "{selectedCount, plural, one {{entityName} selected} other {{manyName} selected}}"
@@ -118,14 +118,14 @@ msgstr "{selectedCount, plural, one {# seçilmiş {entityName} üçün toplu əm
 
 #: src/features/wiki/wiki-comment-thread.tsx:115
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
-msgstr "{track} (standart, versiya {version})"
+msgstr "{totalDescendants, plural, one {# cavab} other {+# daha çox cavab}}"
 
 #: src/routes/_authenticated/$wikiId/settings.tsx:39
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
 #: src/routes/_authenticated/settings.tsx:38
 #: src/routes/_authenticated/settings.tsx:41
 msgid "{wikiName} settings"
-msgstr "{winnerName} qazandı"
+msgstr "{wikiName} parametrləri"
 
 #: src/features/wiki/page-editor.tsx:413
 msgid "*No content*"
@@ -2529,11 +2529,11 @@ msgstr "Yönləndiriləcək mövcud səhifə"
 
 #: src/features/wiki/redirects-page.tsx:261
 msgid "The existing page to redirect to (e.g., \"new-page\")"
-msgstr "\"{slug}\" səhifəsi hələ mövcud deyil."
+msgstr "Yönləndiriləcək mövcud səhifə (məsələn, \"new-page\")"
 
 #: src/features/wiki/page-view.tsx:292
 msgid "The page \"{slug}\" does not exist yet."
-msgstr "Tələb olunan tətbiq tapılmadı."
+msgstr "\"{slug}\" səhifəsi hələ mövcud deyil."
 
 #: src/features/wiki/wiki-settings.tsx:432
 msgid "The page that users see when they first visit the wiki."
@@ -2589,7 +2589,7 @@ msgstr "Bu səhifə hələ yaradılmayıb."
 
 #: src/features/wiki/wiki-settings.tsx:412
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
-msgstr "Bu hərrac ləğv ediləcək və {0} aktiv {1, plural, one {təklif verən} other {təklif verən}}-ə bildiriş göndəriləcək. Elan alıcılardan gizlədiləcək; sonra yeni qaralama kimi yenidən elan edə bilərsiniz."
+msgstr "Bu viki mənbə vikiyə abunə olub və ondan yeniləmələr alır."
 
 #: src/features/wiki/page-editor.tsx:459
 msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
@@ -2599,13 +2599,13 @@ msgstr "Bu hərrac ləğv ediləcək. Elan alıcılardan gizlədiləcək; sonra 
 #. placeholder {1}: redirect.target
 #: src/features/wiki/wiki-settings.tsx:945
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
-msgstr "Bu \"{0}\" yolu üçün marşrutu siləcək."
+msgstr "Bu, \"{0}\" ünvanından \"{1}\" ünvanına yönləndirməni siləcək."
 
 #. placeholder {0}: redirect.source
 #. placeholder {1}: redirect.target
 #: src/features/wiki/redirects-page.tsx:165
 msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the source URL will no longer be redirected."
-msgstr "Bu cari dizaynı <0>{0}</0> ilə əvəz edəcək. Bütün mövcud siniflər, sahələr, variantlar və görünüşlər silinəcək. Mövcud obyektlər silinməyəcək, lakin görünüşlərdə artıq görünməyə bilər."
+msgstr "Bu, \"{0}\" ünvanından \"{1}\" ünvanına yönləndirməni siləcək. Mənbə URL-ə daxil olan istifadəçilər artıq yönləndirilməyəcək."
 
 #. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
 #: src/features/wiki/wiki-settings.tsx:782
@@ -2756,7 +2756,7 @@ msgstr "CRM-dən abunəlikdən çıx"
 #: src/routes/_authenticated/index.tsx:305
 #: src/routes/_authenticated/index.tsx:951
 msgid "Unsubscribed"
-msgstr "{feedName}-dən abunəlikdən çıxıldı"
+msgstr "Abunəlik ləğv edildi"
 
 #: src/features/wiki/wiki-page-content.tsx:77
 #: src/features/wiki/wiki-page-content.tsx:372
@@ -2795,7 +2795,7 @@ msgstr "İzləri yenilə"
 #: src/features/wiki/tag-pages.tsx:72
 #: src/routes/_authenticated/index.tsx:924
 msgid "Updated {0}"
-msgstr "Yüklə"
+msgstr "Yeniləndi {0}"
 
 #: src/features/wiki/wiki-settings.tsx:561
 msgid "Updating access..."
@@ -2874,7 +2874,7 @@ msgstr "Versiya idarəetməsi"
 #. placeholder {0}: revision.version
 #: src/features/wiki/revision-view.tsx:78
 msgid "Version {0}"
-msgstr "Video kiçik şəkli"
+msgstr "Versiya {0}"
 
 #: ../../../lib/web/src/components/attachment-gallery.tsx:79
 msgid "Video thumbnail"
@@ -2906,7 +2906,7 @@ msgstr "Element təfərrüatlarına baxın və redaktə edin"
 
 #: src/features/wiki/wiki-settings.tsx:499
 msgid "View only"
-msgstr "{0} fotoya bax"
+msgstr "Yalnız baxış"
 
 #: src/features/wiki/page-history.tsx:37
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
