@@ -2692,6 +2692,24 @@ def event_page_delete(e):
     if not id or not deleted or not version:
         return
 
+    # Same version check event_page_create and event_page_update apply. Without
+    # it the supplied version is stored as-is, and the gate below only requires
+    # it to be higher: a delete carrying 10**18 wins, and every version derived
+    # from the row afterwards - the restore path takes version+1 - then exceeds
+    # what valid_version accepts, so every replica silently drops it. The page
+    # comes back on the owner's screen and stays deleted everywhere else, for
+    # good. This also rejects a non-integer version, which would otherwise
+    # reach the comparison below and abort the handler.
+    if not valid_version(version):
+        return
+
+    # Same timestamp window the sibling handlers apply. Unlike `updated`, this
+    # value drives no comparison - it is only ever read as deleted/not-deleted -
+    # so the window is consistency rather than a gate.
+    now = mochi.time.now()
+    if deleted > now + 86400 or deleted < now - 31536000:
+        return
+
     # Check if page exists
     existing = mochi.db.row("select * from pages where id=?", id)
     if not existing:
