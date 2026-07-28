@@ -31,7 +31,6 @@ import type {
   AttachmentsResponse,
   AttachmentUploadResponse,
   AttachmentDeleteResponse,
-  AccessListResponse,
   WikiPermissions,
 } from '@/types/wiki'
 import endpoints from '@/api/endpoints'
@@ -195,7 +194,7 @@ export function useDeletePage() {
 
 export interface PageRenameResponse {
   renamed: Array<{ old: string; new: string }>
-  updated_links: number
+  links: { updated: number }
 }
 
 export function useRenamePage() {
@@ -583,38 +582,8 @@ export function useDeleteAttachment() {
 
 // Access Control
 
-export function useAccessRules() {
-  const e = useEntityEndpoint()
-  return useQuery({
-    queryKey: ['wiki', 'access'],
-    queryFn: () =>
-      requestHelpers.get<AccessListResponse>(e(endpoints.wiki.access)),
-  })
-}
 
-export function useSetAccess() {
-  const queryClient = useQueryClient()
-  const e = useEntityEndpoint()
-  return useMutation({
-    mutationFn: (data: { subject: string; level: string }) =>
-      requestHelpers.post<{ success: boolean }>(e(endpoints.wiki.accessSet), data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'access'] })
-    },
-  })
-}
 
-export function useRevokeAccess() {
-  const queryClient = useQueryClient()
-  const e = useEntityEndpoint()
-  return useMutation({
-    mutationFn: (subject: string) =>
-      requestHelpers.post<{ success: boolean }>(e(endpoints.wiki.accessRevoke), { subject }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'access'] })
-    },
-  })
-}
 
 // User/Group search (via People app)
 
@@ -670,32 +639,8 @@ export interface Replica {
   synced: number
 }
 
-interface ReplicasResponse {
-  replicas: Replica[]
-}
 
-export function useReplicas() {
-  const e = useEntityEndpoint()
-  return useQuery({
-    queryKey: ['wiki', 'replicas'],
-    queryFn: () =>
-      requestHelpers.get<ReplicasResponse>(e(endpoints.wiki.replicas)),
-  })
-}
 
-export function useRemoveReplica() {
-  const queryClient = useQueryClient()
-  const e = useEntityEndpoint()
-  return useMutation({
-    mutationFn: (replicaId: string) =>
-      requestHelpers.post<{ ok: boolean }>(e(endpoints.wiki.replicaRemove), {
-        replica: replicaId,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'replicas'] })
-    },
-  })
-}
 
 // Create a new wiki
 

@@ -122,12 +122,24 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
 
   // RSS feed handler
-  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all') => {
+  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all', regenerate = false) => {
     try {
-      const { token } = await getRssToken(wikiId, mode)
+      const { token, exists } = await getRssToken(wikiId, mode, regenerate)
+      // Only the hash is stored, so an already-issued URL cannot be shown
+      // again. Offer to replace it rather than silently minting a new one,
+      // which would break whatever reader is polling the old URL.
+      if (exists) {
+        toast.info(t`This feed URL was already issued and cannot be shown again.`, {
+          action: {
+            label: t`Replace`,
+            onClick: () => void handleCopyRssUrl(mode, true),
+          },
+        })
+        return
+      }
       const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
       const ok = await shellClipboardWrite(url)
-      if (ok) toast.success(t`RSS URL copied to clipboard`)
+      if (ok) toast.success(regenerate ? t`New RSS URL copied to clipboard` : t`RSS URL copied to clipboard`)
     } catch (error) {
       toast.error(getErrorMessage(error, t`Failed to get RSS token`))
     }
@@ -240,7 +252,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
 
   // Page found
   if (isValidResponse && 'page' in data && typeof data.page === 'object') {
-    const commentCount = isValidResponse && 'comment_count' in data ? (data.comment_count ?? 0) : 0
+    const commentCount = isValidResponse && 'comments' in data ? (data.comments?.count ?? 0) : 0
 
     const actionsMenu = (
       <DropdownMenu>
@@ -373,7 +385,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           back={{ label: backLabel, onFallback: goBackToWikis }}
         />
         <Main className="pt-2">
-          <PageView page={data.page} missingLinks={'missing_links' in data ? data.missing_links : undefined} />
+          <PageView page={data.page} missingLinks={'links' in data ? data.links?.missing : undefined} />
         </Main>
         <ConfirmDialog
           open={unsubscribeConfirmOpen}

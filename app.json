@@ -5,7 +5,7 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 {
-	"version": "3.123",
+	"version": "3.128",
 	"label": "app.name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -15,7 +15,7 @@
 	"execute": ["wikis.star"],
 
 	"database": {
-		"schema": 4,
+		"schema": 6,
 		"file": "wikis.db",
 		"create": {"function": "database_create"},
 		"upgrade": {"function": "database_upgrade"},
@@ -113,9 +113,6 @@
 		"page/create": {"function": "event_page_create"},
 		"page/update": {"function": "event_page_update"},
 		"page/delete": {"function": "event_page_delete"},
-		"page/edit/request": {"function": "event_page_edit_request"},
-		"page/delete/request": {"function": "event_page_delete_request"},
-		"attachment/upload/request": {"function": "event_attachment_upload_request"},
 		"attachment/create": {"function": "event_attachment_create"},
 		"attachment/delete": {"function": "event_attachment_delete"},
 		"attachment/fetch": {"function": "event_attachment_fetch"},

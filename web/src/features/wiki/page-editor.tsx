@@ -60,7 +60,7 @@ interface PageEditorProps {
 }
 
 function buildAttachmentUrl(baseURL: string, id: string): string {
-  return authenticatedUrl(`${baseURL}attachments/${id}`)
+  return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`)
 }
 
 function slugify(text: string): string {
@@ -155,7 +155,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
   // Insert markdown at saved cursor position
   const insertMarkdown = (attachment: Attachment) => {
-    const url = `attachments/${attachment.id}`
+    const url = `attachments/${encodeURIComponent(attachment.id)}`
     const markdown = isImage(attachment.type)
       ? `![${attachment.name}](${url}/thumbnail)`
       : `[${attachment.name}](${url})`

@@ -70,7 +70,7 @@ type SortBy = 'name' | 'date' | 'size'
 const EMPTY_ATTACHMENTS: Attachment[] = []
 
 function buildAttachmentUrl(baseURL: string, id: string): string {
-  return authenticatedUrl(`${baseURL}attachments/${id}`)
+  return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`)
 }
 
 export function AttachmentsPage(_props: AttachmentsPageProps) {
@@ -214,7 +214,7 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
   }
 
   const handleCopy = (attachment: Attachment) => {
-    const url = `attachments/${attachment.id}`
+    const url = `attachments/${encodeURIComponent(attachment.id)}`
     const markdown = isImage(attachment.type)
       ? `![${attachment.name}](${url})`
       : `[${attachment.name}](${url})`

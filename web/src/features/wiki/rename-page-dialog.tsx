@@ -70,7 +70,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
       {
         onSuccess: (data) => {
           const renamedCount = data.renamed?.length || 1
-          const linksUpdated = data.updated_links || 0
+          const linksUpdated = data.links?.updated || 0
           let message = plural(renamedCount, { one: 'Renamed 1 page', other: 'Renamed # pages' })
           if (linksUpdated > 0) {
             message += plural(linksUpdated, { one: ', updated 1 link', other: ', updated # links' })

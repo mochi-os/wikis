@@ -23,8 +23,8 @@ export function CommentAttachments({ attachments }: CommentAttachmentsProps) {
     <div className="mt-1">
       <AttachmentGallery
         attachments={attachments}
-        getUrl={(att) => authenticatedUrl(`${baseURL}attachments/${att.id}`)}
-        getThumbnailUrl={(att) => authenticatedUrl(`${baseURL}attachments/${att.id}/thumbnail`)}
+        getUrl={(att) => authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(att.id)}`)}
+        getThumbnailUrl={(att) => authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(att.id)}/thumbnail`)}
         rowHeight={80}
       />
     </div>

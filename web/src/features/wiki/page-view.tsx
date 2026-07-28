@@ -255,6 +255,7 @@ export function PageView({ page, missingLinks }: PageViewProps) {
 
         <div className='text-muted-foreground flex items-center gap-2 text-xs'>
           <span className='bg-background text-foreground rounded border px-1.5 py-0.5 font-mono'>
+            {/* jsx-text-ok: version marker in a monospace badge, not prose */}
             v{page.version}
           </span>
           <time dateTime={new Date(page.updated * 1000).toISOString()}>
