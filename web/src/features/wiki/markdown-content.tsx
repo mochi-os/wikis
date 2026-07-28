@@ -12,7 +12,7 @@ import {
 } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { ExternalLink, Hash } from 'lucide-react'
-import Markdown from 'react-markdown'
+import Markdown, { defaultUrlTransform } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Link } from '@tanstack/react-router'
 import {
@@ -22,6 +22,7 @@ import {
   type LightboxMedia,
   useLightboxHash,
   isDomainEntityRouting,
+  markdownUrlTransform,
 } from '@mochi/web'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import {
@@ -30,6 +31,13 @@ import {
   slugifyHeading,
   type TocHeading,
 } from './markdown-content.utils'
+
+// A page is written by anyone with write access to the wiki and can be read
+// anonymously, so an externally hosted image would let its author log every
+// reader. Images uploaded as attachments are unaffected - they resolve to this
+// origin below - and remain the supported way to put a picture on a page.
+const urlTransform = markdownUrlTransform(defaultUrlTransform)
+
 function resolveAttachmentUrl(baseURL: string, url: string): string {
   if (url.startsWith('attachments/')) {
     return `${baseURL}${url}`
@@ -214,6 +222,7 @@ export function MarkdownContent({
       >
         <Markdown
           remarkPlugins={[remarkGfm]}
+          urlTransform={urlTransform}
           components={{
             // eslint-disable-next-line lingui/no-unlocalized-strings -- Tailwind utility classes
             h2: renderHeading(2, 'group flex items-center'),
