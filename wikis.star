@@ -1537,12 +1537,21 @@ def action_new(a):
 
     return {"data": {"id": id, "slug": slug}}
 
+# Whether a revision version parameter is usable. mochi.text.valid admits a
+# leading sign, which int() accepts and the revision lookup would then miss
+# silently, so exclude it here rather than relying on the query finding no row.
+def version_valid(value):
+    return value and mochi.text.valid(value, "integer") and not value.startswith("-")
+
 # Parse and clamp limit/offset query parameters for paginated list actions
 def pagination(a, default_limit=50):
     limit_input = a.input("limit")
     offset_input = a.input("offset")
-    limit = int(limit_input) if limit_input != None and str(limit_input).isdigit() else default_limit
-    offset = int(offset_input) if offset_input != None and str(offset_input).isdigit() else 0
+    # isdigit() is not a safe guard for int(): it accepts Unicode digit forms
+    # (Arabic-Indic, Devanagari) that int() then rejects, aborting the action
+    # as a 500. The clamps below cover the sign this check admits.
+    limit = int(limit_input) if limit_input != None and mochi.text.valid(str(limit_input), "integer") else default_limit
+    offset = int(offset_input) if offset_input != None and mochi.text.valid(str(offset_input), "integer") else 0
     return min(max(limit, 1), 200), max(offset, 0)
 
 # Page history
@@ -1599,7 +1608,7 @@ def action_page_revision(a):
         a.error.label(400, "errors.missing_page_parameter")
         return
 
-    if not version or not version.isdigit():
+    if not version_valid(version):
         a.error.label(400, "errors.missing_version_parameter")
         return
 
@@ -1655,7 +1664,7 @@ def action_page_revert(a):
         a.error.label(400, "errors.missing_page_parameter")
         return
 
-    if not version or not version.isdigit():
+    if not version_valid(version):
         a.error.label(400, "errors.version_is_required")
         return
 
