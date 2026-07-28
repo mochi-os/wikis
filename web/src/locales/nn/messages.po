@@ -16,7 +16,7 @@ msgstr ""
 #. js-lingui-explicit-id
 #: ../../../lib/web/src/lib/error-normalizer.ts:204
 msgid "Please check your internet connection and try again."
-msgstr ""
+msgstr "Sjekk internettsambandet ditt og prøv igjen."
 
 #: src/features/wiki/wiki-comment-thread.tsx:131
 msgid "(edited)"
@@ -56,7 +56,7 @@ msgstr "{0} ({1}, {2})"
 #. placeholder {0}: wiki.pages
 #: src/routes/_authenticated/index.tsx:918
 msgid "{0} pages"
-msgstr ""
+msgstr "{0} sider"
 
 #. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
 #: src/features/wiki/tag-pages.tsx:44
@@ -79,7 +79,7 @@ msgstr "{entityLabel}-namn"
 #: src/features/wiki/attachments-page.tsx:179
 #: src/features/wiki/page-editor.tsx:227
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
-msgstr ""
+msgstr "{fileCount, plural, one {# fil lasta opp} other {# filer lasta opp}}"
 
 #: src/features/wiki/attachments-page.tsx:287
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -287,11 +287,11 @@ msgstr "Tillat alle å søkje etter wiki"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:159
 msgid "An error occurred"
-msgstr ""
+msgstr "Det oppstod ein feil"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:256
 msgid "An unexpected error occurred"
-msgstr ""
+msgstr "Det oppstod ein uventa feil"
 
 #: src/features/wiki/wiki-settings.tsx:480
 msgid "Are you absolutely sure?"
@@ -318,7 +318,7 @@ msgstr "Stig"
 
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx:27
 msgid "Ascending"
-msgstr ""
+msgstr "Stigande"
 
 #: src/features/wiki/comment-form.tsx:123
 msgid "Attach files"
@@ -370,7 +370,7 @@ msgstr "Tilbake til historikken"
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:28
 #: ../../../lib/web/src/features/errors/unauthorized-error.tsx:28
 msgid "Back to home"
-msgstr ""
+msgstr "Tilbake til start"
 
 #: src/routes/_authenticated/$page/attachments.tsx:42
 #: src/routes/_authenticated/$page/comments.tsx:47
@@ -513,7 +513,7 @@ msgstr "Endringar og kommentarar"
 #. placeholder {1}: revision.version
 #: src/features/wiki/revision-view.tsx:165
 msgid "Changes from version {0} → {1}"
-msgstr ""
+msgstr "Endringar frå versjon {0} → {1}"
 
 #: src/features/wiki/changes-list.tsx:38
 msgid "Changes will appear here when pages are edited."
@@ -587,7 +587,7 @@ msgstr "Lat att navigeringa"
 #: ../../../lib/web/src/components/layout/right-panel.tsx:265
 #: ../../../lib/web/src/components/layout/right-panel.tsx:268
 msgid "Close panel"
-msgstr ""
+msgstr "Lukk panelet"
 
 #: ../../../lib/web/src/components/header-search.tsx:54
 msgid "Close search"
@@ -598,7 +598,7 @@ msgstr "Lat att søket"
 #: ../../../lib/web/src/components/tree-row.tsx:338
 #: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Collapse"
-msgstr ""
+msgstr "Slå saman"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:39
 msgid "Collapse sidebar"
@@ -630,7 +630,7 @@ msgstr "Kompakt"
 
 #: src/features/wiki/revision-view.tsx:96
 msgid "Compare changes"
-msgstr ""
+msgstr "Samanlikn endringar"
 
 #: ../../../lib/web/src/components/place-picker.tsx:159
 #: ../../../lib/web/src/components/travelling-picker.tsx:316
@@ -655,7 +655,7 @@ msgstr "Hald fram"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:352
 msgid "Continue with {label}"
-msgstr ""
+msgstr "Hald fram med {label}"
 
 #: ../../../lib/web/src/components/ui/copy-button.tsx:63
 msgid "Copy"
@@ -670,7 +670,7 @@ msgstr "Kopier innebyggingslenkje"
 
 #: src/features/wiki/revision-view.tsx:171
 msgid "Could not load previous version for comparison."
-msgstr ""
+msgstr "Klarte ikkje å laste førre versjon for samanlikning."
 
 #: ../../../lib/web/src/features/document/document-page.tsx:84
 msgid "Could not load this document. Please try again later."
@@ -678,15 +678,15 @@ msgstr "Kunne ikkje lasta dette dokumentet. Prøv igjen seinare."
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:184
 msgid "Couldn't send the code. Please try again."
-msgstr ""
+msgstr "Klarte ikkje å sende koden. Prøv igjen."
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:136
 msgid "Couldn't start re-authentication. Please try again."
-msgstr ""
+msgstr "Klarte ikkje å starte ny autentisering. Prøv igjen."
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:221
 msgid "Couldn't verify with that account. Please try again."
-msgstr ""
+msgstr "Klarte ikkje å stadfeste med den kontoen. Prøv igjen."
 
 #: src/features/wiki/wiki-settings.tsx:1034
 msgid "Create a redirect from one URL to another."
@@ -737,11 +737,11 @@ msgstr "Oppretta"
 #: src/features/wiki/redirects-page.tsx:207
 #: src/features/wiki/wiki-settings.tsx:1005
 msgid "Creating redirect..."
-msgstr ""
+msgstr "Opprettar omdirigering..."
 
 #: src/components/layout/wiki-layout.tsx:79
 msgid "Creating wiki..."
-msgstr ""
+msgstr "Opprettar wiki..."
 
 #: src/features/wiki/page-editor.tsx:395
 #: src/features/wiki/redirects-page.tsx:274
@@ -773,7 +773,7 @@ msgstr "Mørk modus"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:240
 msgid "Data conflict"
-msgstr ""
+msgstr "Datakonflikt"
 
 #: src/features/wiki/attachments-page.tsx:378
 #: src/features/wiki/changes-list.tsx:48
@@ -866,11 +866,11 @@ msgstr "Slett: {pageTitle}"
 #: src/features/wiki/redirects-page.tsx:118
 #: src/features/wiki/wiki-settings.tsx:864
 msgid "Deleting redirect..."
-msgstr ""
+msgstr "Slettar omdirigering..."
 
 #: src/features/wiki/wiki-settings.tsx:346
 msgid "Deleting wiki..."
-msgstr ""
+msgstr "Slettar wiki..."
 
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/wiki-settings.tsx:474
@@ -883,7 +883,7 @@ msgstr "Sink"
 
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx:27
 msgid "Descending"
-msgstr ""
+msgstr "Fallande"
 
 #: ../../../lib/web/src/components/layout/right-panel.tsx:148
 msgid "Details Panel"
@@ -924,7 +924,7 @@ msgstr "Last ned"
 
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:68
 msgid "Download failed"
-msgstr ""
+msgstr "Nedlastinga feila"
 
 #: src/features/wiki/attachments-page.tsx:442
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
@@ -944,7 +944,7 @@ msgstr "Rediger"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:154
 msgid "Edit {label}"
-msgstr ""
+msgstr "Rediger {label}"
 
 #: src/features/wiki/wiki-settings.tsx:498
 msgid "Edit and view"
@@ -985,11 +985,11 @@ msgstr "Skriv inn etikettnamn"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:299
 msgid "Enter the code from your email"
-msgstr ""
+msgstr "Skriv inn koden frå e-posten din"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:324
 msgid "Enter your authenticator code"
-msgstr ""
+msgstr "Skriv inn autentiseringskoden din"
 
 #: src/features/wiki/wiki-settings.tsx:397
 msgid "Entity ID"
@@ -1008,7 +1008,7 @@ msgstr "Døme: \"home\", \"welcome\", \"index\""
 #: ../../../lib/web/src/components/tree-row.tsx:338
 #: ../../../lib/web/src/components/tree-row.tsx:352
 msgid "Expand"
-msgstr ""
+msgstr "Utvid"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:39
 msgid "Expand sidebar"
@@ -1205,7 +1205,7 @@ msgstr "Fullfør flyttinga av kontoen din"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:116
 msgid "Flat"
-msgstr ""
+msgstr "Flat"
 
 #: ../../../lib/web/src/components/config-drawer.tsx:257
 msgid "Floating"
@@ -1241,7 +1241,7 @@ msgstr "Full layout"
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:26
 #: ../../../lib/web/src/features/errors/unauthorized-error.tsx:26
 msgid "Go back"
-msgstr ""
+msgstr "Gå tilbake"
 
 #: ../../../lib/web/src/components/data-table/pagination.tsx:82
 msgid "Go to first page"
@@ -1257,7 +1257,7 @@ msgstr "Gå til neste side"
 
 #: ../../../lib/web/src/components/data-table/pagination.tsx:106
 msgid "Go to page {pageNumber}"
-msgstr ""
+msgstr "Gå til side {pageNumber}"
 
 #: ../../../lib/web/src/components/data-table/pagination.tsx:91
 msgid "Go to previous page"
@@ -1278,7 +1278,7 @@ msgstr "Skjul"
 
 #: ../../../lib/web/src/components/password-input.tsx:27
 msgid "Hide password"
-msgstr ""
+msgstr "Skjul passordet"
 
 #: src/features/wiki/wiki-page-content.tsx:293
 #: src/routes/_authenticated/$page/index.tsx:215
@@ -1340,7 +1340,7 @@ msgstr "Bilete"
 
 #: src/features/wiki/page-editor.tsx:508
 msgid "images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration."
-msgstr ""
+msgstr "bilete, PDF, DOC, DOCX, TXT og MD. Store opplastingar kan òg vere avgrensa av tenaren din eller proxy-oppsettet."
 
 #: ../../../lib/web/src/lib/preference-utils.ts:86
 msgid "Imperial"
@@ -1386,7 +1386,7 @@ msgstr "Stor"
 
 #: src/features/wiki/attachments-page.tsx:317
 msgid "Large uploads may be limited by your server or proxy configuration."
-msgstr ""
+msgstr "Store opplastingar kan vere avgrensa av tenaren din eller proxy-oppsettet."
 
 #: src/features/wiki/wiki-settings.tsx:744
 msgid "Last synced"
@@ -1506,7 +1506,7 @@ msgstr "Namn må vera 100 teikn eller mindre"
 #: ../../../lib/web/src/features/errors/general-error.tsx:53
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:303
 msgid "Network error"
-msgstr ""
+msgstr "Nettverksfeil"
 
 #: src/features/wiki/wiki-settings.tsx:758
 msgid "Never"
@@ -1531,7 +1531,7 @@ msgstr "Ny side"
 #: src/routes/_authenticated/index.tsx:337
 #: src/routes/_authenticated/index.tsx:624
 msgid "New RSS URL copied to clipboard"
-msgstr ""
+msgstr "Ny RSS-URL kopiert til utklippstavla"
 
 #: src/features/wiki/rename-page-dialog.tsx:103
 msgid "New URL"
@@ -1625,7 +1625,7 @@ msgstr "Ingen revisjonar funne"
 
 #: src/features/wiki/tag-manager.tsx:91
 msgid "No tags"
-msgstr ""
+msgstr "Ingen merkelappar"
 
 #: src/features/wiki/tags-list.tsx:37
 msgid "No tags found"
@@ -1660,7 +1660,7 @@ msgstr "Normal"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:67
 msgid "Not found"
-msgstr ""
+msgstr "Ikkje funnen"
 
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:146
 msgid "Not set"
@@ -1706,7 +1706,7 @@ msgstr "Opna kontohandlingar"
 #: ../../../lib/web/src/components/layout/nav-group.tsx:202
 #: ../../../lib/web/src/components/layout/nav-group.tsx:207
 msgid "Open actions"
-msgstr ""
+msgstr "Opne handlingar"
 
 #: src/features/wiki/attachments-page.tsx:653
 #: src/features/wiki/attachments-page.tsx:658
@@ -1820,7 +1820,7 @@ msgstr "Nykel"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:209
 msgid "Passkey verification failed. Please try again."
-msgstr ""
+msgstr "Stadfesting av tilgangsnøkkelen feila. Prøv igjen."
 
 #: ../../../lib/web/src/components/restore-banner.tsx:135
 msgid "Passkeys"
@@ -1833,7 +1833,7 @@ msgstr "Slett denne wikien og alt innhaldet permanent. Dette kan ikkje angrast."
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
 msgid "Please check your internet connection and try again."
-msgstr ""
+msgstr "Sjekk internettsambandet ditt og prøv igjen."
 
 #: ../../../lib/web/src/features/errors/unauthorized-error.tsx:18
 msgid "Please log in with the appropriate credentials <0/> to access this resource."
@@ -1841,11 +1841,11 @@ msgstr "Logg inn med rett legitimasjon <0/> for å få tilgang til denne ressurs
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:83
 msgid "Please try again."
-msgstr ""
+msgstr "Prøv igjen."
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:75
 msgid "Please wait a moment and try again."
-msgstr ""
+msgstr "Vent eit augeblink og prøv igjen."
 
 #: src/features/wiki/page-editor.tsx:339
 msgid "Preview"
@@ -1868,12 +1868,12 @@ msgstr "Profil"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:117
 msgid "Raised"
-msgstr ""
+msgstr "Heva"
 
 #: src/features/wiki/page-editor.tsx:448
 #: src/features/wiki/page-editor.tsx:454
 msgid "Re-derive from title"
-msgstr ""
+msgstr "Utled på nytt frå tittelen"
 
 #: ../../../lib/web/src/components/restore-banner.tsx:107
 msgid "Re-link your accounts on this server"
@@ -1978,7 +1978,7 @@ msgstr "Fjern tilgang?"
 
 #: src/features/wiki/wiki-comment-thread.tsx:263
 msgid "Remove file"
-msgstr ""
+msgstr "Fjern fila"
 
 #: ../../../lib/web/src/components/post-tags.tsx:220
 #: ../../../lib/web/src/components/post-tags.tsx:232
@@ -1997,11 +1997,11 @@ msgstr "Fjern replika?"
 
 #: src/features/wiki/wiki-settings.tsx:577
 msgid "Removing access..."
-msgstr ""
+msgstr "Fjernar tilgang..."
 
 #: src/features/wiki/wiki-settings.tsx:674
 msgid "Removing replica..."
-msgstr ""
+msgstr "Fjernar replika..."
 
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
@@ -2023,11 +2023,11 @@ msgstr "Døyper om..."
 #: src/routes/_authenticated/index.tsx:329
 #: src/routes/_authenticated/index.tsx:616
 msgid "Replace"
-msgstr ""
+msgstr "Byt ut"
 
 #: src/features/wiki/wiki-settings.tsx:675
 msgid "Replica \"{displayName}\" removed"
-msgstr ""
+msgstr "Replikaen «{displayName}» vart fjerna"
 
 #: src/features/wiki/wiki-settings.tsx:108
 #: src/features/wiki/wiki-settings.tsx:691
@@ -2064,7 +2064,7 @@ msgstr "Førespurnads-URL: {baseURL}{slug}"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:367
 msgid "Resend email"
-msgstr ""
+msgstr "Send e-posten på nytt"
 
 #: ../../../lib/web/src/components/config-drawer.tsx:86
 #: ../../../lib/web/src/components/data-table/toolbar.tsx:81
@@ -2085,7 +2085,7 @@ msgstr "Tilbakerull kommentar"
 
 #: src/features/wiki/revert-page.tsx:63
 msgid "Revert page"
-msgstr ""
+msgstr "Tilbakestill sida"
 
 #: src/features/wiki/page-history.tsx:134
 #: src/features/wiki/page-history.tsx:147
@@ -2280,7 +2280,7 @@ msgstr "Vald: <0>{0}</0>"
 
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:100
 msgid "Send again"
-msgstr ""
+msgstr "Send igjen"
 
 #: src/features/wiki/comment-form.tsx:137
 msgid "Send comment"
@@ -2288,7 +2288,7 @@ msgstr "Send kommentar"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:307
 msgid "Send email"
-msgstr ""
+msgstr "Send e-post"
 
 #: src/features/wiki/wiki-comment-thread.tsx:303
 msgid "Send reply"
@@ -2301,7 +2301,7 @@ msgstr "Serif"
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:260
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:286
 msgid "Server error"
-msgstr ""
+msgstr "Tenarfeil"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx:19
 #: ../../../lib/web/src/features/document/document-page.tsx:40
@@ -2310,7 +2310,7 @@ msgstr "Tenarreglar"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:210
 msgid "Session expired. Please log in again."
-msgstr ""
+msgstr "Økta gjekk ut. Logg inn igjen."
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:147
 msgid "Set origin and destination"
@@ -2318,7 +2318,7 @@ msgstr "Set opphav og mål"
 
 #: src/features/wiki/wiki-settings.tsx:548
 msgid "Setting access..."
-msgstr ""
+msgstr "Set tilgang..."
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:93
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:99
@@ -2338,11 +2338,11 @@ msgstr "Innstillingar lagra"
 
 #: src/features/wiki/revision-view.tsx:96
 msgid "Show page"
-msgstr ""
+msgstr "Vis sida"
 
 #: ../../../lib/web/src/components/password-input.tsx:27
 msgid "Show password"
-msgstr ""
+msgstr "Vis passordet"
 
 #: ../../../lib/web/src/components/ui/load-more.tsx:39
 msgid "Showing {totalShown} of {total}"
@@ -2357,7 +2357,7 @@ msgstr "Sidestolpe"
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:105
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:111
 msgid "Sign out"
-msgstr ""
+msgstr "Logg ut"
 
 #: ../../../lib/web/src/components/layout/authenticated-layout.tsx:131
 msgid "Signing out..."
@@ -2439,11 +2439,11 @@ msgstr "Sundag"
 
 #: src/features/wiki/page-editor.tsx:506
 msgid "Supported files"
-msgstr ""
+msgstr "Støtta filer"
 
 #: src/features/wiki/attachments-page.tsx:316
 msgid "Supported files: images, PDF, DOC, DOCX, TXT, and MD."
-msgstr ""
+msgstr "Støtta filer: bilete, PDF, DOC, DOCX, TXT og MD."
 
 #: src/features/wiki/wiki-settings.tsx:416
 msgid "Sync now"
@@ -2517,7 +2517,7 @@ msgstr "Vilkår"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:195
 msgid "That code is incorrect or has expired."
-msgstr ""
+msgstr "Koden er feil eller har gått ut."
 
 #: src/routes/_authenticated/join.tsx:110
 msgid "The entity ID of the wiki you want to replicate."
@@ -2541,7 +2541,7 @@ msgstr "Sida brukarane ser når dei først går inn på wiki-en."
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:68
 msgid "The requested content could not be found."
-msgstr ""
+msgstr "Fann ikkje innhaldet du bad om."
 
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:15
 msgid "The site is not available at the moment."
@@ -2571,17 +2571,17 @@ msgstr "Denne handlinga kan ikkje gjerast om. Dette vil sletta wiki-en og alt in
 #: src/routes/_authenticated/index.tsx:327
 #: src/routes/_authenticated/index.tsx:614
 msgid "This feed URL was already issued and cannot be shown again."
-msgstr ""
+msgstr "Denne straum-URL-en er allereie utferda og kan ikkje visast igjen."
 
 #: src/features/wiki/attachments-page.tsx:145
 #: src/features/wiki/page-editor.tsx:193
 msgid "This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit."
-msgstr ""
+msgstr "Fila er for stor for den gjeldande opplastingsgrensa på tenaren. Prøv ei mindre fil, eller auk opplastingsgrensa på tenaren eller proxyen."
 
 #: src/features/wiki/attachments-page.tsx:156
 #: src/features/wiki/page-editor.tsx:204
 msgid "This file is too large to upload. Try a smaller file."
-msgstr ""
+msgstr "Fila er for stor til å lastast opp. Prøv ei mindre fil."
 
 #: ../../../lib/web/src/components/coming-soon.tsx:14
 msgid "This page has not been created yet."
@@ -2636,19 +2636,19 @@ msgstr "Slå kolonner av/på"
 #: ../../../lib/web/src/components/layout/right-panel.tsx:233
 #: ../../../lib/web/src/components/layout/right-panel.tsx:236
 msgid "Toggle right panel"
-msgstr ""
+msgstr "Slå høgrepanelet av/på"
 
 #: ../../../lib/web/src/components/layout/nav-group.tsx:373
 #: ../../../lib/web/src/components/layout/nav-group.tsx:380
 #: ../../../lib/web/src/components/layout/nav-group.tsx:503
 #: ../../../lib/web/src/components/layout/nav-group.tsx:510
 msgid "Toggle section"
-msgstr ""
+msgstr "Slå bolken av/på"
 
 #: ../../../lib/web/src/components/ui/sidebar.tsx:317
 #: ../../../lib/web/src/components/ui/sidebar.tsx:320
 msgid "Toggle sidebar"
-msgstr ""
+msgstr "Slå sidepanelet av/på"
 
 #: ../../../lib/web/src/components/ui/sidebar.tsx:332
 #: ../../../lib/web/src/components/ui/sidebar.tsx:335
@@ -2662,7 +2662,7 @@ msgstr "Slå tema av/på"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:74
 msgid "Too many requests"
-msgstr ""
+msgstr "For mange førespurnader"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:45
 msgid "Top"
@@ -2713,7 +2713,7 @@ msgstr "Skriv for å søkje..."
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:282
 msgid "Unable to connect to remote server"
-msgstr ""
+msgstr "Klarte ikkje å kople til fjerntenaren"
 
 #: ../../../lib/web/src/lib/auth-manager.ts:85
 #: ../../../lib/web/src/lib/auth-manager.ts:97
@@ -2772,12 +2772,12 @@ msgstr "Seier opp abonnement..."
 #: src/features/wiki/attachments-page.tsx:138
 #: src/features/wiki/page-editor.tsx:186
 msgid "Unsupported file type: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
-msgstr ""
+msgstr "Filtypen er ikkje støtta: {names}. Støtta filer: bilete, PDF, DOC, DOCX, TXT og MD."
 
 #: src/features/wiki/attachments-page.tsx:139
 #: src/features/wiki/page-editor.tsx:187
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
-msgstr ""
+msgstr "Filtypane er ikkje støtta: {names}. Støtta filer: bilete, PDF, DOC, DOCX, TXT og MD."
 
 #: src/features/wiki/page-editor.tsx:412
 msgid "Untitled"
@@ -2799,7 +2799,7 @@ msgstr "Oppdatert {0}"
 
 #: src/features/wiki/wiki-settings.tsx:561
 msgid "Updating access..."
-msgstr ""
+msgstr "Oppdaterer tilgang..."
 
 #: src/features/wiki/page-editor.tsx:562
 msgid "Upload a file to get started."
@@ -2808,17 +2808,17 @@ msgstr "Last opp ei fil for å koma i gang."
 #: src/features/wiki/attachments-page.tsx:323
 #: src/features/wiki/page-editor.tsx:542
 msgid "Upload failed"
-msgstr ""
+msgstr "Opplastinga feila"
 
 #: src/features/wiki/attachments-page.tsx:153
 #: src/features/wiki/page-editor.tsx:201
 msgid "Upload failed because this account has reached its storage limit."
-msgstr ""
+msgstr "Opplastinga feila fordi kontoen har nådd lagringsgrensa si."
 
 #: src/features/wiki/attachments-page.tsx:150
 #: src/features/wiki/page-editor.tsx:198
 msgid "Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again."
-msgstr ""
+msgstr "Opplastinga feila. Fila kan vere for stor for den gjeldande opplastingsgrensa på tenaren eller proxyen. Er fila lita, sjekk sambandet og prøv igjen."
 
 #: src/features/wiki/attachments-page.tsx:308
 msgid "Upload files"
@@ -2826,7 +2826,7 @@ msgstr "Last opp filer"
 
 #: src/features/wiki/attachments-page.tsx:314
 msgid "Upload guidance"
-msgstr ""
+msgstr "Rettleiing for opplasting"
 
 #: src/features/wiki/page-editor.tsx:536
 msgid "Upload new"
@@ -2838,7 +2838,7 @@ msgstr "Bruk som heim"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:338
 msgid "Use your passkey"
-msgstr ""
+msgstr "Bruk tilgangsnøkkelen din"
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
 msgid "User"
@@ -2893,7 +2893,7 @@ msgstr "Vis"
 #: src/features/wiki/page-history.tsx:125
 msgctxt "action"
 msgid "View"
-msgstr ""
+msgstr "Vis"
 
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:177
 msgid "View all"
@@ -3021,7 +3021,7 @@ msgstr "Du er i ferd med å rulle <0>{slug}</0> tilbake til versjon <1>{version}
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:61
 msgid "You do not have access to this section."
-msgstr ""
+msgstr "Du har ikkje tilgang til denne bolken."
 
 #: ../../../lib/web/src/features/errors/forbidden.tsx:18
 msgid "You don't have necessary permission <0/>to view this resource."
