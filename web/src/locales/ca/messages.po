@@ -53,6 +53,11 @@ msgstr "{0, plural, one {# seleccionat} other {# seleccionats}}"
 msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
+#. placeholder {0}: item.label
+#: ../../../lib/web/src/components/config-drawer.tsx:160
+msgid "{0} option preview"
+msgstr ""
+
 #. placeholder {0}: wiki.pages
 #: src/routes/_authenticated/index.tsx:918
 msgid "{0} pages"
@@ -72,9 +77,13 @@ msgstr "{commentCount, plural, one {1 comentari} other {# comentaris}}"
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# document} other {# documents}}"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:173
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:174
 msgid "{entityLabel} name"
 msgstr "Nom de {entityLabel}"
+
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:99
+msgid "{entityLabel} name is required"
+msgstr ""
 
 #: src/features/wiki/attachments-page.tsx:179
 #: src/features/wiki/page-editor.tsx:227
@@ -120,6 +129,10 @@ msgstr "{selectedCount, plural, one {Accions massives per a # {entityName} selec
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# resposta} other {+# respostes més}}"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:132
+msgid "{unreadCount, plural, one {Open menu (# unread notification)} other {Open menu (# unread notifications)}}"
+msgstr ""
+
 #: src/routes/_authenticated/$wikiId/settings.tsx:39
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
 #: src/routes/_authenticated/settings.tsx:38
@@ -155,7 +168,7 @@ msgstr "Accés denegat"
 msgid "Access Forbidden"
 msgstr "Accés prohibit"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:192
+#: ../../../lib/web/src/features/access/access-list.tsx:197
 msgid "Access level"
 msgstr "Nivell d'accés"
 
@@ -193,6 +206,7 @@ msgstr "Compte verificat"
 msgid "Actions"
 msgstr "Accions"
 
+#: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:196
 #: src/features/wiki/tag-manager.tsx:125
 #: src/features/wiki/tag-manager.tsx:130
@@ -218,7 +232,7 @@ msgstr "Afegeix un compte"
 msgid "Add an account to receive notifications and use services."
 msgstr "Afegeix un compte per rebre notificacions i utilitzar serveis."
 
-#: ../../../lib/web/src/features/accounts/account-picker.tsx:101
+#: ../../../lib/web/src/features/accounts/account-picker.tsx:102
 msgid "Add new account"
 msgstr "Afegeix un compte nou"
 
@@ -228,6 +242,7 @@ msgid "Add redirect"
 msgstr "Afegeix una redirecció"
 
 #: ../../../lib/web/src/components/post-tags.tsx:137
+#: ../../../lib/web/src/components/tag-input.tsx:40
 msgid "Add tag..."
 msgstr "Afegeix una etiqueta..."
 
@@ -248,11 +263,12 @@ msgstr "Afegeix a les notificacions existents"
 msgid "Add view"
 msgstr "Afegeix una vista"
 
+#: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: src/features/wiki/tag-manager.tsx:155
 msgid "Adding..."
 msgstr "S'està afegint..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:71
+#: ../../../lib/web/src/components/config-drawer.tsx:72
 msgid "Adjust the appearance and layout to suit your preferences."
 msgstr "Ajusta l'aparença i la disposició a les teves preferències."
 
@@ -281,6 +297,11 @@ msgstr "Totes les etiquetes"
 msgid "All wikis"
 msgstr "Totes les wikis"
 
+#. placeholder {0}: entityLabel.toLowerCase()
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
+msgid "Allow anyone to search for {0}"
+msgstr ""
+
 #: src/components/layout/wiki-layout.tsx:160
 msgid "Allow anyone to search for wiki"
 msgstr "Permet que qualsevol cerqui la wiki"
@@ -292,6 +313,19 @@ msgstr "S'ha produït un error"
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:256
 msgid "An unexpected error occurred"
 msgstr "S'ha produït un error inesperat"
+
+#: ../../../lib/web/src/features/accounts/types.ts:16
+msgid "Android push"
+msgstr ""
+
+#: ../../../lib/web/src/features/access/access-list.tsx:45
+#: ../../../lib/web/src/features/access/types.ts:42
+msgid "Anyone"
+msgstr "Qualsevol"
+
+#: ../../../lib/web/src/features/access/types.ts:41
+msgid "Anyone who is logged in"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:480
 msgid "Are you absolutely sure?"
@@ -343,6 +377,11 @@ msgstr "Fitxer adjunt suprimit"
 msgid "Attachments"
 msgstr "Fitxers adjunts"
 
+#: ../../../lib/web/src/features/access/access-list.tsx:46
+#: ../../../lib/web/src/features/access/types.ts:41
+msgid "Authenticated users"
+msgstr "Usuaris autenticats"
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:315
 msgid "Authenticator code"
 msgstr "Codi de l'autenticador"
@@ -352,7 +391,15 @@ msgstr "Codi de l'autenticador"
 msgid "Author"
 msgstr "Autor"
 
-#: ../../../lib/web/src/components/place-picker.tsx:155
+#: ../../../lib/web/src/components/entity-avatar.tsx:99
+msgid "Avatar"
+msgstr "Avatar"
+
+#: ../../../lib/web/src/components/entity-avatar.tsx:99
+msgid "Avatar for {name}"
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:156
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
@@ -435,6 +482,10 @@ msgstr "Torna a la pàgina"
 msgid "Back to wikis"
 msgstr "Torna a les wikis"
 
+#: ../../../lib/web/src/components/entity-banner.tsx:17
+msgid "Banner"
+msgstr "Bàner"
+
 #: src/features/wiki/page-comments.tsx:104
 msgid "Be the first to comment on this page."
 msgstr "Sigues el primer a comentar aquesta pàgina."
@@ -457,13 +508,17 @@ msgstr "Descriu breument els teus canvis"
 msgid "Browse pages by tag. Click a tag to see all pages with that tag."
 msgstr "Explora les pàgines per etiqueta. Fes clic en una etiqueta per veure totes les pàgines que la tenen."
 
+#: ../../../lib/web/src/features/accounts/types.ts:13
+msgid "Browser notifications"
+msgstr "Notificacions del navegador"
+
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
 #: ../../../lib/web/src/components/step-up-dialog.tsx:363
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:248
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
 #: ../../../lib/web/src/features/access/access-dialog.tsx:328
-#: ../../../lib/web/src/features/access/access-list.tsx:263
+#: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
 #: src/features/wiki/comment-form.tsx:129
@@ -519,19 +574,23 @@ msgstr "Canvis de la versió {0} → {1}"
 msgid "Changes will appear here when pages are edited."
 msgstr "Els canvis apareixeran aquí quan s'editin pàgines."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:328
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:198
+msgid "Check \"All\" to see your past notifications."
+msgstr "Marca «Tot» per veure les notificacions anteriors."
+
+#: ../../../lib/web/src/components/config-drawer.tsx:329
 msgid "Choose between default expanded, compact icon-only, or full layout mode"
 msgstr "Tria entre el mode expandit per defecte, només icones compacte o disposició completa"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:270
+#: ../../../lib/web/src/components/config-drawer.tsx:271
 msgid "Choose between inset, floating, or standard sidebar layout"
 msgstr "Tria entre la barra lateral encastada, flotant o estàndard"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:371
+#: ../../../lib/web/src/components/config-drawer.tsx:372
 msgid "Choose between left-to-right or right-to-left site direction"
 msgstr "Tria entre direcció del lloc d'esquerra a dreta o de dreta a esquerra"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:226
+#: ../../../lib/web/src/components/config-drawer.tsx:227
 msgid "Choose between system preference, light mode, or dark mode"
 msgstr "Tria entre la preferència del sistema, mode clar o mode fosc"
 
@@ -540,8 +599,8 @@ msgstr "Tria entre la preferència del sistema, mode clar o mode fosc"
 msgid "Choose language"
 msgstr "Tria l'idioma"
 
-#: ../../../lib/web/src/components/colour-picker.tsx:269
-#: ../../../lib/web/src/components/colour-picker.tsx:350
+#: ../../../lib/web/src/components/colour-picker.tsx:270
+#: ../../../lib/web/src/components/colour-picker.tsx:351
 #: ../../../lib/web/src/components/travelling-picker.tsx:164
 #: ../../../lib/web/src/components/travelling-picker.tsx:170
 #: ../../../lib/web/src/components/travelling-picker.tsx:231
@@ -549,7 +608,7 @@ msgstr "Tria l'idioma"
 msgid "Clear"
 msgstr "Esborra"
 
-#: ../../../lib/web/src/components/filter-bar.tsx:73
+#: ../../../lib/web/src/components/filter-bar.tsx:74
 msgid "Clear all"
 msgstr "Esborra-ho tot"
 
@@ -557,6 +616,7 @@ msgstr "Esborra-ho tot"
 msgid "Clear filters"
 msgstr "Esborra els filtres"
 
+#: ../../../lib/web/src/components/search-input.tsx:26
 #: src/features/wiki/attachments-page.tsx:349
 #: src/features/wiki/attachments-page.tsx:354
 msgid "Clear search"
@@ -612,6 +672,10 @@ msgstr "Còmode"
 msgid "Coming Soon!"
 msgstr "Pròximament!"
 
+#: ../../../lib/web/src/components/ui/command.tsx:34
+msgid "Command Palette"
+msgstr ""
+
 #: src/features/wiki/changes-list.tsx:49
 #: src/features/wiki/page-history.tsx:59
 msgid "Comment"
@@ -623,7 +687,7 @@ msgstr "Comentari"
 msgid "Comments"
 msgstr "Comentaris"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:315
+#: ../../../lib/web/src/components/config-drawer.tsx:316
 #: ../../../lib/web/src/lib/preference-utils.ts:95
 msgid "Compact"
 msgstr "Compacte"
@@ -632,14 +696,30 @@ msgstr "Compacte"
 msgid "Compare changes"
 msgstr "Compara els canvis"
 
-#: ../../../lib/web/src/components/place-picker.tsx:159
+#: ../../../lib/web/src/components/place-picker.tsx:160
 #: ../../../lib/web/src/components/travelling-picker.tsx:316
 msgid "Confirm"
 msgstr "Confirma"
 
+#: ../../../lib/web/src/lib/chat-ui.ts:18
+msgid "Connected"
+msgstr "Connectat"
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:191
+msgid "Connected accounts"
+msgstr "Comptes connectats"
+
+#: ../../../lib/web/src/lib/chat-ui.ts:21
+msgid "Connecting..."
+msgstr "S'està connectant..."
+
 #: src/features/wiki/page-editor.tsx:469
 msgid "Content"
 msgstr "Contingut"
+
+#: ../../../lib/web/src/lib/handle-server-error.ts:18
+msgid "Content not found."
+msgstr "No s'ha trobat el contingut."
 
 #: ../../../lib/web/src/lib/query-client.ts:81
 msgid "Content not modified"
@@ -657,7 +737,15 @@ msgstr "Continua"
 msgid "Continue with {label}"
 msgstr "Continua amb {label}"
 
-#: ../../../lib/web/src/components/ui/copy-button.tsx:63
+#: ../../../lib/web/src/lib/toast-utils.ts:42
+msgid "Copied"
+msgstr "Copiat"
+
+#: ../../../lib/web/src/components/ui/copy-button.tsx:25
+msgid "Copied to clipboard"
+msgstr "Copiat al porta-retalls"
+
+#: ../../../lib/web/src/components/ui/copy-button.tsx:64
 msgid "Copy"
 msgstr "Copia"
 
@@ -687,6 +775,11 @@ msgstr "No s'ha pogut iniciar la reautenticació. Torneu-ho a provar."
 #: ../../../lib/web/src/components/step-up-dialog.tsx:221
 msgid "Couldn't verify with that account. Please try again."
 msgstr "No s'ha pogut verificar amb aquest compte. Torneu-ho a provar."
+
+#. placeholder {0}: entityLabel.toLowerCase()
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
+msgid "Create {0}"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:1034
 msgid "Create a redirect from one URL to another."
@@ -743,6 +836,7 @@ msgstr "S'està creant la redirecció..."
 msgid "Creating wiki..."
 msgstr "S'està creant el wiki..."
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
 #: src/features/wiki/page-editor.tsx:395
 #: src/features/wiki/redirects-page.tsx:274
 #: src/features/wiki/wiki-settings.tsx:1068
@@ -753,11 +847,15 @@ msgstr "S'està creant..."
 msgid "Current"
 msgstr "Actual"
 
-#: ../../../lib/web/src/components/colour-picker.tsx:260
+#: ../../../lib/web/src/components/map-view.tsx:208
+msgid "Current location"
+msgstr "Ubicació actual"
+
+#: ../../../lib/web/src/components/colour-picker.tsx:261
 msgid "Custom"
 msgstr "Personalitzat"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:218
+#: ../../../lib/web/src/components/config-drawer.tsx:219
 #: ../../../lib/web/src/components/theme-switch.tsx:52
 #: ../../../lib/web/src/lib/preference-utils.ts:20
 msgid "Dark"
@@ -781,7 +879,7 @@ msgstr "Conflicte de dades"
 msgid "Date"
 msgstr "Data"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:310
+#: ../../../lib/web/src/components/config-drawer.tsx:311
 msgid "Default"
 msgstr "Per defecte"
 
@@ -885,6 +983,10 @@ msgstr "Desc."
 msgid "Descending"
 msgstr "Descendent"
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:83
+msgid "Description"
+msgstr "Descripció"
+
 #: ../../../lib/web/src/components/layout/right-panel.tsx:148
 msgid "Details Panel"
 msgstr "Panell de detalls"
@@ -900,9 +1002,18 @@ msgstr "Panell de detalls"
 msgid "Detect from web browser"
 msgstr "Detecta des del navegador"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:340
+#: ../../../lib/web/src/components/config-drawer.tsx:341
 msgid "Direction"
 msgstr "Direcció"
+
+#: ../../../lib/web/src/components/person-picker.tsx:214
+msgid "Directory"
+msgstr "Directori"
+
+#: ../../../lib/web/src/lib/chat-ui.ts:25
+#: ../../../lib/web/src/lib/chat-ui.ts:29
+msgid "Disconnected"
+msgstr "Desconnectat"
 
 #: ../../../lib/web/src/components/restore-banner.tsx:79
 #: ../../../lib/web/src/components/restore-banner.tsx:85
@@ -967,6 +1078,10 @@ msgstr "Edita el resum (opcional)"
 msgid "Edit: {pageTitle}"
 msgstr "Edita: {pageTitle}"
 
+#: ../../../lib/web/src/features/accounts/types.ts:15
+msgid "Email"
+msgstr "Correu electrònic"
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:289
 msgid "Email code"
 msgstr "Codi per correu"
@@ -1014,6 +1129,10 @@ msgstr "Desplega"
 msgid "Expand sidebar"
 msgstr "Expandeix la barra lateral"
 
+#: ../../../lib/web/src/features/accounts/types.ts:22
+msgid "External URL"
+msgstr "URL externa"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:136
 msgid "Extra large"
 msgstr "Extra gran"
@@ -1022,10 +1141,13 @@ msgstr "Extra gran"
 msgid "Failed to add account"
 msgstr "No s'ha pogut afegir el compte"
 
+#: ../../../lib/web/src/components/tag-input.tsx:39
 #: src/features/wiki/tag-manager.tsx:57
 msgid "Failed to add tag"
 msgstr "No s'ha pogut afegir l'etiqueta"
 
+#: ../../../lib/web/src/components/ui/copy-button.tsx:26
+#: ../../../lib/web/src/lib/toast-utils.ts:44
 #: src/features/wiki/attachments-page.tsx:228
 msgid "Failed to copy"
 msgstr "No s'ha pogut copiar"
@@ -1074,6 +1196,10 @@ msgstr "No s'ha pogut obtenir el testimoni RSS"
 #: src/routes/_authenticated/join.tsx:50
 msgid "Failed to join wiki"
 msgstr "No s'ha pogut unir-se al wiki"
+
+#: ../../../lib/web/src/hooks/use-load-more.ts:74
+msgid "Failed to load"
+msgstr "No s'ha pogut carregar"
 
 #: src/features/wiki/wiki-settings.tsx:534
 msgid "Failed to load access rules"
@@ -1190,6 +1316,10 @@ msgstr "No s'han pogut pujar els fitxers"
 msgid "Filter"
 msgstr "Filtra"
 
+#: ../../../lib/web/src/components/data-table/toolbar.tsx:30
+msgid "Filter..."
+msgstr "Filtra..."
+
 #: src/components/layout/wiki-layout.tsx:136
 #: src/routes/_authenticated/find.tsx:99
 msgid "Find wikis"
@@ -1207,7 +1337,7 @@ msgstr "Acabeu de moure el compte"
 msgid "Flat"
 msgstr "Plana"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:257
+#: ../../../lib/web/src/components/config-drawer.tsx:258
 msgid "Floating"
 msgstr "Flotant"
 
@@ -1219,6 +1349,10 @@ msgstr "S'han trobat {0} per a \"{debouncedQuery}\""
 #: ../../../lib/web/src/lib/preference-utils.ts:63
 msgid "Friday"
 msgstr "Divendres"
+
+#: ../../../lib/web/src/components/person-picker.tsx:207
+msgid "Friends"
+msgstr "Amics"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:153
 msgid "From"
@@ -1233,7 +1367,7 @@ msgstr "De"
 msgid "From theme"
 msgstr "Del tema"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:320
+#: ../../../lib/web/src/components/config-drawer.tsx:321
 msgid "Full layout"
 msgstr "Disposició completa"
 
@@ -1271,6 +1405,11 @@ msgstr "Vista en quadrícula"
 #: ../../../lib/web/src/features/access/access-dialog.tsx:162
 msgid "Group"
 msgstr "Grup"
+
+#. placeholder {0}: name || subject.slice(1)
+#: ../../../lib/web/src/features/access/access-list.tsx:68
+msgid "Group: {0}"
+msgstr "Grup: {0}"
 
 #: ../../../lib/web/src/components/data-table/column-header.tsx:70
 msgid "Hide"
@@ -1346,6 +1485,18 @@ msgstr "imatges, PDF, DOC, DOCX, TXT i MD. Les pujades grans també poden estar 
 msgid "Imperial"
 msgstr "Imperial"
 
+#: ../../../lib/web/src/features/access/types.ts:42
+msgid "Including anonymous users"
+msgstr ""
+
+#: ../../../lib/web/src/components/faceless-avatar.tsx:69
+msgid "Initials avatar"
+msgstr ""
+
+#: ../../../lib/web/src/components/faceless-avatar.tsx:69
+msgid "Initials avatar for {name}"
+msgstr ""
+
 #: src/features/wiki/page-editor.tsx:349
 msgid "Insert"
 msgstr "Insereix"
@@ -1354,13 +1505,17 @@ msgstr "Insereix"
 msgid "Insert attachment"
 msgstr "Insereix l'adjunt"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:252
+#: ../../../lib/web/src/components/config-drawer.tsx:253
 msgid "Inset"
 msgstr "Inset"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "Interessos"
+
+#: ../../../lib/web/src/components/tag-input.tsx:38
+msgid "Invalid tag: letters, numbers, spaces, hyphens, and slashes only (max 50 chars)"
+msgstr ""
 
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:245
 msgid "Invalid verification code"
@@ -1379,6 +1534,10 @@ msgstr "Sembla que la pàgina que cerqueu <0/>no existeix o s'ha eliminat."
 msgid "Joined wiki"
 msgstr "T'has unit al wiki"
 
+#: ../../../lib/web/src/lib/locale-format.ts:62
+msgid "Just now"
+msgstr "Ara mateix"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:108
 #: ../../../lib/web/src/lib/preference-utils.ts:135
 msgid "Large"
@@ -1392,7 +1551,7 @@ msgstr "Les pujades grans poden estar limitades per la configuració del servido
 msgid "Last synced"
 msgstr "Última sincronització"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:286
+#: ../../../lib/web/src/components/config-drawer.tsx:287
 msgid "Layout"
 msgstr "Disposició"
 
@@ -1401,11 +1560,15 @@ msgstr "Disposició"
 msgid "Learn more"
 msgstr "Més informació"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:354
+#: ../../../lib/web/src/components/config-drawer.tsx:355
 msgid "Left to Right"
 msgstr "D'esquerra a dreta"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:213
+#: ../../../lib/web/src/components/post-tags.tsx:72
+msgid "Letters, numbers, spaces, and hyphens only"
+msgstr "Només lletres, xifres, espais i guions"
+
+#: ../../../lib/web/src/components/config-drawer.tsx:214
 #: ../../../lib/web/src/components/theme-switch.tsx:45
 #: ../../../lib/web/src/lib/preference-utils.ts:19
 msgid "Light"
@@ -1464,11 +1627,19 @@ msgstr "S'ha tancat la sessió correctament"
 msgid "Logging out…"
 msgstr "S'està tancant la sessió…"
 
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:192
+msgid "Manage your connected accounts for notifications and services."
+msgstr ""
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:93
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:100
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:224
 msgid "Mark all as read"
 msgstr "Marca-ho tot com a llegit"
+
+#: ../../../lib/web/src/features/accounts/types.ts:17
+msgid "MCP server"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:107
 msgid "Medium"
@@ -1481,6 +1652,10 @@ msgstr "Menú"
 #: ../../../lib/web/src/lib/preference-utils.ts:85
 msgid "Metric"
 msgstr "Mètric"
+
+#: ../../../lib/web/src/features/accounts/types.ts:23
+msgid "Mochi web"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:59
 msgid "Monday"
@@ -1499,9 +1674,17 @@ msgstr "Nom"
 msgid "Name cannot contain < or > characters"
 msgstr "El nom no pot contenir els caràcters < o >"
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
+msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
+msgstr ""
+
 #: src/features/wiki/wiki-settings.tsx:269
 msgid "Name must be 100 characters or less"
 msgstr "El nom ha de tenir 100 caràcters o menys"
+
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:100
+msgid "Name must be 1000 characters or less"
+msgstr "El nom ha de tenir 1000 caràcters o menys"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:53
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:303
@@ -1559,7 +1742,7 @@ msgstr "Imatge següent"
 msgid "No access"
 msgstr "Sense accés"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:160
+#: ../../../lib/web/src/features/access/access-list.tsx:165
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "No s'han configurat regles d'accés. Afegeix regles per controlar qui pot accedir a aquest recurs."
 
@@ -1588,6 +1771,10 @@ msgstr "Cap compte connectat"
 msgid "No groups available"
 msgstr "No hi ha cap grup disponible"
 
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
+msgid "No notifications yet"
+msgstr "Encara no hi ha notificacions"
+
 #: src/features/wiki/search-page.tsx:74
 msgid "No pages found for \"{debouncedQuery}\""
 msgstr "No s'ha trobat cap pàgina per a «{debouncedQuery}»"
@@ -1596,7 +1783,11 @@ msgstr "No s'ha trobat cap pàgina per a «{debouncedQuery}»"
 msgid "No pages found with this tag"
 msgstr "No s'ha trobat cap pàgina amb aquesta etiqueta"
 
-#: ../../../lib/web/src/components/place-picker.tsx:132
+#: ../../../lib/web/src/components/person-picker.tsx:84
+msgid "No people found"
+msgstr "No s'ha trobat ningú"
+
+#: ../../../lib/web/src/components/place-picker.tsx:133
 msgid "No places found"
 msgstr "No s'ha trobat cap lloc"
 
@@ -1613,6 +1804,11 @@ msgstr "Cap redirecció configurada"
 #: src/features/wiki/wiki-settings.tsx:807
 msgid "No replicas yet"
 msgstr "Encara no hi ha rèpliques"
+
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:82
+#: ../../../lib/web/src/components/search-entity-page.tsx:73
+msgid "No results found"
+msgstr "No s'han trobat resultats"
 
 #: ../../../lib/web/src/components/command-menu.tsx:55
 #: ../../../lib/web/src/components/data-table/faceted-filter.tsx:94
@@ -1648,6 +1844,7 @@ msgstr "No s'ha trobat cap usuari"
 msgid "No wikis found"
 msgstr "No s'ha trobat cap wiki"
 
+#: ../../../lib/web/src/components/colour-picker.tsx:345
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:105
 #: ../../../lib/web/src/lib/preference-utils.ts:125
@@ -1683,6 +1880,10 @@ msgstr "Notificacions: {0}"
 #: src/features/wiki/wiki-settings.tsx:1044
 msgid "old-page-name"
 msgstr "antic-nom-de-pagina"
+
+#: ../../../lib/web/src/components/filter-bar.tsx:35
+msgid "On"
+msgstr "Activat"
 
 #: src/features/wiki/page-view.tsx:84
 #: src/features/wiki/page-view.tsx:99
@@ -1722,6 +1923,10 @@ msgstr "Obre l'enllaç"
 msgid "Open link in new tab"
 msgstr "Obre l'enllaç en una pestanya nova"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:133
+msgid "Open menu"
+msgstr "Obre el menú"
+
 #: ../../../lib/web/src/components/layout/top-bar.tsx:63
 #: ../../../lib/web/src/components/layout/top-bar.tsx:68
 msgid "Open navigation"
@@ -1732,8 +1937,8 @@ msgstr "Obre la navegació"
 msgid "Open navigation menu"
 msgstr "Obre el menú de navegació"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:57
-#: ../../../lib/web/src/components/config-drawer.tsx:65
+#: ../../../lib/web/src/components/config-drawer.tsx:58
+#: ../../../lib/web/src/components/config-drawer.tsx:66
 msgid "Open theme settings"
 msgstr "Obre la configuració del tema"
 
@@ -1745,7 +1950,7 @@ msgstr "O introdueix l'ID directament"
 msgid "Other"
 msgstr "Altres"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:217
+#: ../../../lib/web/src/features/access/access-list.tsx:222
 msgid "Owner"
 msgstr "Propietari"
 
@@ -1830,6 +2035,10 @@ msgstr "Claus d'accés"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Suprimeix permanentment aquest wiki i tot el seu contingut. Aquesta acció no es pot desfer."
 
+#: ../../../lib/web/src/components/date-picker.tsx:20
+msgid "Pick a date"
+msgstr "Trieu una data"
+
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
 msgid "Please check your internet connection and try again."
@@ -1865,6 +2074,14 @@ msgstr "Privadesa"
 #: ../../../lib/web/src/components/profile-dropdown.tsx:114
 msgid "Profile"
 msgstr "Perfil"
+
+#: ../../../lib/web/src/components/person-picker.tsx:200
+msgid "Project members"
+msgstr "Membres del projecte"
+
+#: ../../../lib/web/src/features/accounts/types.ts:21
+msgid "Push notification"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:117
 msgid "Raised"
@@ -1905,14 +2122,18 @@ msgstr "Canvis recents"
 msgid "Recent edits across all pages in this wiki."
 msgstr "Edicions recents a totes les pàgines d'aquest wiki."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:216
-#: ../../../lib/web/src/components/search-entity-page.tsx:242
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:217
+#: ../../../lib/web/src/components/search-entity-page.tsx:243
 msgid "Recommended"
 msgstr "Recomanat"
 
 #: src/routes/_authenticated/index.tsx:799
 msgid "Recommended wikis"
 msgstr "Wikis recomanats"
+
+#: ../../../lib/web/src/lib/chat-ui.ts:21
+msgid "Reconnecting ({retries})..."
+msgstr ""
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:119
@@ -1953,7 +2174,7 @@ msgstr "Relativa (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "Relativa en 24 hores, si no absoluta"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:265
+#: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
 #: src/features/wiki/comment-form.tsx:101
 #: src/features/wiki/tag-manager.tsx:108
@@ -1962,17 +2183,23 @@ msgstr "Relativa en 24 hores, si no absoluta"
 msgid "Remove"
 msgstr "Elimina"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:247
-#: ../../../lib/web/src/features/access/access-list.tsx:253
+#. placeholder {0}: filter.label
+#: ../../../lib/web/src/components/filter-bar.tsx:56
+#: ../../../lib/web/src/components/filter-bar.tsx:62
+msgid "Remove {0} filter"
+msgstr "Elimina el filtre {0}"
+
+#: ../../../lib/web/src/features/access/access-list.tsx:252
+#: ../../../lib/web/src/features/access/access-list.tsx:258
 msgid "Remove access rule"
 msgstr "Elimina la regla d'accés"
 
 #. placeholder {0}: formatSubject(subject, data.name)
-#: ../../../lib/web/src/features/access/access-list.tsx:259
+#: ../../../lib/web/src/features/access/access-list.tsx:264
 msgid "Remove access rule for \"{0}\"?"
 msgstr "Voleu eliminar la regla d'accés per a «{0}»?"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:257
+#: ../../../lib/web/src/features/access/access-list.tsx:262
 msgid "Remove access?"
 msgstr "Vols eliminar l'accés?"
 
@@ -2066,12 +2293,17 @@ msgstr "URL de la sol·licitud: {baseURL}{slug}"
 msgid "Resend email"
 msgstr "Torna a enviar el correu"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:86
-#: ../../../lib/web/src/components/data-table/toolbar.tsx:81
+#: ../../../lib/web/src/components/config-drawer.tsx:87
+#: ../../../lib/web/src/components/data-table/toolbar.tsx:82
 msgid "Reset"
 msgstr "Restableix"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:84
+#: ../../../lib/web/src/components/config-drawer.tsx:122
+#: ../../../lib/web/src/components/config-drawer.tsx:127
+msgid "Reset {title}"
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:85
 msgid "Reset all settings to default values"
 msgstr "Restableix tota la configuració als valors per defecte"
 
@@ -2117,7 +2349,7 @@ msgstr "Revertint..."
 msgid "Revoke access"
 msgstr "Revoca l'accés"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:361
+#: ../../../lib/web/src/components/config-drawer.tsx:362
 msgid "Right to Left"
 msgstr "De dreta a esquerra"
 
@@ -2164,6 +2396,9 @@ msgstr "Desa els canvis"
 msgid "Saving..."
 msgstr "Desant..."
 
+#: ../../../lib/web/src/components/filter-bar.tsx:32
+#: ../../../lib/web/src/components/header-search.tsx:22
+#: ../../../lib/web/src/components/search.tsx:18
 #: src/features/wiki/wiki-page-content.tsx:315
 #: src/routes/_authenticated/$page/index.tsx:229
 #: src/routes/_authenticated/$wikiId/search.tsx:31
@@ -2182,9 +2417,17 @@ msgstr "Cerca adjunts..."
 msgid "Search by name, ID, fingerprint, or URL..."
 msgstr "Cerca per nom, ID, empremta o URL..."
 
-#: ../../../lib/web/src/components/place-picker.tsx:85
+#: ../../../lib/web/src/components/ui/command.tsx:35
+msgid "Search for a command to run..."
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:86
 msgid "Search for a place"
 msgstr "Cerca un lloc"
+
+#: ../../../lib/web/src/components/place-picker.tsx:50
+msgid "Search for a place..."
+msgstr ""
 
 #: src/routes/_authenticated/index.tsx:775
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
@@ -2224,14 +2467,21 @@ msgid "Search users"
 msgstr "Cerca usuaris"
 
 #: ../../../lib/web/src/components/person-picker.tsx:324
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:81
+#: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "Cerca..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:174
-#: ../../../lib/web/src/components/search-entity-page.tsx:200
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:175
+#: ../../../lib/web/src/components/search-entity-page.tsx:201
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
 msgstr "Cercant..."
+
+#. placeholder {0}: item.label.toLowerCase()
+#: ../../../lib/web/src/components/config-drawer.tsx:149
+msgid "Select {0}"
+msgstr ""
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:150
 msgid "Select a user, group, or other rule to grant access."
@@ -2240,6 +2490,10 @@ msgstr "Selecciona un usuari, grup o una altra regla per concedir l'accés."
 #: ../../../lib/web/src/features/access/access-dialog.tsx:273
 msgid "Select access rule"
 msgstr "Selecciona la regla d'accés"
+
+#: ../../../lib/web/src/features/accounts/account-picker.tsx:34
+msgid "Select account"
+msgstr ""
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:129
 msgid "Select account type"
@@ -2253,19 +2507,27 @@ msgstr "Selecciona un adjunt per inserir-lo a la pàgina, o puja un fitxer nou."
 msgid "Select group"
 msgstr "Selecciona grup"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:304
+#: ../../../lib/web/src/components/config-drawer.tsx:305
 msgid "Select layout style"
 msgstr "Selecciona estil de disposició"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:246
+#: ../../../lib/web/src/components/place-picker.tsx:49
+msgid "Select location"
+msgstr "Selecciona ubicació"
+
+#: ../../../lib/web/src/components/person-picker.tsx:83
+msgid "Select person..."
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:247
 msgid "Select sidebar style"
 msgstr "Selecciona estil de barra lateral"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:348
+#: ../../../lib/web/src/components/config-drawer.tsx:349
 msgid "Select site direction"
 msgstr "Selecciona direcció del lloc"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:202
+#: ../../../lib/web/src/components/config-drawer.tsx:203
 msgid "Select theme preference"
 msgstr "Selecciona la preferència de tema"
 
@@ -2348,8 +2610,8 @@ msgstr "Mostra la contrasenya"
 msgid "Showing {totalShown} of {total}"
 msgstr "Mostrant {totalShown} de {total}"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:238
-#: ../../../lib/web/src/components/config-drawer.tsx:262
+#: ../../../lib/web/src/components/config-drawer.tsx:239
+#: ../../../lib/web/src/components/config-drawer.tsx:263
 #: ../../../lib/web/src/components/ui/sidebar.tsx:237
 msgid "Sidebar"
 msgstr "Barra lateral"
@@ -2403,10 +2665,12 @@ msgstr "Comença la teva primera wiki"
 msgid "Stay tuned though!"
 msgstr "Però estigues atent!"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:191
+#: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "Assumpte"
 
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:83
+#: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:195
 #: src/routes/_authenticated/index.tsx:837
 msgid "Subscribe"
@@ -2454,7 +2718,7 @@ msgstr "Sincronitza ara"
 msgid "Syncing..."
 msgstr "Sincronitzant..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:208
+#: ../../../lib/web/src/components/config-drawer.tsx:209
 #: ../../../lib/web/src/components/theme-switch.tsx:59
 #: ../../../lib/web/src/lib/preference-utils.ts:21
 #: ../../../lib/web/src/lib/preference-utils.ts:144
@@ -2465,7 +2729,7 @@ msgstr "Sistema"
 msgid "Table of contents"
 msgstr "Taula de continguts"
 
-#: ../../../lib/web/src/components/tag-input.tsx:94
+#: ../../../lib/web/src/components/tag-input.tsx:95
 msgid "Tag"
 msgstr "Etiqueta"
 
@@ -2477,9 +2741,14 @@ msgstr "Etiqueta \"{tag}\" afegida"
 msgid "Tag \"{tag}\" removed"
 msgstr "Etiqueta \"{tag}\" eliminada"
 
+#: ../../../lib/web/src/components/post-tags.tsx:76
 #: src/features/wiki/tag-manager.tsx:44
 msgid "Tag already exists"
 msgstr "L'etiqueta ja existeix"
+
+#: ../../../lib/web/src/components/post-tags.tsx:68
+msgid "Tag must be 50 characters or less"
+msgstr "L'etiqueta ha de tenir 50 caràcters o menys"
 
 #: src/routes/_authenticated/tag/$tag.tsx:23
 #: src/routes/_authenticated/tag/$tag.tsx:29
@@ -2555,11 +2824,11 @@ msgstr "L'URL que es redirigirà"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "L'URL que es redirigirà (p. ex., \"pagina-antiga\")"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:194
+#: ../../../lib/web/src/components/config-drawer.tsx:195
 msgid "Theme"
 msgstr "Tema"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:69
+#: ../../../lib/web/src/components/config-drawer.tsx:70
 msgid "Theme Settings"
 msgstr "Configuració del tema"
 
@@ -2680,8 +2949,8 @@ msgstr "Prova un terme de cerca o filtre diferent."
 msgid "Try a different tag."
 msgstr "Prova una etiqueta diferent."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:190
-#: ../../../lib/web/src/components/search-entity-page.tsx:216
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:191
+#: ../../../lib/web/src/components/search-entity-page.tsx:217
 msgid "Try adjusting your search terms"
 msgstr "Prova d'ajustar els termes de cerca"
 
@@ -2728,10 +2997,16 @@ msgstr "Sense assignar"
 msgid "Unauthorized Access"
 msgstr "Accés no autoritzat"
 
+#: ../../../lib/web/src/lib/request.ts:133
+#: ../../../lib/web/src/lib/request.ts:206
+msgid "Unexpected API error"
+msgstr "Error inesperat de l'API"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:87
 msgid "United States"
 msgstr "Estats Units"
 
+#: ../../../lib/web/src/features/accounts/types.ts:29
 #: src/features/wiki/wiki-comment-thread.tsx:90
 msgid "Unknown"
 msgstr "Desconegut"
@@ -2840,6 +3115,7 @@ msgstr "Utilitza com a inici"
 msgid "Use your passkey"
 msgstr "Utilitzeu la vostra clau d'accés"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:86
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
 msgid "User"
 msgstr "Usuari"
@@ -2912,6 +3188,10 @@ msgstr "Només visualització"
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "Visualitzant l'historial de <0>{slug}</0>, versió actual {currentVersion}"
 
+#: ../../../lib/web/src/components/filter-bar.tsx:35
+msgid "Watched"
+msgstr "Seguit"
+
 #. placeholder {0}: account.identifier
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:63
 msgid "We sent a verification code to <0>{0}</0>. Enter the code below to verify your email address."
@@ -2920,6 +3200,10 @@ msgstr "Hem enviat un codi de verificació a <0>{0}</0>. Introduïu el codi a co
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:16
 msgid "We'll be back online shortly."
 msgstr "Tornarem a estar en línia aviat."
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:197
+msgid "We'll notify you when something important happens."
+msgstr "T'avisarem quan passi alguna cosa important."
 
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:13
 msgid "Website is under maintenance!"
@@ -3026,6 +3310,14 @@ msgstr "No teniu accés a aquesta secció."
 #: ../../../lib/web/src/features/errors/forbidden.tsx:18
 msgid "You don't have necessary permission <0/>to view this resource."
 msgstr "No teniu el permís necessari <0/>per veure aquest recurs."
+
+#: ../../../lib/web/src/lib/show-submitted-data.tsx:9
+msgid "You submitted the following values:"
+msgstr ""
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
+msgid "You're all caught up!"
+msgstr "Ja estàs al dia!"
 
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
