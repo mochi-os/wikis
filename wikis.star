@@ -63,7 +63,11 @@ def database_create():
     # origin: the replica entity that submitted this comment over P2P, empty for
     # one authored locally. It is the authorisation key for remote edit/delete -
     # a replica may only mutate what it submitted. See event_comment_edit.
-    mochi.db.execute("create table if not exists comments (id text primary key, wiki text not null references wikis(id), page text not null, parent text not null default '', author text not null, name text not null default '', body text not null, created integer not null, edited integer not null default 0, deleted integer not null default 0, origin text not null default '')")
+    # signature: the author's own ed25519 signature over the comment, which is
+    # what makes `author` mean anything on a replicated wiki. origin proves which
+    # replica sent a comment, not who wrote it; only this proves authorship. See
+    # comment_create_payload.
+    mochi.db.execute("create table if not exists comments (id text primary key, wiki text not null references wikis(id), page text not null, parent text not null default '', author text not null, name text not null default '', body text not null, created integer not null, edited integer not null default 0, deleted integer not null default 0, origin text not null default '', signature text not null default '')")
     mochi.db.execute("create index if not exists comments_wiki on comments(wiki)")
     mochi.db.execute("create index if not exists comments_page on comments(page)")
     mochi.db.execute("create index if not exists comments_parent on comments(parent)")
@@ -132,6 +136,28 @@ def database_upgrade(version):
         for r in rows:
             mochi.db.execute("insert or ignore into rss (hash, entity, mode, created) values (?, ?, ?, ?)",
                 mochi.crypto.hash.sha256(r["token"]), r["entity"], r["mode"], r["created"])
+    # Schema 7: comments.signature carries the author's own signature over the
+    # comment. Schema 4's origin column confined remote EDITS and DELETES to the
+    # replica that submitted a comment, but creation stayed forgeable: wikis
+    # replication authenticates a wiki entity rather than a person, so
+    # event_comment_create had no sender identity to bind `author` against and
+    # took it verbatim off the wire. Any replica with edit access could post a
+    # comment in anyone's name and have the source rebroadcast it as
+    # authoritative. A Mochi entity id IS its base58 ed25519 public key, so an
+    # author-made signature closes that with no key exchange or directory
+    # lookup - see comment_create_payload and mochi.entity.verify.
+    #
+    # Existing rows default to '' and stay as they are: they were accepted under
+    # the old rules and their authorship cannot be established after the fact.
+    # Only inbound events are held to the new requirement.
+    if version == 7:
+        found = False
+        for c in mochi.db.table("comments"):
+            if c["name"] == "signature":
+                found = True
+                break
+        if not found:
+            mochi.db.execute("alter table comments add column signature text not null default ''")
 
 # Helper: has this outbound operation run within `seconds`? Records the attempt
 # when it has not, so callers just guard on the return value.
@@ -3659,6 +3685,12 @@ def import_sync_dump(wiki, dump):
     # than rejecting the comment, matching event_comment_create.
     comments = dump.get("comments") or []
     imported_comments = []
+    # Read the canonical wiki id from OUR row, not from dump["source"]. The dump
+    # is entirely remote-controlled, so letting it name the wiki a signature is
+    # checked against would let a sender replay a genuine comment of Alice's from
+    # one wiki into another by claiming that wiki as the source.
+    wikirow_local = handle.row("select source from wikis where id=?", wiki) or {}
+    signed_wiki = canonical_wiki(wikirow_local, wiki)
     for c in comments:
         id = c.get("id")
         if not id:
@@ -3671,6 +3703,27 @@ def import_sync_dump(wiki, dump):
             continue
         if slug_problem(c.get("page", "")):
             continue
+        # A dump is the other way a comment can arrive, so it gets the same
+        # authorship rule as event_comment_create - otherwise forging a comment
+        # would just mean waiting to be resynced instead of sending an event.
+        # An edited comment is attested by its edit signature (which covers the
+        # current body); an unedited one by its create signature.
+        author = c.get("author", "")
+        name = c.get("name", "")
+        body = c.get("body", "")
+        created = c.get("created", 0)
+        edited = c.get("edited", 0)
+        signature = c.get("signature", "")
+        if edited:
+            payload = comment_edit_payload(id, signed_wiki, author, body, edited)
+        else:
+            payload = comment_create_payload(id, signed_wiki, c.get("page", ""), c.get("parent", ""), author, name, body, created)
+        if not mochi.entity.verify(author, payload, signature):
+            mochi.log.debug("wikis: dropped comment %s from the %s dump: bad or missing author signature for %s" % (id, wiki, author))
+            continue
+
+        # Local threading correction only, kept out of the signed value - see
+        # event_comment_create for why the signed parent is never rewritten.
         parent = c.get("parent", "")
         if parent and foreign_comment(parent, wiki, handle):
             parent = ""
@@ -3679,8 +3732,8 @@ def import_sync_dump(wiki, dump):
         # the value is not load-bearing for authorisation here - but recording
         # it keeps the column meaningful rather than leaving these rows at ''
         # and relying on that short-circuit to stay true.
-        handle.execute("replace into comments (id, wiki, page, parent, author, name, body, created, edited, deleted, origin) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            id, wiki, c.get("page", ""), parent, c.get("author", ""), c.get("name", ""), c.get("body", ""), c.get("created", 0), c.get("edited", 0), c.get("deleted", 0), dump.get("source") or "")
+        handle.execute("replace into comments (id, wiki, page, parent, author, name, body, created, edited, deleted, origin, signature) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            id, wiki, c.get("page", ""), parent, author, name, body, created, edited, c.get("deleted", 0), dump.get("source") or "", signature)
         imported_comments.append(c)
 
     # Import wiki name and home setting. The dump is entirely controlled by the
@@ -3909,6 +3962,54 @@ def action_page_comments(a):
     return {"data": {"comments": comments, "count": count, "total": total,
                      "truncated": offset + len(comments) < total}}
 
+# Helper: canonical bytes a comment signature is made over.
+#
+# Length-prefixing each field ("12:hello world") rather than joining on a
+# separator means no field content can be arranged to look like a different
+# split of the same string - a body containing the separator would otherwise let
+# two different comments share one payload, and a signature transplanted between
+# them would verify. The leading scheme tag keeps create and edit assertions from
+# ever being interchangeable, and gives a version to bump if the field set
+# changes.
+def signature_payload(scheme, parts):
+    out = scheme
+    for p in parts:
+        # Numbers go through int() before str(), so a timestamp that came back
+        # from a replay as 1750000000.0 rather than 1750000000 still produces the
+        # same payload the author signed. Both sides derive the string from the
+        # value, so a formatting difference is an unverifiable comment, not a
+        # visible error - the failure would look like arbitrary comment loss.
+        s = p if type(p) == "string" else str(int(p))
+        out += ":" + str(len(s)) + ":" + s
+    return out
+
+# Helper: the wiki id every host agrees on, for use inside a signature payload.
+#
+# A wiki entity id is PER HOST: a replica holds its own local entity whose
+# `source` names the origin, so the same wiki is `12a3...` on the replica and
+# `129n...` on the owner. Signing the local id would make every signature fail
+# the moment it crossed a host boundary - which is exactly what it did on the
+# first run of the P2P flows. The source id is the one value both sides share,
+# and on the origin itself there is no source, so it is its own canonical id.
+def canonical_wiki(wikirow, fallback):
+    return wikirow.get("source") or fallback
+
+# Helper: what the author signs when creating a comment. Binds the comment to
+# its author, its place (wiki, page, thread parent), its content and its time,
+# so none of those can be altered by a relaying replica without breaking the
+# signature. `name` is included because it is the string actually rendered next
+# to the comment - leaving it unbound would let a relay keep a valid signature
+# while displaying someone else's name.
+def comment_create_payload(id, wiki, page, parent, author, name, body, created):
+    return signature_payload("wikis.comment.create.1",
+        [id, wiki, page, parent, author, name, body, created])
+
+# Helper: what the author signs when editing their comment. A create signature
+# covers the original body, so an edit needs its own or the stored body would no
+# longer match anything the author attested to.
+def comment_edit_payload(id, wiki, author, body, edited):
+    return signature_payload("wikis.comment.edit.1", [id, wiki, author, body, edited])
+
 # Create a comment on a page
 def action_comment_create(a):
     if not a.user:
@@ -3948,8 +4049,21 @@ def action_comment_create(a):
     author = a.user.identity.id
     name = a.user.identity.name or ""
 
-    mochi.db.execute("insert into comments (id, wiki, page, parent, author, name, body, created) values (?, ?, ?, ?, ?, ?, ?, ?)",
-        id, wiki["id"], slug, parent, author, name, body, now)
+    # Sign as the author, not as the wiki. The wiki entity is what replication
+    # authenticates, so a wiki-level signature would prove only that this host
+    # relayed the comment - exactly the gap this closes. a.user is established
+    # above, so this cannot be an anonymous caller signing as the entity owner.
+    signature = mochi.entity.sign(author,
+        comment_create_payload(id, canonical_wiki(wiki, wiki["id"]), slug, parent, author, name, body, now))
+    # Refuse rather than store an unsignable comment. It would look fine locally
+    # and be dropped by every peer that received it, which is a much harder thing
+    # to diagnose than being told at the point of writing.
+    if not signature:
+        a.error.label(500, "errors.comment_could_not_be_signed")
+        return
+
+    mochi.db.execute("insert into comments (id, wiki, page, parent, author, name, body, created, signature) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        id, wiki["id"], slug, parent, author, name, body, now, signature)
 
     # Save attachments (no push notification — metadata piggybacked on event)
     attachments = mochi.attachment.save(id, "files", [], [], []) or []
@@ -3964,6 +4078,7 @@ def action_comment_create(a):
         "name": name,
         "body": body,
         "created": now,
+        "signature": signature,
     }
 
     # Include attachment metadata in event
@@ -4021,7 +4136,18 @@ def action_comment_edit(a):
         return
 
     now = mochi.time.now()
-    mochi.db.execute("update comments set body=?, edited=? where id=?", body, now, id)
+
+    # Re-sign: the create signature covers the original body, so without this the
+    # stored text would no longer match anything the author attested to. The
+    # author check above proves a.user is the comment's author, so signing as
+    # comment["author"] is signing as themselves.
+    signature = mochi.entity.sign(comment["author"],
+        comment_edit_payload(id, canonical_wiki(wiki, wiki["id"]), comment["author"], body, now))
+    if not signature:
+        a.error.label(500, "errors.comment_could_not_be_signed")
+        return
+
+    mochi.db.execute("update comments set body=?, edited=?, signature=? where id=?", body, now, signature, id)
 
     data = {
         "id": id,
@@ -4029,6 +4155,7 @@ def action_comment_edit(a):
         "page": comment["page"],
         "body": body,
         "edited": now,
+        "signature": signature,
     }
 
     source = wiki.get("source")
@@ -4116,6 +4243,7 @@ def event_comment_create(e):
     name = e.content("name") or ""
     body = e.content("body")
     created = e.content("created")
+    signature = e.content("signature") or ""
 
     if not id or not page or not author or not body or not created:
         return
@@ -4124,6 +4252,9 @@ def event_comment_create(e):
     # oversized comment that we'd then store and replicate onward. The id is
     # attacker-chosen, so each event is a new row: an unbounded name or slug
     # here is unbounded permanent storage, per comment.
+    #
+    # These run before the signature check purely so an oversized body is thrown
+    # away without hashing it first; none of them trust the content.
     if len(body) > 100000:
         return
     if name and not mochi.text.valid(name, "name"):
@@ -4131,21 +4262,42 @@ def event_comment_create(e):
     if slug_problem(page):
         return
 
+    # The author must have signed this comment themselves. Everything above only
+    # establishes that an authorised REPLICA sent it; `author` is a person and
+    # nothing in the envelope speaks for that person, which is why this path was
+    # forgeable until now. An entity id is its own ed25519 public key, so the
+    # claim checks out against `author` alone - no key exchange, no directory
+    # lookup, and no trust in the relaying replica or the source wiki.
+    #
+    # Unsigned is refused rather than accepted-and-flagged. A signature that is
+    # optional proves nothing: an attacker simply omits it, and a name rendered
+    # next to an unverified comment is read as authorship regardless. The cost is
+    # that a replica still running an older wikis has its comments dropped here
+    # until it updates.
+    if not mochi.entity.verify(author, comment_create_payload(id, canonical_wiki(wikirow, wiki), page, parent, author, name, body, created), signature):
+        mochi.log.debug("wikis: rejected comment %s on wiki %s from %s: bad or missing author signature for %s" % (id, wiki, sender, author))
+        return
+
     # Don't thread onto a comment that belongs to a different wiki - a foreign
     # parent lets deletes/rendering cross wiki boundaries. A parent not present
     # yet is left as-is for out-of-order delivery.
-    if parent:
-        parent_row = mochi.db.row("select wiki from comments where id=?", parent)
+    #
+    # This is a LOCAL correction, so it is kept out of `parent`: that value is
+    # covered by the signature verified above, and rebroadcasting a rewritten one
+    # would invalidate the signature for every downstream replica. Each host
+    # re-derives its own threading from what the author actually signed.
+    stored_parent = parent
+    if stored_parent:
+        parent_row = mochi.db.row("select wiki from comments where id=?", stored_parent)
         if parent_row and parent_row["wiki"] != wiki:
-            parent = ""
+            stored_parent = ""
 
-    # Record the submitting replica as the comment's origin: it is the only
-    # party allowed to edit or delete this comment remotely (event_comment_edit
-    # / event_comment_delete). `author` is attacker-supplied on this path and
-    # cannot be verified - the sender is a wiki entity, not a person - so origin
-    # is the authorisation key, not author.
-    mochi.db.execute("insert or ignore into comments (id, wiki, page, parent, author, name, body, created, origin) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        id, wiki, page, parent, author, name, body, created, sender or "")
+    # origin records the submitting replica: it is the only party allowed to edit
+    # or delete this comment remotely (event_comment_edit / event_comment_delete).
+    # It answers "which replica sent this", which is a different question from
+    # "who wrote this" - the signature above answers that one, and both are kept.
+    mochi.db.execute("insert or ignore into comments (id, wiki, page, parent, author, name, body, created, origin, signature) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        id, wiki, page, stored_parent, author, name, body, created, sender or "", signature)
 
     # Store comment attachments from event (files pulled on demand)
     attachments = e.content("attachments") or []
@@ -4153,7 +4305,10 @@ def event_comment_create(e):
     if attachments:
         mochi.attachment.store(attachments, source, id)
 
-    # Re-broadcast if we are the source wiki
+    # Re-broadcast if we are the source wiki. Every field here is repeated
+    # exactly as signed, including the original parent, so downstream replicas
+    # verify the author's signature themselves rather than taking this host's
+    # word for it - the source wiki relays authorship, it does not vouch for it.
     if not wikirow.get("source") and sender:
         rebroadcast = {
             "id": id,
@@ -4163,6 +4318,7 @@ def event_comment_create(e):
             "name": name,
             "body": body,
             "created": created,
+            "signature": signature,
         }
         if attachments:
             rebroadcast["attachments"] = attachments
@@ -4204,6 +4360,7 @@ def event_comment_edit(e):
     id = e.content("id")
     body = e.content("body")
     edited = e.content("edited")
+    signature = e.content("signature") or ""
 
     if not id or not body or not edited:
         return
@@ -4219,9 +4376,22 @@ def event_comment_edit(e):
     # LWW gate: skip if our locally-stored edit is at least as new.
     # `edited` is 0 for never-edited comments, so the first edit always
     # wins over the create-time state.
-    local = mochi.db.row("select edited, origin from comments where id=? and wiki=?", id, wiki)
+    local = mochi.db.row("select edited, origin, author from comments where id=? and wiki=?", id, wiki)
     if not local:
         request_resync(wiki)
+        return
+
+    # The new body must be signed by the comment's ORIGINAL author, taken from
+    # our own row rather than from the event - otherwise a sender could rewrite
+    # the body and hand us a signature made by whoever they liked.
+    #
+    # This deliberately ends remote body-editing by the wiki's manage-holders: a
+    # moderator rewriting someone else's words while their name stays on them is
+    # the same forgery this whole change exists to stop, and it cannot be done
+    # without the author's key. Moderation keeps its real remedy, delete, which
+    # is unchanged and still available to manage-holders.
+    if not mochi.entity.verify(local["author"], comment_edit_payload(id, canonical_wiki(wikirow, wiki), local["author"], body, edited), signature):
+        mochi.log.debug("wikis: rejected edit of comment %s on wiki %s from %s: bad or missing author signature for %s" % (id, wiki, sender, local["author"]))
         return
 
     # A replica may only edit a comment IT submitted. replica_can above proves
@@ -4237,13 +4407,15 @@ def event_comment_edit(e):
     if local["edited"] >= edited:
         return
 
-    mochi.db.execute("update comments set body=?, edited=? where id=? and wiki=?", body, edited, id, wiki)
+    mochi.db.execute("update comments set body=?, edited=?, signature=? where id=? and wiki=?", body, edited, signature, id, wiki)
 
-    # Re-broadcast if we are the source wiki
+    # Re-broadcast if we are the source wiki, carrying the author's signature so
+    # downstream replicas check it themselves rather than trusting this relay.
     if not wikirow.get("source") and sender:
         broadcast_event(wiki, "comment/edit", {
             "id": id,
             "wiki": wiki,
+            "signature": signature,
             "body": body,
             "edited": edited,
         }, exclude=sender)
