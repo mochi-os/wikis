@@ -3,7 +3,7 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { plural, t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
 import { Check, Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
@@ -72,6 +72,11 @@ export function WikiCommentThread({
   const replyFileRef = { current: null as HTMLInputElement | null }
 
   const isReplying = replyingTo === comment.id
+
+  useEffect(() => {
+    if (!isReplying && replyFiles.length > 0) setReplyFiles([])
+  }, [isReplying, replyFiles.length])
+
   const hasChildren = comment.children && comment.children.length > 0
   const canEdit = currentUserId === comment.author
   const canDelete = currentUserId === comment.author || isOwner
@@ -223,7 +228,12 @@ export function WikiCommentThread({
       </div>
 
       {isReplying && (
-        <div className="mt-2 space-y-2 border-t pt-2">
+        <div
+          className="mt-2 space-y-2 border-t pt-2"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') onCancelReply()
+          }}
+        >
           <textarea
             placeholder={t`Reply to ${comment.name || comment.author}...`}
             value={replyDraft}

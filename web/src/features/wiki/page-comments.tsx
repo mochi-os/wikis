@@ -32,13 +32,13 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [replyDraft, setReplyDraft] = useState('')
 
-  const handleCreate = (body: string, files?: File[]) => {
-    createComment.mutate(
-      { slug, body, files },
-      {
-        onError: (err) => toast.error(getErrorMessage(err)),
-      }
-    )
+  const handleCreate = async (body: string, files?: File[]) => {
+    try {
+      await createComment.mutateAsync({ slug, body, files })
+    } catch (err) {
+      toast.error(getErrorMessage(err))
+      throw err
+    }
   }
 
   const handleReply = (parentId: string, files?: File[]) => {

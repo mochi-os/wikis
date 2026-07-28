@@ -25,7 +25,7 @@ import { Paperclip, Send, X } from 'lucide-react'
 import { t } from '@lingui/core/macro'
 
 interface CommentFormProps {
-  onSubmit: (body: string, files?: File[]) => void
+  onSubmit: (body: string, files?: File[]) => void | Promise<void>
   onCancel?: () => void
   placeholder?: string
   autoFocus?: boolean
@@ -35,21 +35,29 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
   const { formatFileSize } = useFormat()
   const [body, setBody] = useState('')
   const [files, setFiles] = useState<File[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const filePreviewUrls = useImageObjectUrls(files)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const trimmed = body.trim()
-    if (!trimmed) return
-    onSubmit(trimmed, files.length > 0 ? files : undefined)
-    setBody('')
-    setFiles([])
+    if (!trimmed || isSubmitting) return
+    setIsSubmitting(true)
+    try {
+      await onSubmit(trimmed, files.length > 0 ? files : undefined)
+      setBody('')
+      setFiles([])
+    } catch {
+      // Keep the draft for retry; the caller already reported the error.
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault()
-      handleSubmit()
+      void handleSubmit()
     } else if (e.key === 'Escape' && onCancel) {
       onCancel()
     }
@@ -132,8 +140,8 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
         <IconButton
           type='button'
           className='size-8'
-          disabled={!body.trim()}
-          onClick={handleSubmit}
+          disabled={!body.trim() || isSubmitting}
+          onClick={() => void handleSubmit()}
           label={t`Send comment`}
         >
           <Send className="size-4" />
