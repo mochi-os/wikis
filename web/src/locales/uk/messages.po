@@ -53,6 +53,11 @@ msgstr "{0, plural, one {# вибрано} few {# вибрано} many {# виб
 msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
+#. placeholder {0}: item.label
+#: ../../../lib/web/src/components/config-drawer.tsx:160
+msgid "{0} option preview"
+msgstr ""
+
 #. placeholder {0}: wiki.pages
 #: src/routes/_authenticated/index.tsx:918
 msgid "{0} pages"
@@ -72,9 +77,13 @@ msgstr "{commentCount, plural, one {1 коментар} few {# коментар�
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# документ} few {# документів} many {# документів} other {# документів}}"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:173
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:174
 msgid "{entityLabel} name"
 msgstr "Назва {entityLabel}"
+
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:99
+msgid "{entityLabel} name is required"
+msgstr ""
 
 #: src/features/wiki/attachments-page.tsx:179
 #: src/features/wiki/page-editor.tsx:227
@@ -120,6 +129,10 @@ msgstr "{selectedCount, plural, one {Масові дії для # вибрано
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# відповідь} few {ще +# відповідей} many {ще +# відповідей} other {ще +# відповідей}}"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:132
+msgid "{unreadCount, plural, one {Open menu (# unread notification)} other {Open menu (# unread notifications)}}"
+msgstr ""
+
 #: src/routes/_authenticated/$wikiId/settings.tsx:39
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
 #: src/routes/_authenticated/settings.tsx:38
@@ -155,7 +168,7 @@ msgstr "Доступ заборонено"
 msgid "Access Forbidden"
 msgstr "Доступ заборонено"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:192
+#: ../../../lib/web/src/features/access/access-list.tsx:197
 msgid "Access level"
 msgstr "Рівень доступу"
 
@@ -193,6 +206,7 @@ msgstr "Обліковий запис підтверджено"
 msgid "Actions"
 msgstr "Дії"
 
+#: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:196
 #: src/features/wiki/tag-manager.tsx:125
 #: src/features/wiki/tag-manager.tsx:130
@@ -218,7 +232,7 @@ msgstr "Додати обліковий запис"
 msgid "Add an account to receive notifications and use services."
 msgstr "Додайте обліковий запис, щоб отримувати сповіщення та користуватися сервісами."
 
-#: ../../../lib/web/src/features/accounts/account-picker.tsx:101
+#: ../../../lib/web/src/features/accounts/account-picker.tsx:102
 msgid "Add new account"
 msgstr "Додати новий обліковий запис"
 
@@ -228,6 +242,7 @@ msgid "Add redirect"
 msgstr "Додати перенаправлення"
 
 #: ../../../lib/web/src/components/post-tags.tsx:137
+#: ../../../lib/web/src/components/tag-input.tsx:40
 msgid "Add tag..."
 msgstr "Додати тег..."
 
@@ -248,11 +263,12 @@ msgstr "Додати до наявних сповіщень"
 msgid "Add view"
 msgstr "Додати подання"
 
+#: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: src/features/wiki/tag-manager.tsx:155
 msgid "Adding..."
 msgstr "Додавання..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:71
+#: ../../../lib/web/src/components/config-drawer.tsx:72
 msgid "Adjust the appearance and layout to suit your preferences."
 msgstr "Налаштуйте вигляд і компонування за своїми вподобаннями."
 
@@ -281,6 +297,11 @@ msgstr "Усі теги"
 msgid "All wikis"
 msgstr "Усі вікі"
 
+#. placeholder {0}: entityLabel.toLowerCase()
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
+msgid "Allow anyone to search for {0}"
+msgstr ""
+
 #: src/components/layout/wiki-layout.tsx:160
 msgid "Allow anyone to search for wiki"
 msgstr "Дозволити всім шукати вікі"
@@ -292,6 +313,19 @@ msgstr "Сталася помилка"
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:256
 msgid "An unexpected error occurred"
 msgstr "Сталася неочікувана помилка"
+
+#: ../../../lib/web/src/features/accounts/types.ts:16
+msgid "Android push"
+msgstr ""
+
+#: ../../../lib/web/src/features/access/access-list.tsx:45
+#: ../../../lib/web/src/features/access/types.ts:42
+msgid "Anyone"
+msgstr ""
+
+#: ../../../lib/web/src/features/access/types.ts:41
+msgid "Anyone who is logged in"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:480
 msgid "Are you absolutely sure?"
@@ -343,6 +377,11 @@ msgstr "Вкладення видалено"
 msgid "Attachments"
 msgstr "Вкладення"
 
+#: ../../../lib/web/src/features/access/access-list.tsx:46
+#: ../../../lib/web/src/features/access/types.ts:41
+msgid "Authenticated users"
+msgstr ""
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:315
 msgid "Authenticator code"
 msgstr "Код автентифікатора"
@@ -352,7 +391,15 @@ msgstr "Код автентифікатора"
 msgid "Author"
 msgstr "Автор"
 
-#: ../../../lib/web/src/components/place-picker.tsx:155
+#: ../../../lib/web/src/components/entity-avatar.tsx:99
+msgid "Avatar"
+msgstr ""
+
+#: ../../../lib/web/src/components/entity-avatar.tsx:99
+msgid "Avatar for {name}"
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:156
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
@@ -435,6 +482,10 @@ msgstr "Назад до сторінки"
 msgid "Back to wikis"
 msgstr "Назад до вікі"
 
+#: ../../../lib/web/src/components/entity-banner.tsx:17
+msgid "Banner"
+msgstr ""
+
 #: src/features/wiki/page-comments.tsx:103
 msgid "Be the first to comment on this page."
 msgstr "Будьте першим, хто прокоментує цю сторінку."
@@ -457,13 +508,17 @@ msgstr "Коротко опишіть свої зміни"
 msgid "Browse pages by tag. Click a tag to see all pages with that tag."
 msgstr "Перегляд сторінок за тегом. Клацніть тег, щоб побачити всі сторінки з ним."
 
+#: ../../../lib/web/src/features/accounts/types.ts:13
+msgid "Browser notifications"
+msgstr ""
+
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
 #: ../../../lib/web/src/components/step-up-dialog.tsx:363
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:248
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
 #: ../../../lib/web/src/features/access/access-dialog.tsx:328
-#: ../../../lib/web/src/features/access/access-list.tsx:263
+#: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
 #: src/features/wiki/delete-page.tsx:71
@@ -491,12 +546,12 @@ msgstr ""
 msgid "Cancel reply"
 msgstr "Скасувати відповідь"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:143
+#: ../../../lib/web/src/components/notification-category-button.tsx:146
 msgid "Category for this notification"
 msgstr "Категорія цього сповіщення"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:124
-#: ../../../lib/web/src/components/notification-category-button.tsx:135
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
+#: ../../../lib/web/src/components/notification-category-button.tsx:138
 msgid "Change notification category"
 msgstr "Змінити категорію сповіщення"
 
@@ -522,19 +577,23 @@ msgstr "Зміни з версії {0} → {1}"
 msgid "Changes will appear here when pages are edited."
 msgstr "Зміни з'являтимуться тут, коли сторінки редагуватимуть."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:328
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:198
+msgid "Check \"All\" to see your past notifications."
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:329
 msgid "Choose between default expanded, compact icon-only, or full layout mode"
 msgstr "Виберіть між стандартним розгорнутим, компактним лише з піктограмами або повним режимом компонування"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:270
+#: ../../../lib/web/src/components/config-drawer.tsx:271
 msgid "Choose between inset, floating, or standard sidebar layout"
 msgstr "Виберіть між врізаним, плаваючим або стандартним компонуванням бічної панелі"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:371
+#: ../../../lib/web/src/components/config-drawer.tsx:372
 msgid "Choose between left-to-right or right-to-left site direction"
 msgstr "Виберіть напрямок сайту: зліва направо чи справа наліво"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:226
+#: ../../../lib/web/src/components/config-drawer.tsx:227
 msgid "Choose between system preference, light mode, or dark mode"
 msgstr "Виберіть між системними налаштуваннями, світлим або темним режимом"
 
@@ -543,8 +602,8 @@ msgstr "Виберіть між системними налаштуванням�
 msgid "Choose language"
 msgstr "Виберіть мову"
 
-#: ../../../lib/web/src/components/colour-picker.tsx:269
-#: ../../../lib/web/src/components/colour-picker.tsx:350
+#: ../../../lib/web/src/components/colour-picker.tsx:270
+#: ../../../lib/web/src/components/colour-picker.tsx:351
 #: ../../../lib/web/src/components/travelling-picker.tsx:164
 #: ../../../lib/web/src/components/travelling-picker.tsx:170
 #: ../../../lib/web/src/components/travelling-picker.tsx:231
@@ -552,7 +611,7 @@ msgstr "Виберіть мову"
 msgid "Clear"
 msgstr "Очистити"
 
-#: ../../../lib/web/src/components/filter-bar.tsx:73
+#: ../../../lib/web/src/components/filter-bar.tsx:74
 msgid "Clear all"
 msgstr "Очистити все"
 
@@ -560,6 +619,7 @@ msgstr "Очистити все"
 msgid "Clear filters"
 msgstr "Очистити фільтри"
 
+#: ../../../lib/web/src/components/search-input.tsx:26
 #: src/features/wiki/attachments-page.tsx:349
 #: src/features/wiki/attachments-page.tsx:354
 msgid "Clear search"
@@ -615,6 +675,10 @@ msgstr "Зручний"
 msgid "Coming Soon!"
 msgstr "Скоро!"
 
+#: ../../../lib/web/src/components/ui/command.tsx:34
+msgid "Command Palette"
+msgstr ""
+
 #: src/features/wiki/changes-list.tsx:49
 #: src/features/wiki/page-history.tsx:59
 msgid "Comment"
@@ -626,7 +690,7 @@ msgstr "Коментар"
 msgid "Comments"
 msgstr "Коментарі"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:315
+#: ../../../lib/web/src/components/config-drawer.tsx:316
 #: ../../../lib/web/src/lib/preference-utils.ts:95
 msgid "Compact"
 msgstr "Компактний"
@@ -635,14 +699,30 @@ msgstr "Компактний"
 msgid "Compare changes"
 msgstr "Порівняти зміни"
 
-#: ../../../lib/web/src/components/place-picker.tsx:159
+#: ../../../lib/web/src/components/place-picker.tsx:160
 #: ../../../lib/web/src/components/travelling-picker.tsx:316
 msgid "Confirm"
 msgstr "Підтвердити"
 
+#: ../../../lib/web/src/lib/chat-ui.ts:18
+msgid "Connected"
+msgstr ""
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:191
+msgid "Connected accounts"
+msgstr ""
+
+#: ../../../lib/web/src/lib/chat-ui.ts:21
+msgid "Connecting..."
+msgstr ""
+
 #: src/features/wiki/page-editor.tsx:469
 msgid "Content"
 msgstr "Вміст"
+
+#: ../../../lib/web/src/lib/handle-server-error.ts:18
+msgid "Content not found."
+msgstr ""
 
 #: ../../../lib/web/src/lib/query-client.ts:81
 msgid "Content not modified"
@@ -660,7 +740,15 @@ msgstr "Продовжити"
 msgid "Continue with {label}"
 msgstr "Продовжити з {label}"
 
-#: ../../../lib/web/src/components/ui/copy-button.tsx:63
+#: ../../../lib/web/src/lib/toast-utils.ts:42
+msgid "Copied"
+msgstr ""
+
+#: ../../../lib/web/src/components/ui/copy-button.tsx:25
+msgid "Copied to clipboard"
+msgstr ""
+
+#: ../../../lib/web/src/components/ui/copy-button.tsx:64
 msgid "Copy"
 msgstr "Копіювати"
 
@@ -690,6 +778,11 @@ msgstr "Не вдалося розпочати повторну автентиф
 #: ../../../lib/web/src/components/step-up-dialog.tsx:221
 msgid "Couldn't verify with that account. Please try again."
 msgstr "Не вдалося підтвердити за допомогою цього облікового запису. Спробуйте ще раз."
+
+#. placeholder {0}: entityLabel.toLowerCase()
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
+msgid "Create {0}"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:1034
 msgid "Create a redirect from one URL to another."
@@ -746,6 +839,7 @@ msgstr "Створення переспрямування..."
 msgid "Creating wiki..."
 msgstr "Створення вікі..."
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
 #: src/features/wiki/page-editor.tsx:395
 #: src/features/wiki/redirects-page.tsx:274
 #: src/features/wiki/wiki-settings.tsx:1068
@@ -756,11 +850,15 @@ msgstr "Створення..."
 msgid "Current"
 msgstr "Поточний"
 
-#: ../../../lib/web/src/components/colour-picker.tsx:260
+#: ../../../lib/web/src/components/map-view.tsx:208
+msgid "Current location"
+msgstr ""
+
+#: ../../../lib/web/src/components/colour-picker.tsx:261
 msgid "Custom"
 msgstr "Користувацький"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:218
+#: ../../../lib/web/src/components/config-drawer.tsx:219
 #: ../../../lib/web/src/components/theme-switch.tsx:52
 #: ../../../lib/web/src/lib/preference-utils.ts:20
 msgid "Dark"
@@ -784,7 +882,7 @@ msgstr "Конфлікт даних"
 msgid "Date"
 msgstr "Дата"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:310
+#: ../../../lib/web/src/components/config-drawer.tsx:311
 msgid "Default"
 msgstr "За замовчуванням"
 
@@ -888,6 +986,10 @@ msgstr "За спад."
 msgid "Descending"
 msgstr "За спаданням"
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:83
+msgid "Description"
+msgstr ""
+
 #: ../../../lib/web/src/components/layout/right-panel.tsx:148
 msgid "Details Panel"
 msgstr "Панель деталей"
@@ -903,16 +1005,25 @@ msgstr "Панель деталей"
 msgid "Detect from web browser"
 msgstr "Визначати з веббраузера"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:340
+#: ../../../lib/web/src/components/config-drawer.tsx:341
 msgid "Direction"
 msgstr "Напрямок"
 
-#: src/components/comment-composer.tsx:269
+#: ../../../lib/web/src/components/person-picker.tsx:214
+msgid "Directory"
+msgstr ""
+
+#: src/components/comment-composer.tsx:302
 msgid "Discard"
 msgstr ""
 
-#: src/components/comment-composer.tsx:267
+#: src/components/comment-composer.tsx:300
 msgid "Discard draft?"
+msgstr ""
+
+#: ../../../lib/web/src/lib/chat-ui.ts:25
+#: ../../../lib/web/src/lib/chat-ui.ts:29
+msgid "Disconnected"
 msgstr ""
 
 #: ../../../lib/web/src/components/restore-banner.tsx:79
@@ -978,6 +1089,10 @@ msgstr "Опис правки (необов'язково)"
 msgid "Edit: {pageTitle}"
 msgstr "Редагувати: {pageTitle}"
 
+#: ../../../lib/web/src/features/accounts/types.ts:15
+msgid "Email"
+msgstr ""
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:289
 msgid "Email code"
 msgstr "Код електронної пошти"
@@ -1025,6 +1140,10 @@ msgstr "Розгорнути"
 msgid "Expand sidebar"
 msgstr "Розгорнути бічну панель"
 
+#: ../../../lib/web/src/features/accounts/types.ts:22
+msgid "External URL"
+msgstr ""
+
 #: ../../../lib/web/src/lib/preference-utils.ts:136
 msgid "Extra large"
 msgstr "Дуже великий"
@@ -1033,10 +1152,13 @@ msgstr "Дуже великий"
 msgid "Failed to add account"
 msgstr "Не вдалося додати обліковий запис"
 
+#: ../../../lib/web/src/components/tag-input.tsx:39
 #: src/features/wiki/tag-manager.tsx:57
 msgid "Failed to add tag"
 msgstr "Не вдалося додати тег"
 
+#: ../../../lib/web/src/components/ui/copy-button.tsx:26
+#: ../../../lib/web/src/lib/toast-utils.ts:44
 #: src/features/wiki/attachments-page.tsx:228
 msgid "Failed to copy"
 msgstr "Не вдалося скопіювати"
@@ -1085,6 +1207,10 @@ msgstr "Не вдалося отримати RSS-токен"
 #: src/routes/_authenticated/join.tsx:50
 msgid "Failed to join wiki"
 msgstr "Не вдалося приєднатися до вікі"
+
+#: ../../../lib/web/src/hooks/use-load-more.ts:74
+msgid "Failed to load"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:534
 msgid "Failed to load access rules"
@@ -1188,7 +1314,7 @@ msgstr "Не вдалося відписатися"
 msgid "Failed to update access level"
 msgstr "Не вдалося оновити рівень доступу"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:111
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Failed to update category"
 msgstr "Не вдалося оновити категорію"
 
@@ -1200,6 +1326,10 @@ msgstr "Не вдалося завантажити файли"
 #: src/features/wiki/attachments-page.tsx:362
 msgid "Filter"
 msgstr "Фільтр"
+
+#: ../../../lib/web/src/components/data-table/toolbar.tsx:30
+msgid "Filter..."
+msgstr ""
 
 #: src/components/layout/wiki-layout.tsx:136
 #: src/routes/_authenticated/find.tsx:99
@@ -1218,7 +1348,7 @@ msgstr "Завершіть переміщення облікового запи�
 msgid "Flat"
 msgstr "Плаский"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:257
+#: ../../../lib/web/src/components/config-drawer.tsx:258
 msgid "Floating"
 msgstr "Плаваючий"
 
@@ -1230,6 +1360,10 @@ msgstr "Знайдено {0} за запитом «{debouncedQuery}»"
 #: ../../../lib/web/src/lib/preference-utils.ts:63
 msgid "Friday"
 msgstr "П'ятниця"
+
+#: ../../../lib/web/src/components/person-picker.tsx:207
+msgid "Friends"
+msgstr ""
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:153
 msgid "From"
@@ -1244,7 +1378,7 @@ msgstr "Від"
 msgid "From theme"
 msgstr "З теми"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:320
+#: ../../../lib/web/src/components/config-drawer.tsx:321
 msgid "Full layout"
 msgstr "Повний макет"
 
@@ -1282,6 +1416,11 @@ msgstr "Вигляд сітки"
 #: ../../../lib/web/src/features/access/access-dialog.tsx:162
 msgid "Group"
 msgstr "Група"
+
+#. placeholder {0}: name || subject.slice(1)
+#: ../../../lib/web/src/features/access/access-list.tsx:68
+msgid "Group: {0}"
+msgstr ""
 
 #: ../../../lib/web/src/components/data-table/column-header.tsx:70
 msgid "Hide"
@@ -1357,6 +1496,18 @@ msgstr "зображення, PDF, DOC, DOCX, TXT та MD. Великі зава
 msgid "Imperial"
 msgstr "Імперські"
 
+#: ../../../lib/web/src/features/access/types.ts:42
+msgid "Including anonymous users"
+msgstr ""
+
+#: ../../../lib/web/src/components/faceless-avatar.tsx:69
+msgid "Initials avatar"
+msgstr ""
+
+#: ../../../lib/web/src/components/faceless-avatar.tsx:69
+msgid "Initials avatar for {name}"
+msgstr ""
+
 #: src/features/wiki/page-editor.tsx:349
 msgid "Insert"
 msgstr "Вставити"
@@ -1365,13 +1516,17 @@ msgstr "Вставити"
 msgid "Insert attachment"
 msgstr "Вставити вкладення"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:252
+#: ../../../lib/web/src/components/config-drawer.tsx:253
 msgid "Inset"
 msgstr "Вставлений"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "Інтереси"
+
+#: ../../../lib/web/src/components/tag-input.tsx:38
+msgid "Invalid tag: letters, numbers, spaces, hyphens, and slashes only (max 50 chars)"
+msgstr ""
 
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:245
 msgid "Invalid verification code"
@@ -1390,6 +1545,10 @@ msgstr "Схоже, сторінка, яку ви шукаєте, <0/>не іс�
 msgid "Joined wiki"
 msgstr "Приєдналися до вікі"
 
+#: ../../../lib/web/src/lib/locale-format.ts:62
+msgid "Just now"
+msgstr ""
+
 #: ../../../lib/web/src/lib/preference-utils.ts:108
 #: ../../../lib/web/src/lib/preference-utils.ts:135
 msgid "Large"
@@ -1403,7 +1562,7 @@ msgstr "Великі завантаження можуть бути обмеже
 msgid "Last synced"
 msgstr "Остання синхронізація"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:286
+#: ../../../lib/web/src/components/config-drawer.tsx:287
 msgid "Layout"
 msgstr "Макет"
 
@@ -1412,11 +1571,15 @@ msgstr "Макет"
 msgid "Learn more"
 msgstr "Дізнатися більше"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:354
+#: ../../../lib/web/src/components/config-drawer.tsx:355
 msgid "Left to Right"
 msgstr "Зліва направо"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:213
+#: ../../../lib/web/src/components/post-tags.tsx:72
+msgid "Letters, numbers, spaces, and hyphens only"
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:214
 #: ../../../lib/web/src/components/theme-switch.tsx:45
 #: ../../../lib/web/src/lib/preference-utils.ts:19
 msgid "Light"
@@ -1475,11 +1638,19 @@ msgstr "Вихід виконано успішно"
 msgid "Logging out…"
 msgstr "Виконується вихід…"
 
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:192
+msgid "Manage your connected accounts for notifications and services."
+msgstr ""
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:93
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:100
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:224
 msgid "Mark all as read"
 msgstr "Позначити все як прочитане"
+
+#: ../../../lib/web/src/features/accounts/types.ts:17
+msgid "MCP server"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:107
 msgid "Medium"
@@ -1492,6 +1663,10 @@ msgstr "Меню"
 #: ../../../lib/web/src/lib/preference-utils.ts:85
 msgid "Metric"
 msgstr "Метричні"
+
+#: ../../../lib/web/src/features/accounts/types.ts:23
+msgid "Mochi web"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:59
 msgid "Monday"
@@ -1510,9 +1685,17 @@ msgstr "Ім'я"
 msgid "Name cannot contain < or > characters"
 msgstr "Ім'я не може містити символи < або >"
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
+msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
+msgstr ""
+
 #: src/features/wiki/wiki-settings.tsx:269
 msgid "Name must be 100 characters or less"
 msgstr "Ім'я має містити 100 символів або менше"
+
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:100
+msgid "Name must be 1000 characters or less"
+msgstr ""
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:53
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:303
@@ -1570,7 +1753,7 @@ msgstr "Наступне зображення"
 msgid "No access"
 msgstr "Немає доступу"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:160
+#: ../../../lib/web/src/features/access/access-list.tsx:165
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "Правила доступу не налаштовано. Додайте правила, щоб керувати, хто може мати доступ до цього ресурсу."
 
@@ -1599,6 +1782,10 @@ msgstr "Немає підключених облікових записів"
 msgid "No groups available"
 msgstr "Немає доступних груп"
 
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
+msgid "No notifications yet"
+msgstr ""
+
 #: src/features/wiki/search-page.tsx:74
 msgid "No pages found for \"{debouncedQuery}\""
 msgstr "Сторінок за запитом «{debouncedQuery}» не знайдено"
@@ -1607,7 +1794,11 @@ msgstr "Сторінок за запитом «{debouncedQuery}» не знай�
 msgid "No pages found with this tag"
 msgstr "Сторінок з цим тегом не знайдено"
 
-#: ../../../lib/web/src/components/place-picker.tsx:132
+#: ../../../lib/web/src/components/person-picker.tsx:84
+msgid "No people found"
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:133
 msgid "No places found"
 msgstr "Місць не знайдено"
 
@@ -1624,6 +1815,11 @@ msgstr "Перенаправлення не налаштовано"
 #: src/features/wiki/wiki-settings.tsx:807
 msgid "No replicas yet"
 msgstr "Реплік ще немає"
+
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:82
+#: ../../../lib/web/src/components/search-entity-page.tsx:73
+msgid "No results found"
+msgstr ""
 
 #: ../../../lib/web/src/components/command-menu.tsx:55
 #: ../../../lib/web/src/components/data-table/faceted-filter.tsx:94
@@ -1646,7 +1842,7 @@ msgstr "Тегів не знайдено"
 msgid "No time zone found."
 msgstr "Часовий пояс не знайдено."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:147
+#: ../../../lib/web/src/components/notification-category-button.tsx:150
 msgid "No topic record yet — try again after the next notification."
 msgstr "Запису про тему ще немає — спробуйте ще раз після наступного сповіщення."
 
@@ -1659,6 +1855,7 @@ msgstr "Користувачів не знайдено"
 msgid "No wikis found"
 msgstr "Вікі не знайдено"
 
+#: ../../../lib/web/src/components/colour-picker.tsx:345
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:105
 #: ../../../lib/web/src/lib/preference-utils.ts:125
@@ -1694,6 +1891,10 @@ msgstr "Сповіщення: {0}"
 #: src/features/wiki/wiki-settings.tsx:1044
 msgid "old-page-name"
 msgstr "стара-сторінка"
+
+#: ../../../lib/web/src/components/filter-bar.tsx:35
+msgid "On"
+msgstr ""
 
 #: src/features/wiki/page-view.tsx:84
 #: src/features/wiki/page-view.tsx:99
@@ -1733,6 +1934,10 @@ msgstr "Відкрити посилання"
 msgid "Open link in new tab"
 msgstr "Відкрити посилання в новій вкладці"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:133
+msgid "Open menu"
+msgstr ""
+
 #: ../../../lib/web/src/components/layout/top-bar.tsx:63
 #: ../../../lib/web/src/components/layout/top-bar.tsx:68
 msgid "Open navigation"
@@ -1743,8 +1948,8 @@ msgstr "Відкрити навігацію"
 msgid "Open navigation menu"
 msgstr "Відкрити меню навігації"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:57
-#: ../../../lib/web/src/components/config-drawer.tsx:65
+#: ../../../lib/web/src/components/config-drawer.tsx:58
+#: ../../../lib/web/src/components/config-drawer.tsx:66
 msgid "Open theme settings"
 msgstr "Відкрити налаштування теми"
 
@@ -1756,7 +1961,7 @@ msgstr "Або введіть ID напряму"
 msgid "Other"
 msgstr "Інше"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:217
+#: ../../../lib/web/src/features/access/access-list.tsx:222
 msgid "Owner"
 msgstr "Власник"
 
@@ -1841,9 +2046,13 @@ msgstr "Ключі доступу"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Остаточно видалити цю вікі та весь її вміст. Цю дію неможливо скасувати."
 
+#: ../../../lib/web/src/components/date-picker.tsx:20
+msgid "Pick a date"
+msgstr ""
+
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
-#: src/components/comment-composer.tsx:69
+#: src/components/comment-composer.tsx:97
 msgid "Please check your internet connection and try again."
 msgstr "Будь ласка, перевірте підключення до Інтернету та спробуйте ще раз."
 
@@ -1877,6 +2086,14 @@ msgstr "Приватність"
 #: ../../../lib/web/src/components/profile-dropdown.tsx:114
 msgid "Profile"
 msgstr "Профіль"
+
+#: ../../../lib/web/src/components/person-picker.tsx:200
+msgid "Project members"
+msgstr ""
+
+#: ../../../lib/web/src/features/accounts/types.ts:21
+msgid "Push notification"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:117
 msgid "Raised"
@@ -1917,14 +2134,18 @@ msgstr "Останні зміни"
 msgid "Recent edits across all pages in this wiki."
 msgstr "Останні редагування на всіх сторінках цієї вікі."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:216
-#: ../../../lib/web/src/components/search-entity-page.tsx:242
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:217
+#: ../../../lib/web/src/components/search-entity-page.tsx:243
 msgid "Recommended"
 msgstr "Рекомендоване"
 
 #: src/routes/_authenticated/index.tsx:799
 msgid "Recommended wikis"
 msgstr "Рекомендовані вікі"
+
+#: ../../../lib/web/src/lib/chat-ui.ts:21
+msgid "Reconnecting ({retries})..."
+msgstr ""
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:119
@@ -1965,26 +2186,32 @@ msgstr "Відносний (5хв, 3год, 2д)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "Відносний протягом 24 годин, інакше абсолютний"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:265
+#: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/components/comment-composer.tsx:201
+#: src/components/comment-composer.tsx:234
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
 msgid "Remove"
 msgstr "Видалити"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:247
-#: ../../../lib/web/src/features/access/access-list.tsx:253
+#. placeholder {0}: filter.label
+#: ../../../lib/web/src/components/filter-bar.tsx:56
+#: ../../../lib/web/src/components/filter-bar.tsx:62
+msgid "Remove {0} filter"
+msgstr ""
+
+#: ../../../lib/web/src/features/access/access-list.tsx:252
+#: ../../../lib/web/src/features/access/access-list.tsx:258
 msgid "Remove access rule"
 msgstr "Видалити правило доступу"
 
 #. placeholder {0}: formatSubject(subject, data.name)
-#: ../../../lib/web/src/features/access/access-list.tsx:259
+#: ../../../lib/web/src/features/access/access-list.tsx:264
 msgid "Remove access rule for \"{0}\"?"
 msgstr "Вилучити правило доступу для «{0}»?"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:257
+#: ../../../lib/web/src/features/access/access-list.tsx:262
 msgid "Remove access?"
 msgstr "Видалити доступ?"
 
@@ -2074,16 +2301,21 @@ msgstr "URL запиту: {baseURL}{slug}"
 msgid "Resend email"
 msgstr "Надіслати лист повторно"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:86
-#: ../../../lib/web/src/components/data-table/toolbar.tsx:81
+#: ../../../lib/web/src/components/config-drawer.tsx:87
+#: ../../../lib/web/src/components/data-table/toolbar.tsx:82
 msgid "Reset"
 msgstr "Скинути"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:84
+#: ../../../lib/web/src/components/config-drawer.tsx:122
+#: ../../../lib/web/src/components/config-drawer.tsx:127
+msgid "Reset {title}"
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:85
 msgid "Reset all settings to default values"
 msgstr "Скинути всі налаштування до значень за замовчуванням"
 
-#: src/components/comment-composer.tsx:218
+#: src/components/comment-composer.tsx:251
 msgid "Retry"
 msgstr ""
 
@@ -2129,7 +2361,7 @@ msgstr "Відкочування..."
 msgid "Revoke access"
 msgstr "Відкликати доступ"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:361
+#: ../../../lib/web/src/components/config-drawer.tsx:362
 msgid "Right to Left"
 msgstr "Справа наліво"
 
@@ -2176,6 +2408,9 @@ msgstr "Зберегти зміни"
 msgid "Saving..."
 msgstr "Збереження..."
 
+#: ../../../lib/web/src/components/filter-bar.tsx:32
+#: ../../../lib/web/src/components/header-search.tsx:22
+#: ../../../lib/web/src/components/search.tsx:18
 #: src/features/wiki/wiki-page-content.tsx:315
 #: src/routes/_authenticated/$page/index.tsx:229
 #: src/routes/_authenticated/$wikiId/search.tsx:31
@@ -2194,9 +2429,17 @@ msgstr "Пошук вкладень..."
 msgid "Search by name, ID, fingerprint, or URL..."
 msgstr "Пошук за назвою, ID, відбитком або URL..."
 
-#: ../../../lib/web/src/components/place-picker.tsx:85
+#: ../../../lib/web/src/components/ui/command.tsx:35
+msgid "Search for a command to run..."
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:86
 msgid "Search for a place"
 msgstr "Пошук місця"
+
+#: ../../../lib/web/src/components/place-picker.tsx:50
+msgid "Search for a place..."
+msgstr ""
 
 #: src/routes/_authenticated/index.tsx:775
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
@@ -2236,14 +2479,21 @@ msgid "Search users"
 msgstr "Пошук користувачів"
 
 #: ../../../lib/web/src/components/person-picker.tsx:324
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:81
+#: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "Пошук..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:174
-#: ../../../lib/web/src/components/search-entity-page.tsx:200
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:175
+#: ../../../lib/web/src/components/search-entity-page.tsx:201
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
 msgstr "Пошук..."
+
+#. placeholder {0}: item.label.toLowerCase()
+#: ../../../lib/web/src/components/config-drawer.tsx:149
+msgid "Select {0}"
+msgstr ""
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:150
 msgid "Select a user, group, or other rule to grant access."
@@ -2252,6 +2502,10 @@ msgstr "Виберіть користувача, групу або інше пр
 #: ../../../lib/web/src/features/access/access-dialog.tsx:273
 msgid "Select access rule"
 msgstr "Виберіть правило доступу"
+
+#: ../../../lib/web/src/features/accounts/account-picker.tsx:34
+msgid "Select account"
+msgstr ""
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:129
 msgid "Select account type"
@@ -2265,19 +2519,27 @@ msgstr "Виберіть вкладення, щоб вставити на сто
 msgid "Select group"
 msgstr "Виберіть групу"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:304
+#: ../../../lib/web/src/components/config-drawer.tsx:305
 msgid "Select layout style"
 msgstr "Виберіть стиль розкладки"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:246
+#: ../../../lib/web/src/components/place-picker.tsx:49
+msgid "Select location"
+msgstr ""
+
+#: ../../../lib/web/src/components/person-picker.tsx:83
+msgid "Select person..."
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:247
 msgid "Select sidebar style"
 msgstr "Виберіть стиль бічної панелі"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:348
+#: ../../../lib/web/src/components/config-drawer.tsx:349
 msgid "Select site direction"
 msgstr "Виберіть напрямок сайту"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:202
+#: ../../../lib/web/src/components/config-drawer.tsx:203
 msgid "Select theme preference"
 msgstr "Виберіть тему"
 
@@ -2360,8 +2622,8 @@ msgstr "Показати пароль"
 msgid "Showing {totalShown} of {total}"
 msgstr "Показано {totalShown} з {total}"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:238
-#: ../../../lib/web/src/components/config-drawer.tsx:262
+#: ../../../lib/web/src/components/config-drawer.tsx:239
+#: ../../../lib/web/src/components/config-drawer.tsx:263
 #: ../../../lib/web/src/components/ui/sidebar.tsx:237
 msgid "Sidebar"
 msgstr "Бічна панель"
@@ -2415,10 +2677,12 @@ msgstr "Створіть свою першу вікі"
 msgid "Stay tuned though!"
 msgstr "Слідкуйте за оновленнями!"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:191
+#: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "Тема"
 
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:83
+#: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:195
 #: src/routes/_authenticated/index.tsx:837
 msgid "Subscribe"
@@ -2466,7 +2730,7 @@ msgstr "Синхронізувати зараз"
 msgid "Syncing..."
 msgstr "Синхронізація..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:208
+#: ../../../lib/web/src/components/config-drawer.tsx:209
 #: ../../../lib/web/src/components/theme-switch.tsx:59
 #: ../../../lib/web/src/lib/preference-utils.ts:21
 #: ../../../lib/web/src/lib/preference-utils.ts:144
@@ -2477,7 +2741,7 @@ msgstr "Система"
 msgid "Table of contents"
 msgstr "Зміст"
 
-#: ../../../lib/web/src/components/tag-input.tsx:94
+#: ../../../lib/web/src/components/tag-input.tsx:95
 msgid "Tag"
 msgstr "Тег"
 
@@ -2489,9 +2753,14 @@ msgstr "Тег «{tag}» додано"
 msgid "Tag \"{tag}\" removed"
 msgstr "Тег «{tag}» видалено"
 
+#: ../../../lib/web/src/components/post-tags.tsx:76
 #: src/features/wiki/tag-manager.tsx:44
 msgid "Tag already exists"
 msgstr "Тег уже існує"
+
+#: ../../../lib/web/src/components/post-tags.tsx:68
+msgid "Tag must be 50 characters or less"
+msgstr ""
 
 #: src/routes/_authenticated/tag/$tag.tsx:23
 #: src/routes/_authenticated/tag/$tag.tsx:29
@@ -2567,11 +2836,11 @@ msgstr "URL, який буде перенаправлено"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "URL, який буде перенаправлено (напр., «old-page»)"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:194
+#: ../../../lib/web/src/components/config-drawer.tsx:195
 msgid "Theme"
 msgstr "Тема"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:69
+#: ../../../lib/web/src/components/config-drawer.tsx:70
 msgid "Theme Settings"
 msgstr "Налаштування теми"
 
@@ -2692,8 +2961,8 @@ msgstr "Спробуйте інший пошуковий запит або фі�
 msgid "Try a different tag."
 msgstr "Спробуйте інший тег."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:190
-#: ../../../lib/web/src/components/search-entity-page.tsx:216
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:191
+#: ../../../lib/web/src/components/search-entity-page.tsx:217
 msgid "Try adjusting your search terms"
 msgstr "Спробуйте змінити пошукові терміни"
 
@@ -2732,7 +3001,7 @@ msgstr "Не вдалося підключитися до віддаленого
 msgid "Unable to redirect to login. Please try again."
 msgstr "Не вдається перенаправити на сторінку входу. Спробуйте ще раз."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:155
+#: ../../../lib/web/src/components/notification-category-button.tsx:158
 msgid "Unassigned"
 msgstr "Не призначено"
 
@@ -2740,10 +3009,16 @@ msgstr "Не призначено"
 msgid "Unauthorized Access"
 msgstr "Неавторизований доступ"
 
+#: ../../../lib/web/src/lib/request.ts:133
+#: ../../../lib/web/src/lib/request.ts:206
+msgid "Unexpected API error"
+msgstr ""
+
 #: ../../../lib/web/src/lib/preference-utils.ts:87
 msgid "United States"
 msgstr "Сполучені Штати"
 
+#: ../../../lib/web/src/features/accounts/types.ts:29
 #: src/features/wiki/wiki-comment-thread.tsx:132
 msgid "Unknown"
 msgstr "Невідомо"
@@ -2852,6 +3127,7 @@ msgstr "Використати як головну"
 msgid "Use your passkey"
 msgstr "Скористайтеся ключем доступу"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:86
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
 msgid "User"
 msgstr "Користувач"
@@ -2924,6 +3200,10 @@ msgstr "Лише перегляд"
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "Перегляд історії <0>{slug}</0>, поточна версія {currentVersion}"
 
+#: ../../../lib/web/src/components/filter-bar.tsx:35
+msgid "Watched"
+msgstr ""
+
 #. placeholder {0}: account.identifier
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:63
 msgid "We sent a verification code to <0>{0}</0>. Enter the code below to verify your email address."
@@ -2932,6 +3212,10 @@ msgstr "Ми надіслали код підтвердження на <0>{0}</0
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:16
 msgid "We'll be back online shortly."
 msgstr "Ми скоро повернемося онлайн."
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:197
+msgid "We'll notify you when something important happens."
+msgstr ""
 
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:13
 msgid "Website is under maintenance!"
@@ -3039,18 +3323,26 @@ msgstr "Ви не маєте доступу до цього розділу."
 msgid "You don't have necessary permission <0/>to view this resource."
 msgstr "У вас немає потрібного дозволу, <0/>щоб переглянути цей ресурс."
 
+#: ../../../lib/web/src/lib/show-submitted-data.tsx:9
+msgid "You submitted the following values:"
+msgstr ""
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
+msgid "You're all caught up!"
+msgstr ""
+
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Ваш обліковий запис переміщено сюди з {source}. Поки ви не видалите його там, повідомлення та сповіщення можуть надходити на обидва сервери, частина вашого вмісту продовжить надаватися зі старого сервера, а підписникам може знадобитися кілька хвилин, щоб знайти вас тут."
 
-#: src/components/comment-composer.tsx:260
+#: src/components/comment-composer.tsx:293
 msgid "Your attachments will be lost."
 msgstr ""
 
-#: src/components/comment-composer.tsx:258
+#: src/components/comment-composer.tsx:291
 msgid "Your text and attachments will be lost."
 msgstr ""
 
-#: src/components/comment-composer.tsx:261
+#: src/components/comment-composer.tsx:294
 msgid "Your text will be lost."
 msgstr ""

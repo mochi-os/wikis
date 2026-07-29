@@ -53,6 +53,11 @@ msgstr "{0, plural, one {# নির্বাচিত} other {# নির্ব
 msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
+#. placeholder {0}: item.label
+#: ../../../lib/web/src/components/config-drawer.tsx:160
+msgid "{0} option preview"
+msgstr ""
+
 #. placeholder {0}: wiki.pages
 #: src/routes/_authenticated/index.tsx:918
 msgid "{0} pages"
@@ -72,9 +77,13 @@ msgstr "{commentCount, plural, one {১টি মন্তব্য} other {#ট
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# নথি} other {# নথি}}"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:173
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:174
 msgid "{entityLabel} name"
 msgstr "{entityLabel} নাম"
+
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:99
+msgid "{entityLabel} name is required"
+msgstr ""
 
 #: src/features/wiki/attachments-page.tsx:179
 #: src/features/wiki/page-editor.tsx:227
@@ -120,6 +129,10 @@ msgstr "{selectedCount, plural, one {# নির্বাচিত {entityName} 
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# উত্তর} other {+# আরো উত্তর}}"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:132
+msgid "{unreadCount, plural, one {Open menu (# unread notification)} other {Open menu (# unread notifications)}}"
+msgstr ""
+
 #: src/routes/_authenticated/$wikiId/settings.tsx:39
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
 #: src/routes/_authenticated/settings.tsx:38
@@ -155,7 +168,7 @@ msgstr "অ্যাক্সেস অস্বীকৃত"
 msgid "Access Forbidden"
 msgstr "অ্যাক্সেস নিষিদ্ধ"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:192
+#: ../../../lib/web/src/features/access/access-list.tsx:197
 msgid "Access level"
 msgstr "অ্যাক্সেস লেভেল"
 
@@ -193,6 +206,7 @@ msgstr "অ্যাকাউন্ট যাচাই করা হয়েছ
 msgid "Actions"
 msgstr "অ্যাকশন"
 
+#: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:196
 #: src/features/wiki/tag-manager.tsx:125
 #: src/features/wiki/tag-manager.tsx:130
@@ -218,7 +232,7 @@ msgstr "অ্যাকাউন্ট যোগ করুন"
 msgid "Add an account to receive notifications and use services."
 msgstr "নোটিফিকেশন পেতে এবং পরিষেবা ব্যবহার করতে একটি অ্যাকাউন্ট যোগ করুন।"
 
-#: ../../../lib/web/src/features/accounts/account-picker.tsx:101
+#: ../../../lib/web/src/features/accounts/account-picker.tsx:102
 msgid "Add new account"
 msgstr "নতুন অ্যাকাউন্ট যোগ করুন"
 
@@ -228,6 +242,7 @@ msgid "Add redirect"
 msgstr "রিডাইরেক্ট যোগ করুন"
 
 #: ../../../lib/web/src/components/post-tags.tsx:137
+#: ../../../lib/web/src/components/tag-input.tsx:40
 msgid "Add tag..."
 msgstr "ট্যাগ যোগ করুন..."
 
@@ -248,11 +263,12 @@ msgstr "বিদ্যমান নোটিফিকেশনে যোগ ক
 msgid "Add view"
 msgstr "ভিউ যোগ করুন"
 
+#: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: src/features/wiki/tag-manager.tsx:155
 msgid "Adding..."
 msgstr "যোগ করা হচ্ছে..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:71
+#: ../../../lib/web/src/components/config-drawer.tsx:72
 msgid "Adjust the appearance and layout to suit your preferences."
 msgstr "আপনার পছন্দ অনুযায়ী চেহারা এবং লেআউট সমন্বয় করুন।"
 
@@ -281,6 +297,11 @@ msgstr "সব ট্যাগ"
 msgid "All wikis"
 msgstr "সব wiki"
 
+#. placeholder {0}: entityLabel.toLowerCase()
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
+msgid "Allow anyone to search for {0}"
+msgstr ""
+
 #: src/components/layout/wiki-layout.tsx:160
 msgid "Allow anyone to search for wiki"
 msgstr "যেকেউ wiki খুঁজতে অনুমতি দিন"
@@ -292,6 +313,19 @@ msgstr "একটি ত্রুটি ঘটেছে"
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:256
 msgid "An unexpected error occurred"
 msgstr "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে"
+
+#: ../../../lib/web/src/features/accounts/types.ts:16
+msgid "Android push"
+msgstr ""
+
+#: ../../../lib/web/src/features/access/access-list.tsx:45
+#: ../../../lib/web/src/features/access/types.ts:42
+msgid "Anyone"
+msgstr ""
+
+#: ../../../lib/web/src/features/access/types.ts:41
+msgid "Anyone who is logged in"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:480
 msgid "Are you absolutely sure?"
@@ -343,6 +377,11 @@ msgstr "অ্যাটাচমেন্ট মুছে ফেলা হয়
 msgid "Attachments"
 msgstr "অ্যাটাচমেন্ট"
 
+#: ../../../lib/web/src/features/access/access-list.tsx:46
+#: ../../../lib/web/src/features/access/types.ts:41
+msgid "Authenticated users"
+msgstr ""
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:315
 msgid "Authenticator code"
 msgstr "অথেন্টিকেটর কোড"
@@ -352,7 +391,15 @@ msgstr "অথেন্টিকেটর কোড"
 msgid "Author"
 msgstr "লেখক"
 
-#: ../../../lib/web/src/components/place-picker.tsx:155
+#: ../../../lib/web/src/components/entity-avatar.tsx:99
+msgid "Avatar"
+msgstr ""
+
+#: ../../../lib/web/src/components/entity-avatar.tsx:99
+msgid "Avatar for {name}"
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:156
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
@@ -435,6 +482,10 @@ msgstr "পেজে ফিরে যান"
 msgid "Back to wikis"
 msgstr "wiki-তে ফিরে যান"
 
+#: ../../../lib/web/src/components/entity-banner.tsx:17
+msgid "Banner"
+msgstr ""
+
 #: src/features/wiki/page-comments.tsx:103
 msgid "Be the first to comment on this page."
 msgstr "এই পেজে প্রথম মন্তব্য করুন।"
@@ -457,13 +508,17 @@ msgstr "সংক্ষেপে আপনার পরিবর্তনগু�
 msgid "Browse pages by tag. Click a tag to see all pages with that tag."
 msgstr "ট্যাগ অনুসারে পেজ ব্রাউজ করুন। সেই ট্যাগ সহ সব পেজ দেখতে একটি ট্যাগে ক্লিক করুন।"
 
+#: ../../../lib/web/src/features/accounts/types.ts:13
+msgid "Browser notifications"
+msgstr ""
+
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
 #: ../../../lib/web/src/components/step-up-dialog.tsx:363
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:248
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
 #: ../../../lib/web/src/features/access/access-dialog.tsx:328
-#: ../../../lib/web/src/features/access/access-list.tsx:263
+#: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
 #: src/features/wiki/delete-page.tsx:71
@@ -491,12 +546,12 @@ msgstr ""
 msgid "Cancel reply"
 msgstr "উত্তর বাতিল করুন"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:143
+#: ../../../lib/web/src/components/notification-category-button.tsx:146
 msgid "Category for this notification"
 msgstr "এই নোটিফিকেশনের ক্যাটেগরি"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:124
-#: ../../../lib/web/src/components/notification-category-button.tsx:135
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
+#: ../../../lib/web/src/components/notification-category-button.tsx:138
 msgid "Change notification category"
 msgstr "নোটিফিকেশন ক্যাটেগরি পরিবর্তন করুন"
 
@@ -522,19 +577,23 @@ msgstr "সংস্করণ {0} → {1} থেকে পরিবর্তন�
 msgid "Changes will appear here when pages are edited."
 msgstr "পেজ সম্পাদনা করা হলে পরিবর্তনগুলি এখানে দেখা যাবে।"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:328
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:198
+msgid "Check \"All\" to see your past notifications."
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:329
 msgid "Choose between default expanded, compact icon-only, or full layout mode"
 msgstr "ডিফল্ট বিস্তৃত, কম্প্যাক্ট আইকন-অনলি, বা সম্পূর্ণ লেআউট মোডের মধ্যে বেছে নিন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:270
+#: ../../../lib/web/src/components/config-drawer.tsx:271
 msgid "Choose between inset, floating, or standard sidebar layout"
 msgstr "ইনসেট, ফ্লোটিং, বা স্ট্যান্ডার্ড সাইডবার লেআউটের মধ্যে বেছে নিন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:371
+#: ../../../lib/web/src/components/config-drawer.tsx:372
 msgid "Choose between left-to-right or right-to-left site direction"
 msgstr "বাম-থেকে-ডান বা ডান-থেকে-বাম সাইট ডিরেকশনের মধ্যে বেছে নিন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:226
+#: ../../../lib/web/src/components/config-drawer.tsx:227
 msgid "Choose between system preference, light mode, or dark mode"
 msgstr "সিস্টেম পছন্দ, লাইট মোড, বা ডার্ক মোডের মধ্যে বেছে নিন"
 
@@ -543,8 +602,8 @@ msgstr "সিস্টেম পছন্দ, লাইট মোড, বা �
 msgid "Choose language"
 msgstr "ভাষা বেছে নিন"
 
-#: ../../../lib/web/src/components/colour-picker.tsx:269
-#: ../../../lib/web/src/components/colour-picker.tsx:350
+#: ../../../lib/web/src/components/colour-picker.tsx:270
+#: ../../../lib/web/src/components/colour-picker.tsx:351
 #: ../../../lib/web/src/components/travelling-picker.tsx:164
 #: ../../../lib/web/src/components/travelling-picker.tsx:170
 #: ../../../lib/web/src/components/travelling-picker.tsx:231
@@ -552,7 +611,7 @@ msgstr "ভাষা বেছে নিন"
 msgid "Clear"
 msgstr "পরিষ্কার করুন"
 
-#: ../../../lib/web/src/components/filter-bar.tsx:73
+#: ../../../lib/web/src/components/filter-bar.tsx:74
 msgid "Clear all"
 msgstr "সব পরিষ্কার করুন"
 
@@ -560,6 +619,7 @@ msgstr "সব পরিষ্কার করুন"
 msgid "Clear filters"
 msgstr "ফিল্টার পরিষ্কার করুন"
 
+#: ../../../lib/web/src/components/search-input.tsx:26
 #: src/features/wiki/attachments-page.tsx:349
 #: src/features/wiki/attachments-page.tsx:354
 msgid "Clear search"
@@ -615,6 +675,10 @@ msgstr "আরামদায়ক"
 msgid "Coming Soon!"
 msgstr "শীঘ্রই আসছে!"
 
+#: ../../../lib/web/src/components/ui/command.tsx:34
+msgid "Command Palette"
+msgstr ""
+
 #: src/features/wiki/changes-list.tsx:49
 #: src/features/wiki/page-history.tsx:59
 msgid "Comment"
@@ -626,7 +690,7 @@ msgstr "মন্তব্য"
 msgid "Comments"
 msgstr "মন্তব্য"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:315
+#: ../../../lib/web/src/components/config-drawer.tsx:316
 #: ../../../lib/web/src/lib/preference-utils.ts:95
 msgid "Compact"
 msgstr "কম্প্যাক্ট"
@@ -635,14 +699,30 @@ msgstr "কম্প্যাক্ট"
 msgid "Compare changes"
 msgstr "পরিবর্তন তুলনা করুন"
 
-#: ../../../lib/web/src/components/place-picker.tsx:159
+#: ../../../lib/web/src/components/place-picker.tsx:160
 #: ../../../lib/web/src/components/travelling-picker.tsx:316
 msgid "Confirm"
 msgstr "নিশ্চিত করুন"
 
+#: ../../../lib/web/src/lib/chat-ui.ts:18
+msgid "Connected"
+msgstr ""
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:191
+msgid "Connected accounts"
+msgstr ""
+
+#: ../../../lib/web/src/lib/chat-ui.ts:21
+msgid "Connecting..."
+msgstr ""
+
 #: src/features/wiki/page-editor.tsx:469
 msgid "Content"
 msgstr "কন্টেন্ট"
+
+#: ../../../lib/web/src/lib/handle-server-error.ts:18
+msgid "Content not found."
+msgstr ""
 
 #: ../../../lib/web/src/lib/query-client.ts:81
 msgid "Content not modified"
@@ -660,7 +740,15 @@ msgstr "চালিয়ে যান"
 msgid "Continue with {label}"
 msgstr "{label} দিয়ে চালিয়ে যান"
 
-#: ../../../lib/web/src/components/ui/copy-button.tsx:63
+#: ../../../lib/web/src/lib/toast-utils.ts:42
+msgid "Copied"
+msgstr ""
+
+#: ../../../lib/web/src/components/ui/copy-button.tsx:25
+msgid "Copied to clipboard"
+msgstr ""
+
+#: ../../../lib/web/src/components/ui/copy-button.tsx:64
 msgid "Copy"
 msgstr "কপি করুন"
 
@@ -690,6 +778,11 @@ msgstr "পুনরায় প্রমাণীকরণ শুরু কর
 #: ../../../lib/web/src/components/step-up-dialog.tsx:221
 msgid "Couldn't verify with that account. Please try again."
 msgstr "ওই অ্যাকাউন্ট দিয়ে যাচাই করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।"
+
+#. placeholder {0}: entityLabel.toLowerCase()
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
+msgid "Create {0}"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:1034
 msgid "Create a redirect from one URL to another."
@@ -746,6 +839,7 @@ msgstr "রিডাইরেক্ট তৈরি করা হচ্ছে...
 msgid "Creating wiki..."
 msgstr "উইকি তৈরি করা হচ্ছে..."
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
 #: src/features/wiki/page-editor.tsx:395
 #: src/features/wiki/redirects-page.tsx:274
 #: src/features/wiki/wiki-settings.tsx:1068
@@ -756,11 +850,15 @@ msgstr "তৈরি করা হচ্ছে..."
 msgid "Current"
 msgstr "বর্তমান"
 
-#: ../../../lib/web/src/components/colour-picker.tsx:260
+#: ../../../lib/web/src/components/map-view.tsx:208
+msgid "Current location"
+msgstr ""
+
+#: ../../../lib/web/src/components/colour-picker.tsx:261
 msgid "Custom"
 msgstr "কাস্টম"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:218
+#: ../../../lib/web/src/components/config-drawer.tsx:219
 #: ../../../lib/web/src/components/theme-switch.tsx:52
 #: ../../../lib/web/src/lib/preference-utils.ts:20
 msgid "Dark"
@@ -784,7 +882,7 @@ msgstr "ডেটা দ্বন্দ্ব"
 msgid "Date"
 msgstr "তারিখ"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:310
+#: ../../../lib/web/src/components/config-drawer.tsx:311
 msgid "Default"
 msgstr "ডিফল্ট"
 
@@ -888,6 +986,10 @@ msgstr "অধঃক্রম"
 msgid "Descending"
 msgstr "অধঃক্রম"
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:83
+msgid "Description"
+msgstr ""
+
 #: ../../../lib/web/src/components/layout/right-panel.tsx:148
 msgid "Details Panel"
 msgstr "বিবরণ প্যানেল"
@@ -903,16 +1005,25 @@ msgstr "বিবরণ প্যানেল"
 msgid "Detect from web browser"
 msgstr "ওয়েব ব্রাউজার থেকে শনাক্ত করুন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:340
+#: ../../../lib/web/src/components/config-drawer.tsx:341
 msgid "Direction"
 msgstr "দিক"
 
-#: src/components/comment-composer.tsx:269
+#: ../../../lib/web/src/components/person-picker.tsx:214
+msgid "Directory"
+msgstr ""
+
+#: src/components/comment-composer.tsx:302
 msgid "Discard"
 msgstr ""
 
-#: src/components/comment-composer.tsx:267
+#: src/components/comment-composer.tsx:300
 msgid "Discard draft?"
+msgstr ""
+
+#: ../../../lib/web/src/lib/chat-ui.ts:25
+#: ../../../lib/web/src/lib/chat-ui.ts:29
+msgid "Disconnected"
 msgstr ""
 
 #: ../../../lib/web/src/components/restore-banner.tsx:79
@@ -978,6 +1089,10 @@ msgstr "সম্পাদনা সারসংক্ষেপ (ঐচ্ছি
 msgid "Edit: {pageTitle}"
 msgstr "সম্পাদনা করুন: {pageTitle}"
 
+#: ../../../lib/web/src/features/accounts/types.ts:15
+msgid "Email"
+msgstr ""
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:289
 msgid "Email code"
 msgstr "ইমেইল কোড"
@@ -1025,6 +1140,10 @@ msgstr "প্রসারিত করুন"
 msgid "Expand sidebar"
 msgstr "সাইডবার প্রসারিত করুন"
 
+#: ../../../lib/web/src/features/accounts/types.ts:22
+msgid "External URL"
+msgstr ""
+
 #: ../../../lib/web/src/lib/preference-utils.ts:136
 msgid "Extra large"
 msgstr "অতিরিক্ত বড়"
@@ -1033,10 +1152,13 @@ msgstr "অতিরিক্ত বড়"
 msgid "Failed to add account"
 msgstr "অ্যাকাউন্ট যোগ করতে ব্যর্থ"
 
+#: ../../../lib/web/src/components/tag-input.tsx:39
 #: src/features/wiki/tag-manager.tsx:57
 msgid "Failed to add tag"
 msgstr "ট্যাগ যোগ করতে ব্যর্থ"
 
+#: ../../../lib/web/src/components/ui/copy-button.tsx:26
+#: ../../../lib/web/src/lib/toast-utils.ts:44
 #: src/features/wiki/attachments-page.tsx:228
 msgid "Failed to copy"
 msgstr "কপি করতে ব্যর্থ"
@@ -1085,6 +1207,10 @@ msgstr "RSS টোকেন পেতে ব্যর্থ"
 #: src/routes/_authenticated/join.tsx:50
 msgid "Failed to join wiki"
 msgstr "উইকিতে যোগ দিতে ব্যর্থ"
+
+#: ../../../lib/web/src/hooks/use-load-more.ts:74
+msgid "Failed to load"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:534
 msgid "Failed to load access rules"
@@ -1188,7 +1314,7 @@ msgstr "আনসাবস্ক্রাইব করতে ব্যর্থ"
 msgid "Failed to update access level"
 msgstr "অ্যাক্সেস স্তর আপডেট করতে ব্যর্থ"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:111
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Failed to update category"
 msgstr "ক্যাটাগরি আপডেট করতে ব্যর্থ"
 
@@ -1200,6 +1326,10 @@ msgstr "ফাইল আপলোড করতে ব্যর্থ"
 #: src/features/wiki/attachments-page.tsx:362
 msgid "Filter"
 msgstr "ফিল্টার"
+
+#: ../../../lib/web/src/components/data-table/toolbar.tsx:30
+msgid "Filter..."
+msgstr ""
 
 #: src/components/layout/wiki-layout.tsx:136
 #: src/routes/_authenticated/find.tsx:99
@@ -1218,7 +1348,7 @@ msgstr "আপনার অ্যাকাউন্ট স্থানান্�
 msgid "Flat"
 msgstr "সমতল"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:257
+#: ../../../lib/web/src/components/config-drawer.tsx:258
 msgid "Floating"
 msgstr "ফ্লোটিং"
 
@@ -1230,6 +1360,10 @@ msgstr "«{debouncedQuery}»-এর জন্য {0} পাওয়া গে�
 #: ../../../lib/web/src/lib/preference-utils.ts:63
 msgid "Friday"
 msgstr "শুক্রবার"
+
+#: ../../../lib/web/src/components/person-picker.tsx:207
+msgid "Friends"
+msgstr ""
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:153
 msgid "From"
@@ -1244,7 +1378,7 @@ msgstr "থেকে"
 msgid "From theme"
 msgstr "থিম থেকে"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:320
+#: ../../../lib/web/src/components/config-drawer.tsx:321
 msgid "Full layout"
 msgstr "সম্পূর্ণ লেআউট"
 
@@ -1282,6 +1416,11 @@ msgstr "গ্রিড ভিউ"
 #: ../../../lib/web/src/features/access/access-dialog.tsx:162
 msgid "Group"
 msgstr "গ্রুপ"
+
+#. placeholder {0}: name || subject.slice(1)
+#: ../../../lib/web/src/features/access/access-list.tsx:68
+msgid "Group: {0}"
+msgstr ""
 
 #: ../../../lib/web/src/components/data-table/column-header.tsx:70
 msgid "Hide"
@@ -1357,6 +1496,18 @@ msgstr "ছবি, PDF, DOC, DOCX, TXT, এবং MD। বড় আপলো�
 msgid "Imperial"
 msgstr "ইম্পেরিয়াল"
 
+#: ../../../lib/web/src/features/access/types.ts:42
+msgid "Including anonymous users"
+msgstr ""
+
+#: ../../../lib/web/src/components/faceless-avatar.tsx:69
+msgid "Initials avatar"
+msgstr ""
+
+#: ../../../lib/web/src/components/faceless-avatar.tsx:69
+msgid "Initials avatar for {name}"
+msgstr ""
+
 #: src/features/wiki/page-editor.tsx:349
 msgid "Insert"
 msgstr "সন্নিবেশ করুন"
@@ -1365,13 +1516,17 @@ msgstr "সন্নিবেশ করুন"
 msgid "Insert attachment"
 msgstr "সংযুক্তি সন্নিবেশ করুন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:252
+#: ../../../lib/web/src/components/config-drawer.tsx:253
 msgid "Inset"
 msgstr "ইনসেট"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "আগ্রহসমূহ"
+
+#: ../../../lib/web/src/components/tag-input.tsx:38
+msgid "Invalid tag: letters, numbers, spaces, hyphens, and slashes only (max 50 chars)"
+msgstr ""
 
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:245
 msgid "Invalid verification code"
@@ -1390,6 +1545,10 @@ msgstr "আপনি যে পৃষ্ঠাটি খুঁজছেন <0/>�
 msgid "Joined wiki"
 msgstr "উইকিতে যোগ দিয়েছেন"
 
+#: ../../../lib/web/src/lib/locale-format.ts:62
+msgid "Just now"
+msgstr ""
+
 #: ../../../lib/web/src/lib/preference-utils.ts:108
 #: ../../../lib/web/src/lib/preference-utils.ts:135
 msgid "Large"
@@ -1403,7 +1562,7 @@ msgstr "বড় আপলোড আপনার সার্ভার বা �
 msgid "Last synced"
 msgstr "সর্বশেষ সিঙ্ক"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:286
+#: ../../../lib/web/src/components/config-drawer.tsx:287
 msgid "Layout"
 msgstr "লেআউট"
 
@@ -1412,11 +1571,15 @@ msgstr "লেআউট"
 msgid "Learn more"
 msgstr "আরও জানুন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:354
+#: ../../../lib/web/src/components/config-drawer.tsx:355
 msgid "Left to Right"
 msgstr "বাম থেকে ডান"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:213
+#: ../../../lib/web/src/components/post-tags.tsx:72
+msgid "Letters, numbers, spaces, and hyphens only"
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:214
 #: ../../../lib/web/src/components/theme-switch.tsx:45
 #: ../../../lib/web/src/lib/preference-utils.ts:19
 msgid "Light"
@@ -1475,11 +1638,19 @@ msgstr "সফলভাবে লগ আউট"
 msgid "Logging out…"
 msgstr "লগ আউট হচ্ছে…"
 
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:192
+msgid "Manage your connected accounts for notifications and services."
+msgstr ""
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:93
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:100
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:224
 msgid "Mark all as read"
 msgstr "সবগুলি পঠিত হিসেবে চিহ্নিত করুন"
+
+#: ../../../lib/web/src/features/accounts/types.ts:17
+msgid "MCP server"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:107
 msgid "Medium"
@@ -1492,6 +1663,10 @@ msgstr "মেনু"
 #: ../../../lib/web/src/lib/preference-utils.ts:85
 msgid "Metric"
 msgstr "মেট্রিক"
+
+#: ../../../lib/web/src/features/accounts/types.ts:23
+msgid "Mochi web"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:59
 msgid "Monday"
@@ -1510,9 +1685,17 @@ msgstr "নাম"
 msgid "Name cannot contain < or > characters"
 msgstr "নামে < বা > অক্ষর থাকতে পারবে না"
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
+msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
+msgstr ""
+
 #: src/features/wiki/wiki-settings.tsx:269
 msgid "Name must be 100 characters or less"
 msgstr "নাম অবশ্যই ১০০ অক্ষর বা তার কম হতে হবে"
+
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:100
+msgid "Name must be 1000 characters or less"
+msgstr ""
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:53
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:303
@@ -1570,7 +1753,7 @@ msgstr "পরবর্তী ছবি"
 msgid "No access"
 msgstr "অ্যাক্সেস নেই"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:160
+#: ../../../lib/web/src/features/access/access-list.tsx:165
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "কোনো অ্যাক্সেস নিয়ম কনফিগার করা হয়নি। কে এই রিসোর্স অ্যাক্সেস করতে পারবে তা নিয়ন্ত্রণ করতে নিয়ম যোগ করুন।"
 
@@ -1599,6 +1782,10 @@ msgstr "কোনো সংযুক্ত অ্যাকাউন্ট নে
 msgid "No groups available"
 msgstr "কোনো গ্রুপ উপলব্ধ নেই"
 
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
+msgid "No notifications yet"
+msgstr ""
+
 #: src/features/wiki/search-page.tsx:74
 msgid "No pages found for \"{debouncedQuery}\""
 msgstr "«{debouncedQuery}»-এর জন্য কোনো পৃষ্ঠা পাওয়া যায়নি"
@@ -1607,7 +1794,11 @@ msgstr "«{debouncedQuery}»-এর জন্য কোনো পৃষ্ঠা
 msgid "No pages found with this tag"
 msgstr "এই ট্যাগ সহ কোনো পৃষ্ঠা পাওয়া যায়নি"
 
-#: ../../../lib/web/src/components/place-picker.tsx:132
+#: ../../../lib/web/src/components/person-picker.tsx:84
+msgid "No people found"
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:133
 msgid "No places found"
 msgstr "কোনো স্থান পাওয়া যায়নি"
 
@@ -1624,6 +1815,11 @@ msgstr "কোনো রিডাইরেক্ট কনফিগার কর
 #: src/features/wiki/wiki-settings.tsx:807
 msgid "No replicas yet"
 msgstr "এখনও কোনো রেপ্লিকা নেই"
+
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:82
+#: ../../../lib/web/src/components/search-entity-page.tsx:73
+msgid "No results found"
+msgstr ""
 
 #: ../../../lib/web/src/components/command-menu.tsx:55
 #: ../../../lib/web/src/components/data-table/faceted-filter.tsx:94
@@ -1646,7 +1842,7 @@ msgstr "কোনো ট্যাগ পাওয়া যায়নি"
 msgid "No time zone found."
 msgstr "কোনো টাইম জোন পাওয়া যায়নি।"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:147
+#: ../../../lib/web/src/components/notification-category-button.tsx:150
 msgid "No topic record yet — try again after the next notification."
 msgstr "এখনও কোনো বিষয়ের রেকর্ড নেই — পরবর্তী বিজ্ঞপ্তির পরে আবার চেষ্টা করুন।"
 
@@ -1659,6 +1855,7 @@ msgstr "কোনো ব্যবহারকারী পাওয়া যা
 msgid "No wikis found"
 msgstr "কোনো উইকি পাওয়া যায়নি"
 
+#: ../../../lib/web/src/components/colour-picker.tsx:345
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:105
 #: ../../../lib/web/src/lib/preference-utils.ts:125
@@ -1694,6 +1891,10 @@ msgstr "বিজ্ঞপ্তি: {0}"
 #: src/features/wiki/wiki-settings.tsx:1044
 msgid "old-page-name"
 msgstr "old-page-name"
+
+#: ../../../lib/web/src/components/filter-bar.tsx:35
+msgid "On"
+msgstr ""
 
 #: src/features/wiki/page-view.tsx:84
 #: src/features/wiki/page-view.tsx:99
@@ -1733,6 +1934,10 @@ msgstr "লিঙ্ক খুলুন"
 msgid "Open link in new tab"
 msgstr "নতুন ট্যাবে লিঙ্ক খুলুন"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:133
+msgid "Open menu"
+msgstr ""
+
 #: ../../../lib/web/src/components/layout/top-bar.tsx:63
 #: ../../../lib/web/src/components/layout/top-bar.tsx:68
 msgid "Open navigation"
@@ -1743,8 +1948,8 @@ msgstr "নেভিগেশন খুলুন"
 msgid "Open navigation menu"
 msgstr "নেভিগেশন মেনু খুলুন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:57
-#: ../../../lib/web/src/components/config-drawer.tsx:65
+#: ../../../lib/web/src/components/config-drawer.tsx:58
+#: ../../../lib/web/src/components/config-drawer.tsx:66
 msgid "Open theme settings"
 msgstr "থিম সেটিংস খুলুন"
 
@@ -1756,7 +1961,7 @@ msgstr "অথবা সরাসরি আইডি লিখুন"
 msgid "Other"
 msgstr "অন্যান্য"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:217
+#: ../../../lib/web/src/features/access/access-list.tsx:222
 msgid "Owner"
 msgstr "মালিক"
 
@@ -1841,9 +2046,13 @@ msgstr "পাসকি"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "এই উইকি ও এর সমস্ত বিষয়বস্তু স্থায়ীভাবে মুছে ফেলুন। এটি পূর্বাবস্থায় ফেরানো যাবে না।"
 
+#: ../../../lib/web/src/components/date-picker.tsx:20
+msgid "Pick a date"
+msgstr ""
+
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
-#: src/components/comment-composer.tsx:69
+#: src/components/comment-composer.tsx:97
 msgid "Please check your internet connection and try again."
 msgstr "অনুগ্রহ করে আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
 
@@ -1877,6 +2086,14 @@ msgstr "গোপনীয়তা"
 #: ../../../lib/web/src/components/profile-dropdown.tsx:114
 msgid "Profile"
 msgstr "প্রোফাইল"
+
+#: ../../../lib/web/src/components/person-picker.tsx:200
+msgid "Project members"
+msgstr ""
+
+#: ../../../lib/web/src/features/accounts/types.ts:21
+msgid "Push notification"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:117
 msgid "Raised"
@@ -1917,14 +2134,18 @@ msgstr "সাম্প্রতিক পরিবর্তন"
 msgid "Recent edits across all pages in this wiki."
 msgstr "এই উইকির সমস্ত পৃষ্ঠা জুড়ে সাম্প্রতিক সম্পাদনা।"
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:216
-#: ../../../lib/web/src/components/search-entity-page.tsx:242
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:217
+#: ../../../lib/web/src/components/search-entity-page.tsx:243
 msgid "Recommended"
 msgstr "সুপারিশকৃত"
 
 #: src/routes/_authenticated/index.tsx:799
 msgid "Recommended wikis"
 msgstr "সুপারিশকৃত উইকি"
+
+#: ../../../lib/web/src/lib/chat-ui.ts:21
+msgid "Reconnecting ({retries})..."
+msgstr ""
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:119
@@ -1965,26 +2186,32 @@ msgstr "আপেক্ষিক (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "২৪ ঘণ্টার মধ্যে আপেক্ষিক, অন্যথায় পরম"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:265
+#: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/components/comment-composer.tsx:201
+#: src/components/comment-composer.tsx:234
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
 msgid "Remove"
 msgstr "সরান"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:247
-#: ../../../lib/web/src/features/access/access-list.tsx:253
+#. placeholder {0}: filter.label
+#: ../../../lib/web/src/components/filter-bar.tsx:56
+#: ../../../lib/web/src/components/filter-bar.tsx:62
+msgid "Remove {0} filter"
+msgstr ""
+
+#: ../../../lib/web/src/features/access/access-list.tsx:252
+#: ../../../lib/web/src/features/access/access-list.tsx:258
 msgid "Remove access rule"
 msgstr "অ্যাক্সেস নিয়ম সরান"
 
 #. placeholder {0}: formatSubject(subject, data.name)
-#: ../../../lib/web/src/features/access/access-list.tsx:259
+#: ../../../lib/web/src/features/access/access-list.tsx:264
 msgid "Remove access rule for \"{0}\"?"
 msgstr "\"{0}\" এর জন্য অ্যাক্সেস নিয়ম সরাবেন?"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:257
+#: ../../../lib/web/src/features/access/access-list.tsx:262
 msgid "Remove access?"
 msgstr "অ্যাক্সেস সরাবেন?"
 
@@ -2074,16 +2301,21 @@ msgstr "অনুরোধ URL: {baseURL}{slug}"
 msgid "Resend email"
 msgstr "ইমেল আবার পাঠান"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:86
-#: ../../../lib/web/src/components/data-table/toolbar.tsx:81
+#: ../../../lib/web/src/components/config-drawer.tsx:87
+#: ../../../lib/web/src/components/data-table/toolbar.tsx:82
 msgid "Reset"
 msgstr "রিসেট"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:84
+#: ../../../lib/web/src/components/config-drawer.tsx:122
+#: ../../../lib/web/src/components/config-drawer.tsx:127
+msgid "Reset {title}"
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:85
 msgid "Reset all settings to default values"
 msgstr "সমস্ত সেটিংস ডিফল্ট মানে রিসেট করুন"
 
-#: src/components/comment-composer.tsx:218
+#: src/components/comment-composer.tsx:251
 msgid "Retry"
 msgstr ""
 
@@ -2129,7 +2361,7 @@ msgstr "ফিরিয়ে আনা হচ্ছে..."
 msgid "Revoke access"
 msgstr "অ্যাক্সেস প্রত্যাহার করুন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:361
+#: ../../../lib/web/src/components/config-drawer.tsx:362
 msgid "Right to Left"
 msgstr "ডান থেকে বাম"
 
@@ -2176,6 +2408,9 @@ msgstr "পরিবর্তন সংরক্ষণ করুন"
 msgid "Saving..."
 msgstr "সংরক্ষণ করা হচ্ছে..."
 
+#: ../../../lib/web/src/components/filter-bar.tsx:32
+#: ../../../lib/web/src/components/header-search.tsx:22
+#: ../../../lib/web/src/components/search.tsx:18
 #: src/features/wiki/wiki-page-content.tsx:315
 #: src/routes/_authenticated/$page/index.tsx:229
 #: src/routes/_authenticated/$wikiId/search.tsx:31
@@ -2194,9 +2429,17 @@ msgstr "সংযুক্তি অনুসন্ধান করুন..."
 msgid "Search by name, ID, fingerprint, or URL..."
 msgstr "নাম, ID, ফিঙ্গারপ্রিন্ট, বা URL দিয়ে অনুসন্ধান করুন..."
 
-#: ../../../lib/web/src/components/place-picker.tsx:85
+#: ../../../lib/web/src/components/ui/command.tsx:35
+msgid "Search for a command to run..."
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:86
 msgid "Search for a place"
 msgstr "একটি স্থান অনুসন্ধান করুন"
+
+#: ../../../lib/web/src/components/place-picker.tsx:50
+msgid "Search for a place..."
+msgstr ""
 
 #: src/routes/_authenticated/index.tsx:775
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
@@ -2236,14 +2479,21 @@ msgid "Search users"
 msgstr "ব্যবহারকারী অনুসন্ধান করুন"
 
 #: ../../../lib/web/src/components/person-picker.tsx:324
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:81
+#: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "অনুসন্ধান করুন..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:174
-#: ../../../lib/web/src/components/search-entity-page.tsx:200
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:175
+#: ../../../lib/web/src/components/search-entity-page.tsx:201
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
 msgstr "অনুসন্ধান করা হচ্ছে..."
+
+#. placeholder {0}: item.label.toLowerCase()
+#: ../../../lib/web/src/components/config-drawer.tsx:149
+msgid "Select {0}"
+msgstr ""
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:150
 msgid "Select a user, group, or other rule to grant access."
@@ -2252,6 +2502,10 @@ msgstr "অ্যাক্সেস দিতে একজন ব্যবহা
 #: ../../../lib/web/src/features/access/access-dialog.tsx:273
 msgid "Select access rule"
 msgstr "অ্যাক্সেস নিয়ম নির্বাচন করুন"
+
+#: ../../../lib/web/src/features/accounts/account-picker.tsx:34
+msgid "Select account"
+msgstr ""
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:129
 msgid "Select account type"
@@ -2265,19 +2519,27 @@ msgstr "আপনার পৃষ্ঠায় ঢোকানোর জন্
 msgid "Select group"
 msgstr "গ্রুপ নির্বাচন করুন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:304
+#: ../../../lib/web/src/components/config-drawer.tsx:305
 msgid "Select layout style"
 msgstr "লেআউট স্টাইল নির্বাচন করুন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:246
+#: ../../../lib/web/src/components/place-picker.tsx:49
+msgid "Select location"
+msgstr ""
+
+#: ../../../lib/web/src/components/person-picker.tsx:83
+msgid "Select person..."
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:247
 msgid "Select sidebar style"
 msgstr "সাইডবার স্টাইল নির্বাচন করুন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:348
+#: ../../../lib/web/src/components/config-drawer.tsx:349
 msgid "Select site direction"
 msgstr "সাইটের দিক নির্বাচন করুন"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:202
+#: ../../../lib/web/src/components/config-drawer.tsx:203
 msgid "Select theme preference"
 msgstr "থিম পছন্দ নির্বাচন করুন"
 
@@ -2360,8 +2622,8 @@ msgstr "পাসওয়ার্ড দেখান"
 msgid "Showing {totalShown} of {total}"
 msgstr "{total} এর মধ্যে {totalShown} দেখানো হচ্ছে"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:238
-#: ../../../lib/web/src/components/config-drawer.tsx:262
+#: ../../../lib/web/src/components/config-drawer.tsx:239
+#: ../../../lib/web/src/components/config-drawer.tsx:263
 #: ../../../lib/web/src/components/ui/sidebar.tsx:237
 msgid "Sidebar"
 msgstr "সাইডবার"
@@ -2415,10 +2677,12 @@ msgstr "আপনার প্রথম wiki শুরু করুন"
 msgid "Stay tuned though!"
 msgstr "তবে সাথে থাকুন!"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:191
+#: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "বিষয়"
 
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:83
+#: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:195
 #: src/routes/_authenticated/index.tsx:837
 msgid "Subscribe"
@@ -2466,7 +2730,7 @@ msgstr "এখন সিঙ্ক করুন"
 msgid "Syncing..."
 msgstr "সিঙ্ক করা হচ্ছে..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:208
+#: ../../../lib/web/src/components/config-drawer.tsx:209
 #: ../../../lib/web/src/components/theme-switch.tsx:59
 #: ../../../lib/web/src/lib/preference-utils.ts:21
 #: ../../../lib/web/src/lib/preference-utils.ts:144
@@ -2477,7 +2741,7 @@ msgstr "সিস্টেম"
 msgid "Table of contents"
 msgstr "সূচিপত্র"
 
-#: ../../../lib/web/src/components/tag-input.tsx:94
+#: ../../../lib/web/src/components/tag-input.tsx:95
 msgid "Tag"
 msgstr "ট্যাগ"
 
@@ -2489,9 +2753,14 @@ msgstr "«{tag}» ট্যাগ যোগ করা হয়েছে"
 msgid "Tag \"{tag}\" removed"
 msgstr "«{tag}» ট্যাগ সরানো হয়েছে"
 
+#: ../../../lib/web/src/components/post-tags.tsx:76
 #: src/features/wiki/tag-manager.tsx:44
 msgid "Tag already exists"
 msgstr "ট্যাগ ইতিমধ্যে বিদ্যমান"
+
+#: ../../../lib/web/src/components/post-tags.tsx:68
+msgid "Tag must be 50 characters or less"
+msgstr ""
 
 #: src/routes/_authenticated/tag/$tag.tsx:23
 #: src/routes/_authenticated/tag/$tag.tsx:29
@@ -2567,11 +2836,11 @@ msgstr "যে URL রিডাইরেক্ট করা হবে"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "যে URL রিডাইরেক্ট হবে (যেমন «old-page»)"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:194
+#: ../../../lib/web/src/components/config-drawer.tsx:195
 msgid "Theme"
 msgstr "থিম"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:69
+#: ../../../lib/web/src/components/config-drawer.tsx:70
 msgid "Theme Settings"
 msgstr "থিম সেটিংস"
 
@@ -2692,8 +2961,8 @@ msgstr "একটি ভিন্ন অনুসন্ধান শব্দ �
 msgid "Try a different tag."
 msgstr "একটি ভিন্ন ট্যাগ চেষ্টা করুন।"
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:190
-#: ../../../lib/web/src/components/search-entity-page.tsx:216
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:191
+#: ../../../lib/web/src/components/search-entity-page.tsx:217
 msgid "Try adjusting your search terms"
 msgstr "আপনার অনুসন্ধান শর্তাবলী সমন্বয় করার চেষ্টা করুন"
 
@@ -2732,7 +3001,7 @@ msgstr "দূরবর্তী সার্ভারে সংযোগ কর
 msgid "Unable to redirect to login. Please try again."
 msgstr "লগইনে রিডাইরেক্ট করা যাচ্ছে না। অনুগ্রহ করে আবার চেষ্টা করুন।"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:155
+#: ../../../lib/web/src/components/notification-category-button.tsx:158
 msgid "Unassigned"
 msgstr "অ্যাসাইন করা হয়নি"
 
@@ -2740,10 +3009,16 @@ msgstr "অ্যাসাইন করা হয়নি"
 msgid "Unauthorized Access"
 msgstr "অননুমোদিত অ্যাক্সেস"
 
+#: ../../../lib/web/src/lib/request.ts:133
+#: ../../../lib/web/src/lib/request.ts:206
+msgid "Unexpected API error"
+msgstr ""
+
 #: ../../../lib/web/src/lib/preference-utils.ts:87
 msgid "United States"
 msgstr "যুক্তরাষ্ট্র"
 
+#: ../../../lib/web/src/features/accounts/types.ts:29
 #: src/features/wiki/wiki-comment-thread.tsx:132
 msgid "Unknown"
 msgstr "অজানা"
@@ -2852,6 +3127,7 @@ msgstr "হোম হিসাবে ব্যবহার করুন"
 msgid "Use your passkey"
 msgstr "আপনার পাসকি ব্যবহার করুন"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:86
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
 msgid "User"
 msgstr "ব্যবহারকারী"
@@ -2924,6 +3200,10 @@ msgstr "শুধুমাত্র দেখুন"
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "<0>{slug}</0>-এর ইতিহাস দেখা হচ্ছে, বর্তমান সংস্করণ {currentVersion}"
 
+#: ../../../lib/web/src/components/filter-bar.tsx:35
+msgid "Watched"
+msgstr ""
+
 #. placeholder {0}: account.identifier
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:63
 msgid "We sent a verification code to <0>{0}</0>. Enter the code below to verify your email address."
@@ -2932,6 +3212,10 @@ msgstr "আমরা <0>{0}</0> এ একটি যাচাইকরণ কো
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:16
 msgid "We'll be back online shortly."
 msgstr "আমরা শীঘ্রই আবার অনলাইনে ফিরে আসব।"
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:197
+msgid "We'll notify you when something important happens."
+msgstr ""
 
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:13
 msgid "Website is under maintenance!"
@@ -3039,18 +3323,26 @@ msgstr "এই বিভাগে আপনার অ্যাক্সেস �
 msgid "You don't have necessary permission <0/>to view this resource."
 msgstr "এই রিসোর্স দেখার জন্য <0/>আপনার প্রয়োজনীয় অনুমতি নেই।"
 
+#: ../../../lib/web/src/lib/show-submitted-data.tsx:9
+msgid "You submitted the following values:"
+msgstr ""
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
+msgid "You're all caught up!"
+msgstr ""
+
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "আপনার অ্যাকাউন্ট {source} থেকে এখানে স্থানান্তরিত হয়েছে। আপনি সেখানে এটি মুছে না দেওয়া পর্যন্ত, বার্তা ও বিজ্ঞপ্তি উভয় সার্ভারে পৌঁছাতে পারে, আপনার কিছু বিষয়বস্তু পুরানো সার্ভার থেকে পরিবেশিত হতে পারে, এবং অনুসরণকারীদের আপনাকে এখানে খুঁজে পেতে কয়েক মিনিট লাগতে পারে।"
 
-#: src/components/comment-composer.tsx:260
+#: src/components/comment-composer.tsx:293
 msgid "Your attachments will be lost."
 msgstr ""
 
-#: src/components/comment-composer.tsx:258
+#: src/components/comment-composer.tsx:291
 msgid "Your text and attachments will be lost."
 msgstr ""
 
-#: src/components/comment-composer.tsx:261
+#: src/components/comment-composer.tsx:294
 msgid "Your text will be lost."
 msgstr ""

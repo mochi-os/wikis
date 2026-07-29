@@ -53,6 +53,11 @@ msgstr "{0, plural, one {# valgt} other {# valgt}}"
 msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
+#. placeholder {0}: item.label
+#: ../../../lib/web/src/components/config-drawer.tsx:160
+msgid "{0} option preview"
+msgstr ""
+
 #. placeholder {0}: wiki.pages
 #: src/routes/_authenticated/index.tsx:918
 msgid "{0} pages"
@@ -72,9 +77,13 @@ msgstr "{commentCount, plural, one {1 kommentar} other {# kommentarer}}"
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# dokument} other {# dokumenter}}"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:173
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:174
 msgid "{entityLabel} name"
 msgstr "{entityLabel}-navn"
+
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:99
+msgid "{entityLabel} name is required"
+msgstr ""
 
 #: src/features/wiki/attachments-page.tsx:179
 #: src/features/wiki/page-editor.tsx:227
@@ -120,6 +129,10 @@ msgstr "{selectedCount, plural, one {Massehandlinger for # valgt {entityName}} o
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# svar} other {+# flere svar}}"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:132
+msgid "{unreadCount, plural, one {Open menu (# unread notification)} other {Open menu (# unread notifications)}}"
+msgstr ""
+
 #: src/routes/_authenticated/$wikiId/settings.tsx:39
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
 #: src/routes/_authenticated/settings.tsx:38
@@ -155,7 +168,7 @@ msgstr "Adgang nægtet"
 msgid "Access Forbidden"
 msgstr "Adgang forbudt"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:192
+#: ../../../lib/web/src/features/access/access-list.tsx:197
 msgid "Access level"
 msgstr "Adgangsniveau"
 
@@ -193,6 +206,7 @@ msgstr "Konto bekræftet"
 msgid "Actions"
 msgstr "Handlinger"
 
+#: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:196
 #: src/features/wiki/tag-manager.tsx:125
 #: src/features/wiki/tag-manager.tsx:130
@@ -218,7 +232,7 @@ msgstr "Tilføj konto"
 msgid "Add an account to receive notifications and use services."
 msgstr "Tilføj en konto for at modtage notifikationer og bruge tjenester."
 
-#: ../../../lib/web/src/features/accounts/account-picker.tsx:101
+#: ../../../lib/web/src/features/accounts/account-picker.tsx:102
 msgid "Add new account"
 msgstr "Tilføj ny konto"
 
@@ -228,6 +242,7 @@ msgid "Add redirect"
 msgstr "Tilføj omdirigering"
 
 #: ../../../lib/web/src/components/post-tags.tsx:137
+#: ../../../lib/web/src/components/tag-input.tsx:40
 msgid "Add tag..."
 msgstr "Tilføj tag..."
 
@@ -248,11 +263,12 @@ msgstr "Tilføj til eksisterende notifikationer"
 msgid "Add view"
 msgstr "Tilføj visning"
 
+#: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: src/features/wiki/tag-manager.tsx:155
 msgid "Adding..."
 msgstr "Tilføjer..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:71
+#: ../../../lib/web/src/components/config-drawer.tsx:72
 msgid "Adjust the appearance and layout to suit your preferences."
 msgstr "Juster udseende og layout efter dine præferencer."
 
@@ -281,6 +297,11 @@ msgstr "Alle tags"
 msgid "All wikis"
 msgstr "Alle wikier"
 
+#. placeholder {0}: entityLabel.toLowerCase()
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
+msgid "Allow anyone to search for {0}"
+msgstr ""
+
 #: src/components/layout/wiki-layout.tsx:160
 msgid "Allow anyone to search for wiki"
 msgstr "Tillad alle at søge efter wiki"
@@ -292,6 +313,19 @@ msgstr "Der opstod en fejl"
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:256
 msgid "An unexpected error occurred"
 msgstr "Der opstod en uventet fejl"
+
+#: ../../../lib/web/src/features/accounts/types.ts:16
+msgid "Android push"
+msgstr ""
+
+#: ../../../lib/web/src/features/access/access-list.tsx:45
+#: ../../../lib/web/src/features/access/types.ts:42
+msgid "Anyone"
+msgstr ""
+
+#: ../../../lib/web/src/features/access/types.ts:41
+msgid "Anyone who is logged in"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:480
 msgid "Are you absolutely sure?"
@@ -343,6 +377,11 @@ msgstr "Vedhæftning slettet"
 msgid "Attachments"
 msgstr "Vedhæftninger"
 
+#: ../../../lib/web/src/features/access/access-list.tsx:46
+#: ../../../lib/web/src/features/access/types.ts:41
+msgid "Authenticated users"
+msgstr ""
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:315
 msgid "Authenticator code"
 msgstr "Authenticator-kode"
@@ -352,7 +391,15 @@ msgstr "Authenticator-kode"
 msgid "Author"
 msgstr "Forfatter"
 
-#: ../../../lib/web/src/components/place-picker.tsx:155
+#: ../../../lib/web/src/components/entity-avatar.tsx:99
+msgid "Avatar"
+msgstr ""
+
+#: ../../../lib/web/src/components/entity-avatar.tsx:99
+msgid "Avatar for {name}"
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:156
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
@@ -435,6 +482,10 @@ msgstr "Tilbage til side"
 msgid "Back to wikis"
 msgstr "Tilbage til wikier"
 
+#: ../../../lib/web/src/components/entity-banner.tsx:17
+msgid "Banner"
+msgstr ""
+
 #: src/features/wiki/page-comments.tsx:103
 msgid "Be the first to comment on this page."
 msgstr "Vær den første til at kommentere på denne side."
@@ -457,13 +508,17 @@ msgstr "Beskriv kort dine ændringer"
 msgid "Browse pages by tag. Click a tag to see all pages with that tag."
 msgstr "Gennemse sider efter tag. Klik på et tag for at se alle sider med det tag."
 
+#: ../../../lib/web/src/features/accounts/types.ts:13
+msgid "Browser notifications"
+msgstr ""
+
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
 #: ../../../lib/web/src/components/step-up-dialog.tsx:363
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:248
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
 #: ../../../lib/web/src/features/access/access-dialog.tsx:328
-#: ../../../lib/web/src/features/access/access-list.tsx:263
+#: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
 #: src/features/wiki/delete-page.tsx:71
@@ -491,12 +546,12 @@ msgstr ""
 msgid "Cancel reply"
 msgstr "Annuller svar"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:143
+#: ../../../lib/web/src/components/notification-category-button.tsx:146
 msgid "Category for this notification"
 msgstr "Kategori for denne notifikation"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:124
-#: ../../../lib/web/src/components/notification-category-button.tsx:135
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
+#: ../../../lib/web/src/components/notification-category-button.tsx:138
 msgid "Change notification category"
 msgstr "Skift notifikationskategori"
 
@@ -522,19 +577,23 @@ msgstr "Ændringer fra version {0} → {1}"
 msgid "Changes will appear here when pages are edited."
 msgstr "Ændringer vises her, når sider redigeres."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:328
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:198
+msgid "Check \"All\" to see your past notifications."
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:329
 msgid "Choose between default expanded, compact icon-only, or full layout mode"
 msgstr "Vælg mellem standard udvidet, kompakt kun-ikon eller fuld layouttilstand"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:270
+#: ../../../lib/web/src/components/config-drawer.tsx:271
 msgid "Choose between inset, floating, or standard sidebar layout"
 msgstr "Vælg mellem indlejret, flydende eller standard sidepanellayout"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:371
+#: ../../../lib/web/src/components/config-drawer.tsx:372
 msgid "Choose between left-to-right or right-to-left site direction"
 msgstr "Vælg mellem venstre-mod-højre eller højre-mod-venstre sideretning"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:226
+#: ../../../lib/web/src/components/config-drawer.tsx:227
 msgid "Choose between system preference, light mode, or dark mode"
 msgstr "Vælg mellem systemindstilling, lys tilstand eller mørk tilstand"
 
@@ -543,8 +602,8 @@ msgstr "Vælg mellem systemindstilling, lys tilstand eller mørk tilstand"
 msgid "Choose language"
 msgstr "Vælg sprog"
 
-#: ../../../lib/web/src/components/colour-picker.tsx:269
-#: ../../../lib/web/src/components/colour-picker.tsx:350
+#: ../../../lib/web/src/components/colour-picker.tsx:270
+#: ../../../lib/web/src/components/colour-picker.tsx:351
 #: ../../../lib/web/src/components/travelling-picker.tsx:164
 #: ../../../lib/web/src/components/travelling-picker.tsx:170
 #: ../../../lib/web/src/components/travelling-picker.tsx:231
@@ -552,7 +611,7 @@ msgstr "Vælg sprog"
 msgid "Clear"
 msgstr "Ryd"
 
-#: ../../../lib/web/src/components/filter-bar.tsx:73
+#: ../../../lib/web/src/components/filter-bar.tsx:74
 msgid "Clear all"
 msgstr "Ryd alle"
 
@@ -560,6 +619,7 @@ msgstr "Ryd alle"
 msgid "Clear filters"
 msgstr "Ryd filtre"
 
+#: ../../../lib/web/src/components/search-input.tsx:26
 #: src/features/wiki/attachments-page.tsx:349
 #: src/features/wiki/attachments-page.tsx:354
 msgid "Clear search"
@@ -615,6 +675,10 @@ msgstr "Komfortabel"
 msgid "Coming Soon!"
 msgstr "Kommer snart!"
 
+#: ../../../lib/web/src/components/ui/command.tsx:34
+msgid "Command Palette"
+msgstr ""
+
 #: src/features/wiki/changes-list.tsx:49
 #: src/features/wiki/page-history.tsx:59
 msgid "Comment"
@@ -626,7 +690,7 @@ msgstr "Kommentar"
 msgid "Comments"
 msgstr "Kommentarer"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:315
+#: ../../../lib/web/src/components/config-drawer.tsx:316
 #: ../../../lib/web/src/lib/preference-utils.ts:95
 msgid "Compact"
 msgstr "Kompakt"
@@ -635,14 +699,30 @@ msgstr "Kompakt"
 msgid "Compare changes"
 msgstr "Sammenlign ændringer"
 
-#: ../../../lib/web/src/components/place-picker.tsx:159
+#: ../../../lib/web/src/components/place-picker.tsx:160
 #: ../../../lib/web/src/components/travelling-picker.tsx:316
 msgid "Confirm"
 msgstr "Bekræft"
 
+#: ../../../lib/web/src/lib/chat-ui.ts:18
+msgid "Connected"
+msgstr ""
+
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:191
+msgid "Connected accounts"
+msgstr ""
+
+#: ../../../lib/web/src/lib/chat-ui.ts:21
+msgid "Connecting..."
+msgstr ""
+
 #: src/features/wiki/page-editor.tsx:469
 msgid "Content"
 msgstr "Indhold"
+
+#: ../../../lib/web/src/lib/handle-server-error.ts:18
+msgid "Content not found."
+msgstr ""
 
 #: ../../../lib/web/src/lib/query-client.ts:81
 msgid "Content not modified"
@@ -660,7 +740,15 @@ msgstr "Fortsæt"
 msgid "Continue with {label}"
 msgstr "Fortsæt med {label}"
 
-#: ../../../lib/web/src/components/ui/copy-button.tsx:63
+#: ../../../lib/web/src/lib/toast-utils.ts:42
+msgid "Copied"
+msgstr ""
+
+#: ../../../lib/web/src/components/ui/copy-button.tsx:25
+msgid "Copied to clipboard"
+msgstr ""
+
+#: ../../../lib/web/src/components/ui/copy-button.tsx:64
 msgid "Copy"
 msgstr "Kopier"
 
@@ -690,6 +778,11 @@ msgstr "Kunne ikke starte gentaget godkendelse. Prøv igen."
 #: ../../../lib/web/src/components/step-up-dialog.tsx:221
 msgid "Couldn't verify with that account. Please try again."
 msgstr "Kunne ikke verificere med den konto. Prøv venligst igen."
+
+#. placeholder {0}: entityLabel.toLowerCase()
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
+msgid "Create {0}"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:1034
 msgid "Create a redirect from one URL to another."
@@ -746,6 +839,7 @@ msgstr "Opretter omdirigering..."
 msgid "Creating wiki..."
 msgstr "Opretter wiki..."
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
 #: src/features/wiki/page-editor.tsx:395
 #: src/features/wiki/redirects-page.tsx:274
 #: src/features/wiki/wiki-settings.tsx:1068
@@ -756,11 +850,15 @@ msgstr "Opretter..."
 msgid "Current"
 msgstr "Aktuel"
 
-#: ../../../lib/web/src/components/colour-picker.tsx:260
+#: ../../../lib/web/src/components/map-view.tsx:208
+msgid "Current location"
+msgstr ""
+
+#: ../../../lib/web/src/components/colour-picker.tsx:261
 msgid "Custom"
 msgstr "Brugerdefineret"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:218
+#: ../../../lib/web/src/components/config-drawer.tsx:219
 #: ../../../lib/web/src/components/theme-switch.tsx:52
 #: ../../../lib/web/src/lib/preference-utils.ts:20
 msgid "Dark"
@@ -784,7 +882,7 @@ msgstr "Datakonflikt"
 msgid "Date"
 msgstr "Dato"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:310
+#: ../../../lib/web/src/components/config-drawer.tsx:311
 msgid "Default"
 msgstr "Standard"
 
@@ -888,6 +986,10 @@ msgstr "Faldende"
 msgid "Descending"
 msgstr "Faldende"
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:83
+msgid "Description"
+msgstr ""
+
 #: ../../../lib/web/src/components/layout/right-panel.tsx:148
 msgid "Details Panel"
 msgstr "Detaljepanel"
@@ -903,16 +1005,25 @@ msgstr "Detaljepanel"
 msgid "Detect from web browser"
 msgstr "Registrer fra webbrowser"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:340
+#: ../../../lib/web/src/components/config-drawer.tsx:341
 msgid "Direction"
 msgstr "Retning"
 
-#: src/components/comment-composer.tsx:269
+#: ../../../lib/web/src/components/person-picker.tsx:214
+msgid "Directory"
+msgstr ""
+
+#: src/components/comment-composer.tsx:302
 msgid "Discard"
 msgstr ""
 
-#: src/components/comment-composer.tsx:267
+#: src/components/comment-composer.tsx:300
 msgid "Discard draft?"
+msgstr ""
+
+#: ../../../lib/web/src/lib/chat-ui.ts:25
+#: ../../../lib/web/src/lib/chat-ui.ts:29
+msgid "Disconnected"
 msgstr ""
 
 #: ../../../lib/web/src/components/restore-banner.tsx:79
@@ -978,6 +1089,10 @@ msgstr "Resumé af redigering (valgfrit)"
 msgid "Edit: {pageTitle}"
 msgstr "Rediger: {pageTitle}"
 
+#: ../../../lib/web/src/features/accounts/types.ts:15
+msgid "Email"
+msgstr ""
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:289
 msgid "Email code"
 msgstr "E-mailkode"
@@ -1025,6 +1140,10 @@ msgstr "Udvid"
 msgid "Expand sidebar"
 msgstr "Udvid sidebjælke"
 
+#: ../../../lib/web/src/features/accounts/types.ts:22
+msgid "External URL"
+msgstr ""
+
 #: ../../../lib/web/src/lib/preference-utils.ts:136
 msgid "Extra large"
 msgstr "Ekstra stor"
@@ -1033,10 +1152,13 @@ msgstr "Ekstra stor"
 msgid "Failed to add account"
 msgstr "Kunne ikke tilføje konto"
 
+#: ../../../lib/web/src/components/tag-input.tsx:39
 #: src/features/wiki/tag-manager.tsx:57
 msgid "Failed to add tag"
 msgstr "Kunne ikke tilføje tag"
 
+#: ../../../lib/web/src/components/ui/copy-button.tsx:26
+#: ../../../lib/web/src/lib/toast-utils.ts:44
 #: src/features/wiki/attachments-page.tsx:228
 msgid "Failed to copy"
 msgstr "Kunne ikke kopiere"
@@ -1085,6 +1207,10 @@ msgstr "Kunne ikke hente RSS-token"
 #: src/routes/_authenticated/join.tsx:50
 msgid "Failed to join wiki"
 msgstr "Kunne ikke tilslutte wiki"
+
+#: ../../../lib/web/src/hooks/use-load-more.ts:74
+msgid "Failed to load"
+msgstr ""
 
 #: src/features/wiki/wiki-settings.tsx:534
 msgid "Failed to load access rules"
@@ -1188,7 +1314,7 @@ msgstr "Kunne ikke afmelde"
 msgid "Failed to update access level"
 msgstr "Kunne ikke opdatere adgangsniveau"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:111
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Failed to update category"
 msgstr "Kunne ikke opdatere kategori"
 
@@ -1200,6 +1326,10 @@ msgstr "Kunne ikke uploade filer"
 #: src/features/wiki/attachments-page.tsx:362
 msgid "Filter"
 msgstr "Filter"
+
+#: ../../../lib/web/src/components/data-table/toolbar.tsx:30
+msgid "Filter..."
+msgstr ""
 
 #: src/components/layout/wiki-layout.tsx:136
 #: src/routes/_authenticated/find.tsx:99
@@ -1218,7 +1348,7 @@ msgstr "Afslut flytning af din konto"
 msgid "Flat"
 msgstr "Flad"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:257
+#: ../../../lib/web/src/components/config-drawer.tsx:258
 msgid "Floating"
 msgstr "Flydende"
 
@@ -1230,6 +1360,10 @@ msgstr "Fandt {0} for «{debouncedQuery}»"
 #: ../../../lib/web/src/lib/preference-utils.ts:63
 msgid "Friday"
 msgstr "Fredag"
+
+#: ../../../lib/web/src/components/person-picker.tsx:207
+msgid "Friends"
+msgstr ""
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:153
 msgid "From"
@@ -1244,7 +1378,7 @@ msgstr "Fra"
 msgid "From theme"
 msgstr "Fra tema"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:320
+#: ../../../lib/web/src/components/config-drawer.tsx:321
 msgid "Full layout"
 msgstr "Fuldt layout"
 
@@ -1282,6 +1416,11 @@ msgstr "Gittervisning"
 #: ../../../lib/web/src/features/access/access-dialog.tsx:162
 msgid "Group"
 msgstr "Gruppe"
+
+#. placeholder {0}: name || subject.slice(1)
+#: ../../../lib/web/src/features/access/access-list.tsx:68
+msgid "Group: {0}"
+msgstr ""
 
 #: ../../../lib/web/src/components/data-table/column-header.tsx:70
 msgid "Hide"
@@ -1357,6 +1496,18 @@ msgstr "billeder, PDF, DOC, DOCX, TXT og MD. Store uploads kan også være begr�
 msgid "Imperial"
 msgstr "Imperialt"
 
+#: ../../../lib/web/src/features/access/types.ts:42
+msgid "Including anonymous users"
+msgstr ""
+
+#: ../../../lib/web/src/components/faceless-avatar.tsx:69
+msgid "Initials avatar"
+msgstr ""
+
+#: ../../../lib/web/src/components/faceless-avatar.tsx:69
+msgid "Initials avatar for {name}"
+msgstr ""
+
 #: src/features/wiki/page-editor.tsx:349
 msgid "Insert"
 msgstr "Indsæt"
@@ -1365,13 +1516,17 @@ msgstr "Indsæt"
 msgid "Insert attachment"
 msgstr "Indsæt vedhæftning"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:252
+#: ../../../lib/web/src/components/config-drawer.tsx:253
 msgid "Inset"
 msgstr "Indsat"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "Interesser"
+
+#: ../../../lib/web/src/components/tag-input.tsx:38
+msgid "Invalid tag: letters, numbers, spaces, hyphens, and slashes only (max 50 chars)"
+msgstr ""
 
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:245
 msgid "Invalid verification code"
@@ -1390,6 +1545,10 @@ msgstr "Det ser ud til, at den side, du leder efter, <0/>ikke findes eller er bl
 msgid "Joined wiki"
 msgstr "Tilsluttet wiki"
 
+#: ../../../lib/web/src/lib/locale-format.ts:62
+msgid "Just now"
+msgstr ""
+
 #: ../../../lib/web/src/lib/preference-utils.ts:108
 #: ../../../lib/web/src/lib/preference-utils.ts:135
 msgid "Large"
@@ -1403,7 +1562,7 @@ msgstr "Store uploads kan være begrænset af din server- eller proxykonfigurati
 msgid "Last synced"
 msgstr "Sidst synkroniseret"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:286
+#: ../../../lib/web/src/components/config-drawer.tsx:287
 msgid "Layout"
 msgstr "Layout"
 
@@ -1412,11 +1571,15 @@ msgstr "Layout"
 msgid "Learn more"
 msgstr "Læs mere"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:354
+#: ../../../lib/web/src/components/config-drawer.tsx:355
 msgid "Left to Right"
 msgstr "Venstre mod højre"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:213
+#: ../../../lib/web/src/components/post-tags.tsx:72
+msgid "Letters, numbers, spaces, and hyphens only"
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:214
 #: ../../../lib/web/src/components/theme-switch.tsx:45
 #: ../../../lib/web/src/lib/preference-utils.ts:19
 msgid "Light"
@@ -1475,11 +1638,19 @@ msgstr "Logget ud"
 msgid "Logging out…"
 msgstr "Logger ud…"
 
+#: ../../../lib/web/src/features/accounts/account-manager.tsx:192
+msgid "Manage your connected accounts for notifications and services."
+msgstr ""
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:93
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:100
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:224
 msgid "Mark all as read"
 msgstr "Markér alle som læst"
+
+#: ../../../lib/web/src/features/accounts/types.ts:17
+msgid "MCP server"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:107
 msgid "Medium"
@@ -1492,6 +1663,10 @@ msgstr "Menu"
 #: ../../../lib/web/src/lib/preference-utils.ts:85
 msgid "Metric"
 msgstr "Metrisk"
+
+#: ../../../lib/web/src/features/accounts/types.ts:23
+msgid "Mochi web"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:59
 msgid "Monday"
@@ -1510,9 +1685,17 @@ msgstr "Navn"
 msgid "Name cannot contain < or > characters"
 msgstr "Navn må ikke indeholde tegnene < eller >"
 
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
+msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
+msgstr ""
+
 #: src/features/wiki/wiki-settings.tsx:269
 msgid "Name must be 100 characters or less"
 msgstr "Navn må højst være 100 tegn"
+
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:100
+msgid "Name must be 1000 characters or less"
+msgstr ""
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:53
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:303
@@ -1570,7 +1753,7 @@ msgstr "Næste billede"
 msgid "No access"
 msgstr "Ingen adgang"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:160
+#: ../../../lib/web/src/features/access/access-list.tsx:165
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "Ingen adgangsregler konfigureret. Tilføj regler for at styre, hvem der har adgang til denne ressource."
 
@@ -1599,6 +1782,10 @@ msgstr "Ingen tilknyttede konti"
 msgid "No groups available"
 msgstr "Ingen grupper tilgængelige"
 
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
+msgid "No notifications yet"
+msgstr ""
+
 #: src/features/wiki/search-page.tsx:74
 msgid "No pages found for \"{debouncedQuery}\""
 msgstr "Ingen sider fundet for «{debouncedQuery}»"
@@ -1607,7 +1794,11 @@ msgstr "Ingen sider fundet for «{debouncedQuery}»"
 msgid "No pages found with this tag"
 msgstr "Ingen sider fundet med dette tag"
 
-#: ../../../lib/web/src/components/place-picker.tsx:132
+#: ../../../lib/web/src/components/person-picker.tsx:84
+msgid "No people found"
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:133
 msgid "No places found"
 msgstr "Ingen steder fundet"
 
@@ -1624,6 +1815,11 @@ msgstr "Ingen omdirigeringer konfigureret"
 #: src/features/wiki/wiki-settings.tsx:807
 msgid "No replicas yet"
 msgstr "Ingen replikaer endnu"
+
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:82
+#: ../../../lib/web/src/components/search-entity-page.tsx:73
+msgid "No results found"
+msgstr ""
 
 #: ../../../lib/web/src/components/command-menu.tsx:55
 #: ../../../lib/web/src/components/data-table/faceted-filter.tsx:94
@@ -1646,7 +1842,7 @@ msgstr "Ingen tags fundet"
 msgid "No time zone found."
 msgstr "Ingen tidszone fundet."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:147
+#: ../../../lib/web/src/components/notification-category-button.tsx:150
 msgid "No topic record yet — try again after the next notification."
 msgstr "Ingen emnepost endnu — prøv igen efter næste notifikation."
 
@@ -1659,6 +1855,7 @@ msgstr "Ingen brugere fundet"
 msgid "No wikis found"
 msgstr "Ingen wikier fundet"
 
+#: ../../../lib/web/src/components/colour-picker.tsx:345
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:105
 #: ../../../lib/web/src/lib/preference-utils.ts:125
@@ -1694,6 +1891,10 @@ msgstr "Notifikationer: {0}"
 #: src/features/wiki/wiki-settings.tsx:1044
 msgid "old-page-name"
 msgstr "gammel-side"
+
+#: ../../../lib/web/src/components/filter-bar.tsx:35
+msgid "On"
+msgstr ""
 
 #: src/features/wiki/page-view.tsx:84
 #: src/features/wiki/page-view.tsx:99
@@ -1733,6 +1934,10 @@ msgstr "Åbn link"
 msgid "Open link in new tab"
 msgstr "Åbn link i ny fane"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:133
+msgid "Open menu"
+msgstr ""
+
 #: ../../../lib/web/src/components/layout/top-bar.tsx:63
 #: ../../../lib/web/src/components/layout/top-bar.tsx:68
 msgid "Open navigation"
@@ -1743,8 +1948,8 @@ msgstr "Åbn navigation"
 msgid "Open navigation menu"
 msgstr "Åbn navigationsmenu"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:57
-#: ../../../lib/web/src/components/config-drawer.tsx:65
+#: ../../../lib/web/src/components/config-drawer.tsx:58
+#: ../../../lib/web/src/components/config-drawer.tsx:66
 msgid "Open theme settings"
 msgstr "Åbn temaindstillinger"
 
@@ -1756,7 +1961,7 @@ msgstr "Eller indtast id direkte"
 msgid "Other"
 msgstr "Andet"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:217
+#: ../../../lib/web/src/features/access/access-list.tsx:222
 msgid "Owner"
 msgstr "Ejer"
 
@@ -1841,9 +2046,13 @@ msgstr "Adgangsnøgler"
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Slet denne wiki og alt dens indhold permanent. Dette kan ikke fortrydes."
 
+#: ../../../lib/web/src/components/date-picker.tsx:20
+msgid "Pick a date"
+msgstr ""
+
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
-#: src/components/comment-composer.tsx:69
+#: src/components/comment-composer.tsx:97
 msgid "Please check your internet connection and try again."
 msgstr "Tjek din internetforbindelse, og prøv igen."
 
@@ -1877,6 +2086,14 @@ msgstr "Privatliv"
 #: ../../../lib/web/src/components/profile-dropdown.tsx:114
 msgid "Profile"
 msgstr "Profil"
+
+#: ../../../lib/web/src/components/person-picker.tsx:200
+msgid "Project members"
+msgstr ""
+
+#: ../../../lib/web/src/features/accounts/types.ts:21
+msgid "Push notification"
+msgstr ""
 
 #: ../../../lib/web/src/lib/preference-utils.ts:117
 msgid "Raised"
@@ -1917,14 +2134,18 @@ msgstr "Nylige ændringer"
 msgid "Recent edits across all pages in this wiki."
 msgstr "Nylige redigeringer på tværs af alle sider i denne wiki."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:216
-#: ../../../lib/web/src/components/search-entity-page.tsx:242
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:217
+#: ../../../lib/web/src/components/search-entity-page.tsx:243
 msgid "Recommended"
 msgstr "Anbefalet"
 
 #: src/routes/_authenticated/index.tsx:799
 msgid "Recommended wikis"
 msgstr "Anbefalede wikier"
+
+#: ../../../lib/web/src/lib/chat-ui.ts:21
+msgid "Reconnecting ({retries})..."
+msgstr ""
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:119
@@ -1965,26 +2186,32 @@ msgstr "Relativ (5m, 3t, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "Relativ inden for 24 timer, ellers absolut"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:265
+#: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/components/comment-composer.tsx:201
+#: src/components/comment-composer.tsx:234
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
 msgid "Remove"
 msgstr "Fjern"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:247
-#: ../../../lib/web/src/features/access/access-list.tsx:253
+#. placeholder {0}: filter.label
+#: ../../../lib/web/src/components/filter-bar.tsx:56
+#: ../../../lib/web/src/components/filter-bar.tsx:62
+msgid "Remove {0} filter"
+msgstr ""
+
+#: ../../../lib/web/src/features/access/access-list.tsx:252
+#: ../../../lib/web/src/features/access/access-list.tsx:258
 msgid "Remove access rule"
 msgstr "Fjern adgangsregel"
 
 #. placeholder {0}: formatSubject(subject, data.name)
-#: ../../../lib/web/src/features/access/access-list.tsx:259
+#: ../../../lib/web/src/features/access/access-list.tsx:264
 msgid "Remove access rule for \"{0}\"?"
 msgstr "Fjern adgangsregel for \"{0}\"?"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:257
+#: ../../../lib/web/src/features/access/access-list.tsx:262
 msgid "Remove access?"
 msgstr "Fjern adgang?"
 
@@ -2074,16 +2301,21 @@ msgstr "Anmodnings-URL: {baseURL}{slug}"
 msgid "Resend email"
 msgstr "Send e-mail igen"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:86
-#: ../../../lib/web/src/components/data-table/toolbar.tsx:81
+#: ../../../lib/web/src/components/config-drawer.tsx:87
+#: ../../../lib/web/src/components/data-table/toolbar.tsx:82
 msgid "Reset"
 msgstr "Nulstil"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:84
+#: ../../../lib/web/src/components/config-drawer.tsx:122
+#: ../../../lib/web/src/components/config-drawer.tsx:127
+msgid "Reset {title}"
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:85
 msgid "Reset all settings to default values"
 msgstr "Nulstil alle indstillinger til standardværdier"
 
-#: src/components/comment-composer.tsx:218
+#: src/components/comment-composer.tsx:251
 msgid "Retry"
 msgstr ""
 
@@ -2129,7 +2361,7 @@ msgstr "Tilbagefører..."
 msgid "Revoke access"
 msgstr "Tilbagekald adgang"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:361
+#: ../../../lib/web/src/components/config-drawer.tsx:362
 msgid "Right to Left"
 msgstr "Højre mod venstre"
 
@@ -2176,6 +2408,9 @@ msgstr "Gem ændringer"
 msgid "Saving..."
 msgstr "Gemmer..."
 
+#: ../../../lib/web/src/components/filter-bar.tsx:32
+#: ../../../lib/web/src/components/header-search.tsx:22
+#: ../../../lib/web/src/components/search.tsx:18
 #: src/features/wiki/wiki-page-content.tsx:315
 #: src/routes/_authenticated/$page/index.tsx:229
 #: src/routes/_authenticated/$wikiId/search.tsx:31
@@ -2194,9 +2429,17 @@ msgstr "Søg i vedhæftede filer..."
 msgid "Search by name, ID, fingerprint, or URL..."
 msgstr "Søg efter navn, ID, fingeraftryk eller URL..."
 
-#: ../../../lib/web/src/components/place-picker.tsx:85
+#: ../../../lib/web/src/components/ui/command.tsx:35
+msgid "Search for a command to run..."
+msgstr ""
+
+#: ../../../lib/web/src/components/place-picker.tsx:86
 msgid "Search for a place"
 msgstr "Søg efter et sted"
+
+#: ../../../lib/web/src/components/place-picker.tsx:50
+msgid "Search for a place..."
+msgstr ""
 
 #: src/routes/_authenticated/index.tsx:775
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
@@ -2236,14 +2479,21 @@ msgid "Search users"
 msgstr "Søg efter brugere"
 
 #: ../../../lib/web/src/components/person-picker.tsx:324
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:81
+#: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "Søg..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:174
-#: ../../../lib/web/src/components/search-entity-page.tsx:200
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:175
+#: ../../../lib/web/src/components/search-entity-page.tsx:201
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
 msgstr "Søger..."
+
+#. placeholder {0}: item.label.toLowerCase()
+#: ../../../lib/web/src/components/config-drawer.tsx:149
+msgid "Select {0}"
+msgstr ""
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:150
 msgid "Select a user, group, or other rule to grant access."
@@ -2252,6 +2502,10 @@ msgstr "Vælg en bruger, gruppe eller anden regel for at give adgang."
 #: ../../../lib/web/src/features/access/access-dialog.tsx:273
 msgid "Select access rule"
 msgstr "Vælg adgangsregel"
+
+#: ../../../lib/web/src/features/accounts/account-picker.tsx:34
+msgid "Select account"
+msgstr ""
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:129
 msgid "Select account type"
@@ -2265,19 +2519,27 @@ msgstr "Vælg en vedhæftet fil at indsætte på din side, eller upload en ny fi
 msgid "Select group"
 msgstr "Vælg gruppe"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:304
+#: ../../../lib/web/src/components/config-drawer.tsx:305
 msgid "Select layout style"
 msgstr "Vælg layoutstil"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:246
+#: ../../../lib/web/src/components/place-picker.tsx:49
+msgid "Select location"
+msgstr ""
+
+#: ../../../lib/web/src/components/person-picker.tsx:83
+msgid "Select person..."
+msgstr ""
+
+#: ../../../lib/web/src/components/config-drawer.tsx:247
 msgid "Select sidebar style"
 msgstr "Vælg sidepanelstil"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:348
+#: ../../../lib/web/src/components/config-drawer.tsx:349
 msgid "Select site direction"
 msgstr "Vælg sideretning"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:202
+#: ../../../lib/web/src/components/config-drawer.tsx:203
 msgid "Select theme preference"
 msgstr "Vælg temapræference"
 
@@ -2360,8 +2622,8 @@ msgstr "Vis adgangskode"
 msgid "Showing {totalShown} of {total}"
 msgstr "Viser {totalShown} af {total}"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:238
-#: ../../../lib/web/src/components/config-drawer.tsx:262
+#: ../../../lib/web/src/components/config-drawer.tsx:239
+#: ../../../lib/web/src/components/config-drawer.tsx:263
 #: ../../../lib/web/src/components/ui/sidebar.tsx:237
 msgid "Sidebar"
 msgstr "Sidepanel"
@@ -2415,10 +2677,12 @@ msgstr "Start din første wiki"
 msgid "Stay tuned though!"
 msgstr "Hold dig dog opdateret!"
 
-#: ../../../lib/web/src/features/access/access-list.tsx:191
+#: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "Emne"
 
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:83
+#: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:195
 #: src/routes/_authenticated/index.tsx:837
 msgid "Subscribe"
@@ -2466,7 +2730,7 @@ msgstr "Synkronisér nu"
 msgid "Syncing..."
 msgstr "Synkroniserer..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:208
+#: ../../../lib/web/src/components/config-drawer.tsx:209
 #: ../../../lib/web/src/components/theme-switch.tsx:59
 #: ../../../lib/web/src/lib/preference-utils.ts:21
 #: ../../../lib/web/src/lib/preference-utils.ts:144
@@ -2477,7 +2741,7 @@ msgstr "System"
 msgid "Table of contents"
 msgstr "Indholdsfortegnelse"
 
-#: ../../../lib/web/src/components/tag-input.tsx:94
+#: ../../../lib/web/src/components/tag-input.tsx:95
 msgid "Tag"
 msgstr "Tag"
 
@@ -2489,9 +2753,14 @@ msgstr "Tag «{tag}» tilføjet"
 msgid "Tag \"{tag}\" removed"
 msgstr "Tag «{tag}» fjernet"
 
+#: ../../../lib/web/src/components/post-tags.tsx:76
 #: src/features/wiki/tag-manager.tsx:44
 msgid "Tag already exists"
 msgstr "Tag findes allerede"
+
+#: ../../../lib/web/src/components/post-tags.tsx:68
+msgid "Tag must be 50 characters or less"
+msgstr ""
 
 #: src/routes/_authenticated/tag/$tag.tsx:23
 #: src/routes/_authenticated/tag/$tag.tsx:29
@@ -2567,11 +2836,11 @@ msgstr "URL'en der vil blive omdirigeret"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "URL'en der bliver omdirigeret (f.eks. «gammel-side»)"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:194
+#: ../../../lib/web/src/components/config-drawer.tsx:195
 msgid "Theme"
 msgstr "Tema"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:69
+#: ../../../lib/web/src/components/config-drawer.tsx:70
 msgid "Theme Settings"
 msgstr "Temaindstillinger"
 
@@ -2692,8 +2961,8 @@ msgstr "Prøv et andet søgeord eller filter."
 msgid "Try a different tag."
 msgstr "Prøv et andet tag."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:190
-#: ../../../lib/web/src/components/search-entity-page.tsx:216
+#: ../../../lib/web/src/components/search-entity-dialog.tsx:191
+#: ../../../lib/web/src/components/search-entity-page.tsx:217
 msgid "Try adjusting your search terms"
 msgstr "Prøv at justere dine søgeord"
 
@@ -2732,7 +3001,7 @@ msgstr "Kunne ikke oprette forbindelse til fjernserveren"
 msgid "Unable to redirect to login. Please try again."
 msgstr "Kan ikke omdirigere til login. Prøv igen."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:155
+#: ../../../lib/web/src/components/notification-category-button.tsx:158
 msgid "Unassigned"
 msgstr "Ikke tildelt"
 
@@ -2740,10 +3009,16 @@ msgstr "Ikke tildelt"
 msgid "Unauthorized Access"
 msgstr "Uautoriseret adgang"
 
+#: ../../../lib/web/src/lib/request.ts:133
+#: ../../../lib/web/src/lib/request.ts:206
+msgid "Unexpected API error"
+msgstr ""
+
 #: ../../../lib/web/src/lib/preference-utils.ts:87
 msgid "United States"
 msgstr "USA"
 
+#: ../../../lib/web/src/features/accounts/types.ts:29
 #: src/features/wiki/wiki-comment-thread.tsx:132
 msgid "Unknown"
 msgstr "Ukendt"
@@ -2852,6 +3127,7 @@ msgstr "Brug som hjem"
 msgid "Use your passkey"
 msgstr "Brug din adgangsnøgle"
 
+#: ../../../lib/web/src/components/layout/mochi-menu.tsx:86
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
 msgid "User"
 msgstr "Bruger"
@@ -2924,6 +3200,10 @@ msgstr "Kun læseadgang"
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "Viser historik for <0>{slug}</0>, aktuel version {currentVersion}"
 
+#: ../../../lib/web/src/components/filter-bar.tsx:35
+msgid "Watched"
+msgstr ""
+
 #. placeholder {0}: account.identifier
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:63
 msgid "We sent a verification code to <0>{0}</0>. Enter the code below to verify your email address."
@@ -2932,6 +3212,10 @@ msgstr "Vi har sendt en bekræftelseskode til <0>{0}</0>. Indtast koden nedenfor
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:16
 msgid "We'll be back online shortly."
 msgstr "Vi er online igen om kort tid."
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:197
+msgid "We'll notify you when something important happens."
+msgstr ""
 
 #: ../../../lib/web/src/features/errors/maintenance-error.tsx:13
 msgid "Website is under maintenance!"
@@ -3039,18 +3323,26 @@ msgstr "Du har ikke adgang til denne sektion."
 msgid "You don't have necessary permission <0/>to view this resource."
 msgstr "Du har ikke den nødvendige tilladelse <0/>til at se denne ressource."
 
+#: ../../../lib/web/src/lib/show-submitted-data.tsx:9
+msgid "You submitted the following values:"
+msgstr ""
+
+#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
+msgid "You're all caught up!"
+msgstr ""
+
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Din konto blev flyttet hertil fra {source}. Indtil du sletter den dér, kan beskeder og notifikationer nå begge servere, noget af dit indhold serveres stadig fra den gamle server, og følgere kan have brug for et par minutter på at finde dig her."
 
-#: src/components/comment-composer.tsx:260
+#: src/components/comment-composer.tsx:293
 msgid "Your attachments will be lost."
 msgstr ""
 
-#: src/components/comment-composer.tsx:258
+#: src/components/comment-composer.tsx:291
 msgid "Your text and attachments will be lost."
 msgstr ""
 
-#: src/components/comment-composer.tsx:261
+#: src/components/comment-composer.tsx:294
 msgid "Your text will be lost."
 msgstr ""
