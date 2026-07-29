@@ -3,33 +3,33 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { plural, t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
-import { Check, Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
+import { Check, Loader2, Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
 import {
   Button,
   CommentTreeLayout,
   ConfirmDialog,
   EntityAvatar,
   IconButton,
+  cn,
   useFormat,
   getAppPath,
-  Attachment,
-  AttachmentGroup,
-  AttachmentMedia,
-  AttachmentContent,
-  AttachmentTitle,
-  AttachmentDescription,
-  AttachmentActions,
-  AttachmentAction,
   useImageObjectUrls,
   textUnchanged,
-  pendingFileKey,
   removePendingFile,
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
+import {
+  ComposerAttachments,
+  SendShortcutHint,
+  dropActiveClass,
+  offlineBlocked,
+  useComposerDrop,
+  useDiscardGuard,
+} from '@/components/comment-composer'
 
 interface WikiCommentThreadProps {
   comment: WikiComment
@@ -41,7 +41,7 @@ interface WikiCommentThreadProps {
   onStartReply: (commentId: string) => void
   onCancelReply: () => void
   onReplyDraftChange: (value: string) => void
-  onSubmitReply: (commentId: string, files?: File[]) => void
+  onSubmitReply: (commentId: string, files?: File[]) => void | Promise<void>
   onEdit?: (commentId: string, body: string) => void
   onDelete?: (commentId: string) => void
   depth?: number
@@ -62,20 +62,57 @@ export function WikiCommentThread({
   onDelete,
   depth = 0,
 }: WikiCommentThreadProps) {
-  const { formatTimestamp, formatFileSize } = useFormat()
+  const { formatTimestamp } = useFormat()
   const [collapsed, setCollapsed] = useState(false)
   const [editing, setEditing] = useState(false)
   const [editBody, setEditBody] = useState('')
   const [deleting, setDeleting] = useState(false)
   const [replyFiles, setReplyFiles] = useState<File[]>([])
+  const [isSubmittingReply, setIsSubmittingReply] = useState(false)
+  const [replyFailed, setReplyFailed] = useState(false)
   const replyPreviewUrls = useImageObjectUrls(replyFiles)
-  const replyFileRef = { current: null as HTMLInputElement | null }
+  const replyFileRef = useRef<HTMLInputElement>(null)
 
   const isReplying = replyingTo === comment.id
 
   useEffect(() => {
     if (!isReplying && replyFiles.length > 0) setReplyFiles([])
   }, [isReplying, replyFiles.length])
+
+  useEffect(() => {
+    if (!isReplying && replyFailed) setReplyFailed(false)
+  }, [isReplying, replyFailed])
+
+  const addReplyFiles = useCallback((incoming: File[]) => {
+    setReplyFailed(false)
+    setReplyFiles((prev) => [...prev, ...incoming])
+  }, [])
+
+  const { isDragActive, dropzoneProps } = useComposerDrop({
+    onFiles: addReplyFiles,
+    disabled: isSubmittingReply,
+  })
+
+  const handleSubmitReply = async () => {
+    if (isSubmittingReply || !replyDraft.trim() || offlineBlocked()) return
+    setIsSubmittingReply(true)
+    setReplyFailed(false)
+    try {
+      await onSubmitReply(comment.id, replyFiles.length > 0 ? replyFiles : undefined)
+    } catch {
+      // The page already reported the error; keep the draft staged for Retry.
+      setReplyFailed(true)
+    } finally {
+      setIsSubmittingReply(false)
+    }
+  }
+
+  const { requestClose: requestCloseReply, discardDialog } = useDiscardGuard({
+    hasText: replyDraft.trim().length > 0,
+    hasFiles: replyFiles.length > 0,
+    onDiscard: onCancelReply,
+    locked: isSubmittingReply,
+  })
 
   const hasChildren = comment.children && comment.children.length > 0
   const canEdit = currentUserId === comment.author
@@ -142,7 +179,7 @@ export function WikiCommentThread({
             <textarea
               value={editBody}
               onChange={(e) => setEditBody(e.target.value)}
-              className="border-input bg-background min-h-16 w-full rounded-lg border px-3 py-2 text-sm"
+              className="border-input bg-background placeholder:text-muted-foreground min-h-16 w-full rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
               rows={3}
               autoFocus
             />
@@ -229,10 +266,11 @@ export function WikiCommentThread({
 
       {isReplying && (
         <div
-          className="mt-2 space-y-2 border-t pt-2"
+          className={cn('mt-2 space-y-2 border-t pt-2', isDragActive && dropActiveClass)}
           onKeyDown={(e) => {
-            if (e.key === 'Escape') onCancelReply()
+            if (e.key === 'Escape') requestCloseReply()
           }}
+          {...dropzoneProps}
         >
           <textarea
             placeholder={t`Reply to ${comment.name || comment.author}...`}
@@ -241,50 +279,30 @@ export function WikiCommentThread({
             onKeyDown={(e) => {
               if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault()
-                if (replyDraft.trim()) onSubmitReply(comment.id, replyFiles.length > 0 ? replyFiles : undefined)
+                void handleSubmitReply()
               } else if (e.key === 'Escape') {
-                onCancelReply()
+                requestCloseReply()
               }
             }}
-            className="border-input bg-background min-h-16 w-full rounded-lg border px-3 py-2 text-sm"
+            className="border-input bg-background placeholder:text-muted-foreground min-h-16 w-full rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
             rows={2}
             autoFocus
+            disabled={isSubmittingReply}
           />
-          {replyFiles.length > 0 && (
-            <AttachmentGroup>
-              {replyFiles.map((file, i) => {
-                const isImage = file.type.startsWith('image/')
-                return (
-                  <Attachment key={pendingFileKey(file)} state="uploading" size="sm">
-                    <AttachmentMedia variant={isImage ? "image" : "icon"}>
-                      {isImage && replyPreviewUrls[i] ? (
-                        <img src={replyPreviewUrls[i] ?? undefined} alt={file.name} draggable={false} />
-                      ) : (
-                        <Paperclip />
-                      )}
-                    </AttachmentMedia>
-                    <AttachmentContent>
-                      <AttachmentTitle>{file.name}</AttachmentTitle>
-                      <AttachmentDescription>
-                        {formatFileSize(file.size)}
-                      </AttachmentDescription>
-                    </AttachmentContent>
-                    <AttachmentActions>
-                      <AttachmentAction onClick={() => setReplyFiles((prev) => removePendingFile(prev, file))} aria-label={t`Remove file`}>
-                        <X className="size-4" />
-                      </AttachmentAction>
-                    </AttachmentActions>
-                  </Attachment>
-                )
-              })}
-            </AttachmentGroup>
-          )}
+          <ComposerAttachments
+            files={replyFiles}
+            previewUrls={replyPreviewUrls}
+            state={isSubmittingReply ? 'uploading' : replyFailed ? 'error' : 'idle'}
+            onRemove={(file) => setReplyFiles((prev) => removePendingFile(prev, file))}
+            onRetry={() => void handleSubmitReply()}
+          />
           <div className="flex items-center justify-end gap-2">
+            <SendShortcutHint />
             <input
-              ref={(el) => { replyFileRef.current = el }}
+              ref={replyFileRef}
               type="file"
               multiple
-              onChange={(e) => { if (e.target.files) { const f = Array.from(e.target.files); setReplyFiles((prev) => [...prev, ...f]) } e.target.value = '' }}
+              onChange={(e) => { if (e.target.files) { addReplyFiles(Array.from(e.target.files)) } e.target.value = '' }}
               className="hidden"
             />
             <IconButton
@@ -292,6 +310,7 @@ export function WikiCommentThread({
               variant='ghost'
               className='size-8'
               onClick={() => replyFileRef.current?.click()}
+              disabled={isSubmittingReply}
               label={t`Attach reply files`}
             >
               <Paperclip className="size-4" />
@@ -300,7 +319,8 @@ export function WikiCommentThread({
               type='button'
               variant='ghost'
               className='size-8'
-              onClick={onCancelReply}
+              onClick={requestCloseReply}
+              disabled={isSubmittingReply}
               label={t`Cancel reply`}
             >
               <X className="size-4" />
@@ -308,11 +328,15 @@ export function WikiCommentThread({
             <IconButton
               type='button'
               className='size-8'
-              disabled={!replyDraft.trim()}
-              onClick={() => onSubmitReply(comment.id, replyFiles.length > 0 ? replyFiles : undefined)}
+              disabled={!replyDraft.trim() || isSubmittingReply}
+              onClick={() => void handleSubmitReply()}
               label={t`Send reply`}
             >
-              <Send className="size-4" />
+              {isSubmittingReply ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Send className="size-4" />
+              )}
             </IconButton>
           </div>
         </div>
@@ -330,6 +354,7 @@ export function WikiCommentThread({
           setDeleting(false)
         }}
       />
+      {discardDialog}
     </div>
   )
 

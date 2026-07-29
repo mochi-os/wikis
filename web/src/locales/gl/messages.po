@@ -18,11 +18,11 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "Comproba a túa conexión a internet e téntao de novo."
 
-#: src/features/wiki/wiki-comment-thread.tsx:131
+#: src/features/wiki/wiki-comment-thread.tsx:173
 msgid "(edited)"
 msgstr "(editado)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:117
+#: src/features/wiki/wiki-comment-thread.tsx:159
 msgid "(expand)"
 msgstr "(expandir)"
 
@@ -116,7 +116,7 @@ msgstr "{selectedCount, plural, one {# seleccionados} other {# seleccionados}}"
 msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
 msgstr "{selectedCount, plural, one {Accións masivas para # {entityName} seleccionado} other {Accións masivas para # {manyName} seleccionados}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:115
+#: src/features/wiki/wiki-comment-thread.tsx:157
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# resposta} other {+# respostas máis}}"
 
@@ -297,7 +297,7 @@ msgstr "Produciuse un erro inesperado"
 msgid "Are you absolutely sure?"
 msgstr "Estás absolutamente seguro?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:315
+#: src/features/wiki/wiki-comment-thread.tsx:349
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Seguro que queres eliminar este comentario? Isto tamén eliminará todas as respostas. Esta acción non se pode desfacer."
 
@@ -320,11 +320,11 @@ msgstr "Asc"
 msgid "Ascending"
 msgstr "Ascendente"
 
-#: src/features/wiki/comment-form.tsx:123
+#: src/features/wiki/comment-form.tsx:142
 msgid "Attach files"
 msgstr "Anexar ficheiros"
 
-#: src/features/wiki/wiki-comment-thread.tsx:285
+#: src/features/wiki/wiki-comment-thread.tsx:314
 msgid "Attach reply files"
 msgstr "Anexar ficheiros da resposta"
 
@@ -435,7 +435,7 @@ msgstr "Volver á páxina"
 msgid "Back to wikis"
 msgstr "Volver aos wikis"
 
-#: src/features/wiki/page-comments.tsx:104
+#: src/features/wiki/page-comments.tsx:103
 msgid "Be the first to comment on this page."
 msgstr "Sé o primeiro en comentar nesta páxina."
 
@@ -466,7 +466,6 @@ msgstr "Examina as páxinas por etiqueta. Fai clic nunha etiqueta para ver todas
 #: ../../../lib/web/src/features/access/access-list.tsx:263
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
-#: src/features/wiki/comment-form.tsx:129
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
 #: src/features/wiki/page-editor.tsx:389
@@ -476,7 +475,7 @@ msgstr "Examina as páxinas por etiqueta. Fai clic nunha etiqueta para ver todas
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:146
+#: src/features/wiki/wiki-comment-thread.tsx:188
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
 #: src/features/wiki/wiki-settings.tsx:1065
@@ -484,7 +483,11 @@ msgstr "Examina as páxinas por etiqueta. Fai clic nunha etiqueta para ver todas
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/comment-form.tsx:153
+msgid "Cancel comment"
+msgstr ""
+
+#: src/features/wiki/wiki-comment-thread.tsx:324
 msgid "Cancel reply"
 msgstr "Cancelar resposta"
 
@@ -793,8 +796,8 @@ msgstr "Conta de IA predeterminada"
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:218
-#: src/features/wiki/wiki-comment-thread.tsx:316
+#: src/features/wiki/wiki-comment-thread.tsx:260
+#: src/features/wiki/wiki-comment-thread.tsx:350
 #: src/features/wiki/wiki-page-content.tsx:306
 #: src/features/wiki/wiki-settings.tsx:957
 msgid "Delete"
@@ -817,7 +820,7 @@ msgstr "Eliminar \"{0}\"? Isto non se pode desfacer."
 msgid "Delete attachment"
 msgstr "Eliminar anexo"
 
-#: src/features/wiki/wiki-comment-thread.tsx:314
+#: src/features/wiki/wiki-comment-thread.tsx:348
 msgid "Delete comment"
 msgstr "Eliminar comentario"
 
@@ -904,6 +907,14 @@ msgstr "Detectar do navegador web"
 msgid "Direction"
 msgstr "Dirección"
 
+#: src/components/comment-composer.tsx:269
+msgid "Discard"
+msgstr ""
+
+#: src/components/comment-composer.tsx:267
+msgid "Discard draft?"
+msgstr ""
+
 #: ../../../lib/web/src/components/restore-banner.tsx:79
 #: ../../../lib/web/src/components/restore-banner.tsx:85
 msgid "Dismiss"
@@ -935,7 +946,7 @@ msgid "Dyslexia-friendly"
 msgstr "Apto para dislexia"
 
 #: src/features/wiki/page-editor.tsx:334
-#: src/features/wiki/wiki-comment-thread.tsx:207
+#: src/features/wiki/wiki-comment-thread.tsx:249
 #: src/features/wiki/wiki-page-content.tsx:280
 #: src/routes/_authenticated/$page/index.tsx:202
 #: src/routes/_authenticated/index.tsx:423
@@ -1576,7 +1587,7 @@ msgstr "Aínda non hai anexos"
 msgid "No changes yet"
 msgstr "Aínda non hai cambios"
 
-#: src/features/wiki/page-comments.tsx:103
+#: src/features/wiki/page-comments.tsx:102
 msgid "No comments yet"
 msgstr "Aínda non hai comentarios"
 
@@ -1832,6 +1843,7 @@ msgstr "Eliminar permanentemente esta wiki e todo o seu contido. Isto non se pod
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
+#: src/components/comment-composer.tsx:69
 msgid "Please check your internet connection and try again."
 msgstr "Comproba a túa conexión a internet e téntao de novo."
 
@@ -1955,7 +1967,7 @@ msgstr "Relativo nas últimas 24 horas, se non absoluto"
 
 #: ../../../lib/web/src/features/access/access-list.tsx:265
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/features/wiki/comment-form.tsx:101
+#: src/components/comment-composer.tsx:201
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
@@ -1975,10 +1987,6 @@ msgstr "Quitar a regra de acceso para «{0}»?"
 #: ../../../lib/web/src/features/access/access-list.tsx:257
 msgid "Remove access?"
 msgstr "Eliminar acceso?"
-
-#: src/features/wiki/wiki-comment-thread.tsx:263
-msgid "Remove file"
-msgstr "Quitar o ficheiro"
 
 #: ../../../lib/web/src/components/post-tags.tsx:220
 #: ../../../lib/web/src/components/post-tags.tsx:232
@@ -2049,12 +2057,12 @@ msgstr "Replicar wiki"
 msgid "Replicating..."
 msgstr "Replicando..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:194
+#: src/features/wiki/wiki-comment-thread.tsx:236
 msgid "Reply"
 msgstr "Responder"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:228
+#: src/features/wiki/wiki-comment-thread.tsx:276
 msgid "Reply to {0}..."
 msgstr "Responder a {0}..."
 
@@ -2074,6 +2082,10 @@ msgstr "Restablecer"
 #: ../../../lib/web/src/components/config-drawer.tsx:84
 msgid "Reset all settings to default values"
 msgstr "Restablecer toda a configuración aos valores por defecto"
+
+#: src/components/comment-composer.tsx:218
+msgid "Retry"
+msgstr ""
 
 #: src/features/wiki/revert-page.tsx:105
 msgid "Revert"
@@ -2149,7 +2161,7 @@ msgstr "Sábado"
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:400
-#: src/features/wiki/wiki-comment-thread.tsx:166
+#: src/features/wiki/wiki-comment-thread.tsx:208
 msgid "Save"
 msgstr "Gardar"
 
@@ -2282,7 +2294,7 @@ msgstr "Seleccionado: <0>{0}</0>"
 msgid "Send again"
 msgstr "Enviar de novo"
 
-#: src/features/wiki/comment-form.tsx:137
+#: src/features/wiki/comment-form.tsx:163
 msgid "Send comment"
 msgstr "Enviar comentario"
 
@@ -2290,7 +2302,7 @@ msgstr "Enviar comentario"
 msgid "Send email"
 msgstr "Enviar correo"
 
-#: src/features/wiki/wiki-comment-thread.tsx:303
+#: src/features/wiki/wiki-comment-thread.tsx:333
 msgid "Send reply"
 msgstr "Enviar resposta"
 
@@ -2732,7 +2744,7 @@ msgstr "Acceso non autorizado"
 msgid "United States"
 msgstr "Estados Unidos"
 
-#: src/features/wiki/wiki-comment-thread.tsx:90
+#: src/features/wiki/wiki-comment-thread.tsx:132
 msgid "Unknown"
 msgstr "Descoñecido"
 
@@ -3003,7 +3015,7 @@ msgstr "Wiki sincronizada"
 msgid "Wikis"
 msgstr "Wikis"
 
-#: src/features/wiki/page-comments.tsx:98
+#: src/features/wiki/page-comments.tsx:97
 msgid "Write a comment..."
 msgstr "Escribe un comentario..."
 
@@ -3030,3 +3042,15 @@ msgstr "Non tes o permiso necesario <0/>para ver este recurso."
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "A túa conta foi trasladada aquí desde {source}. Ata que a elimines alí, as mensaxes e notificacións poden chegar a ambos os servidores, parte do teu contido segue sendo servido desde o servidor antigo e os teus seguidores poden necesitar uns minutos para atoparte aquí."
+
+#: src/components/comment-composer.tsx:260
+msgid "Your attachments will be lost."
+msgstr ""
+
+#: src/components/comment-composer.tsx:258
+msgid "Your text and attachments will be lost."
+msgstr ""
+
+#: src/components/comment-composer.tsx:261
+msgid "Your text will be lost."
+msgstr ""

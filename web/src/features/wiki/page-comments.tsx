@@ -41,19 +41,18 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
     }
   }
 
-  const handleReply = (parentId: string, files?: File[]) => {
+  const handleReply = async (parentId: string, files?: File[]) => {
     const body = replyDraft.trim()
     if (!body) return
-    createComment.mutate(
-      { slug, body, parent: parentId, files },
-      {
-        onSuccess: () => {
-          setReplyingTo(null)
-          setReplyDraft('')
-        },
-        onError: (err) => toast.error(getErrorMessage(err)),
-      }
-    )
+    try {
+      await createComment.mutateAsync({ slug, body, parent: parentId, files })
+      setReplyingTo(null)
+      setReplyDraft('')
+    } catch (err) {
+      // Leave the form open with its draft and files so the thread can retry.
+      toast.error(getErrorMessage(err))
+      throw err
+    }
   }
 
   const handleEdit = (commentId: string, body: string) => {

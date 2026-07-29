@@ -18,11 +18,11 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "Проверите интернет везу и покушајте поново."
 
-#: src/features/wiki/wiki-comment-thread.tsx:131
+#: src/features/wiki/wiki-comment-thread.tsx:173
 msgid "(edited)"
 msgstr "(измењено)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:117
+#: src/features/wiki/wiki-comment-thread.tsx:159
 msgid "(expand)"
 msgstr "(прошири)"
 
@@ -116,7 +116,7 @@ msgstr "{selectedCount, plural, one {# изабрано} few {# изабрано
 msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
 msgstr "{selectedCount, plural, one {Групне радње за # изабрани {entityName}} few {Групне радње за # изабрана {manyName}} other {Групне радње за # изабраних {manyName}}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:115
+#: src/features/wiki/wiki-comment-thread.tsx:157
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# одговор} few {+# додатних одговора} other {+# додатних одговора}}"
 
@@ -297,7 +297,7 @@ msgstr "Дошло је до неочекиване грешке"
 msgid "Are you absolutely sure?"
 msgstr "Да ли сте апсолутно сигурни?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:315
+#: src/features/wiki/wiki-comment-thread.tsx:349
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Да ли сте сигурни да желите да обришете овај коментар? Ово ће такође обрисати све одговоре. Ова радња се не може поништити."
 
@@ -320,11 +320,11 @@ msgstr "Раст."
 msgid "Ascending"
 msgstr "Растуће"
 
-#: src/features/wiki/comment-form.tsx:123
+#: src/features/wiki/comment-form.tsx:142
 msgid "Attach files"
 msgstr "Приложи датотеке"
 
-#: src/features/wiki/wiki-comment-thread.tsx:285
+#: src/features/wiki/wiki-comment-thread.tsx:314
 msgid "Attach reply files"
 msgstr "Приложи датотеке одговора"
 
@@ -435,7 +435,7 @@ msgstr "Назад на страницу"
 msgid "Back to wikis"
 msgstr "Назад на wiki-је"
 
-#: src/features/wiki/page-comments.tsx:104
+#: src/features/wiki/page-comments.tsx:103
 msgid "Be the first to comment on this page."
 msgstr "Будите први који ће коментарисати ову страницу."
 
@@ -466,7 +466,6 @@ msgstr "Прегледајте странице по ознаци. Кликни�
 #: ../../../lib/web/src/features/access/access-list.tsx:263
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
-#: src/features/wiki/comment-form.tsx:129
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
 #: src/features/wiki/page-editor.tsx:389
@@ -476,7 +475,7 @@ msgstr "Прегледајте странице по ознаци. Кликни�
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:146
+#: src/features/wiki/wiki-comment-thread.tsx:188
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
 #: src/features/wiki/wiki-settings.tsx:1065
@@ -484,7 +483,11 @@ msgstr "Прегледајте странице по ознаци. Кликни�
 msgid "Cancel"
 msgstr "Откажи"
 
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/comment-form.tsx:153
+msgid "Cancel comment"
+msgstr ""
+
+#: src/features/wiki/wiki-comment-thread.tsx:324
 msgid "Cancel reply"
 msgstr "Откажи одговор"
 
@@ -793,8 +796,8 @@ msgstr "Подразумевани AI налог"
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:218
-#: src/features/wiki/wiki-comment-thread.tsx:316
+#: src/features/wiki/wiki-comment-thread.tsx:260
+#: src/features/wiki/wiki-comment-thread.tsx:350
 #: src/features/wiki/wiki-page-content.tsx:306
 #: src/features/wiki/wiki-settings.tsx:957
 msgid "Delete"
@@ -817,7 +820,7 @@ msgstr "Обрисати „{0}“? Ово се не може поништити
 msgid "Delete attachment"
 msgstr "Обриши прилог"
 
-#: src/features/wiki/wiki-comment-thread.tsx:314
+#: src/features/wiki/wiki-comment-thread.tsx:348
 msgid "Delete comment"
 msgstr "Обриши коментар"
 
@@ -904,6 +907,14 @@ msgstr "Препознај из веб прегледача"
 msgid "Direction"
 msgstr "Смер"
 
+#: src/components/comment-composer.tsx:269
+msgid "Discard"
+msgstr ""
+
+#: src/components/comment-composer.tsx:267
+msgid "Discard draft?"
+msgstr ""
+
 #: ../../../lib/web/src/components/restore-banner.tsx:79
 #: ../../../lib/web/src/components/restore-banner.tsx:85
 msgid "Dismiss"
@@ -935,7 +946,7 @@ msgid "Dyslexia-friendly"
 msgstr "Прилагођено за дислексију"
 
 #: src/features/wiki/page-editor.tsx:334
-#: src/features/wiki/wiki-comment-thread.tsx:207
+#: src/features/wiki/wiki-comment-thread.tsx:249
 #: src/features/wiki/wiki-page-content.tsx:280
 #: src/routes/_authenticated/$page/index.tsx:202
 #: src/routes/_authenticated/index.tsx:423
@@ -1576,7 +1587,7 @@ msgstr "Још нема прилога"
 msgid "No changes yet"
 msgstr "Још нема промена"
 
-#: src/features/wiki/page-comments.tsx:103
+#: src/features/wiki/page-comments.tsx:102
 msgid "No comments yet"
 msgstr "Још нема коментара"
 
@@ -1832,6 +1843,7 @@ msgstr "Трајно обриши овај wiki и сав његов садрж�
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
+#: src/components/comment-composer.tsx:69
 msgid "Please check your internet connection and try again."
 msgstr "Проверите интернет везу и покушајте поново."
 
@@ -1955,7 +1967,7 @@ msgstr "Релативно у оквиру 24 сата, иначе апсолу�
 
 #: ../../../lib/web/src/features/access/access-list.tsx:265
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/features/wiki/comment-form.tsx:101
+#: src/components/comment-composer.tsx:201
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
@@ -1975,10 +1987,6 @@ msgstr "Уклонити правило приступа за „{0}“?"
 #: ../../../lib/web/src/features/access/access-list.tsx:257
 msgid "Remove access?"
 msgstr "Уклонити приступ?"
-
-#: src/features/wiki/wiki-comment-thread.tsx:263
-msgid "Remove file"
-msgstr "Уклони датотеку"
 
 #: ../../../lib/web/src/components/post-tags.tsx:220
 #: ../../../lib/web/src/components/post-tags.tsx:232
@@ -2049,12 +2057,12 @@ msgstr "Реплицирај wiki"
 msgid "Replicating..."
 msgstr "Реплицирање..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:194
+#: src/features/wiki/wiki-comment-thread.tsx:236
 msgid "Reply"
 msgstr "Одговори"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:228
+#: src/features/wiki/wiki-comment-thread.tsx:276
 msgid "Reply to {0}..."
 msgstr "Одговори {0}..."
 
@@ -2074,6 +2082,10 @@ msgstr "Ресетуј"
 #: ../../../lib/web/src/components/config-drawer.tsx:84
 msgid "Reset all settings to default values"
 msgstr "Ресетуј сва подешавања на подразумеване вредности"
+
+#: src/components/comment-composer.tsx:218
+msgid "Retry"
+msgstr ""
 
 #: src/features/wiki/revert-page.tsx:105
 msgid "Revert"
@@ -2149,7 +2161,7 @@ msgstr "Субота"
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:400
-#: src/features/wiki/wiki-comment-thread.tsx:166
+#: src/features/wiki/wiki-comment-thread.tsx:208
 msgid "Save"
 msgstr "Сачувај"
 
@@ -2282,7 +2294,7 @@ msgstr "Изабрано: <0>{0}</0>"
 msgid "Send again"
 msgstr "Пошаљи поново"
 
-#: src/features/wiki/comment-form.tsx:137
+#: src/features/wiki/comment-form.tsx:163
 msgid "Send comment"
 msgstr "Пошаљи коментар"
 
@@ -2290,7 +2302,7 @@ msgstr "Пошаљи коментар"
 msgid "Send email"
 msgstr "Пошаљи имејл"
 
-#: src/features/wiki/wiki-comment-thread.tsx:303
+#: src/features/wiki/wiki-comment-thread.tsx:333
 msgid "Send reply"
 msgstr "Пошаљи одговор"
 
@@ -2732,7 +2744,7 @@ msgstr "Неовлашћен приступ"
 msgid "United States"
 msgstr "Сједињене Америчке Државе"
 
-#: src/features/wiki/wiki-comment-thread.tsx:90
+#: src/features/wiki/wiki-comment-thread.tsx:132
 msgid "Unknown"
 msgstr "Непознато"
 
@@ -3003,7 +3015,7 @@ msgstr "Wiki синхронизован"
 msgid "Wikis"
 msgstr "Wiki-ји"
 
-#: src/features/wiki/page-comments.tsx:98
+#: src/features/wiki/page-comments.tsx:97
 msgid "Write a comment..."
 msgstr "Напиши коментар..."
 
@@ -3030,3 +3042,15 @@ msgstr "Немате потребну дозволу <0/>за приказ ов�
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Ваш налог је премештен овде са {source}. Све док га тамо не обришете, поруке и обавештења могу стизати на оба сервера, неки ваш садржај ће и даље бити сервиран са старог сервера, а пратиоцима може требати неколико минута да вас пронађу овде."
+
+#: src/components/comment-composer.tsx:260
+msgid "Your attachments will be lost."
+msgstr ""
+
+#: src/components/comment-composer.tsx:258
+msgid "Your text and attachments will be lost."
+msgstr ""
+
+#: src/components/comment-composer.tsx:261
+msgid "Your text will be lost."
+msgstr ""
