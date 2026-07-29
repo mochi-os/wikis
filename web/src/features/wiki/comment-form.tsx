@@ -18,6 +18,7 @@ import {
 } from '@mochi/web'
 import { Loader2, Paperclip, Send, X } from 'lucide-react'
 import { t } from '@lingui/core/macro'
+import { mergePendingFiles } from './composer-files'
 
 interface CommentFormProps {
   onSubmit: (body: string, files?: File[]) => void | Promise<void>
@@ -36,7 +37,14 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
 
   const addFiles = useCallback((incoming: File[]) => {
     setFailed(false)
-    setFiles((prev) => [...prev, ...incoming])
+    setFiles((prev) => mergePendingFiles(prev, incoming))
+  }, [])
+
+  // Editing the draft after a failure means the red attachments and the Retry
+  // button no longer describe what is in the box.
+  const handleBodyChange = useCallback((value: string) => {
+    setBody(value)
+    setFailed(false)
   }, [])
 
   const { isDragActive, dropzoneProps } = useComposerDrop({
@@ -107,7 +115,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
     >
       <textarea
         value={body}
-        onChange={(e) => setBody(e.target.value)}
+        onChange={(e) => handleBodyChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className="border-input bg-background placeholder:text-muted-foreground min-h-16 w-full rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
@@ -120,7 +128,8 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
         previewUrls={filePreviewUrls}
         state={isSubmitting ? 'uploading' : failed ? 'error' : 'idle'}
         onRemove={removeFile}
-        onRetry={() => void handleSubmit()}
+        // Retry sends the draft, so it is only offered while there is one.
+        onRetry={body.trim() ? () => void handleSubmit() : undefined}
       />
       <div className="flex items-center justify-end gap-2">
         <SendShortcutHint />

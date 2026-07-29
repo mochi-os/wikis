@@ -28,6 +28,7 @@ import {
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
+import { mergePendingFiles } from './composer-files'
 
 interface WikiCommentThreadProps {
   comment: WikiComment
@@ -39,6 +40,9 @@ interface WikiCommentThreadProps {
   onStartReply: (commentId: string) => void
   onCancelReply: () => void
   onReplyDraftChange: (value: string) => void
+  /** Reports how many files this comment has staged while it is the one being
+   * replied to, so the page can warn before a switch throws them away. */
+  onReplyFilesChange?: (count: number) => void
   onSubmitReply: (commentId: string, files?: File[]) => void | Promise<void>
   onEdit?: (commentId: string, body: string) => void
   onDelete?: (commentId: string) => void
@@ -55,6 +59,7 @@ export function WikiCommentThread({
   onStartReply,
   onCancelReply,
   onReplyDraftChange,
+  onReplyFilesChange,
   onSubmitReply,
   onEdit,
   onDelete,
@@ -81,10 +86,24 @@ export function WikiCommentThread({
     if (!isReplying && replyFailed) setReplyFailed(false)
   }, [isReplying, replyFailed])
 
+  useEffect(() => {
+    if (isReplying) onReplyFilesChange?.(replyFiles.length)
+  }, [isReplying, replyFiles.length, onReplyFilesChange])
+
   const addReplyFiles = useCallback((incoming: File[]) => {
     setReplyFailed(false)
-    setReplyFiles((prev) => [...prev, ...incoming])
+    setReplyFiles((prev) => mergePendingFiles(prev, incoming))
   }, [])
+
+  // Editing the draft after a failure means the red attachments and the Retry
+  // button no longer describe what is in the box.
+  const handleReplyDraftChange = useCallback(
+    (value: string) => {
+      setReplyFailed(false)
+      onReplyDraftChange(value)
+    },
+    [onReplyDraftChange]
+  )
 
   const { isDragActive, dropzoneProps } = useComposerDrop({
     onFiles: addReplyFiles,
@@ -273,7 +292,7 @@ export function WikiCommentThread({
           <textarea
             placeholder={t`Reply to ${comment.name || comment.author}...`}
             value={replyDraft}
-            onChange={(e) => onReplyDraftChange(e.target.value)}
+            onChange={(e) => handleReplyDraftChange(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault()
@@ -292,7 +311,8 @@ export function WikiCommentThread({
             previewUrls={replyPreviewUrls}
             state={isSubmittingReply ? 'uploading' : replyFailed ? 'error' : 'idle'}
             onRemove={(file) => setReplyFiles((prev) => removePendingFile(prev, file))}
-            onRetry={() => void handleSubmitReply()}
+            // Retry sends the draft, so it is only offered while there is one.
+            onRetry={replyDraft.trim() ? () => void handleSubmitReply() : undefined}
           />
           <div className="flex items-center justify-end gap-2">
             <SendShortcutHint />
@@ -370,6 +390,7 @@ export function WikiCommentThread({
           onStartReply={onStartReply}
           onCancelReply={onCancelReply}
           onReplyDraftChange={onReplyDraftChange}
+          onReplyFilesChange={onReplyFilesChange}
           onSubmitReply={onSubmitReply}
           onEdit={onEdit}
           onDelete={onDelete}
