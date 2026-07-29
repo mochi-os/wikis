@@ -9,17 +9,15 @@ import {
   useImageObjectUrls,
   cn,
   removePendingFile,
-} from '@mochi/web'
-import { Loader2, Paperclip, Send, X } from 'lucide-react'
-import { t } from '@lingui/core/macro'
-import {
   ComposerAttachments,
   SendShortcutHint,
   dropActiveClass,
   offlineBlocked,
   useComposerDrop,
   useDiscardGuard,
-} from '@/components/comment-composer'
+} from '@mochi/web'
+import { Loader2, Paperclip, Send, X } from 'lucide-react'
+import { t } from '@lingui/core/macro'
 
 interface CommentFormProps {
   onSubmit: (body: string, files?: File[]) => void | Promise<void>

@@ -19,17 +19,15 @@ import {
   useImageObjectUrls,
   textUnchanged,
   removePendingFile,
-} from '@mochi/web'
-import type { WikiComment } from '@/types/wiki'
-import { CommentAttachments } from './comment-attachments'
-import {
   ComposerAttachments,
   SendShortcutHint,
   dropActiveClass,
   offlineBlocked,
   useComposerDrop,
   useDiscardGuard,
-} from '@/components/comment-composer'
+} from '@mochi/web'
+import type { WikiComment } from '@/types/wiki'
+import { CommentAttachments } from './comment-attachments'
 
 interface WikiCommentThreadProps {
   comment: WikiComment
