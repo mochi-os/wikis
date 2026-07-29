@@ -18,11 +18,11 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "कृपया आफ्नो इन्टरनेट जडान जाँच गरी पुनः प्रयास गर्नुहोस्।"
 
-#: src/features/wiki/wiki-comment-thread.tsx:131
+#: src/features/wiki/wiki-comment-thread.tsx:190
 msgid "(edited)"
 msgstr "(सम्पादित)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:117
+#: src/features/wiki/wiki-comment-thread.tsx:176
 msgid "(expand)"
 msgstr "(विस्तार गर्नुहोस्)"
 
@@ -125,7 +125,7 @@ msgstr "{selectedCount, plural, one {# चयन गरिएको} other {# �
 msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
 msgstr "{selectedCount, plural, one {# चयनित {entityName} का लागि बल्क कार्यहरू} other {# चयनित {manyName} का लागि बल्क कार्यहरू}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:115
+#: src/features/wiki/wiki-comment-thread.tsx:174
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# जवाफ} other {+# थप जवाफहरू}}"
 
@@ -331,7 +331,7 @@ msgstr "लग इन भएको जो कोही"
 msgid "Are you absolutely sure?"
 msgstr "के तपाईं पूर्ण रूपमा निश्चित हुनुहुन्छ?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:315
+#: src/features/wiki/wiki-comment-thread.tsx:367
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "के तपाईं यो टिप्पणी मेटाउन निश्चित हुनुहुन्छ? यसले सबै जवाफहरू पनि मेटाउनेछ। यो कार्य फिर्ता गर्न सकिँदैन।"
 
@@ -354,11 +354,11 @@ msgstr "बढ्दो"
 msgid "Ascending"
 msgstr "बढ्दो क्रम"
 
-#: src/features/wiki/comment-form.tsx:123
+#: src/features/wiki/comment-form.tsx:149
 msgid "Attach files"
 msgstr "फाइलहरू एट्याच गर्नुहोस्"
 
-#: src/features/wiki/wiki-comment-thread.tsx:285
+#: src/features/wiki/wiki-comment-thread.tsx:332
 msgid "Attach reply files"
 msgstr "जवाफ फाइलहरू एट्याच गर्नुहोस्"
 
@@ -486,7 +486,7 @@ msgstr "wiki हरूमा फर्कनुहोस्"
 msgid "Banner"
 msgstr "ब्यानर"
 
-#: src/features/wiki/page-comments.tsx:104
+#: src/features/wiki/page-comments.tsx:151
 msgid "Be the first to comment on this page."
 msgstr "यो पृष्ठमा टिप्पणी गर्ने पहिलो व्यक्ति बन्नुहोस्।"
 
@@ -521,7 +521,6 @@ msgstr "ब्राउजर सूचनाहरू"
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
-#: src/features/wiki/comment-form.tsx:129
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
 #: src/features/wiki/page-editor.tsx:389
@@ -531,7 +530,7 @@ msgstr "ब्राउजर सूचनाहरू"
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:146
+#: src/features/wiki/wiki-comment-thread.tsx:205
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
 #: src/features/wiki/wiki-settings.tsx:1065
@@ -539,16 +538,20 @@ msgstr "ब्राउजर सूचनाहरू"
 msgid "Cancel"
 msgstr "रद्द गर्नुहोस्"
 
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/comment-form.tsx:160
+msgid "Cancel comment"
+msgstr "टिप्पणी रद्द गर्नुहोस्"
+
+#: src/features/wiki/wiki-comment-thread.tsx:342
 msgid "Cancel reply"
 msgstr "जवाफ रद्द गर्नुहोस्"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:143
+#: ../../../lib/web/src/components/notification-category-button.tsx:146
 msgid "Category for this notification"
 msgstr "यस सूचनाका लागि श्रेणी"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:124
-#: ../../../lib/web/src/components/notification-category-button.tsx:135
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
+#: ../../../lib/web/src/components/notification-category-button.tsx:138
 msgid "Change notification category"
 msgstr "सूचना श्रेणी परिवर्तन गर्नुहोस्"
 
@@ -891,8 +894,8 @@ msgstr "पूर्वनिर्धारित AI खाता"
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:218
-#: src/features/wiki/wiki-comment-thread.tsx:316
+#: src/features/wiki/wiki-comment-thread.tsx:277
+#: src/features/wiki/wiki-comment-thread.tsx:368
 #: src/features/wiki/wiki-page-content.tsx:306
 #: src/features/wiki/wiki-settings.tsx:957
 msgid "Delete"
@@ -915,7 +918,7 @@ msgstr "«{0}» मेटाउने हो? यो पूर्ववत ग�
 msgid "Delete attachment"
 msgstr "एट्याचमेन्ट मेटाउनुहोस्"
 
-#: src/features/wiki/wiki-comment-thread.tsx:314
+#: src/features/wiki/wiki-comment-thread.tsx:366
 msgid "Delete comment"
 msgstr "टिप्पणी मेटाउनुहोस्"
 
@@ -1010,6 +1013,14 @@ msgstr "दिशा"
 msgid "Directory"
 msgstr "निर्देशिका"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:300
+msgid "Discard"
+msgstr "हटाउनुहोस्"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:298
+msgid "Discard draft?"
+msgstr "मस्यौदा हटाउने?"
+
 #: ../../../lib/web/src/lib/chat-ui.ts:25
 #: ../../../lib/web/src/lib/chat-ui.ts:29
 msgid "Disconnected"
@@ -1046,7 +1057,7 @@ msgid "Dyslexia-friendly"
 msgstr "डिस्लेक्सिया-मैत्रीपूर्ण"
 
 #: src/features/wiki/page-editor.tsx:334
-#: src/features/wiki/wiki-comment-thread.tsx:207
+#: src/features/wiki/wiki-comment-thread.tsx:266
 #: src/features/wiki/wiki-page-content.tsx:280
 #: src/routes/_authenticated/$page/index.tsx:202
 #: src/routes/_authenticated/index.tsx:423
@@ -1303,7 +1314,7 @@ msgstr "सदस्यता हटाउन असफल"
 msgid "Failed to update access level"
 msgstr "पहुँच स्तर अद्यावधिक गर्न असफल"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:111
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Failed to update category"
 msgstr "वर्ग अद्यावधिक गर्न असफल"
 
@@ -1464,7 +1475,7 @@ msgstr "आईडी"
 msgid "Identity"
 msgstr "पहिचान"
 
-#: src/features/wiki/markdown-content.tsx:111
+#: src/features/wiki/markdown-content.tsx:119
 msgid "Image"
 msgstr "तस्बिर"
 
@@ -1581,7 +1592,7 @@ msgstr "उज्यालो"
 msgid "Link"
 msgstr "लिङ्क"
 
-#: src/features/wiki/markdown-content.tsx:159
+#: src/features/wiki/markdown-content.tsx:167
 msgid "Link to {headingText}"
 msgstr "{headingText} को लिंक"
 
@@ -1759,7 +1770,7 @@ msgstr "अहिलेसम्म कुनै एट्याचमेन्�
 msgid "No changes yet"
 msgstr "अहिलेसम्म कुनै परिवर्तन छैन"
 
-#: src/features/wiki/page-comments.tsx:103
+#: src/features/wiki/page-comments.tsx:150
 msgid "No comments yet"
 msgstr "अहिलेसम्म कुनै टिप्पणी छैन"
 
@@ -1831,7 +1842,7 @@ msgstr "कुनै ट्याग भेटिएन"
 msgid "No time zone found."
 msgstr "कुनै समय क्षेत्र भेटिएन।"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:147
+#: ../../../lib/web/src/components/notification-category-button.tsx:150
 msgid "No topic record yet — try again after the next notification."
 msgstr "अहिलेसम्म कुनै टपिक रेकर्ड छैन — अर्को सूचना पछि फेरि प्रयास गर्नुहोस्।"
 
@@ -2039,6 +2050,7 @@ msgstr "यो विकी र यसका सम्पूर्ण साम�
 msgid "Pick a date"
 msgstr "मिति छान्नुहोस्"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:95
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
 msgid "Please check your internet connection and try again."
@@ -2174,9 +2186,9 @@ msgstr "सापेक्ष (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "२४ घण्टाभित्र सापेक्ष, अन्यथा निरपेक्ष"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:232
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/features/wiki/comment-form.tsx:101
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
@@ -2202,10 +2214,6 @@ msgstr "\"{0}\" का लागि पहुँच नियम हटाउन
 #: ../../../lib/web/src/features/access/access-list.tsx:262
 msgid "Remove access?"
 msgstr "पहुँच हटाउने?"
-
-#: src/features/wiki/wiki-comment-thread.tsx:263
-msgid "Remove file"
-msgstr "फाइल हटाउनुहोस्"
 
 #: ../../../lib/web/src/components/post-tags.tsx:220
 #: ../../../lib/web/src/components/post-tags.tsx:232
@@ -2276,12 +2284,12 @@ msgstr "विकी रेप्लिकेट गर्नुहोस्"
 msgid "Replicating..."
 msgstr "रेप्लिकेट गर्दै..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:194
+#: src/features/wiki/wiki-comment-thread.tsx:253
 msgid "Reply"
 msgstr "जवाफ दिनुहोस्"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:228
+#: src/features/wiki/wiki-comment-thread.tsx:293
 msgid "Reply to {0}..."
 msgstr "{0} लाई जवाफ..."
 
@@ -2306,6 +2314,10 @@ msgstr "{title} रिसेट गर्नुहोस्"
 #: ../../../lib/web/src/components/config-drawer.tsx:85
 msgid "Reset all settings to default values"
 msgstr "सबै सेटिङहरू पूर्वनिर्धारित मानमा रिसेट गर्नुहोस्"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:249
+msgid "Retry"
+msgstr "फेरि प्रयास गर्नुहोस्"
 
 #: src/features/wiki/revert-page.tsx:105
 msgid "Revert"
@@ -2381,7 +2393,7 @@ msgstr "शनिबार"
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:400
-#: src/features/wiki/wiki-comment-thread.tsx:166
+#: src/features/wiki/wiki-comment-thread.tsx:225
 msgid "Save"
 msgstr "सुरक्षित गर्नुहोस्"
 
@@ -2544,7 +2556,7 @@ msgstr "छानिएको: <0>{0}</0>"
 msgid "Send again"
 msgstr "फेरि पठाउनुहोस्"
 
-#: src/features/wiki/comment-form.tsx:137
+#: src/features/wiki/comment-form.tsx:170
 msgid "Send comment"
 msgstr "टिप्पणी पठाउनुहोस्"
 
@@ -2552,7 +2564,7 @@ msgstr "टिप्पणी पठाउनुहोस्"
 msgid "Send email"
 msgstr "इमेल पठाउनुहोस्"
 
-#: src/features/wiki/wiki-comment-thread.tsx:303
+#: src/features/wiki/wiki-comment-thread.tsx:351
 msgid "Send reply"
 msgstr "जवाफ पठाउनुहोस्"
 
@@ -2989,7 +3001,7 @@ msgstr "रिमोट सर्भरमा जडान गर्न सक�
 msgid "Unable to redirect to login. Please try again."
 msgstr "लगइनमा रिडाइरेक्ट गर्न असमर्थ। कृपया फेरि प्रयास गर्नुहोस्।"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:155
+#: ../../../lib/web/src/components/notification-category-button.tsx:158
 msgid "Unassigned"
 msgstr "नतोकिएको"
 
@@ -3007,7 +3019,7 @@ msgid "United States"
 msgstr "संयुक्त राज्य अमेरिका"
 
 #: ../../../lib/web/src/features/accounts/types.ts:29
-#: src/features/wiki/wiki-comment-thread.tsx:90
+#: src/features/wiki/wiki-comment-thread.tsx:149
 msgid "Unknown"
 msgstr "अज्ञात"
 
@@ -3287,7 +3299,7 @@ msgstr "विकि सिङ्क गरियो"
 msgid "Wikis"
 msgstr "विकिहरू"
 
-#: src/features/wiki/page-comments.tsx:98
+#: src/features/wiki/page-comments.tsx:145
 msgid "Write a comment..."
 msgstr "टिप्पणी लेख्नुहोस्..."
 
@@ -3322,3 +3334,15 @@ msgstr "तपाईंले सबै हेर्नुभयो!"
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "तपाईंको खाता {source} बाट यहाँ सारिएको छ। त्यहाँ मेटाउनु नभएसम्म, सन्देश र सूचनाहरू दुवै सर्भरमा पुग्न सक्छन्, तपाईंको केही सामग्री पुरानो सर्भरबाट आउन सक्छ, र अनुयायीहरूलाई तपाईंलाई यहाँ भेट्न केही मिनेट लाग्न सक्छ।"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:291
+msgid "Your attachments will be lost."
+msgstr "तपाईंका संलग्नकहरू हराउनेछन्।"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:289
+msgid "Your text and attachments will be lost."
+msgstr "तपाईंको पाठ र संलग्नकहरू हराउनेछन्।"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:292
+msgid "Your text will be lost."
+msgstr "तपाईंको पाठ हराउनेछ।"

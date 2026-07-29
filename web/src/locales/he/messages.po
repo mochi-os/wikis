@@ -18,11 +18,11 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "בדקו את חיבור האינטרנט ונסו שוב."
 
-#: src/features/wiki/wiki-comment-thread.tsx:131
+#: src/features/wiki/wiki-comment-thread.tsx:190
 msgid "(edited)"
 msgstr "(נערך)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:117
+#: src/features/wiki/wiki-comment-thread.tsx:176
 msgid "(expand)"
 msgstr "(הרחב)"
 
@@ -125,7 +125,7 @@ msgstr "{selectedCount, plural, one {# נבחרו} two {# נבחרו} many {# נ
 msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
 msgstr "{selectedCount, plural, one {פעולות קבוצתיות עבור {entityName} אחד שנבחר} two {פעולות קבוצתיות עבור שני {manyName} שנבחרו} many {פעולות קבוצתיות עבור # {manyName} שנבחרו} other {פעולות קבוצתיות עבור # {manyName} שנבחרו}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:115
+#: src/features/wiki/wiki-comment-thread.tsx:174
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {תגובה אחת} two {+# תגובות נוספות} many {+# תגובות נוספות} other {+# תגובות נוספות}}"
 
@@ -331,7 +331,7 @@ msgstr "כל מי שמחובר"
 msgid "Are you absolutely sure?"
 msgstr "האם אתה בטוח לחלוטין?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:315
+#: src/features/wiki/wiki-comment-thread.tsx:367
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "האם אתה בטוח שברצונך למחוק תגובה זו? פעולה זו תמחק גם את כל התשובות. לא ניתן לבטל פעולה זו."
 
@@ -354,11 +354,11 @@ msgstr "עולה"
 msgid "Ascending"
 msgstr "סדר עולה"
 
-#: src/features/wiki/comment-form.tsx:123
+#: src/features/wiki/comment-form.tsx:149
 msgid "Attach files"
 msgstr "צרף קבצים"
 
-#: src/features/wiki/wiki-comment-thread.tsx:285
+#: src/features/wiki/wiki-comment-thread.tsx:332
 msgid "Attach reply files"
 msgstr "צרף קובצי תשובה"
 
@@ -486,7 +486,7 @@ msgstr "חזור ל-wikis"
 msgid "Banner"
 msgstr "באנר"
 
-#: src/features/wiki/page-comments.tsx:104
+#: src/features/wiki/page-comments.tsx:151
 msgid "Be the first to comment on this page."
 msgstr "היה הראשון להגיב על דף זה."
 
@@ -521,7 +521,6 @@ msgstr "התראות דפדפן"
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
-#: src/features/wiki/comment-form.tsx:129
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
 #: src/features/wiki/page-editor.tsx:389
@@ -531,7 +530,7 @@ msgstr "התראות דפדפן"
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:146
+#: src/features/wiki/wiki-comment-thread.tsx:205
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
 #: src/features/wiki/wiki-settings.tsx:1065
@@ -539,16 +538,20 @@ msgstr "התראות דפדפן"
 msgid "Cancel"
 msgstr "ביטול"
 
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/comment-form.tsx:160
+msgid "Cancel comment"
+msgstr "בטל תגובה"
+
+#: src/features/wiki/wiki-comment-thread.tsx:342
 msgid "Cancel reply"
 msgstr "בטל תשובה"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:143
+#: ../../../lib/web/src/components/notification-category-button.tsx:146
 msgid "Category for this notification"
 msgstr "קטגוריה עבור התראה זו"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:124
-#: ../../../lib/web/src/components/notification-category-button.tsx:135
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
+#: ../../../lib/web/src/components/notification-category-button.tsx:138
 msgid "Change notification category"
 msgstr "שנה קטגוריית התראה"
 
@@ -891,8 +894,8 @@ msgstr "חשבון AI ברירת מחדל"
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:218
-#: src/features/wiki/wiki-comment-thread.tsx:316
+#: src/features/wiki/wiki-comment-thread.tsx:277
+#: src/features/wiki/wiki-comment-thread.tsx:368
 #: src/features/wiki/wiki-page-content.tsx:306
 #: src/features/wiki/wiki-settings.tsx:957
 msgid "Delete"
@@ -915,7 +918,7 @@ msgstr "למחוק את «{0}»? פעולה זו אינה הפיכה."
 msgid "Delete attachment"
 msgstr "מחק קובץ מצורף"
 
-#: src/features/wiki/wiki-comment-thread.tsx:314
+#: src/features/wiki/wiki-comment-thread.tsx:366
 msgid "Delete comment"
 msgstr "מחק תגובה"
 
@@ -1010,6 +1013,14 @@ msgstr "כיוון"
 msgid "Directory"
 msgstr "מדריך"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:300
+msgid "Discard"
+msgstr "מחיקה"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:298
+msgid "Discard draft?"
+msgstr "למחוק את הטיוטה?"
+
 #: ../../../lib/web/src/lib/chat-ui.ts:25
 #: ../../../lib/web/src/lib/chat-ui.ts:29
 msgid "Disconnected"
@@ -1046,7 +1057,7 @@ msgid "Dyslexia-friendly"
 msgstr "ידידותי לדיסלקציה"
 
 #: src/features/wiki/page-editor.tsx:334
-#: src/features/wiki/wiki-comment-thread.tsx:207
+#: src/features/wiki/wiki-comment-thread.tsx:266
 #: src/features/wiki/wiki-page-content.tsx:280
 #: src/routes/_authenticated/$page/index.tsx:202
 #: src/routes/_authenticated/index.tsx:423
@@ -1303,7 +1314,7 @@ msgstr "ביטול ההרשמה נכשל"
 msgid "Failed to update access level"
 msgstr "עדכון רמת הגישה נכשל"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:111
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Failed to update category"
 msgstr "עדכון הקטגוריה נכשל"
 
@@ -1464,7 +1475,7 @@ msgstr "מזהה"
 msgid "Identity"
 msgstr "זהות"
 
-#: src/features/wiki/markdown-content.tsx:111
+#: src/features/wiki/markdown-content.tsx:119
 msgid "Image"
 msgstr "תמונה"
 
@@ -1581,7 +1592,7 @@ msgstr "בהיר"
 msgid "Link"
 msgstr "קישור"
 
-#: src/features/wiki/markdown-content.tsx:159
+#: src/features/wiki/markdown-content.tsx:167
 msgid "Link to {headingText}"
 msgstr "קישור אל {headingText}"
 
@@ -1759,7 +1770,7 @@ msgstr "עדיין אין קבצים מצורפים"
 msgid "No changes yet"
 msgstr "עדיין אין שינויים"
 
-#: src/features/wiki/page-comments.tsx:103
+#: src/features/wiki/page-comments.tsx:150
 msgid "No comments yet"
 msgstr "עדיין אין תגובות"
 
@@ -1831,7 +1842,7 @@ msgstr "לא נמצאו תגיות"
 msgid "No time zone found."
 msgstr "לא נמצא אזור זמן."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:147
+#: ../../../lib/web/src/components/notification-category-button.tsx:150
 msgid "No topic record yet — try again after the next notification."
 msgstr "עדיין אין רשומת נושא — נסה שוב לאחר ההתראה הבאה."
 
@@ -2039,6 +2050,7 @@ msgstr "מחק לצמיתות את הוויקי הזה וכל תכניו. לא �
 msgid "Pick a date"
 msgstr "בחר תאריך"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:95
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
 msgid "Please check your internet connection and try again."
@@ -2174,9 +2186,9 @@ msgstr "יחסי (5 דקות, 3 שעות, 2 ימים)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "יחסי בתוך 24 שעות, אחרת מוחלט"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:232
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/features/wiki/comment-form.tsx:101
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
@@ -2202,10 +2214,6 @@ msgstr "להסיר את כלל הגישה עבור \"{0}\"?"
 #: ../../../lib/web/src/features/access/access-list.tsx:262
 msgid "Remove access?"
 msgstr "להסיר גישה?"
-
-#: src/features/wiki/wiki-comment-thread.tsx:263
-msgid "Remove file"
-msgstr "הסרת קובץ"
 
 #: ../../../lib/web/src/components/post-tags.tsx:220
 #: ../../../lib/web/src/components/post-tags.tsx:232
@@ -2276,12 +2284,12 @@ msgstr "שכפל ויקי"
 msgid "Replicating..."
 msgstr "משכפל..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:194
+#: src/features/wiki/wiki-comment-thread.tsx:253
 msgid "Reply"
 msgstr "השב"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:228
+#: src/features/wiki/wiki-comment-thread.tsx:293
 msgid "Reply to {0}..."
 msgstr "הגב ל-{0}..."
 
@@ -2306,6 +2314,10 @@ msgstr "אפס {title}"
 #: ../../../lib/web/src/components/config-drawer.tsx:85
 msgid "Reset all settings to default values"
 msgstr "אפס את כל ההגדרות לערכי ברירת המחדל"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:249
+msgid "Retry"
+msgstr "נסה שוב"
 
 #: src/features/wiki/revert-page.tsx:105
 msgid "Revert"
@@ -2381,7 +2393,7 @@ msgstr "שבת"
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:400
-#: src/features/wiki/wiki-comment-thread.tsx:166
+#: src/features/wiki/wiki-comment-thread.tsx:225
 msgid "Save"
 msgstr "שמור"
 
@@ -2544,7 +2556,7 @@ msgstr "נבחר: <0>{0}</0>"
 msgid "Send again"
 msgstr "שלח שוב"
 
-#: src/features/wiki/comment-form.tsx:137
+#: src/features/wiki/comment-form.tsx:170
 msgid "Send comment"
 msgstr "שלח תגובה"
 
@@ -2552,7 +2564,7 @@ msgstr "שלח תגובה"
 msgid "Send email"
 msgstr "שלח אימייל"
 
-#: src/features/wiki/wiki-comment-thread.tsx:303
+#: src/features/wiki/wiki-comment-thread.tsx:351
 msgid "Send reply"
 msgstr "שלח תשובה"
 
@@ -2989,7 +3001,7 @@ msgstr "לא ניתן להתחבר לשרת המרוחק"
 msgid "Unable to redirect to login. Please try again."
 msgstr "לא ניתן להפנות להתחברות. נסה שוב."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:155
+#: ../../../lib/web/src/components/notification-category-button.tsx:158
 msgid "Unassigned"
 msgstr "לא משויך"
 
@@ -3007,7 +3019,7 @@ msgid "United States"
 msgstr "ארצות הברית"
 
 #: ../../../lib/web/src/features/accounts/types.ts:29
-#: src/features/wiki/wiki-comment-thread.tsx:90
+#: src/features/wiki/wiki-comment-thread.tsx:149
 msgid "Unknown"
 msgstr "לא ידוע"
 
@@ -3287,7 +3299,7 @@ msgstr "הוויקי סונכרן"
 msgid "Wikis"
 msgstr "ויקים"
 
-#: src/features/wiki/page-comments.tsx:98
+#: src/features/wiki/page-comments.tsx:145
 msgid "Write a comment..."
 msgstr "כתוב תגובה..."
 
@@ -3322,3 +3334,15 @@ msgstr "ראית הכול!"
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "חשבונך הועבר לכאן מ-{source}. עד שתמחק אותו שם, הודעות והתראות עשויות להגיע לשני השרתים, חלק מהתוכן שלך ממשיך להיות מוגש מהשרת הישן, ועוקבים עשויים לקחת מספר דקות למצוא אותך כאן."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:291
+msgid "Your attachments will be lost."
+msgstr "הקבצים המצורפים שלך יאבדו."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:289
+msgid "Your text and attachments will be lost."
+msgstr "הטקסט והקבצים המצורפים שלך יאבדו."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:292
+msgid "Your text will be lost."
+msgstr "הטקסט שלכם יאבד."

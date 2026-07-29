@@ -18,11 +18,11 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "Vui lòng kiểm tra kết nối internet và thử lại."
 
-#: src/features/wiki/wiki-comment-thread.tsx:131
+#: src/features/wiki/wiki-comment-thread.tsx:190
 msgid "(edited)"
 msgstr "(đã chỉnh sửa)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:117
+#: src/features/wiki/wiki-comment-thread.tsx:176
 msgid "(expand)"
 msgstr "(mở rộng)"
 
@@ -125,7 +125,7 @@ msgstr "{selectedCount, plural, one {# đã chọn} other {# đã chọn}}"
 msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
 msgstr "{selectedCount, plural, one {Thao tác hàng loạt cho # {entityName} đã chọn} other {Thao tác hàng loạt cho # {manyName} đã chọn}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:115
+#: src/features/wiki/wiki-comment-thread.tsx:174
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# phản hồi} other {+# phản hồi nữa}}"
 
@@ -331,7 +331,7 @@ msgstr "Bất kỳ ai đã đăng nhập"
 msgid "Are you absolutely sure?"
 msgstr "Bạn hoàn toàn chắc chắn?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:315
+#: src/features/wiki/wiki-comment-thread.tsx:367
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Bạn có chắc muốn xóa bình luận này? Tất cả phản hồi cũng sẽ bị xóa. Hành động này không thể hoàn tác."
 
@@ -354,11 +354,11 @@ msgstr "Tăng dần"
 msgid "Ascending"
 msgstr "Tăng dần"
 
-#: src/features/wiki/comment-form.tsx:123
+#: src/features/wiki/comment-form.tsx:149
 msgid "Attach files"
 msgstr "Đính kèm tệp"
 
-#: src/features/wiki/wiki-comment-thread.tsx:285
+#: src/features/wiki/wiki-comment-thread.tsx:332
 msgid "Attach reply files"
 msgstr "Đính kèm tệp phản hồi"
 
@@ -486,7 +486,7 @@ msgstr "Quay lại wiki"
 msgid "Banner"
 msgstr "Biểu ngữ"
 
-#: src/features/wiki/page-comments.tsx:104
+#: src/features/wiki/page-comments.tsx:151
 msgid "Be the first to comment on this page."
 msgstr "Hãy là người đầu tiên bình luận trên trang này."
 
@@ -521,7 +521,6 @@ msgstr "Thông báo trình duyệt"
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
-#: src/features/wiki/comment-form.tsx:129
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
 #: src/features/wiki/page-editor.tsx:389
@@ -531,7 +530,7 @@ msgstr "Thông báo trình duyệt"
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:146
+#: src/features/wiki/wiki-comment-thread.tsx:205
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
 #: src/features/wiki/wiki-settings.tsx:1065
@@ -539,16 +538,20 @@ msgstr "Thông báo trình duyệt"
 msgid "Cancel"
 msgstr "Hủy"
 
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/comment-form.tsx:160
+msgid "Cancel comment"
+msgstr "Hủy bình luận"
+
+#: src/features/wiki/wiki-comment-thread.tsx:342
 msgid "Cancel reply"
 msgstr "Hủy phản hồi"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:143
+#: ../../../lib/web/src/components/notification-category-button.tsx:146
 msgid "Category for this notification"
 msgstr "Danh mục cho thông báo này"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:124
-#: ../../../lib/web/src/components/notification-category-button.tsx:135
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
+#: ../../../lib/web/src/components/notification-category-button.tsx:138
 msgid "Change notification category"
 msgstr "Đổi danh mục thông báo"
 
@@ -891,8 +894,8 @@ msgstr "Tài khoản AI mặc định"
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:218
-#: src/features/wiki/wiki-comment-thread.tsx:316
+#: src/features/wiki/wiki-comment-thread.tsx:277
+#: src/features/wiki/wiki-comment-thread.tsx:368
 #: src/features/wiki/wiki-page-content.tsx:306
 #: src/features/wiki/wiki-settings.tsx:957
 msgid "Delete"
@@ -915,7 +918,7 @@ msgstr "Xoá «{0}»? Không thể hoàn tác."
 msgid "Delete attachment"
 msgstr "Xóa tệp đính kèm"
 
-#: src/features/wiki/wiki-comment-thread.tsx:314
+#: src/features/wiki/wiki-comment-thread.tsx:366
 msgid "Delete comment"
 msgstr "Xóa bình luận"
 
@@ -1010,6 +1013,14 @@ msgstr "Hướng"
 msgid "Directory"
 msgstr "Danh bạ"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:300
+msgid "Discard"
+msgstr "Hủy bỏ"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:298
+msgid "Discard draft?"
+msgstr "Hủy bản nháp?"
+
 #: ../../../lib/web/src/lib/chat-ui.ts:25
 #: ../../../lib/web/src/lib/chat-ui.ts:29
 msgid "Disconnected"
@@ -1046,7 +1057,7 @@ msgid "Dyslexia-friendly"
 msgstr "Thân thiện với chứng khó đọc"
 
 #: src/features/wiki/page-editor.tsx:334
-#: src/features/wiki/wiki-comment-thread.tsx:207
+#: src/features/wiki/wiki-comment-thread.tsx:266
 #: src/features/wiki/wiki-page-content.tsx:280
 #: src/routes/_authenticated/$page/index.tsx:202
 #: src/routes/_authenticated/index.tsx:423
@@ -1303,7 +1314,7 @@ msgstr "Không huỷ đăng ký được"
 msgid "Failed to update access level"
 msgstr "Không cập nhật mức truy cập được"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:111
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Failed to update category"
 msgstr "Không cập nhật danh mục được"
 
@@ -1464,7 +1475,7 @@ msgstr "ID"
 msgid "Identity"
 msgstr "Danh tính"
 
-#: src/features/wiki/markdown-content.tsx:111
+#: src/features/wiki/markdown-content.tsx:119
 msgid "Image"
 msgstr "Hình ảnh"
 
@@ -1581,7 +1592,7 @@ msgstr "Sáng"
 msgid "Link"
 msgstr "Liên kết"
 
-#: src/features/wiki/markdown-content.tsx:159
+#: src/features/wiki/markdown-content.tsx:167
 msgid "Link to {headingText}"
 msgstr "Liên kết đến {headingText}"
 
@@ -1759,7 +1770,7 @@ msgstr "Chưa có tệp đính kèm"
 msgid "No changes yet"
 msgstr "Chưa có thay đổi"
 
-#: src/features/wiki/page-comments.tsx:103
+#: src/features/wiki/page-comments.tsx:150
 msgid "No comments yet"
 msgstr "Chưa có bình luận"
 
@@ -1831,7 +1842,7 @@ msgstr "Không tìm thấy thẻ nào"
 msgid "No time zone found."
 msgstr "Không tìm thấy múi giờ."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:147
+#: ../../../lib/web/src/components/notification-category-button.tsx:150
 msgid "No topic record yet — try again after the next notification."
 msgstr "Chưa có bản ghi chủ đề — hãy thử lại sau thông báo tiếp theo."
 
@@ -2039,6 +2050,7 @@ msgstr "Xoá vĩnh viễn wiki này và toàn bộ nội dung của nó. Không 
 msgid "Pick a date"
 msgstr "Chọn ngày"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:95
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
 msgid "Please check your internet connection and try again."
@@ -2174,9 +2186,9 @@ msgstr "Tương đối (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "Tương đối trong vòng 24 giờ, ngoài ra dùng tuyệt đối"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:232
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/features/wiki/comment-form.tsx:101
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
@@ -2202,10 +2214,6 @@ msgstr "Xóa quy tắc truy cập cho \"{0}\"?"
 #: ../../../lib/web/src/features/access/access-list.tsx:262
 msgid "Remove access?"
 msgstr "Xoá quyền truy cập?"
-
-#: src/features/wiki/wiki-comment-thread.tsx:263
-msgid "Remove file"
-msgstr "Xóa tệp"
 
 #: ../../../lib/web/src/components/post-tags.tsx:220
 #: ../../../lib/web/src/components/post-tags.tsx:232
@@ -2276,12 +2284,12 @@ msgstr "Sao chép wiki"
 msgid "Replicating..."
 msgstr "Đang sao chép..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:194
+#: src/features/wiki/wiki-comment-thread.tsx:253
 msgid "Reply"
 msgstr "Trả lời"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:228
+#: src/features/wiki/wiki-comment-thread.tsx:293
 msgid "Reply to {0}..."
 msgstr "Trả lời {0}..."
 
@@ -2306,6 +2314,10 @@ msgstr "Đặt lại {title}"
 #: ../../../lib/web/src/components/config-drawer.tsx:85
 msgid "Reset all settings to default values"
 msgstr "Đặt lại tất cả cài đặt về giá trị mặc định"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:249
+msgid "Retry"
+msgstr "Thử lại"
 
 #: src/features/wiki/revert-page.tsx:105
 msgid "Revert"
@@ -2381,7 +2393,7 @@ msgstr "Thứ bảy"
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:400
-#: src/features/wiki/wiki-comment-thread.tsx:166
+#: src/features/wiki/wiki-comment-thread.tsx:225
 msgid "Save"
 msgstr "Lưu"
 
@@ -2544,7 +2556,7 @@ msgstr "Đã chọn: <0>{0}</0>"
 msgid "Send again"
 msgstr "Gửi lại"
 
-#: src/features/wiki/comment-form.tsx:137
+#: src/features/wiki/comment-form.tsx:170
 msgid "Send comment"
 msgstr "Gửi bình luận"
 
@@ -2552,7 +2564,7 @@ msgstr "Gửi bình luận"
 msgid "Send email"
 msgstr "Gửi email"
 
-#: src/features/wiki/wiki-comment-thread.tsx:303
+#: src/features/wiki/wiki-comment-thread.tsx:351
 msgid "Send reply"
 msgstr "Gửi trả lời"
 
@@ -2989,7 +3001,7 @@ msgstr "Không thể kết nối đến máy chủ từ xa"
 msgid "Unable to redirect to login. Please try again."
 msgstr "Không thể chuyển hướng đến trang đăng nhập. Vui lòng thử lại."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:155
+#: ../../../lib/web/src/components/notification-category-button.tsx:158
 msgid "Unassigned"
 msgstr "Chưa phân công"
 
@@ -3007,7 +3019,7 @@ msgid "United States"
 msgstr "Hoa Kỳ"
 
 #: ../../../lib/web/src/features/accounts/types.ts:29
-#: src/features/wiki/wiki-comment-thread.tsx:90
+#: src/features/wiki/wiki-comment-thread.tsx:149
 msgid "Unknown"
 msgstr "Không rõ"
 
@@ -3287,7 +3299,7 @@ msgstr "Đã đồng bộ wiki"
 msgid "Wikis"
 msgstr "Wiki"
 
-#: src/features/wiki/page-comments.tsx:98
+#: src/features/wiki/page-comments.tsx:145
 msgid "Write a comment..."
 msgstr "Viết bình luận..."
 
@@ -3322,3 +3334,15 @@ msgstr "Bạn đã xem hết!"
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Tài khoản của bạn đã được chuyển đến đây từ {source}. Cho đến khi bạn xóa nó ở đó, tin nhắn và thông báo có thể đến cả hai máy chủ, một số nội dung của bạn vẫn được phục vụ từ máy chủ cũ và người theo dõi có thể mất vài phút để tìm thấy bạn ở đây."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:291
+msgid "Your attachments will be lost."
+msgstr "Tệp đính kèm của bạn sẽ bị mất."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:289
+msgid "Your text and attachments will be lost."
+msgstr "Văn bản và tệp đính kèm của bạn sẽ bị mất."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:292
+msgid "Your text will be lost."
+msgstr "Nội dung của bạn sẽ bị mất."

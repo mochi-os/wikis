@@ -18,11 +18,11 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "Veuillez vérifier votre connexion Internet et réessayer."
 
-#: src/features/wiki/wiki-comment-thread.tsx:131
+#: src/features/wiki/wiki-comment-thread.tsx:190
 msgid "(edited)"
 msgstr "(modifié)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:117
+#: src/features/wiki/wiki-comment-thread.tsx:176
 msgid "(expand)"
 msgstr "(développer)"
 
@@ -125,7 +125,7 @@ msgstr "{selectedCount, plural, one {# sélectionnés} other {# sélectionnés}}
 msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
 msgstr "{selectedCount, plural, one {Actions groupées pour # {entityName} sélectionné} other {Actions groupées pour # {manyName} sélectionnés}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:115
+#: src/features/wiki/wiki-comment-thread.tsx:174
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# réponse} other {+# autres réponses}}"
 
@@ -331,7 +331,7 @@ msgstr "Toute personne connectée"
 msgid "Are you absolutely sure?"
 msgstr "Êtes-vous absolument sûr ?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:315
+#: src/features/wiki/wiki-comment-thread.tsx:367
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Voulez-vous vraiment supprimer ce commentaire ? Toutes les réponses seront également supprimées. Cette action est irréversible."
 
@@ -354,11 +354,11 @@ msgstr "Croissant"
 msgid "Ascending"
 msgstr "Croissant"
 
-#: src/features/wiki/comment-form.tsx:123
+#: src/features/wiki/comment-form.tsx:149
 msgid "Attach files"
 msgstr "Joindre des fichiers"
 
-#: src/features/wiki/wiki-comment-thread.tsx:285
+#: src/features/wiki/wiki-comment-thread.tsx:332
 msgid "Attach reply files"
 msgstr "Joindre des fichiers à la réponse"
 
@@ -486,7 +486,7 @@ msgstr "Retour aux wikis"
 msgid "Banner"
 msgstr "Bannière"
 
-#: src/features/wiki/page-comments.tsx:104
+#: src/features/wiki/page-comments.tsx:151
 msgid "Be the first to comment on this page."
 msgstr "Soyez le premier à commenter cette page."
 
@@ -521,7 +521,6 @@ msgstr "Notifications du navigateur"
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
-#: src/features/wiki/comment-form.tsx:129
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
 #: src/features/wiki/page-editor.tsx:389
@@ -531,7 +530,7 @@ msgstr "Notifications du navigateur"
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:146
+#: src/features/wiki/wiki-comment-thread.tsx:205
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
 #: src/features/wiki/wiki-settings.tsx:1065
@@ -539,16 +538,20 @@ msgstr "Notifications du navigateur"
 msgid "Cancel"
 msgstr "Annuler"
 
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/comment-form.tsx:160
+msgid "Cancel comment"
+msgstr "Annuler le commentaire"
+
+#: src/features/wiki/wiki-comment-thread.tsx:342
 msgid "Cancel reply"
 msgstr "Annuler la réponse"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:143
+#: ../../../lib/web/src/components/notification-category-button.tsx:146
 msgid "Category for this notification"
 msgstr "Catégorie de cette notification"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:124
-#: ../../../lib/web/src/components/notification-category-button.tsx:135
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
+#: ../../../lib/web/src/components/notification-category-button.tsx:138
 msgid "Change notification category"
 msgstr "Changer la catégorie de notification"
 
@@ -891,8 +894,8 @@ msgstr "Compte IA par défaut"
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:218
-#: src/features/wiki/wiki-comment-thread.tsx:316
+#: src/features/wiki/wiki-comment-thread.tsx:277
+#: src/features/wiki/wiki-comment-thread.tsx:368
 #: src/features/wiki/wiki-page-content.tsx:306
 #: src/features/wiki/wiki-settings.tsx:957
 msgid "Delete"
@@ -915,7 +918,7 @@ msgstr "Supprimer « {0} » ? Cette action est irréversible."
 msgid "Delete attachment"
 msgstr "Supprimer la pièce jointe"
 
-#: src/features/wiki/wiki-comment-thread.tsx:314
+#: src/features/wiki/wiki-comment-thread.tsx:366
 msgid "Delete comment"
 msgstr "Supprimer le commentaire"
 
@@ -1010,6 +1013,14 @@ msgstr "Direction"
 msgid "Directory"
 msgstr "Annuaire"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:300
+msgid "Discard"
+msgstr "Abandonner"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:298
+msgid "Discard draft?"
+msgstr "Abandonner le brouillon ?"
+
 #: ../../../lib/web/src/lib/chat-ui.ts:25
 #: ../../../lib/web/src/lib/chat-ui.ts:29
 msgid "Disconnected"
@@ -1046,7 +1057,7 @@ msgid "Dyslexia-friendly"
 msgstr "Adapté à la dyslexie"
 
 #: src/features/wiki/page-editor.tsx:334
-#: src/features/wiki/wiki-comment-thread.tsx:207
+#: src/features/wiki/wiki-comment-thread.tsx:266
 #: src/features/wiki/wiki-page-content.tsx:280
 #: src/routes/_authenticated/$page/index.tsx:202
 #: src/routes/_authenticated/index.tsx:423
@@ -1303,7 +1314,7 @@ msgstr "Échec du désabonnement"
 msgid "Failed to update access level"
 msgstr "Échec de la mise à jour du niveau d'accès"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:111
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Failed to update category"
 msgstr "Échec de la mise à jour de la catégorie"
 
@@ -1464,7 +1475,7 @@ msgstr "Identifiant"
 msgid "Identity"
 msgstr "Identité"
 
-#: src/features/wiki/markdown-content.tsx:111
+#: src/features/wiki/markdown-content.tsx:119
 msgid "Image"
 msgstr "Image"
 
@@ -1581,7 +1592,7 @@ msgstr "Clair"
 msgid "Link"
 msgstr "Lien"
 
-#: src/features/wiki/markdown-content.tsx:159
+#: src/features/wiki/markdown-content.tsx:167
 msgid "Link to {headingText}"
 msgstr "Lien vers {headingText}"
 
@@ -1759,7 +1770,7 @@ msgstr "Aucune pièce jointe pour le moment"
 msgid "No changes yet"
 msgstr "Aucune modification pour le moment"
 
-#: src/features/wiki/page-comments.tsx:103
+#: src/features/wiki/page-comments.tsx:150
 msgid "No comments yet"
 msgstr "Aucun commentaire pour le moment"
 
@@ -1831,7 +1842,7 @@ msgstr "Aucun tag trouvé"
 msgid "No time zone found."
 msgstr "Aucun fuseau horaire trouvé."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:147
+#: ../../../lib/web/src/components/notification-category-button.tsx:150
 msgid "No topic record yet — try again after the next notification."
 msgstr "Aucun enregistrement de sujet pour le moment — réessayez après la prochaine notification."
 
@@ -2039,6 +2050,7 @@ msgstr "Supprimer définitivement ce wiki et tout son contenu. Cette action est 
 msgid "Pick a date"
 msgstr "Choisir une date"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:95
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
 msgid "Please check your internet connection and try again."
@@ -2174,9 +2186,9 @@ msgstr "Relatif (5min, 3h, 2j)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "Relatif dans les 24 heures, sinon absolu"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:232
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/features/wiki/comment-form.tsx:101
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
@@ -2202,10 +2214,6 @@ msgstr "Supprimer la règle d'accès pour « {0} » ?"
 #: ../../../lib/web/src/features/access/access-list.tsx:262
 msgid "Remove access?"
 msgstr "Supprimer l'accès ?"
-
-#: src/features/wiki/wiki-comment-thread.tsx:263
-msgid "Remove file"
-msgstr "Supprimer le fichier"
 
 #: ../../../lib/web/src/components/post-tags.tsx:220
 #: ../../../lib/web/src/components/post-tags.tsx:232
@@ -2276,12 +2284,12 @@ msgstr "Répliquer le wiki"
 msgid "Replicating..."
 msgstr "Réplication..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:194
+#: src/features/wiki/wiki-comment-thread.tsx:253
 msgid "Reply"
 msgstr "Répondre"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:228
+#: src/features/wiki/wiki-comment-thread.tsx:293
 msgid "Reply to {0}..."
 msgstr "Répondre à {0}..."
 
@@ -2306,6 +2314,10 @@ msgstr "Réinitialiser {title}"
 #: ../../../lib/web/src/components/config-drawer.tsx:85
 msgid "Reset all settings to default values"
 msgstr "Réinitialiser tous les paramètres aux valeurs par défaut"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:249
+msgid "Retry"
+msgstr "Réessayer"
 
 #: src/features/wiki/revert-page.tsx:105
 msgid "Revert"
@@ -2381,7 +2393,7 @@ msgstr "Samedi"
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:400
-#: src/features/wiki/wiki-comment-thread.tsx:166
+#: src/features/wiki/wiki-comment-thread.tsx:225
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -2544,7 +2556,7 @@ msgstr "Sélectionné : <0>{0}</0>"
 msgid "Send again"
 msgstr "Renvoyer"
 
-#: src/features/wiki/comment-form.tsx:137
+#: src/features/wiki/comment-form.tsx:170
 msgid "Send comment"
 msgstr "Envoyer le commentaire"
 
@@ -2552,7 +2564,7 @@ msgstr "Envoyer le commentaire"
 msgid "Send email"
 msgstr "Envoyer l'e-mail"
 
-#: src/features/wiki/wiki-comment-thread.tsx:303
+#: src/features/wiki/wiki-comment-thread.tsx:351
 msgid "Send reply"
 msgstr "Envoyer la réponse"
 
@@ -2989,7 +3001,7 @@ msgstr "Impossible de se connecter au serveur distant"
 msgid "Unable to redirect to login. Please try again."
 msgstr "Impossible de rediriger vers la page de connexion. Veuillez réessayer."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:155
+#: ../../../lib/web/src/components/notification-category-button.tsx:158
 msgid "Unassigned"
 msgstr "Non assigné"
 
@@ -3007,7 +3019,7 @@ msgid "United States"
 msgstr "États-Unis"
 
 #: ../../../lib/web/src/features/accounts/types.ts:29
-#: src/features/wiki/wiki-comment-thread.tsx:90
+#: src/features/wiki/wiki-comment-thread.tsx:149
 msgid "Unknown"
 msgstr "Inconnu"
 
@@ -3287,7 +3299,7 @@ msgstr "Wiki synchronisé"
 msgid "Wikis"
 msgstr "Wikis"
 
-#: src/features/wiki/page-comments.tsx:98
+#: src/features/wiki/page-comments.tsx:145
 msgid "Write a comment..."
 msgstr "Écrire un commentaire…"
 
@@ -3322,3 +3334,15 @@ msgstr "Vous êtes à jour !"
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Votre compte a été déplacé ici depuis {source}. Tant que vous ne le supprimez pas là-bas, les messages et notifications peuvent parvenir aux deux serveurs, une partie de votre contenu continue d'être servie depuis l'ancien serveur, et vos abonnés peuvent avoir besoin de quelques minutes pour vous trouver ici."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:291
+msgid "Your attachments will be lost."
+msgstr "Vos pièces jointes seront perdues."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:289
+msgid "Your text and attachments will be lost."
+msgstr "Votre texte et vos pièces jointes seront perdus."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:292
+msgid "Your text will be lost."
+msgstr "Votre texte sera perdu."

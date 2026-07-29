@@ -18,11 +18,11 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni."
 
-#: src/features/wiki/wiki-comment-thread.tsx:131
+#: src/features/wiki/wiki-comment-thread.tsx:190
 msgid "(edited)"
 msgstr "(golygwyd)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:117
+#: src/features/wiki/wiki-comment-thread.tsx:176
 msgid "(expand)"
 msgstr "(ehangu)"
 
@@ -125,7 +125,7 @@ msgstr "{selectedCount, plural, zero {# wedi'u dewis} one {# wedi'u dewis} two {
 msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
 msgstr "{selectedCount, plural, zero {Camau swmp ar gyfer # {manyName} a ddewiswyd} one {Camau swmp ar gyfer # {entityName} a ddewiswyd} two {Camau swmp ar gyfer # {manyName} a ddewiswyd} few {Camau swmp ar gyfer # {manyName} a ddewiswyd} many {Camau swmp ar gyfer # {manyName} a ddewiswyd} other {Camau swmp ar gyfer # {manyName} a ddewiswyd}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:115
+#: src/features/wiki/wiki-comment-thread.tsx:174
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, zero {# ateb} one {# ateb} two {+# ateb arall} few {+# ateb arall} many {+# ateb arall} other {+# ateb arall}}"
 
@@ -331,7 +331,7 @@ msgstr "Unrhyw un sydd wedi mewngofnodi"
 msgid "Are you absolutely sure?"
 msgstr "Ydych chi'n hollol siŵr?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:315
+#: src/features/wiki/wiki-comment-thread.tsx:367
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Ydych chi'n siŵr eich bod am ddileu'r sylw hwn? Bydd hyn hefyd yn dileu pob ateb. Ni ellir dadwneud y weithred hon."
 
@@ -354,11 +354,11 @@ msgstr "Esg"
 msgid "Ascending"
 msgstr "Esgynnol"
 
-#: src/features/wiki/comment-form.tsx:123
+#: src/features/wiki/comment-form.tsx:149
 msgid "Attach files"
 msgstr "Atodi ffeiliau"
 
-#: src/features/wiki/wiki-comment-thread.tsx:285
+#: src/features/wiki/wiki-comment-thread.tsx:332
 msgid "Attach reply files"
 msgstr "Atodi ffeiliau ateb"
 
@@ -486,7 +486,7 @@ msgstr "Yn ôl i'r wicïau"
 msgid "Banner"
 msgstr "Baner"
 
-#: src/features/wiki/page-comments.tsx:104
+#: src/features/wiki/page-comments.tsx:151
 msgid "Be the first to comment on this page."
 msgstr "Byddwch y cyntaf i sylwi ar y dudalen hon."
 
@@ -521,7 +521,6 @@ msgstr "Hysbysiadau porwr"
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
-#: src/features/wiki/comment-form.tsx:129
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
 #: src/features/wiki/page-editor.tsx:389
@@ -531,7 +530,7 @@ msgstr "Hysbysiadau porwr"
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:146
+#: src/features/wiki/wiki-comment-thread.tsx:205
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
 #: src/features/wiki/wiki-settings.tsx:1065
@@ -539,16 +538,20 @@ msgstr "Hysbysiadau porwr"
 msgid "Cancel"
 msgstr "Canslo"
 
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/comment-form.tsx:160
+msgid "Cancel comment"
+msgstr "Canslo sylw"
+
+#: src/features/wiki/wiki-comment-thread.tsx:342
 msgid "Cancel reply"
 msgstr "Canslo ateb"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:143
+#: ../../../lib/web/src/components/notification-category-button.tsx:146
 msgid "Category for this notification"
 msgstr "Categori ar gyfer yr hysbysiad hwn"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:124
-#: ../../../lib/web/src/components/notification-category-button.tsx:135
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
+#: ../../../lib/web/src/components/notification-category-button.tsx:138
 msgid "Change notification category"
 msgstr "Newid categori hysbysiad"
 
@@ -891,8 +894,8 @@ msgstr "Cyfrif AI diofyn"
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:218
-#: src/features/wiki/wiki-comment-thread.tsx:316
+#: src/features/wiki/wiki-comment-thread.tsx:277
+#: src/features/wiki/wiki-comment-thread.tsx:368
 #: src/features/wiki/wiki-page-content.tsx:306
 #: src/features/wiki/wiki-settings.tsx:957
 msgid "Delete"
@@ -915,7 +918,7 @@ msgstr "Dileu \"{0}\"? Ni ellir dadwneud hyn."
 msgid "Delete attachment"
 msgstr "Dileu atodiad"
 
-#: src/features/wiki/wiki-comment-thread.tsx:314
+#: src/features/wiki/wiki-comment-thread.tsx:366
 msgid "Delete comment"
 msgstr "Dileu sylw"
 
@@ -1010,6 +1013,14 @@ msgstr "Cyfeiriad"
 msgid "Directory"
 msgstr "Cyfeiriadur"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:300
+msgid "Discard"
+msgstr "Hepgor"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:298
+msgid "Discard draft?"
+msgstr "Hepgor y drafft?"
+
 #: ../../../lib/web/src/lib/chat-ui.ts:25
 #: ../../../lib/web/src/lib/chat-ui.ts:29
 msgid "Disconnected"
@@ -1046,7 +1057,7 @@ msgid "Dyslexia-friendly"
 msgstr "Cyfeillgar i ddyslecsia"
 
 #: src/features/wiki/page-editor.tsx:334
-#: src/features/wiki/wiki-comment-thread.tsx:207
+#: src/features/wiki/wiki-comment-thread.tsx:266
 #: src/features/wiki/wiki-page-content.tsx:280
 #: src/routes/_authenticated/$page/index.tsx:202
 #: src/routes/_authenticated/index.tsx:423
@@ -1303,7 +1314,7 @@ msgstr "Methwyd dad-danysgrifio"
 msgid "Failed to update access level"
 msgstr "Methwyd diweddaru lefel mynediad"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:111
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Failed to update category"
 msgstr "Methwyd diweddaru'r categori"
 
@@ -1464,7 +1475,7 @@ msgstr "ID"
 msgid "Identity"
 msgstr "Hunaniaeth"
 
-#: src/features/wiki/markdown-content.tsx:111
+#: src/features/wiki/markdown-content.tsx:119
 msgid "Image"
 msgstr "Delwedd"
 
@@ -1581,7 +1592,7 @@ msgstr "Golau"
 msgid "Link"
 msgstr "Dolen"
 
-#: src/features/wiki/markdown-content.tsx:159
+#: src/features/wiki/markdown-content.tsx:167
 msgid "Link to {headingText}"
 msgstr "Dolen i {headingText}"
 
@@ -1759,7 +1770,7 @@ msgstr "Dim atodiadau eto"
 msgid "No changes yet"
 msgstr "Dim newidiadau eto"
 
-#: src/features/wiki/page-comments.tsx:103
+#: src/features/wiki/page-comments.tsx:150
 msgid "No comments yet"
 msgstr "Dim sylwadau eto"
 
@@ -1831,7 +1842,7 @@ msgstr "Heb ddod o hyd i dagiau"
 msgid "No time zone found."
 msgstr "Heb ddod o hyd i barth amser."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:147
+#: ../../../lib/web/src/components/notification-category-button.tsx:150
 msgid "No topic record yet — try again after the next notification."
 msgstr "Dim cofnod pwnc eto — rhowch gynnig arall arni ar ôl yr hysbysiad nesaf."
 
@@ -2039,6 +2050,7 @@ msgstr "Dileu'r wici hwn a'i holl gynnwys yn barhaol. Ni ellir dadwneud hyn."
 msgid "Pick a date"
 msgstr "Dewiswch ddyddiad"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:95
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
 msgid "Please check your internet connection and try again."
@@ -2174,9 +2186,9 @@ msgstr "Cymharol (5m, 3a, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "Cymharol o fewn 24 awr, fel arall yn absoliwt"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:232
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/features/wiki/comment-form.tsx:101
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
@@ -2202,10 +2214,6 @@ msgstr "Tynnu'r rheol mynediad ar gyfer \"{0}\"?"
 #: ../../../lib/web/src/features/access/access-list.tsx:262
 msgid "Remove access?"
 msgstr "Tynnu mynediad?"
-
-#: src/features/wiki/wiki-comment-thread.tsx:263
-msgid "Remove file"
-msgstr "Tynnu ffeil"
 
 #: ../../../lib/web/src/components/post-tags.tsx:220
 #: ../../../lib/web/src/components/post-tags.tsx:232
@@ -2276,12 +2284,12 @@ msgstr "Dyblygu wici"
 msgid "Replicating..."
 msgstr "Yn dyblygu..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:194
+#: src/features/wiki/wiki-comment-thread.tsx:253
 msgid "Reply"
 msgstr "Ymateb"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:228
+#: src/features/wiki/wiki-comment-thread.tsx:293
 msgid "Reply to {0}..."
 msgstr "Ymateb i {0}..."
 
@@ -2306,6 +2314,10 @@ msgstr "Ailosod {title}"
 #: ../../../lib/web/src/components/config-drawer.tsx:85
 msgid "Reset all settings to default values"
 msgstr "Ailosod yr holl osodiadau i'r gwerthoedd diofyn"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:249
+msgid "Retry"
+msgstr "Ail-geisio"
 
 #: src/features/wiki/revert-page.tsx:105
 msgid "Revert"
@@ -2381,7 +2393,7 @@ msgstr "Dydd Sadwrn"
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:400
-#: src/features/wiki/wiki-comment-thread.tsx:166
+#: src/features/wiki/wiki-comment-thread.tsx:225
 msgid "Save"
 msgstr "Cadw"
 
@@ -2544,7 +2556,7 @@ msgstr "Dewiswyd: <0>{0}</0>"
 msgid "Send again"
 msgstr "Anfon eto"
 
-#: src/features/wiki/comment-form.tsx:137
+#: src/features/wiki/comment-form.tsx:170
 msgid "Send comment"
 msgstr "Anfon sylw"
 
@@ -2552,7 +2564,7 @@ msgstr "Anfon sylw"
 msgid "Send email"
 msgstr "Anfon e-bost"
 
-#: src/features/wiki/wiki-comment-thread.tsx:303
+#: src/features/wiki/wiki-comment-thread.tsx:351
 msgid "Send reply"
 msgstr "Anfon ateb"
 
@@ -2989,7 +3001,7 @@ msgstr "Methu cysylltu â'r gweinydd pell"
 msgid "Unable to redirect to login. Please try again."
 msgstr "Methu ailgyfeirio i fewngofnodi. Rhowch gynnig arall arni."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:155
+#: ../../../lib/web/src/components/notification-category-button.tsx:158
 msgid "Unassigned"
 msgstr "Heb ei neilltuo"
 
@@ -3007,7 +3019,7 @@ msgid "United States"
 msgstr "Yr Unol Daleithiau"
 
 #: ../../../lib/web/src/features/accounts/types.ts:29
-#: src/features/wiki/wiki-comment-thread.tsx:90
+#: src/features/wiki/wiki-comment-thread.tsx:149
 msgid "Unknown"
 msgstr "Anhysbys"
 
@@ -3287,7 +3299,7 @@ msgstr "Wici wedi'i gysoni"
 msgid "Wikis"
 msgstr "Wicis"
 
-#: src/features/wiki/page-comments.tsx:98
+#: src/features/wiki/page-comments.tsx:145
 msgid "Write a comment..."
 msgstr "Ysgrifennwch sylw..."
 
@@ -3322,3 +3334,15 @@ msgstr "Rydych wedi dal i fyny!"
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Symudwyd eich cyfrif yma o {source}. Hyd nes y byddwch yn ei ddileu yno, gall negeseuon a hysbysiadau gyrraedd y ddau weinydd, gall peth o'ch cynnwys barhau i gael ei weini o'r hen weinydd, a gall dilynwyr gymryd ychydig funudau i ddod o hyd i chi yma."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:291
+msgid "Your attachments will be lost."
+msgstr "Bydd eich atodiadau'n cael eu colli."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:289
+msgid "Your text and attachments will be lost."
+msgstr "Bydd eich testun a'ch atodiadau'n cael eu colli."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:292
+msgid "Your text will be lost."
+msgstr "Bydd eich testun yn cael ei golli."

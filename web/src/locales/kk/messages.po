@@ -18,11 +18,11 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "Интернет байланысын тексеріп, қайталап көріңіз."
 
-#: src/features/wiki/wiki-comment-thread.tsx:131
+#: src/features/wiki/wiki-comment-thread.tsx:190
 msgid "(edited)"
 msgstr "(өңделді)"
 
-#: src/features/wiki/wiki-comment-thread.tsx:117
+#: src/features/wiki/wiki-comment-thread.tsx:176
 msgid "(expand)"
 msgstr "(жаю)"
 
@@ -125,7 +125,7 @@ msgstr "{selectedCount, plural, one {# таңдалды} other {# таңдалд
 msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
 msgstr "{selectedCount, plural, one {# таңдалған {entityName} үшін топтық әрекеттер} other {# таңдалған {manyName} үшін топтық әрекеттер}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:115
+#: src/features/wiki/wiki-comment-thread.tsx:174
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# жауап} other {+# тағы жауап}}"
 
@@ -331,7 +331,7 @@ msgstr "Кірген кез келген адам"
 msgid "Are you absolutely sure?"
 msgstr "Сіз шынымен сенімдісіз бе?"
 
-#: src/features/wiki/wiki-comment-thread.tsx:315
+#: src/features/wiki/wiki-comment-thread.tsx:367
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Бұл пікірді жойғыңыз келетініне сенімдісіз бе? Барлық жауаптар да жойылады. Бұл әрекетті қайтару мүмкін емес."
 
@@ -354,11 +354,11 @@ msgstr "Өсу ретімен"
 msgid "Ascending"
 msgstr "Өсу реті"
 
-#: src/features/wiki/comment-form.tsx:123
+#: src/features/wiki/comment-form.tsx:149
 msgid "Attach files"
 msgstr "Файлдар тіркеу"
 
-#: src/features/wiki/wiki-comment-thread.tsx:285
+#: src/features/wiki/wiki-comment-thread.tsx:332
 msgid "Attach reply files"
 msgstr "Жауап файлдарын тіркеу"
 
@@ -486,7 +486,7 @@ msgstr "Wiki-лерге оралу"
 msgid "Banner"
 msgstr "Баннер"
 
-#: src/features/wiki/page-comments.tsx:104
+#: src/features/wiki/page-comments.tsx:151
 msgid "Be the first to comment on this page."
 msgstr "Бұл бетке бірінші болып пікір қалдырыңыз."
 
@@ -521,7 +521,6 @@ msgstr "Браузер хабарландырулары"
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:188
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
-#: src/features/wiki/comment-form.tsx:129
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
 #: src/features/wiki/page-editor.tsx:389
@@ -531,7 +530,7 @@ msgstr "Браузер хабарландырулары"
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:147
-#: src/features/wiki/wiki-comment-thread.tsx:146
+#: src/features/wiki/wiki-comment-thread.tsx:205
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
 #: src/features/wiki/wiki-settings.tsx:1065
@@ -539,16 +538,20 @@ msgstr "Браузер хабарландырулары"
 msgid "Cancel"
 msgstr "Болдырмау"
 
-#: src/features/wiki/wiki-comment-thread.tsx:294
+#: src/features/wiki/comment-form.tsx:160
+msgid "Cancel comment"
+msgstr "Пікірден бас тарту"
+
+#: src/features/wiki/wiki-comment-thread.tsx:342
 msgid "Cancel reply"
 msgstr "Жауаптан бас тарту"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:143
+#: ../../../lib/web/src/components/notification-category-button.tsx:146
 msgid "Category for this notification"
 msgstr "Осы хабарландырудың санаты"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:124
-#: ../../../lib/web/src/components/notification-category-button.tsx:135
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
+#: ../../../lib/web/src/components/notification-category-button.tsx:138
 msgid "Change notification category"
 msgstr "Хабарландыру санатын өзгерту"
 
@@ -891,8 +894,8 @@ msgstr "Әдепкі AI тіркелгісі"
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:638
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:218
-#: src/features/wiki/wiki-comment-thread.tsx:316
+#: src/features/wiki/wiki-comment-thread.tsx:277
+#: src/features/wiki/wiki-comment-thread.tsx:368
 #: src/features/wiki/wiki-page-content.tsx:306
 #: src/features/wiki/wiki-settings.tsx:957
 msgid "Delete"
@@ -915,7 +918,7 @@ msgstr "\"{0}\" жою керек пе? Бұны қайтару мүмкін е�
 msgid "Delete attachment"
 msgstr "Тіркемені жою"
 
-#: src/features/wiki/wiki-comment-thread.tsx:314
+#: src/features/wiki/wiki-comment-thread.tsx:366
 msgid "Delete comment"
 msgstr "Пікірді жою"
 
@@ -1010,6 +1013,14 @@ msgstr "Бағыт"
 msgid "Directory"
 msgstr "Каталог"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:300
+msgid "Discard"
+msgstr "Алып тастау"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:298
+msgid "Discard draft?"
+msgstr "Жобаны алып тастау керек пе?"
+
 #: ../../../lib/web/src/lib/chat-ui.ts:25
 #: ../../../lib/web/src/lib/chat-ui.ts:29
 msgid "Disconnected"
@@ -1046,7 +1057,7 @@ msgid "Dyslexia-friendly"
 msgstr "Дислексияға бейімделген"
 
 #: src/features/wiki/page-editor.tsx:334
-#: src/features/wiki/wiki-comment-thread.tsx:207
+#: src/features/wiki/wiki-comment-thread.tsx:266
 #: src/features/wiki/wiki-page-content.tsx:280
 #: src/routes/_authenticated/$page/index.tsx:202
 #: src/routes/_authenticated/index.tsx:423
@@ -1303,7 +1314,7 @@ msgstr "Жазылудан бас тарту сәтсіз аяқталды"
 msgid "Failed to update access level"
 msgstr "Кіру деңгейін жаңарту сәтсіз аяқталды"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:111
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Failed to update category"
 msgstr "Санатты жаңарту сәтсіз аяқталды"
 
@@ -1464,7 +1475,7 @@ msgstr "Идентификатор"
 msgid "Identity"
 msgstr "Жеке басы"
 
-#: src/features/wiki/markdown-content.tsx:111
+#: src/features/wiki/markdown-content.tsx:119
 msgid "Image"
 msgstr "Сурет"
 
@@ -1581,7 +1592,7 @@ msgstr "Ашық"
 msgid "Link"
 msgstr "Сілтеме"
 
-#: src/features/wiki/markdown-content.tsx:159
+#: src/features/wiki/markdown-content.tsx:167
 msgid "Link to {headingText}"
 msgstr "{headingText} сілтемесі"
 
@@ -1759,7 +1770,7 @@ msgstr "Тіркемелер әлі жоқ"
 msgid "No changes yet"
 msgstr "Өзгерістер әлі жоқ"
 
-#: src/features/wiki/page-comments.tsx:103
+#: src/features/wiki/page-comments.tsx:150
 msgid "No comments yet"
 msgstr "Әлі пікірлер жоқ"
 
@@ -1831,7 +1842,7 @@ msgstr "Тегтер табылмады"
 msgid "No time zone found."
 msgstr "Уақыт белдеуі табылмады."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:147
+#: ../../../lib/web/src/components/notification-category-button.tsx:150
 msgid "No topic record yet — try again after the next notification."
 msgstr "Тақырып жазбасы әлі жоқ — келесі хабарландырудан кейін қайталап көріңіз."
 
@@ -2039,6 +2050,7 @@ msgstr "Бұл wiki-ді және оның барлық мазмұнын бір�
 msgid "Pick a date"
 msgstr "Күнді таңдаңыз"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:95
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:304
 msgid "Please check your internet connection and try again."
@@ -2174,9 +2186,9 @@ msgstr "Қатысты (5м, 3с, 2к)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "24 сағат ішінде салыстырмалы, әйтпесе абсолютті"
 
+#: ../../../lib/web/src/components/comment-composer.tsx:232
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/features/wiki/comment-form.tsx:101
 #: src/features/wiki/tag-manager.tsx:108
 #: src/features/wiki/tag-manager.tsx:113
 #: src/features/wiki/wiki-settings.tsx:794
@@ -2202,10 +2214,6 @@ msgstr "\"{0}\" үшін қатынау ережесі жойылсын ба?"
 #: ../../../lib/web/src/features/access/access-list.tsx:262
 msgid "Remove access?"
 msgstr "Қатынауды жою керек пе?"
-
-#: src/features/wiki/wiki-comment-thread.tsx:263
-msgid "Remove file"
-msgstr "Файлды жою"
 
 #: ../../../lib/web/src/components/post-tags.tsx:220
 #: ../../../lib/web/src/components/post-tags.tsx:232
@@ -2276,12 +2284,12 @@ msgstr "Wiki репликасын жасау"
 msgid "Replicating..."
 msgstr "Реплика жасалуда..."
 
-#: src/features/wiki/wiki-comment-thread.tsx:194
+#: src/features/wiki/wiki-comment-thread.tsx:253
 msgid "Reply"
 msgstr "Жауап беру"
 
 #. placeholder {0}: comment.name || comment.author
-#: src/features/wiki/wiki-comment-thread.tsx:228
+#: src/features/wiki/wiki-comment-thread.tsx:293
 msgid "Reply to {0}..."
 msgstr "{0} жауап беру..."
 
@@ -2306,6 +2314,10 @@ msgstr "{title} қалпына келтіру"
 #: ../../../lib/web/src/components/config-drawer.tsx:85
 msgid "Reset all settings to default values"
 msgstr "Барлық параметрлерді әдепкі мәндерге қайтару"
+
+#: ../../../lib/web/src/components/comment-composer.tsx:249
+msgid "Retry"
+msgstr "Қайталап көру"
 
 #: src/features/wiki/revert-page.tsx:105
 msgid "Revert"
@@ -2381,7 +2393,7 @@ msgstr "Сенбі"
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:400
-#: src/features/wiki/wiki-comment-thread.tsx:166
+#: src/features/wiki/wiki-comment-thread.tsx:225
 msgid "Save"
 msgstr "Сақтау"
 
@@ -2544,7 +2556,7 @@ msgstr "Таңдалған: <0>{0}</0>"
 msgid "Send again"
 msgstr "Қайта жіберу"
 
-#: src/features/wiki/comment-form.tsx:137
+#: src/features/wiki/comment-form.tsx:170
 msgid "Send comment"
 msgstr "Пікір жіберу"
 
@@ -2552,7 +2564,7 @@ msgstr "Пікір жіберу"
 msgid "Send email"
 msgstr "Электрондық пошта жіберу"
 
-#: src/features/wiki/wiki-comment-thread.tsx:303
+#: src/features/wiki/wiki-comment-thread.tsx:351
 msgid "Send reply"
 msgstr "Жауап жіберу"
 
@@ -2989,7 +3001,7 @@ msgstr "Қашықтағы серверге қосылу мүмкін болма
 msgid "Unable to redirect to login. Please try again."
 msgstr "Кіру бетіне қайта бағыттау мүмкін болмады. Қайталап көріңіз."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:155
+#: ../../../lib/web/src/components/notification-category-button.tsx:158
 msgid "Unassigned"
 msgstr "Тағайындалмаған"
 
@@ -3007,7 +3019,7 @@ msgid "United States"
 msgstr "Америка Құрама Штаттары"
 
 #: ../../../lib/web/src/features/accounts/types.ts:29
-#: src/features/wiki/wiki-comment-thread.tsx:90
+#: src/features/wiki/wiki-comment-thread.tsx:149
 msgid "Unknown"
 msgstr "Белгісіз"
 
@@ -3287,7 +3299,7 @@ msgstr "Wiki синхрондалды"
 msgid "Wikis"
 msgstr "Wiki-лер"
 
-#: src/features/wiki/page-comments.tsx:98
+#: src/features/wiki/page-comments.tsx:145
 msgid "Write a comment..."
 msgstr "Пікір жазу..."
 
@@ -3322,3 +3334,15 @@ msgstr "Барлығын көрдіңіз!"
 #: ../../../lib/web/src/components/restore-banner.tsx:91
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Тіркелгіңіз {source} жерінен осында ауыстырылды. Сіз оны сол жерден жоймайынша, хабарлар мен хабарландырулар екі серверге де жетуі мүмкін, кейбір мазмұныңыз ескі серверден берілуін жалғастырады, ал жазылушылар сізді осында табу үшін бірнеше минут кетуі мүмкін."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:291
+msgid "Your attachments will be lost."
+msgstr "Тіркемелеріңіз жоғалады."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:289
+msgid "Your text and attachments will be lost."
+msgstr "Мәтініңіз бен тіркемелеріңіз жоғалады."
+
+#: ../../../lib/web/src/components/comment-composer.tsx:292
+msgid "Your text will be lost."
+msgstr "Мәтініңіз жоғалады."
