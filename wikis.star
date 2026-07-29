@@ -3445,15 +3445,26 @@ def event_attachment_create(e):
             attachment_id, replica, response.get("error") if response else "no response")
         return
 
-    # Get replicas for notification (excluding the one who uploaded)
-    replicas = mochi.db.rows("select id from replicas where wiki=? and id!=?", wiki, replica)
-    recipients = [r["id"] for r in replicas]
-
     # Stream directly to attachment storage with the original ID (no temp file needed)
-    attachment = mochi.attachment.create.stream(wiki, name, stream, content_type, "", "", recipients, attachment_id)
+    attachment = mochi.attachment.create.stream(wiki, name, stream, content_type, "", "", attachment_id)
 
     if attachment:
         mochi.log.debug("Created attachment %s from replica %s", attachment_id, replica)
+        # Tell the other replicas through this app's own event, the same way an
+        # upload here does, rather than through a fan-out from the server. The
+        # handler checks the sender's edit access before storing; the server's
+        # path checked nothing, so anyone able to reach it could place a row.
+        # The replica that supplied the file already has it.
+        broadcast_event(wiki, "attachment/add", {
+            "attachments": [{
+                "id": attachment["id"],
+                "name": attachment["name"],
+                "size": attachment["size"],
+                "content_type": attachment.get("type") or attachment.get("content_type", ""),
+                "rank": attachment.get("rank", 0),
+                "created": attachment.get("created", 0),
+            }],
+        }, exclude=replica)
         notify_websocket(wiki)
 
 # Handle attachment/delete event - replica notifies source that they deleted an attachment
@@ -3496,7 +3507,7 @@ def event_attachment_delete(e):
         return
 
     # Delete locally and broadcast removal to other replicas
-    mochi.attachment.delete(attachment_id, [])
+    mochi.attachment.delete(attachment_id)
     broadcast_event(wiki, "attachment/remove", {"id": attachment_id}, exclude=sender)
     mochi.log.debug("Deleted attachment %s from replica %s", attachment_id, sender)
     notify_websocket(wiki)
@@ -3598,7 +3609,7 @@ def event_attachment_remove(e):
         if att:
             obj = att.get("object")
             if obj == wiki or mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
-                mochi.attachment.delete(attachment_id, [])
+                mochi.attachment.delete(attachment_id)
 
     notify_websocket(wiki)
 
@@ -4075,7 +4086,7 @@ def action_comment_create(a):
         id, wiki["id"], slug, parent, author, name, body, now, signature)
 
     # Save attachments (no push notification — metadata piggybacked on event)
-    attachments = mochi.attachment.save(id, "files", [], [], []) or []
+    attachments = mochi.attachment.save(id, "files", [], []) or []
     source = wiki.get("source")
 
     data = {
@@ -4565,7 +4576,7 @@ def action_attachment_upload(a):
     source = wiki.get("source")
     if source:
         # Save attachment locally first (immediately available)
-        attachments = mochi.attachment.save(wiki["id"], "files", [], [], [])
+        attachments = mochi.attachment.save(wiki["id"], "files", [], [])
         if not attachments:
             a.error.label(400, "errors.no_files_uploaded")
             return
@@ -4588,7 +4599,7 @@ def action_attachment_upload(a):
         return {"data": {"attachments": attachments}}
 
     # Save uploaded attachments (no push notification — metadata piggybacked)
-    attachments = mochi.attachment.save(wiki["id"], "files", [], [], [])
+    attachments = mochi.attachment.save(wiki["id"], "files", [], [])
 
     if not attachments:
         a.error.label(400, "errors.no_files_uploaded")
@@ -4643,7 +4654,7 @@ def action_attachment_delete(a):
         return
 
     # Delete locally (no push notification — metadata piggybacked)
-    if not mochi.attachment.delete(id, []):
+    if not mochi.attachment.delete(id):
         a.error.label(404, "errors.attachment_not_found")
         return
 
