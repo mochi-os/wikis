@@ -3,9 +3,9 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { MessageSquare } from 'lucide-react'
-import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage, textUnchanged, findCommentTextInTree } from '@mochi/web'
+import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage, textUnchanged, findCommentTextInTree, useDiscardGuard } from '@mochi/web'
 import {
   usePageComments,
   useCreateComment,
@@ -31,29 +31,76 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
 
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [replyDraft, setReplyDraft] = useState('')
+  const [replyFileCount, setReplyFileCount] = useState(0)
+  const pendingReplyTarget = useRef<string | null>(null)
 
-  const handleCreate = (body: string, files?: File[]) => {
-    createComment.mutate(
-      { slug, body, files },
-      {
-        onError: (err) => toast.error(getErrorMessage(err)),
+  const startReply = useCallback((commentId: string) => {
+    setReplyingTo(commentId)
+    setReplyFileCount(0)
+    const selected = window.getSelection()?.toString().trim()
+    if (selected) {
+      const quoted = selected.split('\n').map((line) => `> ${line}`).join('\n') + '\n\n'
+      setReplyDraft(quoted)
+    } else {
+      setReplyDraft('')
+    }
+  }, [])
+
+  const cancelReply = useCallback(() => {
+    setReplyingTo(null)
+    setReplyDraft('')
+    setReplyFileCount(0)
+  }, [])
+
+  // Opening another comment's reply box throws the current draft away, so it
+  // asks first, exactly like closing the box does. The guard lives here rather
+  // than in the thread because the comment being replied to is not the one
+  // whose Reply button was clicked.
+  const { requestClose: requestReplySwitch, discardDialog: replySwitchDialog } =
+    useDiscardGuard({
+      hasText: replyDraft.trim().length > 0,
+      hasFiles: replyFileCount > 0,
+      onDiscard: () => {
+        const next = pendingReplyTarget.current
+        pendingReplyTarget.current = null
+        if (next) startReply(next)
+        else cancelReply()
+      },
+    })
+
+  const handleStartReply = useCallback(
+    (commentId: string) => {
+      if (replyingTo && replyingTo !== commentId) {
+        pendingReplyTarget.current = commentId
+        requestReplySwitch()
+        return
       }
-    )
+      startReply(commentId)
+    },
+    [replyingTo, requestReplySwitch, startReply]
+  )
+
+  const handleCreate = async (body: string, files?: File[]) => {
+    try {
+      await createComment.mutateAsync({ slug, body, files })
+    } catch (err) {
+      toast.error(getErrorMessage(err))
+      throw err
+    }
   }
 
-  const handleReply = (parentId: string, files?: File[]) => {
+  const handleReply = async (parentId: string, files?: File[]) => {
     const body = replyDraft.trim()
     if (!body) return
-    createComment.mutate(
-      { slug, body, parent: parentId, files },
-      {
-        onSuccess: () => {
-          setReplyingTo(null)
-          setReplyDraft('')
-        },
-        onError: (err) => toast.error(getErrorMessage(err)),
-      }
-    )
+    try {
+      await createComment.mutateAsync({ slug, body, parent: parentId, files })
+      setReplyingTo(null)
+      setReplyDraft('')
+    } catch (err) {
+      // Leave the form open with its draft and files so the thread can retry.
+      toast.error(getErrorMessage(err))
+      throw err
+    }
   }
 
   const handleEdit = (commentId: string, body: string) => {
@@ -114,21 +161,10 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
               isOwner={isOwner}
               replyingTo={replyingTo}
               replyDraft={replyDraft}
-              onStartReply={(id) => {
-                setReplyingTo(id)
-                const selected = window.getSelection()?.toString().trim()
-                if (selected) {
-                  const quoted = selected.split('\n').map((line) => `> ${line}`).join('\n') + '\n\n'
-                  setReplyDraft(quoted)
-                } else {
-                  setReplyDraft('')
-                }
-              }}
-              onCancelReply={() => {
-                setReplyingTo(null)
-                setReplyDraft('')
-              }}
+              onStartReply={handleStartReply}
+              onCancelReply={cancelReply}
               onReplyDraftChange={setReplyDraft}
+              onReplyFilesChange={setReplyFileCount}
               onSubmitReply={handleReply}
               onEdit={canComment ? handleEdit : undefined}
               onDelete={canComment ? handleDelete : undefined}
@@ -136,6 +172,7 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
           ))}
         </div>
       )}
+      {replySwitchDialog}
     </div>
   )
 }
