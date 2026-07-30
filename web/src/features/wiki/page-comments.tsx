@@ -142,7 +142,7 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
   return (
     <div className="space-y-4">
       {canComment && (
-        <CommentForm onSubmit={handleCreate} placeholder={t`Write a comment...`} />
+        <CommentForm onSubmit={handleCreate} placeholder={t`Write a comment...`} progress={createComment.progress} />
       )}
       {comments.length === 0 ? (
         <EmptyState
@@ -168,6 +168,7 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
               onSubmitReply={handleReply}
               onEdit={canComment ? handleEdit : undefined}
               onDelete={canComment ? handleDelete : undefined}
+              progress={createComment.progress}
             />
           ))}
         </div>

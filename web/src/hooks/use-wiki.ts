@@ -4,6 +4,7 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { AxiosProgressEvent } from 'axios'
 import type {
   PageResponse,
   PageNotFoundResponse,
@@ -34,7 +35,7 @@ import type {
   WikiPermissions,
 } from '@/types/wiki'
 import endpoints from '@/api/endpoints'
-import { requestHelpers, MUTATION_SKIPPED, isMutationSkipped, textUnchanged, type MutationFnResult } from '@mochi/web'
+import { requestHelpers, MUTATION_SKIPPED, isMutationSkipped, textUnchanged, useUploadProgress, type MutationFnResult } from '@mochi/web'
 import { wikisRequest } from '@/api/request'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 
@@ -426,7 +427,8 @@ export function usePageComments(slug: string) {
 export function useCreateComment() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
-  return useMutation({
+  const { progress, upload } = useUploadProgress()
+  const mutation = useMutation({
     mutationFn: (data: { slug: string; body: string; parent?: string; files?: FileList | File[] }) => {
       const formData = new FormData()
       formData.append('body', data.body)
@@ -436,10 +438,14 @@ export function useCreateComment() {
           formData.append('files', file)
         })
       }
-      return requestHelpers.post<CommentCreateResponse>(
-        e(endpoints.wiki.commentCreate(data.slug)),
-        formData
-      )
+      const post = (onProgress?: (event: AxiosProgressEvent) => void) =>
+        requestHelpers.post<CommentCreateResponse>(
+          e(endpoints.wiki.commentCreate(data.slug)),
+          formData,
+          { onUploadProgress: onProgress }
+        )
+      // Only file-carrying comments track upload progress.
+      return data.files?.length ? upload(post) : post()
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
@@ -449,6 +455,7 @@ export function useCreateComment() {
       })
     },
   })
+  return { ...mutation, progress }
 }
 
 export function useEditComment() {
@@ -515,26 +522,31 @@ export function useAttachments() {
 export function useUploadAttachment() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
-  return useMutation({
+  const { progress, upload } = useUploadProgress()
+  const mutation = useMutation({
     mutationFn: (files: FileList | File[]) => {
       const formData = new FormData()
       Array.from(files).forEach((file) => {
         formData.append('files', file)
       })
-      return requestHelpers.post<AttachmentUploadResponse>(
-        e(endpoints.wiki.attachmentUpload),
-        formData,
-        {
-          mochi: {
-            showGlobalErrorToast: false,
-          },
-        }
+      return upload((onProgress) =>
+        requestHelpers.post<AttachmentUploadResponse>(
+          e(endpoints.wiki.attachmentUpload),
+          formData,
+          {
+            onUploadProgress: onProgress,
+            mochi: {
+              showGlobalErrorToast: false,
+            },
+          }
+        )
       )
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'attachments'] })
     },
   })
+  return { ...mutation, progress }
 }
 
 export function useDeleteAttachment() {

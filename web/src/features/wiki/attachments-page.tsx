@@ -51,6 +51,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  UploadProgress,
 } from '@mochi/web'
 import {
   useAttachments,
@@ -309,6 +310,8 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
           </Button>
         </div>
       </div>
+
+      <UploadProgress progress={uploadMutation.progress} />
 
       <Alert>
         <AlertTitle><Trans>Upload guidance</Trans></AlertTitle>

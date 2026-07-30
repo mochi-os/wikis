@@ -15,6 +15,8 @@ import {
   offlineBlocked,
   useComposerDrop,
   useDiscardGuard,
+  UploadProgress,
+  type Upload,
 } from '@mochi/web'
 import { Loader2, Paperclip, Send, X } from 'lucide-react'
 import { t } from '@lingui/core/macro'
@@ -25,9 +27,11 @@ interface CommentFormProps {
   onCancel?: () => void
   placeholder?: string
   autoFocus?: boolean
+  /** Byte progress of an in-flight comment upload */
+  progress?: Upload | null
 }
 
-export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: CommentFormProps) {
+export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus, progress }: CommentFormProps) {
   const [body, setBody] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -131,6 +135,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus }: Comm
         // Retry sends the draft, so it is only offered while there is one.
         onRetry={body.trim() ? () => void handleSubmit() : undefined}
       />
+      {isSubmitting && <UploadProgress progress={progress ?? null} />}
       <div className="flex items-center justify-end gap-2">
         <SendShortcutHint />
         <input

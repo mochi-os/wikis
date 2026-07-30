@@ -25,6 +25,8 @@ import {
   offlineBlocked,
   useComposerDrop,
   useDiscardGuard,
+  UploadProgress,
+  type Upload,
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
@@ -46,6 +48,8 @@ interface WikiCommentThreadProps {
   onSubmitReply: (commentId: string, files?: File[]) => void | Promise<void>
   onEdit?: (commentId: string, body: string) => void
   onDelete?: (commentId: string) => void
+  /** Byte progress of an in-flight reply upload */
+  progress?: Upload | null
   depth?: number
 }
 
@@ -63,6 +67,7 @@ export function WikiCommentThread({
   onSubmitReply,
   onEdit,
   onDelete,
+  progress,
   depth = 0,
 }: WikiCommentThreadProps) {
   const { formatTimestamp } = useFormat()
@@ -314,6 +319,7 @@ export function WikiCommentThread({
             // Retry sends the draft, so it is only offered while there is one.
             onRetry={replyDraft.trim() ? () => void handleSubmitReply() : undefined}
           />
+          {isSubmittingReply && <UploadProgress progress={progress ?? null} />}
           <div className="flex items-center justify-end gap-2">
             <SendShortcutHint />
             <input
@@ -394,6 +400,7 @@ export function WikiCommentThread({
           onSubmitReply={onSubmitReply}
           onEdit={onEdit}
           onDelete={onDelete}
+          progress={progress}
           depth={depth + 1}
         />
       ))}

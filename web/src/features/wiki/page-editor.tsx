@@ -38,6 +38,7 @@ import {
   TooltipContent,
   textChanged,
   isMutationSkipped,
+  UploadProgress,
 } from '@mochi/web'
 import {
   useEditPage,
@@ -536,6 +537,8 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
               <Trans>Upload new</Trans>
             </Button>
           </div>
+
+          <UploadProgress progress={uploadMutation.progress} />
 
           {uploadError ? (
             <Alert variant="destructive">
