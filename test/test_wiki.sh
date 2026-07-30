@@ -10,7 +10,7 @@
 set -e
 
 SCRIPT_DIR="$(dirname "$0")"
-CURL_HELPER="/home/alistair/mochi/test/claude/curl.sh"
+CURL_HELPER="/home/alistair/mochi/claude/scripts/curl.sh"
 
 PASSED=0
 FAILED=0
