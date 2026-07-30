@@ -4214,8 +4214,10 @@ def action_comment_delete(a):
         a.error.label(404, "errors.comment_not_found")
         return
 
-    # Only the author or wiki owner can delete
-    is_owner = bool(mochi.entity.get(wiki["id"]))
+    # Only the author or wiki owner can delete. a.owner is core's answer for the
+    # routed entity, computed against the authenticated caller - get_wiki(a)
+    # resolves that same route parameter, so this is the same wiki.
+    is_owner = a.owner
     if comment["author"] != a.user.identity.id and not is_owner:
         a.error.label(403, "errors.cannot_delete_others_comment")
         return
