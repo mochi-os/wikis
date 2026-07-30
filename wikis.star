@@ -84,6 +84,10 @@ def database_create():
     # but not outbound mochi.remote.request, so the app has to bound its own.
     mochi.db.execute("create table if not exists throttle (key text not null primary key, last integer not null)")
 
+    # Attachments now live in this database, owned by the shared library, rather
+    # than in core's managed store.
+    attachment_schema_create()
+
 def database_upgrade(version):
     # Schema 2: the replicas.peer column is gone - the core per-user directory
     # now carries the route to a private replica, so the owner no longer stores
@@ -158,6 +162,14 @@ def database_upgrade(version):
                 break
         if not found:
             mochi.db.execute("alter table comments add column signature text not null default ''")
+    # Schema 8: attachments move out of core's managed store into this app's own
+    # database, owned by the shared attachments library. Create the table and
+    # copy existing rows across the transition bridge. attachment_migrate aborts
+    # without advancing the version if the bridge is gone (a dormant user
+    # migrating after core's cleanup release), so the step retries later.
+    if version == 8:
+        attachment_schema_create()
+        attachment_migrate()
 
 # Helper: has this outbound operation run within `seconds`? Records the attempt
 # when it has not, so callers just guard on the return value.
@@ -1039,7 +1051,7 @@ def action_delete(a):
     mochi.db.execute("delete from wikis where id=?", wiki_id)
 
     # 9. Delete all attachments for this entity
-    mochi.attachment.clear(wiki_id)
+    attachment_clear(wiki_id)
 
     # 10. Clear access rules
     mochi.access.clear.resource("wiki/" + wiki_id)
@@ -2457,7 +2469,7 @@ def action_unsubscribe(a):
     mochi.db.execute("delete from wikis where id=?", wiki_id)
 
     # Clean up attachments, access rules, and entity registration
-    mochi.attachment.clear(wiki_id)
+    attachment_clear(wiki_id)
     mochi.access.clear.resource("wiki/" + wiki_id)
     mochi.entity.delete(wiki_id)
 
@@ -3331,11 +3343,11 @@ def event_sync(e):
     redirects = mochi.db.rows("select * from redirects where wiki=?", wiki)
     comments = mochi.db.rows("select * from comments where wiki=? and deleted=0", wiki)
     wikirow = mochi.db.row("select name, home from wikis where id=?", wiki)
-    attachments = mochi.attachment.list(wiki) or []
+    attachments = attachment_list(wiki) or []
 
     # Include comment-level attachments in each comment
     for c in comments:
-        c_atts = mochi.attachment.list(c["id"]) or []
+        c_atts = attachment_list(c["id"]) or []
         if c_atts:
             c["attachments"] = c_atts
 
@@ -3424,7 +3436,7 @@ def event_attachment_create(e):
             return
 
     # Check if we already have this attachment
-    if mochi.attachment.exists(attachment_id):
+    if attachment_exists(attachment_id):
         mochi.log.debug("attachment/create: attachment %s already exists, skipping", attachment_id)
         return
 
@@ -3452,7 +3464,7 @@ def event_attachment_create(e):
         return
 
     # Stream directly to attachment storage with the original ID (no temp file needed)
-    attachment = mochi.attachment.create.stream(wiki, name, stream, content_type, "", "", attachment_id)
+    attachment = attachment_receive(wiki, name, stream, content_type, attachment_id)
 
     if attachment:
         mochi.log.debug("Created attachment %s from replica %s", attachment_id, replica)
@@ -3505,7 +3517,7 @@ def event_attachment_delete(e):
     # resolves the id across the owner's whole wikis DB, so without this an
     # edit-replica of one wiki could delete another wiki's attachment by id.
     # Mirrors event_attachment_fetch / serve_attachment.
-    att = mochi.attachment.get(attachment_id)
+    att = attachment_get(attachment_id)
     if not att:
         return
     obj = att.get("object")
@@ -3513,57 +3525,23 @@ def event_attachment_delete(e):
         return
 
     # Delete locally and broadcast removal to other replicas
-    mochi.attachment.delete(attachment_id)
+    attachment_delete(attachment_id)
     broadcast_event(wiki, "attachment/remove", {"id": attachment_id}, exclude=sender)
     mochi.log.debug("Deleted attachment %s from replica %s", attachment_id, sender)
     notify_websocket(wiki)
 
 # Handle attachment/fetch event - serve attachment file data to requester via stream
 def event_attachment_fetch(e):
+    # The library runs the fixed responder sequence: it takes the requester from
+    # the signed header, authorizes it against this wiki, binds the requested
+    # attachment to the wiki (directly or via one of its comments) so a viewer of
+    # one wiki cannot pull a private sibling's attachment by id, and streams the
+    # bytes (or a rendered image variant). The two callbacks are this app's
+    # judgement: view access, and comment membership.
     wiki = e.header("to")
-    if not wiki:
-        e.write({"error": "errors.wiki_id_is_required", "code": 400})
-        return
-
-    # Check if requester has view access
-    requester = e.header("from")
-    if not check_event_access(requester, wiki, "view"):
-        e.write({"error": "errors.access_denied", "code": 403})
-        return
-
-    # Get attachment ID from event content (sent as second arg to mochi.stream)
-    attachment_id = e.content("id")
-    mochi.log.debug("attachment/fetch request for id=%s", attachment_id)
-    if not attachment_id:
-        e.write({"error": "errors.attachment_id_is_required", "code": 400})
-        return
-
-    # Bind the attachment to the requested wiki. The access check above only
-    # proved view access to `wiki`, but mochi.attachment.path resolves the id
-    # across the owner's whole wikis DB, so without this a viewer of one wiki
-    # could fetch a private sibling wiki's attachment by id. Mirrors the HTTP
-    # serve_attachment binding: attached to the wiki itself or one of its
-    # comments.
-    att = mochi.attachment.get(attachment_id)
-    if not att:
-        e.write({"error": "errors.attachment_not_found", "code": 404})
-        return
-    obj = att.get("object")
-    if obj != wiki and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
-        e.write({"error": "errors.attachment_not_found", "code": 404})
-        return
-
-    # Get the attachment file path
-    path = mochi.attachment.path(attachment_id)
-    mochi.log.debug("attachment/fetch path=%s", path)
-    if not path:
-        e.write({"error": "errors.attachment_not_found", "code": 404})
-        return
-
-    # Send success status, then file data
-    e.write({"status": "200"})
-    bytes_written = e.write.file(path)
-    mochi.log.debug("attachment/fetch sent %s bytes", bytes_written)
+    attachment_respond(e, wiki,
+        lambda sender, container: check_event_access(sender, container, "view"),
+        member=lambda object: mochi.db.exists("select 1 from comments where id=? and wiki=?", object, wiki))
 
 # P2P event: attachment/add — store remote attachment metadata (files pulled on demand)
 def event_attachment_add(e):
@@ -3585,7 +3563,7 @@ def event_attachment_add(e):
     attachments = e.content("attachments") or []
     if attachments:
         source = wikirow.get("source") or sender
-        mochi.attachment.store(attachments, source, wiki)
+        attachment_store(attachments, source, wiki)
 
     notify_websocket(wiki)
 
@@ -3611,11 +3589,11 @@ def event_attachment_remove(e):
         # Bind the attachment to this wiki before deleting (see
         # event_attachment_delete) so a colliding id can't reach another wiki's
         # attachment.
-        att = mochi.attachment.get(attachment_id)
+        att = attachment_get(attachment_id)
         if att:
             obj = att.get("object")
             if obj == wiki or mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
-                mochi.attachment.delete(attachment_id)
+                attachment_delete(attachment_id)
 
     notify_websocket(wiki)
 
@@ -3784,7 +3762,7 @@ def import_sync_dump(wiki, dump):
     if source:
         attachments = dump.get("attachments") or []
         if attachments:
-            mochi.attachment.store(attachments, source, wiki)
+            attachment_store(attachments, source, wiki)
         # Only for comments that actually landed under this wiki. core's
         # api_attachment_store performs no object validation and uses
         # `replace into`, so an unvalidated comment id would let a dump inject
@@ -3793,7 +3771,7 @@ def import_sync_dump(wiki, dump):
         for c in imported_comments:
             c_atts = c.get("attachments") or []
             if c_atts:
-                mochi.attachment.store(c_atts, source, c.get("id"))
+                attachment_store(c_atts, source, c.get("id"))
 
     notify_websocket(wiki)
     return True
@@ -3928,7 +3906,7 @@ def page_comments(wiki_id, page_slug, limit, offset):
             continue
         seen[node["id"]] = True
         node["markdown"] = mochi.text.markdown(node["body"])
-        node["attachments"] = mochi.attachment.list(node["id"], wiki_id) or []
+        node["attachments"] = attachment_list(node["id"], wiki_id) or []
         kids = []
         if depth < 100:
             for k in by_parent.get(node["id"], []):
@@ -3959,8 +3937,8 @@ def delete_comment_tree(comment_id, wiki_id):
             pending.append(child["id"])
         i += 1
     for cid in pending:
-        for att in (mochi.attachment.list(cid, wiki_id) or []):
-            mochi.attachment.delete(att["id"])
+        for att in (attachment_list(cid, wiki_id) or []):
+            attachment_delete(att["id"])
         mochi.db.execute("delete from comments where id=? and wiki=?", cid, wiki_id)
 
 # List comments for a page
@@ -4092,7 +4070,7 @@ def action_comment_create(a):
         id, wiki["id"], slug, parent, author, name, body, now, signature)
 
     # Save attachments (no push notification — metadata piggybacked on event)
-    attachments = mochi.attachment.save(id, "files", [], []) or []
+    attachments = attachment_save(a, id) or []
     source = wiki.get("source")
 
     data = {
@@ -4331,7 +4309,7 @@ def event_comment_create(e):
     attachments = e.content("attachments") or []
     source = wikirow.get("source") or sender
     if attachments:
-        mochi.attachment.store(attachments, source, id)
+        attachment_store(attachments, source, id)
 
     # Re-broadcast if we are the source wiki. Every field here is repeated
     # exactly as signed, including the original parent, so downstream replicas
@@ -4519,29 +4497,18 @@ def serve_attachment(a, variant):
         a.error.label(404, "errors.attachment_not_found")
         return
 
-    # The gate and the binding both run for wikis we own AND for replicas.
-    # Never defer to "the source enforces access when a.write.attachment
-    # fetches over P2P": that holds only until the bytes are cached locally,
-    # after which core serves them from disk and the source is never consulted
-    # again - so a revoked or deleted source keeps serving.
-    # check_access derives its subject from a.user, so an anonymous caller is
-    # tested against the "*" grant alone: a public wiki carries it (granted at
-    # creation, and mirrored onto a replica by action_join only when the source
-    # is public), a private wiki does not.
-    if not check_access(a, wiki["id"], "view"):
-        a.error.label(403, "errors.access_denied")
-        return
-
-    att = mochi.attachment.get(attachment)
-    if not att:
-        a.error.label(404, "errors.attachment_not_found")
-        return
-    obj = att.get("object")
-    if obj != wiki["id"] and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki["id"]):
-        a.error.label(404, "errors.attachment_not_found")
-        return
-
-    a.write.attachment(attachment, variant=variant)
+    # The library serves the bytes with no access check of its own, so this
+    # handler is the gate: it binds the attachment to this wiki (directly or via
+    # one of its comments) and passes the view-access callback. The gate and the
+    # binding both run for wikis we own AND for replicas - never defer to "the
+    # source enforces access on pull": a revoked or deleted source would keep a
+    # locally-cached copy serving. check_access derives its subject from a.user,
+    # so an anonymous caller is tested against the "*" grant alone (a public wiki
+    # carries it, a private wiki does not).
+    attachment_serve(a, attachment, wiki["id"],
+        lambda container: check_access(a, container, "view"),
+        variant=variant,
+        member=lambda object: mochi.db.exists("select 1 from comments where id=? and wiki=?", object, wiki["id"]))
 
 # List all wiki attachments
 def action_attachments(a):
@@ -4556,9 +4523,9 @@ def action_attachments(a):
 
     # For replica wikis, list attachments from both source and local entity
     source = wiki.get("source")
-    attachments = list(mochi.attachment.list(wiki["id"], wiki["id"]) or [])
+    attachments = list(attachment_list(wiki["id"], wiki["id"]) or [])
     if source and source != wiki["id"]:
-        source_attachments = mochi.attachment.list(source, wiki["id"]) or []
+        source_attachments = attachment_list(source, wiki["id"]) or []
         existing = {a["id"]: True for a in attachments}
         for sa in source_attachments:
             if sa["id"] not in existing:
@@ -4584,7 +4551,7 @@ def action_attachment_upload(a):
     source = wiki.get("source")
     if source:
         # Save attachment locally first (immediately available)
-        attachments = mochi.attachment.save(wiki["id"], "files", [], [])
+        attachments = attachment_save(a, wiki["id"])
         if not attachments:
             a.error.label(400, "errors.no_files_uploaded")
             return
@@ -4607,7 +4574,7 @@ def action_attachment_upload(a):
         return {"data": {"attachments": attachments}}
 
     # Save uploaded attachments (no push notification — metadata piggybacked)
-    attachments = mochi.attachment.save(wiki["id"], "files", [], [])
+    attachments = attachment_save(a, wiki["id"])
 
     if not attachments:
         a.error.label(400, "errors.no_files_uploaded")
@@ -4652,7 +4619,7 @@ def action_attachment_delete(a):
     # owner, including private ones they cannot view. Matches the binding
     # event_attachment_delete, event_attachment_remove, event_attachment_fetch
     # and serve_attachment all apply.
-    att = mochi.attachment.get(id)
+    att = attachment_get(id)
     if not att:
         a.error.label(404, "errors.attachment_not_found")
         return
@@ -4662,7 +4629,7 @@ def action_attachment_delete(a):
         return
 
     # Delete locally (no push notification — metadata piggybacked)
-    if not mochi.attachment.delete(id):
+    if not attachment_delete(id):
         a.error.label(404, "errors.attachment_not_found")
         return
 
