@@ -11,10 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as errors401RouteImport } from './routes/(errors)/401'
-import { Route as errors403RouteImport } from './routes/(errors)/403'
-import { Route as errors404RouteImport } from './routes/(errors)/404'
-import { Route as errors500RouteImport } from './routes/(errors)/500'
-import { Route as errors503RouteImport } from './routes/(errors)/503'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedWikiIdRouteRouteImport } from './routes/_authenticated/$wikiId/route'
 import { Route as AuthenticatedChangesRouteImport } from './routes/_authenticated/changes'
@@ -36,7 +32,6 @@ import { Route as AuthenticatedWikiIdChangesRouteImport } from './routes/_authen
 import { Route as AuthenticatedWikiIdNewRouteImport } from './routes/_authenticated/$wikiId/new'
 import { Route as AuthenticatedWikiIdSearchRouteImport } from './routes/_authenticated/$wikiId/search'
 import { Route as AuthenticatedWikiIdSettingsRouteImport } from './routes/_authenticated/$wikiId/settings'
-import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedTagTagRouteImport } from './routes/_authenticated/tag/$tag'
 import { Route as AuthenticatedPageHistoryIndexRouteImport } from './routes/_authenticated/$page/history/index'
 import { Route as AuthenticatedPageHistoryVersionRouteImport } from './routes/_authenticated/$page/history/$version'
@@ -56,26 +51,6 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const errors401Route = errors401RouteImport.update({
   id: '/(errors)/401',
   path: '/401',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const errors403Route = errors403RouteImport.update({
-  id: '/(errors)/403',
-  path: '/403',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const errors404Route = errors404RouteImport.update({
-  id: '/(errors)/404',
-  path: '/404',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const errors500Route = errors500RouteImport.update({
-  id: '/(errors)/500',
-  path: '/500',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const errors503Route = errors503RouteImport.update({
-  id: '/(errors)/503',
-  path: '/503',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
@@ -190,12 +165,6 @@ const AuthenticatedWikiIdSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedWikiIdRouteRoute,
   } as any)
-const AuthenticatedErrorsErrorRoute =
-  AuthenticatedErrorsErrorRouteImport.update({
-    id: '/errors/$error',
-    path: '/errors/$error',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedTagTagRoute = AuthenticatedTagTagRouteImport.update({
   id: '/tag/$tag',
   path: '/tag/$tag',
@@ -266,10 +235,6 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/$wikiId': typeof AuthenticatedWikiIdRouteRouteWithChildren
   '/401': typeof errors401Route
-  '/403': typeof errors403Route
-  '/404': typeof errors404Route
-  '/500': typeof errors500Route
-  '/503': typeof errors503Route
   '/changes': typeof AuthenticatedChangesRoute
   '/find': typeof AuthenticatedFindRoute
   '/join': typeof AuthenticatedJoinRoute
@@ -287,7 +252,6 @@ export interface FileRoutesByFullPath {
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/$wikiId/search': typeof AuthenticatedWikiIdSearchRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
-  '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
   '/$page/': typeof AuthenticatedPageIndexRoute
   '/$wikiId/': typeof AuthenticatedWikiIdIndexRoute
@@ -304,10 +268,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/401': typeof errors401Route
-  '/403': typeof errors403Route
-  '/404': typeof errors404Route
-  '/500': typeof errors500Route
-  '/503': typeof errors503Route
   '/changes': typeof AuthenticatedChangesRoute
   '/find': typeof AuthenticatedFindRoute
   '/join': typeof AuthenticatedJoinRoute
@@ -326,7 +286,6 @@ export interface FileRoutesByTo {
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/$wikiId/search': typeof AuthenticatedWikiIdSearchRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
-  '/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
   '/$page': typeof AuthenticatedPageIndexRoute
   '/$wikiId': typeof AuthenticatedWikiIdIndexRoute
@@ -346,10 +305,6 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/$wikiId': typeof AuthenticatedWikiIdRouteRouteWithChildren
   '/(errors)/401': typeof errors401Route
-  '/(errors)/403': typeof errors403Route
-  '/(errors)/404': typeof errors404Route
-  '/(errors)/500': typeof errors500Route
-  '/(errors)/503': typeof errors503Route
   '/_authenticated/changes': typeof AuthenticatedChangesRoute
   '/_authenticated/find': typeof AuthenticatedFindRoute
   '/_authenticated/join': typeof AuthenticatedJoinRoute
@@ -368,7 +323,6 @@ export interface FileRoutesById {
   '/_authenticated/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/_authenticated/$wikiId/search': typeof AuthenticatedWikiIdSearchRoute
   '/_authenticated/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
-  '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
   '/_authenticated/tag/$tag': typeof AuthenticatedTagTagRoute
   '/_authenticated/$page/': typeof AuthenticatedPageIndexRoute
   '/_authenticated/$wikiId/': typeof AuthenticatedWikiIdIndexRoute
@@ -389,10 +343,6 @@ export interface FileRouteTypes {
     | '/'
     | '/$wikiId'
     | '/401'
-    | '/403'
-    | '/404'
-    | '/500'
-    | '/503'
     | '/changes'
     | '/find'
     | '/join'
@@ -410,7 +360,6 @@ export interface FileRouteTypes {
     | '/$wikiId/new'
     | '/$wikiId/search'
     | '/$wikiId/settings'
-    | '/errors/$error'
     | '/tag/$tag'
     | '/$page/'
     | '/$wikiId/'
@@ -427,10 +376,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/401'
-    | '/403'
-    | '/404'
-    | '/500'
-    | '/503'
     | '/changes'
     | '/find'
     | '/join'
@@ -449,7 +394,6 @@ export interface FileRouteTypes {
     | '/$wikiId/new'
     | '/$wikiId/search'
     | '/$wikiId/settings'
-    | '/errors/$error'
     | '/tag/$tag'
     | '/$page'
     | '/$wikiId'
@@ -468,10 +412,6 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_authenticated/$wikiId'
     | '/(errors)/401'
-    | '/(errors)/403'
-    | '/(errors)/404'
-    | '/(errors)/500'
-    | '/(errors)/503'
     | '/_authenticated/changes'
     | '/_authenticated/find'
     | '/_authenticated/join'
@@ -490,7 +430,6 @@ export interface FileRouteTypes {
     | '/_authenticated/$wikiId/new'
     | '/_authenticated/$wikiId/search'
     | '/_authenticated/$wikiId/settings'
-    | '/_authenticated/errors/$error'
     | '/_authenticated/tag/$tag'
     | '/_authenticated/$page/'
     | '/_authenticated/$wikiId/'
@@ -509,10 +448,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   errors401Route: typeof errors401Route
-  errors403Route: typeof errors403Route
-  errors404Route: typeof errors404Route
-  errors500Route: typeof errors500Route
-  errors503Route: typeof errors503Route
 }
 
 declare module '@tanstack/react-router' {
@@ -529,34 +464,6 @@ declare module '@tanstack/react-router' {
       path: '/401'
       fullPath: '/401'
       preLoaderRoute: typeof errors401RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(errors)/403': {
-      id: '/(errors)/403'
-      path: '/403'
-      fullPath: '/403'
-      preLoaderRoute: typeof errors403RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(errors)/404': {
-      id: '/(errors)/404'
-      path: '/404'
-      fullPath: '/404'
-      preLoaderRoute: typeof errors404RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(errors)/500': {
-      id: '/(errors)/500'
-      path: '/500'
-      fullPath: '/500'
-      preLoaderRoute: typeof errors500RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(errors)/503': {
-      id: '/(errors)/503'
-      path: '/503'
-      fullPath: '/503'
-      preLoaderRoute: typeof errors503RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -706,13 +613,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWikiIdSettingsRouteImport
       parentRoute: typeof AuthenticatedWikiIdRouteRoute
     }
-    '/_authenticated/errors/$error': {
-      id: '/_authenticated/errors/$error'
-      path: '/errors/$error'
-      fullPath: '/errors/$error'
-      preLoaderRoute: typeof AuthenticatedErrorsErrorRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/tag/$tag': {
       id: '/_authenticated/tag/$tag'
       path: '/tag/$tag'
@@ -850,7 +750,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPageDeleteRoute: typeof AuthenticatedPageDeleteRoute
   AuthenticatedPageEditRoute: typeof AuthenticatedPageEditRoute
   AuthenticatedPageRevertRoute: typeof AuthenticatedPageRevertRoute
-  AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
   AuthenticatedTagTagRoute: typeof AuthenticatedTagTagRoute
   AuthenticatedPageIndexRoute: typeof AuthenticatedPageIndexRoute
   AuthenticatedPageHistoryVersionRoute: typeof AuthenticatedPageHistoryVersionRoute
@@ -873,7 +772,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPageDeleteRoute: AuthenticatedPageDeleteRoute,
   AuthenticatedPageEditRoute: AuthenticatedPageEditRoute,
   AuthenticatedPageRevertRoute: AuthenticatedPageRevertRoute,
-  AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
   AuthenticatedTagTagRoute: AuthenticatedTagTagRoute,
   AuthenticatedPageIndexRoute: AuthenticatedPageIndexRoute,
   AuthenticatedPageHistoryVersionRoute: AuthenticatedPageHistoryVersionRoute,
@@ -886,10 +784,6 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   errors401Route: errors401Route,
-  errors403Route: errors403Route,
-  errors404Route: errors404Route,
-  errors500Route: errors500Route,
-  errors503Route: errors503Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
