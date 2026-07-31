@@ -1220,7 +1220,7 @@ def action_recommendations(a):
                 "id": entity_id,
                 "name": item.get("name", ""),
                 "blurb": item.get("blurb", ""),
-                "fingerprint": item.get("fingerprint", ""),
+                "fingerprint": mochi.entity.fingerprint(entity_id),
                 "server": rec_server,
             })
     s.close()
