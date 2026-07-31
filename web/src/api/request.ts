@@ -10,7 +10,14 @@
 import { type AxiosRequestConfig } from 'axios'
 import { getAppPath, requestHelpers } from '@mochi/web'
 
+// A protocol-relative URL ("//host/path") also starts with "/", and axios
+// treats it as absolute — so passing it through unchanged would send the
+// request off-origin. Scope it like any other relative URL instead.
 function toClassScopedUrl(url: string): string {
+  if (url.startsWith('//')) {
+    return `${getAppPath()}/${url.replace(/^\/+/, '')}`
+  }
+
   if (url.startsWith('/') || /^https?:\/\//.test(url)) {
     return url
   }
