@@ -4498,15 +4498,17 @@ def serve_attachment(a, variant):
         return
 
     # The library serves the bytes with no access check of its own, so this
-    # handler is the gate: it binds the attachment to this wiki (directly or via
-    # one of its comments) and passes the view-access callback. The gate and the
-    # binding both run for wikis we own AND for replicas - never defer to "the
-    # source enforces access on pull": a revoked or deleted source would keep a
-    # locally-cached copy serving. check_access derives its subject from a.user,
-    # so an anonymous caller is tested against the "*" grant alone (a public wiki
-    # carries it, a private wiki does not).
+    # handler is the gate: view access first, then the serve binds the
+    # attachment to this wiki (directly or via one of its comments). The gate
+    # and the binding both run for wikis we own AND for replicas - never defer
+    # to "the source enforces access on pull": a revoked or deleted source
+    # would keep a locally-cached copy serving. check_access derives its
+    # subject from a.user, so an anonymous caller is tested against the "*"
+    # grant alone (a public wiki carries it, a private wiki does not).
+    if not check_access(a, wiki["id"], "view"):
+        a.error.label(403, "attachment.errors.denied")
+        return
     attachment_serve(a, attachment, wiki["id"],
-        lambda container: check_access(a, container, "view"),
         variant=variant,
         member=lambda object: mochi.db.exists("select 1 from comments where id=? and wiki=?", object, wiki["id"]))
 
