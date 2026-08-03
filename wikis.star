@@ -167,7 +167,12 @@ def database_upgrade(version):
     # copy existing rows across the transition bridge. attachment_migrate aborts
     # without advancing the version if the bridge is gone (a dormant user
     # migrating after core's cleanup release), so the step retries later.
-    if version == 8 or version == 9:
+    if version == 8 or version == 9 or version == 10:
+    	# The last number re-issues the step: a server that installed the
+    	# first library version ahead of its core update paid both earlier
+    	# numbers for a raise inside the bridge call and was left at full
+    	# schema with no attachments table. The step is idempotent, so a
+    	# healthy database re-running it changes nothing.
         attachment_schema_create()
         attachment_migrate()
 
