@@ -4513,9 +4513,14 @@ def serve_attachment(a, variant):
     if not check_access(a, wiki["id"], "view"):
         a.error.label(403, "attachment.errors.denied")
         return
+    # The source adopts legacy remote-provenance rows on first serve, taking
+    # the bytes in; replicas keep pulling to cache. (The live upload path
+    # already lands bytes on the source - event_attachment_create pulls at
+    # accept - so adoption only heals rows minted before that flow.)
     attachment_serve(a, attachment, wiki["id"],
         variant=variant,
-        member=lambda object: mochi.db.exists("select 1 from comments where id=? and wiki=?", object, wiki["id"]))
+        member=lambda object: mochi.db.exists("select 1 from comments where id=? and wiki=?", object, wiki["id"]),
+        adopt=not wiki.get("source"))
 
 # List all wiki attachments
 def action_attachments(a):
