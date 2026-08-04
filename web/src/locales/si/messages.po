@@ -32,7 +32,7 @@ msgid "{0, plural, one {# file} other {# files}}"
 msgstr "{0, plural, one {# ගොනුව} other {# ගොනු}}"
 
 #. placeholder {0}: pages.length
-#: src/features/wiki/tag-pages.tsx:44
+#: src/features/wiki/tag-pages.tsx:46
 msgid "{0, plural, one {# page} other {# pages}}"
 msgstr "{0, plural, one {# පිටුව} other {# පිටු}}"
 
@@ -59,12 +59,12 @@ msgid "{0} option preview"
 msgstr "{0} විකල්පයේ පෙරදසුන"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:918
+#: src/routes/_authenticated/index.tsx:906
 msgid "{0} pages"
 msgstr "පිටු {0}"
 
-#. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
-#: src/features/wiki/tag-pages.tsx:44
+#. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] // Set in class context (/wikis/$wikiId/...) so links stay entity-scoped wikiId?: string } export function TagPages({ tag, pages, wikiId }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to={wikiId ? '/$wikiId/tags' : '/tags'} params={wikiId ? { wikiId } : {}}> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: page.page } : { page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
+#: src/features/wiki/tag-pages.tsx:46
 msgid "{0} with this tag."
 msgstr "මෙම ටැගය සමඟ {0}."
 
@@ -226,9 +226,9 @@ msgstr "ක්‍රියා"
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx:717
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
-#: src/features/wiki/tag-manager.tsx:125
-#: src/features/wiki/tag-manager.tsx:130
-#: src/features/wiki/tag-manager.tsx:155
+#: src/features/wiki/tag-manager.tsx:134
+#: src/features/wiki/tag-manager.tsx:139
+#: src/features/wiki/tag-manager.tsx:164
 #: src/features/wiki/wiki-settings.tsx:595
 msgid "Add"
 msgstr "එක් කරන්න"
@@ -272,7 +272,7 @@ msgstr "යළි-යොමුකිරීමක් එක් කරන්න"
 msgid "Add tag..."
 msgstr "ටැගයක් එක් කරන්න..."
 
-#: src/features/wiki/tags-list.tsx:38
+#: src/features/wiki/tags-list.tsx:40
 msgid "Add tags to group pages in your wiki."
 msgstr "ඔබේ wiki එකේ පිටු කාණ්ඩගත කිරීමට ටැග එක් කරන්න."
 
@@ -290,7 +290,7 @@ msgid "Add view"
 msgstr "දැක්මක් එක් කරන්න"
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
-#: src/features/wiki/tag-manager.tsx:155
+#: src/features/wiki/tag-manager.tsx:164
 msgid "Adding..."
 msgstr "එක් කරමින්..."
 
@@ -310,12 +310,16 @@ msgstr "සියල්ල"
 msgid "All files"
 msgstr "සියලු ගොනු"
 
-#: src/features/wiki/tag-pages.tsx:38
-#: src/features/wiki/tags-list.tsx:23
-#: src/routes/_authenticated/tags.tsx:21
-#: src/routes/_authenticated/tags.tsx:27
-#: src/routes/_authenticated/tags.tsx:38
-#: src/routes/_authenticated/tags.tsx:48
+#: src/features/wiki/tag-pages.tsx:40
+#: src/features/wiki/tags-list.tsx:25
+#: src/routes/_authenticated/$wikiId/tags.tsx:25
+#: src/routes/_authenticated/$wikiId/tags.tsx:31
+#: src/routes/_authenticated/$wikiId/tags.tsx:42
+#: src/routes/_authenticated/$wikiId/tags.tsx:52
+#: src/routes/_authenticated/tags.tsx:28
+#: src/routes/_authenticated/tags.tsx:34
+#: src/routes/_authenticated/tags.tsx:45
+#: src/routes/_authenticated/tags.tsx:55
 msgid "All tags"
 msgstr "සියලු ටැග"
 
@@ -367,8 +371,8 @@ msgstr "ඔබට පිටවීමට අවශ්‍ය බව විශ්�
 
 #: src/features/wiki/wiki-page-content.tsx:394
 #: src/routes/_authenticated/$page/index.tsx:298
-#: src/routes/_authenticated/index.tsx:542
-#: src/routes/_authenticated/index.tsx:941
+#: src/routes/_authenticated/index.tsx:530
+#: src/routes/_authenticated/index.tsx:929
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "ඔබට මෙම wiki එකෙන් දායකත්වය ඉවත් කිරීමට අවශ්‍ය බව විශ්වාසද?"
 
@@ -497,18 +501,18 @@ msgstr "පිටුවට ආපසු"
 #: src/routes/_authenticated/changes.tsx:42
 #: src/routes/_authenticated/changes.tsx:53
 #: src/routes/_authenticated/changes.tsx:63
-#: src/routes/_authenticated/index.tsx:264
+#: src/routes/_authenticated/index.tsx:252
 #: src/routes/_authenticated/join.tsx:64
 #: src/routes/_authenticated/new.tsx:31
 #: src/routes/_authenticated/redirects.tsx:23
 #: src/routes/_authenticated/search.tsx:36
 #: src/routes/_authenticated/settings.tsx:41
-#: src/routes/_authenticated/tag/$tag.tsx:29
-#: src/routes/_authenticated/tag/$tag.tsx:40
-#: src/routes/_authenticated/tag/$tag.tsx:50
-#: src/routes/_authenticated/tags.tsx:27
-#: src/routes/_authenticated/tags.tsx:38
-#: src/routes/_authenticated/tags.tsx:48
+#: src/routes/_authenticated/tag/$tag.tsx:36
+#: src/routes/_authenticated/tag/$tag.tsx:47
+#: src/routes/_authenticated/tag/$tag.tsx:57
+#: src/routes/_authenticated/tags.tsx:34
+#: src/routes/_authenticated/tags.tsx:45
+#: src/routes/_authenticated/tags.tsx:55
 msgid "Back to wikis"
 msgstr "wikis වෙත ආපසු"
 
@@ -539,7 +543,7 @@ msgstr "ප්‍රභවය සහ ඉලක්කය යන දෙකම අ�
 msgid "Briefly describe your changes"
 msgstr "ඔබේ වෙනස්කම් කෙටියෙන් විස්තර කරන්න"
 
-#: src/features/wiki/tags-list.tsx:27
+#: src/features/wiki/tags-list.tsx:29
 msgid "Browse pages by tag. Click a tag to see all pages with that tag."
 msgstr "ටැග මගින් පිටු සොයන්න. එම ටැගය ඇති සියලු පිටු බැලීමට ටැගයක් ක්ලික් කරන්න."
 
@@ -564,7 +568,7 @@ msgstr "බ්‍රවුසර දැනුම්දීම්"
 #: src/features/wiki/rename-page-dialog.tsx:128
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
-#: src/features/wiki/tag-manager.tsx:147
+#: src/features/wiki/tag-manager.tsx:156
 #: src/features/wiki/wiki-comment-thread.tsx:210
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
@@ -591,14 +595,14 @@ msgid "Change notification category"
 msgstr "දැනුම්දීම් ප්‍රවර්ගය වෙනස් කරන්න"
 
 #: src/features/wiki/wiki-page-content.tsx:336
-#: src/routes/_authenticated/index.tsx:468
-#: src/routes/_authenticated/index.tsx:737
+#: src/routes/_authenticated/index.tsx:456
+#: src/routes/_authenticated/index.tsx:725
 msgid "Changes"
 msgstr "වෙනස්කම්"
 
 #: src/features/wiki/wiki-page-content.tsx:338
-#: src/routes/_authenticated/index.tsx:476
-#: src/routes/_authenticated/index.tsx:747
+#: src/routes/_authenticated/index.tsx:464
+#: src/routes/_authenticated/index.tsx:735
 msgid "Changes and comments"
 msgstr "වෙනස්කම් සහ අදහස්"
 
@@ -728,8 +732,8 @@ msgid "Comment"
 msgstr "අදහස"
 
 #: src/features/wiki/wiki-page-content.tsx:337
-#: src/routes/_authenticated/index.tsx:473
-#: src/routes/_authenticated/index.tsx:742
+#: src/routes/_authenticated/index.tsx:461
+#: src/routes/_authenticated/index.tsx:730
 msgid "Comments"
 msgstr "අදහස්"
 
@@ -863,8 +867,8 @@ msgstr "යළි-යොමුකිරීමක් නිර්මාණය ක
 msgid "Create redirect from old URL"
 msgstr "පැරණි URL එකෙන් යළි-යොමුකිරීමක් නිර්මාණය කරන්න"
 
-#: src/features/wiki/page-view.tsx:299
-#: src/features/wiki/page-view.tsx:304
+#: src/features/wiki/page-view.tsx:301
+#: src/features/wiki/page-view.tsx:306
 #: src/features/wiki/wiki-page-content.tsx:214
 #: src/routes/_authenticated/$page/index.tsx:134
 msgid "Create this page"
@@ -872,7 +876,7 @@ msgstr "මෙම පිටුව නිර්මාණය කරන්න"
 
 #: src/components/layout/wiki-layout.tsx:137
 #: src/components/layout/wiki-layout.tsx:157
-#: src/routes/_authenticated/index.tsx:789
+#: src/routes/_authenticated/index.tsx:777
 msgid "Create wiki"
 msgstr "wiki එකක් නිර්මාණය කරන්න"
 
@@ -1112,7 +1116,7 @@ msgstr "ඩිස්ලෙක්සියාවට මිත්‍ර"
 #: src/features/wiki/wiki-comment-thread.tsx:271
 #: src/features/wiki/wiki-page-content.tsx:280
 #: src/routes/_authenticated/$page/index.tsx:202
-#: src/routes/_authenticated/index.tsx:423
+#: src/routes/_authenticated/index.tsx:411
 msgid "Edit"
 msgstr "සංස්කරණය කරන්න"
 
@@ -1161,7 +1165,7 @@ msgstr "කාවැද්දූ සබැඳිය පිටපත් කළා
 msgid "Enter a search term"
 msgstr "සෙවුම් පදයක් ඇතුළු කරන්න"
 
-#: src/features/wiki/tag-manager.tsx:138
+#: src/features/wiki/tag-manager.tsx:147
 msgid "Enter tag name"
 msgstr "ටැග් නාමය ඇතුළු කරන්න"
 
@@ -1209,7 +1213,7 @@ msgid "Failed to add account"
 msgstr "ගිණුම එක් කිරීමට අසමත් විය"
 
 #: ../../../lib/web/src/components/tag-input.tsx:39
-#: src/features/wiki/tag-manager.tsx:57
+#: src/features/wiki/tag-manager.tsx:60
 msgid "Failed to add tag"
 msgstr "ටැගය එක් කිරීමට අසමත් විය"
 
@@ -1257,8 +1261,8 @@ msgstr "විකිය මැකීමට අසමත් විය"
 
 #: ../../../lib/web/src/components/options-menu.tsx:123
 #: src/features/wiki/wiki-page-content.tsx:144
-#: src/routes/_authenticated/index.tsx:339
-#: src/routes/_authenticated/index.tsx:626
+#: src/routes/_authenticated/index.tsx:327
+#: src/routes/_authenticated/index.tsx:614
 msgid "Failed to get RSS token"
 msgstr "RSS ටෝකනය ලබා ගැනීමට අසමත් විය"
 
@@ -1314,7 +1318,7 @@ msgstr "ගිණුම ඉවත් කිරීමට අසමත් වි�
 msgid "Failed to remove replica"
 msgstr "අනුරූ ඉවත් කිරීමට අසමත් විය"
 
-#: src/features/wiki/tag-manager.tsx:71
+#: src/features/wiki/tag-manager.tsx:74
 msgid "Failed to remove tag"
 msgstr "ටැගය ඉවත් කිරීමට අසමත් විය"
 
@@ -1331,8 +1335,8 @@ msgid "Failed to revert page"
 msgstr "පිටුව ආපසු හැරවීමට අසමත් විය"
 
 #: ../../../lib/web/src/components/options-menu.tsx:133
-#: src/routes/_authenticated/index.tsx:348
-#: src/routes/_authenticated/index.tsx:635
+#: src/routes/_authenticated/index.tsx:336
+#: src/routes/_authenticated/index.tsx:623
 msgid "Failed to revoke RSS access"
 msgstr "RSS ප්‍රවේශය අවලංගු කිරීමට අසමත් විය"
 
@@ -1358,7 +1362,7 @@ msgstr "ප්‍රවේශ මට්ටම සැකසීමට අසමත
 
 #: src/features/wiki/inline-wiki-search.tsx:104
 #: src/routes/_authenticated/find.tsx:65
-#: src/routes/_authenticated/index.tsx:692
+#: src/routes/_authenticated/index.tsx:680
 msgid "Failed to subscribe"
 msgstr "දායක වීමට අසමත් විය"
 
@@ -1368,8 +1372,8 @@ msgstr "විකිය සමමුහුර්ත කිරීමට අසම
 
 #: src/features/wiki/wiki-page-content.tsx:79
 #: src/routes/_authenticated/$page/index.tsx:72
-#: src/routes/_authenticated/index.tsx:306
-#: src/routes/_authenticated/index.tsx:952
+#: src/routes/_authenticated/index.tsx:294
+#: src/routes/_authenticated/index.tsx:940
 msgid "Failed to unsubscribe"
 msgstr "දායකත්වයෙන් ඉවත් වීමට අසමත් විය"
 
@@ -1492,7 +1496,7 @@ msgstr "මුරපදය සඟවන්න"
 #: ../../../lib/web/src/components/audit-timeline.tsx:64
 #: src/features/wiki/wiki-page-content.tsx:293
 #: src/routes/_authenticated/$page/index.tsx:215
-#: src/routes/_authenticated/index.tsx:436
+#: src/routes/_authenticated/index.tsx:424
 msgid "History"
 msgstr "ඉතිහාසය"
 
@@ -1515,7 +1519,7 @@ msgstr "home"
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:192
 #: ../../../lib/web/src/components/layout/top-bar.tsx:71
 #: ../../../lib/web/src/components/layout/top-bar.tsx:100
-#: src/routes/_authenticated/index.tsx:272
+#: src/routes/_authenticated/index.tsx:260
 msgid "Home"
 msgstr "මුල් පිටුව"
 
@@ -1657,7 +1661,7 @@ msgstr "ලා"
 #: src/features/wiki/wiki-page-content.tsx:224
 #: src/features/wiki/wiki-page-content.tsx:353
 #: src/routes/_authenticated/$page/index.tsx:256
-#: src/routes/_authenticated/index.tsx:495
+#: src/routes/_authenticated/index.tsx:483
 msgid "Link"
 msgstr "සබැඳිය"
 
@@ -1803,15 +1807,15 @@ msgstr "නව ක්‍රීඩාවක්"
 #: src/routes/_authenticated/$page/index.tsx:248
 #: src/routes/_authenticated/$wikiId/new.tsx:25
 #: src/routes/_authenticated/$wikiId/new.tsx:36
-#: src/routes/_authenticated/index.tsx:487
+#: src/routes/_authenticated/index.tsx:475
 #: src/routes/_authenticated/new.tsx:24
 #: src/routes/_authenticated/new.tsx:31
 msgid "New page"
 msgstr "නව පිටුව"
 
 #: src/features/wiki/wiki-page-content.tsx:142
-#: src/routes/_authenticated/index.tsx:337
-#: src/routes/_authenticated/index.tsx:624
+#: src/routes/_authenticated/index.tsx:325
+#: src/routes/_authenticated/index.tsx:612
 msgid "New RSS URL copied to clipboard"
 msgstr "නව RSS URL ක්ලිප්බෝඩ් වෙත පිටපත් කරන ලදී"
 
@@ -1882,7 +1886,7 @@ msgstr "තවම දැනුම්දීම් නැත"
 msgid "No pages found for \"{debouncedQuery}\""
 msgstr "«{debouncedQuery}» සඳහා පිටු හමු නොවීය"
 
-#: src/features/wiki/tag-pages.tsx:53
+#: src/features/wiki/tag-pages.tsx:55
 msgid "No pages found with this tag"
 msgstr "මෙම ටැගය සහිත පිටු හමු නොවීය"
 
@@ -1923,11 +1927,11 @@ msgstr "ප්‍රතිඵල හමු නොවීය."
 msgid "No revisions found"
 msgstr "සංශෝධන හමු නොවීය"
 
-#: src/features/wiki/tag-manager.tsx:91
+#: src/features/wiki/tag-manager.tsx:94
 msgid "No tags"
 msgstr "ටැග් නැත"
 
-#: src/features/wiki/tags-list.tsx:37
+#: src/features/wiki/tags-list.tsx:39
 msgid "No tags found"
 msgstr "ටැග හමු නොවීය"
 
@@ -1993,8 +1997,8 @@ msgstr "old-page-name"
 msgid "On"
 msgstr "සක්‍රීයයි"
 
-#: src/features/wiki/page-view.tsx:84
-#: src/features/wiki/page-view.tsx:99
+#: src/features/wiki/page-view.tsx:86
+#: src/features/wiki/page-view.tsx:101
 msgid "On this page"
 msgstr "මෙම පිටුවේ"
 
@@ -2003,7 +2007,7 @@ msgid "Oops! Page Not Found!"
 msgstr "අහෝ! පිටුව හමු නොවීය!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:875
+#: src/routes/_authenticated/index.tsx:863
 msgid "Open {0}"
 msgstr "{0} විවෘත කරන්න"
 
@@ -2069,7 +2073,7 @@ msgstr "හිමිකරු"
 #: src/features/wiki/changes-list.tsx:45
 #: src/features/wiki/wiki-page-content.tsx:275
 #: src/routes/_authenticated/$page/index.tsx:197
-#: src/routes/_authenticated/index.tsx:418
+#: src/routes/_authenticated/index.tsx:406
 msgid "Page"
 msgstr "පිටුව"
 
@@ -2095,8 +2099,8 @@ msgstr "පිටුව {currentPage} / {totalPages}"
 #: src/routes/_authenticated/$page/index.tsx:127
 #: src/routes/_authenticated/$page/index.tsx:187
 #: src/routes/_authenticated/$page/index.tsx:194
-#: src/routes/_authenticated/index.tsx:408
-#: src/routes/_authenticated/index.tsx:415
+#: src/routes/_authenticated/index.tsx:396
+#: src/routes/_authenticated/index.tsx:403
 msgid "Page actions"
 msgstr "පිටු ක්‍රියා"
 
@@ -2104,10 +2108,10 @@ msgstr "පිටු ක්‍රියා"
 msgid "Page created"
 msgstr "පිටුව සාදන ලදී"
 
-#: src/features/wiki/page-view.tsx:291
+#: src/features/wiki/page-view.tsx:293
 #: src/features/wiki/wiki-page-content.tsx:241
 #: src/routes/_authenticated/$page/index.tsx:164
-#: src/routes/_authenticated/index.tsx:387
+#: src/routes/_authenticated/index.tsx:375
 msgid "Page not found"
 msgstr "පිටුව හමු නොවීය"
 
@@ -2127,7 +2131,7 @@ msgstr "පිටු URL"
 msgid "Page URL is required"
 msgstr "පිටු URL අවශ්‍යයි"
 
-#: src/features/wiki/tag-pages.tsx:27
+#: src/features/wiki/tag-pages.tsx:29
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "<0>{tag}</0> ටැග් කළ පිටු"
 
@@ -2238,7 +2242,7 @@ msgstr "ආපසු හැරවීමට හේතුව"
 #: src/routes/_authenticated/changes.tsx:42
 #: src/routes/_authenticated/changes.tsx:53
 #: src/routes/_authenticated/changes.tsx:63
-#: src/routes/_authenticated/index.tsx:456
+#: src/routes/_authenticated/index.tsx:444
 msgid "Recent changes"
 msgstr "මෑත වෙනස්කම්"
 
@@ -2251,7 +2255,7 @@ msgstr "මෙම wiki එකේ සියලු පිටු හරහා ම�
 msgid "Recommended"
 msgstr "නිර්දේශිත"
 
-#: src/routes/_authenticated/index.tsx:799
+#: src/routes/_authenticated/index.tsx:787
 msgid "Recommended wikis"
 msgstr "නිර්දේශිත wikis"
 
@@ -2301,8 +2305,8 @@ msgstr "පැය 24 තුළ සාපේක්ෂ, නැතහොත් න�
 #: ../../../lib/web/src/components/comment-composer.tsx:236
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/features/wiki/tag-manager.tsx:108
-#: src/features/wiki/tag-manager.tsx:113
+#: src/features/wiki/tag-manager.tsx:117
+#: src/features/wiki/tag-manager.tsx:122
 #: src/features/wiki/wiki-settings.tsx:794
 msgid "Remove"
 msgstr "ඉවත් කරන්න"
@@ -2358,7 +2362,7 @@ msgstr " පිටපත ඉවත් කරමින්..."
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:287
 #: src/routes/_authenticated/$page/index.tsx:209
-#: src/routes/_authenticated/index.tsx:430
+#: src/routes/_authenticated/index.tsx:418
 msgid "Rename"
 msgstr "නැවත නම් කරන්න"
 
@@ -2371,8 +2375,8 @@ msgid "Renaming..."
 msgstr "නැවත නම් කරමින්..."
 
 #: src/features/wiki/wiki-page-content.tsx:134
-#: src/routes/_authenticated/index.tsx:329
-#: src/routes/_authenticated/index.tsx:616
+#: src/routes/_authenticated/index.tsx:317
+#: src/routes/_authenticated/index.tsx:604
 msgid "Replace"
 msgstr "ප්‍රතිස්ථාපනය"
 
@@ -2473,8 +2477,8 @@ msgid "Reverting..."
 msgstr "ආපසු හරවමින්..."
 
 #: ../../../lib/web/src/components/options-menu.tsx:181
-#: src/routes/_authenticated/index.tsx:479
-#: src/routes/_authenticated/index.tsx:750
+#: src/routes/_authenticated/index.tsx:467
+#: src/routes/_authenticated/index.tsx:738
 msgid "Revoke access"
 msgstr "ප්‍රවේශය අවලංගු කරන්න"
 
@@ -2487,22 +2491,22 @@ msgid "Rows per page"
 msgstr "පිටුවකට පේළි"
 
 #: ../../../lib/web/src/components/options-menu.tsx:131
-#: src/routes/_authenticated/index.tsx:346
-#: src/routes/_authenticated/index.tsx:633
+#: src/routes/_authenticated/index.tsx:334
+#: src/routes/_authenticated/index.tsx:621
 msgid "RSS access revoked"
 msgstr "RSS ප්‍රවේශය අවලංගු කරන ලදී"
 
 #: ../../../lib/web/src/components/options-menu.tsx:171
 #: src/features/wiki/wiki-page-content.tsx:333
-#: src/routes/_authenticated/index.tsx:462
-#: src/routes/_authenticated/index.tsx:731
+#: src/routes/_authenticated/index.tsx:450
+#: src/routes/_authenticated/index.tsx:719
 msgid "RSS feed"
 msgstr "RSS පෝෂණය"
 
 #: ../../../lib/web/src/components/options-menu.tsx:121
 #: src/features/wiki/wiki-page-content.tsx:142
-#: src/routes/_authenticated/index.tsx:337
-#: src/routes/_authenticated/index.tsx:624
+#: src/routes/_authenticated/index.tsx:325
+#: src/routes/_authenticated/index.tsx:612
 msgid "RSS URL copied to clipboard"
 msgstr "RSS URL ක්ලිප්බෝඩ් වෙත පිටපත් කරන ලදී"
 
@@ -2535,7 +2539,7 @@ msgstr "සුරකිමින්..."
 #: src/routes/_authenticated/$page/index.tsx:229
 #: src/routes/_authenticated/$wikiId/search.tsx:31
 #: src/routes/_authenticated/$wikiId/search.tsx:41
-#: src/routes/_authenticated/index.tsx:444
+#: src/routes/_authenticated/index.tsx:432
 #: src/routes/_authenticated/search.tsx:27
 #: src/routes/_authenticated/search.tsx:36
 msgid "Search"
@@ -2561,7 +2565,7 @@ msgstr "ස්ථානයක් සොයන්න"
 msgid "Search for a place..."
 msgstr "ස්ථානයක් සොයන්න..."
 
-#: src/routes/_authenticated/index.tsx:775
+#: src/routes/_authenticated/index.tsx:763
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "දායකත්වය ලබා ගැනීමට විකියක් සොයන්න, හෝ ඔබේම ලේඛන ප්‍රකාශ කිරීමට නවයක් සාදන්න."
 
@@ -2742,7 +2746,7 @@ msgstr "ප්‍රවේශය සකසමින්..."
 #: src/features/wiki/wiki-page-content.tsx:360
 #: src/features/wiki/wiki-settings.tsx:105
 #: src/routes/_authenticated/$page/index.tsx:263
-#: src/routes/_authenticated/index.tsx:502
+#: src/routes/_authenticated/index.tsx:490
 msgid "Settings"
 msgstr "සැකසුම්"
 
@@ -2817,7 +2821,7 @@ msgstr "මූලාරම්භ"
 msgid "Spacious"
 msgstr "විශාල"
 
-#: src/routes/_authenticated/index.tsx:772
+#: src/routes/_authenticated/index.tsx:760
 msgid "Start your first wiki"
 msgstr "ඔබේ පළමු wiki එක ආරම්භ කරන්න"
 
@@ -2832,7 +2836,7 @@ msgstr "විෂය"
 #: ../../../lib/web/src/components/search-entity-dialog.tsx:83
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:195
-#: src/routes/_authenticated/index.tsx:837
+#: src/routes/_authenticated/index.tsx:825
 msgid "Subscribe"
 msgstr "දායක වන්න"
 
@@ -2843,13 +2847,13 @@ msgid "Subscribed"
 msgstr "දායක වී ඇත"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:691
+#: src/routes/_authenticated/index.tsx:679
 msgid "Subscribed to {0}"
 msgstr "{0} ට දායක විය"
 
 #: src/features/wiki/inline-wiki-search.tsx:102
 #: src/routes/_authenticated/find.tsx:63
-#: src/routes/_authenticated/index.tsx:690
+#: src/routes/_authenticated/index.tsx:678
 msgid "Subscribing..."
 msgstr "දායක වෙමින්..."
 
@@ -2890,7 +2894,7 @@ msgstr "සමමුහුර්ත කරමින්..."
 msgid "System"
 msgstr "පද්ධතිය"
 
-#: src/features/wiki/page-view.tsx:52
+#: src/features/wiki/page-view.tsx:54
 msgid "Table of contents"
 msgstr "අන්තර්ගත වගුව"
 
@@ -2898,16 +2902,16 @@ msgstr "අන්තර්ගත වගුව"
 msgid "Tag"
 msgstr "ටැගය"
 
-#: src/features/wiki/tag-manager.tsx:52
+#: src/features/wiki/tag-manager.tsx:55
 msgid "Tag \"{tag}\" added"
 msgstr "ටැගය «{tag}» එකතු කළා"
 
-#: src/features/wiki/tag-manager.tsx:68
+#: src/features/wiki/tag-manager.tsx:71
 msgid "Tag \"{tag}\" removed"
 msgstr "ටැගය «{tag}» ඉවත් කළා"
 
 #: ../../../lib/web/src/components/post-tags.tsx:76
-#: src/features/wiki/tag-manager.tsx:44
+#: src/features/wiki/tag-manager.tsx:47
 msgid "Tag already exists"
 msgstr "ටැගය දැනටමත් පවතී"
 
@@ -2915,10 +2919,14 @@ msgstr "ටැගය දැනටමත් පවතී"
 msgid "Tag must be 50 characters or less"
 msgstr "ටැගය අක්ෂර 50ක් හෝ ඊට අඩු විය යුතුය"
 
-#: src/routes/_authenticated/tag/$tag.tsx:23
-#: src/routes/_authenticated/tag/$tag.tsx:29
-#: src/routes/_authenticated/tag/$tag.tsx:40
-#: src/routes/_authenticated/tag/$tag.tsx:50
+#: src/routes/_authenticated/$wikiId/tag/$tag.tsx:24
+#: src/routes/_authenticated/$wikiId/tag/$tag.tsx:30
+#: src/routes/_authenticated/$wikiId/tag/$tag.tsx:41
+#: src/routes/_authenticated/$wikiId/tag/$tag.tsx:51
+#: src/routes/_authenticated/tag/$tag.tsx:30
+#: src/routes/_authenticated/tag/$tag.tsx:36
+#: src/routes/_authenticated/tag/$tag.tsx:47
+#: src/routes/_authenticated/tag/$tag.tsx:57
 msgid "Tag: {tag}"
 msgstr "ටැගය: {tag}"
 
@@ -2926,7 +2934,7 @@ msgstr "ටැගය: {tag}"
 #: ../../../lib/web/src/components/post-tags.tsx:115
 #: src/features/wiki/wiki-page-content.tsx:321
 #: src/routes/_authenticated/$page/index.tsx:235
-#: src/routes/_authenticated/index.tsx:450
+#: src/routes/_authenticated/index.tsx:438
 msgid "Tags"
 msgstr "ටැග"
 
@@ -2965,7 +2973,7 @@ msgstr "යළි-යොමු කිරීමට පවතින පිටු�
 msgid "The existing page to redirect to (e.g., \"new-page\")"
 msgstr "හරවායැවීමට ඇති පිටුව (උදා. «new-page»)"
 
-#: src/features/wiki/page-view.tsx:292
+#: src/features/wiki/page-view.tsx:294
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "«{slug}» පිටුව තවම නොපවතී."
 
@@ -3006,8 +3014,8 @@ msgid "This action cannot be undone. This will permanently delete the wiki and a
 msgstr "මෙම ක්‍රියාව ආපසු හැරවිය නොහැක. මෙය wiki එක සහ එහි සියලුම අන්තර්ගතය ස්ථිරවම මකා දමනු ඇත."
 
 #: src/features/wiki/wiki-page-content.tsx:132
-#: src/routes/_authenticated/index.tsx:327
-#: src/routes/_authenticated/index.tsx:614
+#: src/routes/_authenticated/index.tsx:315
+#: src/routes/_authenticated/index.tsx:602
 msgid "This feed URL was already issued and cannot be shown again."
 msgstr "මෙම සංග්‍රහ URL දැනටමත් නිකුත් කර ඇති අතර නැවත පෙන්විය නොහැක."
 
@@ -3118,7 +3126,7 @@ msgstr "ගමන් කරමින්"
 msgid "Try a different search term or filter."
 msgstr "වෙනස් සෙවුම් වචනයක් හෝ පෙරහනක් උත්සාහ කරන්න."
 
-#: src/features/wiki/tag-pages.tsx:54
+#: src/features/wiki/tag-pages.tsx:56
 msgid "Try a different tag."
 msgstr "වෙනස් ටැගයක් උත්සාහ කරන්න."
 
@@ -3195,19 +3203,19 @@ msgstr "නොදන්නා"
 #: src/routes/_authenticated/$page/index.tsx:275
 #: src/routes/_authenticated/$page/index.tsx:297
 #: src/routes/_authenticated/$page/index.tsx:299
-#: src/routes/_authenticated/index.tsx:513
-#: src/routes/_authenticated/index.tsx:541
-#: src/routes/_authenticated/index.tsx:543
-#: src/routes/_authenticated/index.tsx:908
-#: src/routes/_authenticated/index.tsx:940
-#: src/routes/_authenticated/index.tsx:942
+#: src/routes/_authenticated/index.tsx:501
+#: src/routes/_authenticated/index.tsx:529
+#: src/routes/_authenticated/index.tsx:531
+#: src/routes/_authenticated/index.tsx:896
+#: src/routes/_authenticated/index.tsx:928
+#: src/routes/_authenticated/index.tsx:930
 msgid "Unsubscribe"
 msgstr "දායකත්වය ඉවත් කරන්න"
 
 #: src/features/wiki/wiki-page-content.tsx:78
 #: src/routes/_authenticated/$page/index.tsx:71
-#: src/routes/_authenticated/index.tsx:305
-#: src/routes/_authenticated/index.tsx:951
+#: src/routes/_authenticated/index.tsx:293
+#: src/routes/_authenticated/index.tsx:939
 msgid "Unsubscribed"
 msgstr "දායකත්වය ඉවත් කරන ලදී"
 
@@ -3215,10 +3223,10 @@ msgstr "දායකත්වය ඉවත් කරන ලදී"
 #: src/features/wiki/wiki-page-content.tsx:372
 #: src/routes/_authenticated/$page/index.tsx:70
 #: src/routes/_authenticated/$page/index.tsx:275
-#: src/routes/_authenticated/index.tsx:304
-#: src/routes/_authenticated/index.tsx:513
-#: src/routes/_authenticated/index.tsx:907
-#: src/routes/_authenticated/index.tsx:950
+#: src/routes/_authenticated/index.tsx:292
+#: src/routes/_authenticated/index.tsx:501
+#: src/routes/_authenticated/index.tsx:895
+#: src/routes/_authenticated/index.tsx:938
 msgid "Unsubscribing..."
 msgstr "දායකත්වය ඉවත් කරමින්..."
 
@@ -3243,10 +3251,10 @@ msgstr "සත්‍යාපනය නොකළ"
 #. placeholder {0}: formatTimestamp(page.updated)
 #. placeholder {0}: formatTimestamp(result.updated)
 #. placeholder {0}: formatTimestamp(wiki.updated)
-#: src/features/wiki/page-view.tsx:262
+#: src/features/wiki/page-view.tsx:264
 #: src/features/wiki/search-page.tsx:117
-#: src/features/wiki/tag-pages.tsx:72
-#: src/routes/_authenticated/index.tsx:924
+#: src/features/wiki/tag-pages.tsx:74
+#: src/routes/_authenticated/index.tsx:912
 msgid "Updated {0}"
 msgstr "යාවත්කාලීන කළා {0}"
 
@@ -3406,15 +3414,15 @@ msgstr "වෙනත් wikis මෙම wiki අනුකරණය කරන ව
 #: src/features/wiki/wiki-page-content.tsx:311
 #: src/routes/_authenticated/$page/index.tsx:225
 #: src/routes/_authenticated/$wikiId/settings.tsx:38
-#: src/routes/_authenticated/index.tsx:440
+#: src/routes/_authenticated/index.tsx:428
 #: src/routes/_authenticated/settings.tsx:37
 msgid "Wiki"
 msgstr "wiki"
 
-#: src/routes/_authenticated/index.tsx:718
-#: src/routes/_authenticated/index.tsx:725
-#: src/routes/_authenticated/index.tsx:888
-#: src/routes/_authenticated/index.tsx:895
+#: src/routes/_authenticated/index.tsx:706
+#: src/routes/_authenticated/index.tsx:713
+#: src/routes/_authenticated/index.tsx:876
+#: src/routes/_authenticated/index.tsx:883
 msgid "Wiki actions"
 msgstr "wiki ක්‍රියා"
 
@@ -3464,8 +3472,8 @@ msgstr "wiki සැකසුම් කොටස්"
 msgid "Wiki synced"
 msgstr "wiki සමමුහුර්ත කරන ලදී"
 
-#: src/routes/_authenticated/index.tsx:586
-#: src/routes/_authenticated/index.tsx:707
+#: src/routes/_authenticated/index.tsx:574
+#: src/routes/_authenticated/index.tsx:695
 msgid "Wikis"
 msgstr "wikis"
 

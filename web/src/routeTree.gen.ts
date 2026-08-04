@@ -32,6 +32,7 @@ import { Route as AuthenticatedWikiIdChangesRouteImport } from './routes/_authen
 import { Route as AuthenticatedWikiIdNewRouteImport } from './routes/_authenticated/$wikiId/new'
 import { Route as AuthenticatedWikiIdSearchRouteImport } from './routes/_authenticated/$wikiId/search'
 import { Route as AuthenticatedWikiIdSettingsRouteImport } from './routes/_authenticated/$wikiId/settings'
+import { Route as AuthenticatedWikiIdTagsRouteImport } from './routes/_authenticated/$wikiId/tags'
 import { Route as AuthenticatedTagTagRouteImport } from './routes/_authenticated/tag/$tag'
 import { Route as AuthenticatedPageHistoryIndexRouteImport } from './routes/_authenticated/$page/history/index'
 import { Route as AuthenticatedPageHistoryVersionRouteImport } from './routes/_authenticated/$page/history/$version'
@@ -41,6 +42,7 @@ import { Route as AuthenticatedWikiIdPageCommentsRouteImport } from './routes/_a
 import { Route as AuthenticatedWikiIdPageDeleteRouteImport } from './routes/_authenticated/$wikiId/$page/delete'
 import { Route as AuthenticatedWikiIdPageEditRouteImport } from './routes/_authenticated/$wikiId/$page/edit'
 import { Route as AuthenticatedWikiIdPageRevertRouteImport } from './routes/_authenticated/$wikiId/$page/revert'
+import { Route as AuthenticatedWikiIdTagTagRouteImport } from './routes/_authenticated/$wikiId/tag/$tag'
 import { Route as AuthenticatedWikiIdPageHistoryIndexRouteImport } from './routes/_authenticated/$wikiId/$page/history/index'
 import { Route as AuthenticatedWikiIdPageHistoryVersionRouteImport } from './routes/_authenticated/$wikiId/$page/history/$version'
 
@@ -165,6 +167,11 @@ const AuthenticatedWikiIdSettingsRoute =
     path: '/settings',
     getParentRoute: () => AuthenticatedWikiIdRouteRoute,
   } as any)
+const AuthenticatedWikiIdTagsRoute = AuthenticatedWikiIdTagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+} as any)
 const AuthenticatedTagTagRoute = AuthenticatedTagTagRouteImport.update({
   id: '/tag/$tag',
   path: '/tag/$tag',
@@ -218,6 +225,12 @@ const AuthenticatedWikiIdPageRevertRoute =
     path: '/$page/revert',
     getParentRoute: () => AuthenticatedWikiIdRouteRoute,
   } as any)
+const AuthenticatedWikiIdTagTagRoute =
+  AuthenticatedWikiIdTagTagRouteImport.update({
+    id: '/tag/$tag',
+    path: '/tag/$tag',
+    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
+  } as any)
 const AuthenticatedWikiIdPageHistoryIndexRoute =
   AuthenticatedWikiIdPageHistoryIndexRouteImport.update({
     id: '/$page/history/',
@@ -252,6 +265,7 @@ export interface FileRoutesByFullPath {
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/$wikiId/search': typeof AuthenticatedWikiIdSearchRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
+  '/$wikiId/tags': typeof AuthenticatedWikiIdTagsRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
   '/$page/': typeof AuthenticatedPageIndexRoute
   '/$wikiId/': typeof AuthenticatedWikiIdIndexRoute
@@ -261,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/$wikiId/$page/delete': typeof AuthenticatedWikiIdPageDeleteRoute
   '/$wikiId/$page/edit': typeof AuthenticatedWikiIdPageEditRoute
   '/$wikiId/$page/revert': typeof AuthenticatedWikiIdPageRevertRoute
+  '/$wikiId/tag/$tag': typeof AuthenticatedWikiIdTagTagRoute
   '/$page/history/': typeof AuthenticatedPageHistoryIndexRoute
   '/$wikiId/$page/': typeof AuthenticatedWikiIdPageIndexRoute
   '/$wikiId/$page/history/$version': typeof AuthenticatedWikiIdPageHistoryVersionRoute
@@ -286,6 +301,7 @@ export interface FileRoutesByTo {
   '/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/$wikiId/search': typeof AuthenticatedWikiIdSearchRoute
   '/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
+  '/$wikiId/tags': typeof AuthenticatedWikiIdTagsRoute
   '/tag/$tag': typeof AuthenticatedTagTagRoute
   '/$page': typeof AuthenticatedPageIndexRoute
   '/$wikiId': typeof AuthenticatedWikiIdIndexRoute
@@ -295,6 +311,7 @@ export interface FileRoutesByTo {
   '/$wikiId/$page/delete': typeof AuthenticatedWikiIdPageDeleteRoute
   '/$wikiId/$page/edit': typeof AuthenticatedWikiIdPageEditRoute
   '/$wikiId/$page/revert': typeof AuthenticatedWikiIdPageRevertRoute
+  '/$wikiId/tag/$tag': typeof AuthenticatedWikiIdTagTagRoute
   '/$page/history': typeof AuthenticatedPageHistoryIndexRoute
   '/$wikiId/$page': typeof AuthenticatedWikiIdPageIndexRoute
   '/$wikiId/$page/history/$version': typeof AuthenticatedWikiIdPageHistoryVersionRoute
@@ -323,6 +340,7 @@ export interface FileRoutesById {
   '/_authenticated/$wikiId/new': typeof AuthenticatedWikiIdNewRoute
   '/_authenticated/$wikiId/search': typeof AuthenticatedWikiIdSearchRoute
   '/_authenticated/$wikiId/settings': typeof AuthenticatedWikiIdSettingsRoute
+  '/_authenticated/$wikiId/tags': typeof AuthenticatedWikiIdTagsRoute
   '/_authenticated/tag/$tag': typeof AuthenticatedTagTagRoute
   '/_authenticated/$page/': typeof AuthenticatedPageIndexRoute
   '/_authenticated/$wikiId/': typeof AuthenticatedWikiIdIndexRoute
@@ -332,6 +350,7 @@ export interface FileRoutesById {
   '/_authenticated/$wikiId/$page/delete': typeof AuthenticatedWikiIdPageDeleteRoute
   '/_authenticated/$wikiId/$page/edit': typeof AuthenticatedWikiIdPageEditRoute
   '/_authenticated/$wikiId/$page/revert': typeof AuthenticatedWikiIdPageRevertRoute
+  '/_authenticated/$wikiId/tag/$tag': typeof AuthenticatedWikiIdTagTagRoute
   '/_authenticated/$page/history/': typeof AuthenticatedPageHistoryIndexRoute
   '/_authenticated/$wikiId/$page/': typeof AuthenticatedWikiIdPageIndexRoute
   '/_authenticated/$wikiId/$page/history/$version': typeof AuthenticatedWikiIdPageHistoryVersionRoute
@@ -360,6 +379,7 @@ export interface FileRouteTypes {
     | '/$wikiId/new'
     | '/$wikiId/search'
     | '/$wikiId/settings'
+    | '/$wikiId/tags'
     | '/tag/$tag'
     | '/$page/'
     | '/$wikiId/'
@@ -369,6 +389,7 @@ export interface FileRouteTypes {
     | '/$wikiId/$page/delete'
     | '/$wikiId/$page/edit'
     | '/$wikiId/$page/revert'
+    | '/$wikiId/tag/$tag'
     | '/$page/history/'
     | '/$wikiId/$page/'
     | '/$wikiId/$page/history/$version'
@@ -394,6 +415,7 @@ export interface FileRouteTypes {
     | '/$wikiId/new'
     | '/$wikiId/search'
     | '/$wikiId/settings'
+    | '/$wikiId/tags'
     | '/tag/$tag'
     | '/$page'
     | '/$wikiId'
@@ -403,6 +425,7 @@ export interface FileRouteTypes {
     | '/$wikiId/$page/delete'
     | '/$wikiId/$page/edit'
     | '/$wikiId/$page/revert'
+    | '/$wikiId/tag/$tag'
     | '/$page/history'
     | '/$wikiId/$page'
     | '/$wikiId/$page/history/$version'
@@ -430,6 +453,7 @@ export interface FileRouteTypes {
     | '/_authenticated/$wikiId/new'
     | '/_authenticated/$wikiId/search'
     | '/_authenticated/$wikiId/settings'
+    | '/_authenticated/$wikiId/tags'
     | '/_authenticated/tag/$tag'
     | '/_authenticated/$page/'
     | '/_authenticated/$wikiId/'
@@ -439,6 +463,7 @@ export interface FileRouteTypes {
     | '/_authenticated/$wikiId/$page/delete'
     | '/_authenticated/$wikiId/$page/edit'
     | '/_authenticated/$wikiId/$page/revert'
+    | '/_authenticated/$wikiId/tag/$tag'
     | '/_authenticated/$page/history/'
     | '/_authenticated/$wikiId/$page/'
     | '/_authenticated/$wikiId/$page/history/$version'
@@ -613,6 +638,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWikiIdSettingsRouteImport
       parentRoute: typeof AuthenticatedWikiIdRouteRoute
     }
+    '/_authenticated/$wikiId/tags': {
+      id: '/_authenticated/$wikiId/tags'
+      path: '/tags'
+      fullPath: '/$wikiId/tags'
+      preLoaderRoute: typeof AuthenticatedWikiIdTagsRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
     '/_authenticated/tag/$tag': {
       id: '/_authenticated/tag/$tag'
       path: '/tag/$tag'
@@ -676,6 +708,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWikiIdPageRevertRouteImport
       parentRoute: typeof AuthenticatedWikiIdRouteRoute
     }
+    '/_authenticated/$wikiId/tag/$tag': {
+      id: '/_authenticated/$wikiId/tag/$tag'
+      path: '/tag/$tag'
+      fullPath: '/$wikiId/tag/$tag'
+      preLoaderRoute: typeof AuthenticatedWikiIdTagTagRouteImport
+      parentRoute: typeof AuthenticatedWikiIdRouteRoute
+    }
     '/_authenticated/$wikiId/$page/history/': {
       id: '/_authenticated/$wikiId/$page/history/'
       path: '/$page/history'
@@ -698,12 +737,14 @@ interface AuthenticatedWikiIdRouteRouteChildren {
   AuthenticatedWikiIdNewRoute: typeof AuthenticatedWikiIdNewRoute
   AuthenticatedWikiIdSearchRoute: typeof AuthenticatedWikiIdSearchRoute
   AuthenticatedWikiIdSettingsRoute: typeof AuthenticatedWikiIdSettingsRoute
+  AuthenticatedWikiIdTagsRoute: typeof AuthenticatedWikiIdTagsRoute
   AuthenticatedWikiIdIndexRoute: typeof AuthenticatedWikiIdIndexRoute
   AuthenticatedWikiIdPageAttachmentsRoute: typeof AuthenticatedWikiIdPageAttachmentsRoute
   AuthenticatedWikiIdPageCommentsRoute: typeof AuthenticatedWikiIdPageCommentsRoute
   AuthenticatedWikiIdPageDeleteRoute: typeof AuthenticatedWikiIdPageDeleteRoute
   AuthenticatedWikiIdPageEditRoute: typeof AuthenticatedWikiIdPageEditRoute
   AuthenticatedWikiIdPageRevertRoute: typeof AuthenticatedWikiIdPageRevertRoute
+  AuthenticatedWikiIdTagTagRoute: typeof AuthenticatedWikiIdTagTagRoute
   AuthenticatedWikiIdPageIndexRoute: typeof AuthenticatedWikiIdPageIndexRoute
   AuthenticatedWikiIdPageHistoryVersionRoute: typeof AuthenticatedWikiIdPageHistoryVersionRoute
   AuthenticatedWikiIdPageHistoryIndexRoute: typeof AuthenticatedWikiIdPageHistoryIndexRoute
@@ -715,6 +756,7 @@ const AuthenticatedWikiIdRouteRouteChildren: AuthenticatedWikiIdRouteRouteChildr
     AuthenticatedWikiIdNewRoute: AuthenticatedWikiIdNewRoute,
     AuthenticatedWikiIdSearchRoute: AuthenticatedWikiIdSearchRoute,
     AuthenticatedWikiIdSettingsRoute: AuthenticatedWikiIdSettingsRoute,
+    AuthenticatedWikiIdTagsRoute: AuthenticatedWikiIdTagsRoute,
     AuthenticatedWikiIdIndexRoute: AuthenticatedWikiIdIndexRoute,
     AuthenticatedWikiIdPageAttachmentsRoute:
       AuthenticatedWikiIdPageAttachmentsRoute,
@@ -722,6 +764,7 @@ const AuthenticatedWikiIdRouteRouteChildren: AuthenticatedWikiIdRouteRouteChildr
     AuthenticatedWikiIdPageDeleteRoute: AuthenticatedWikiIdPageDeleteRoute,
     AuthenticatedWikiIdPageEditRoute: AuthenticatedWikiIdPageEditRoute,
     AuthenticatedWikiIdPageRevertRoute: AuthenticatedWikiIdPageRevertRoute,
+    AuthenticatedWikiIdTagTagRoute: AuthenticatedWikiIdTagTagRoute,
     AuthenticatedWikiIdPageIndexRoute: AuthenticatedWikiIdPageIndexRoute,
     AuthenticatedWikiIdPageHistoryVersionRoute:
       AuthenticatedWikiIdPageHistoryVersionRoute,

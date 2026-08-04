@@ -316,7 +316,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link preload={false} to="/tags">
+            <Link preload={false} to="/$wikiId/tags" params={{ wikiId }}>
               <Tags className="size-4" />
               <Trans>Tags</Trans>
             </Link>
@@ -385,7 +385,7 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
           back={{ label: backLabel, onFallback: goBackToWikis }}
         />
         <Main className="pt-2">
-          <PageView page={data.page} missingLinks={'links' in data ? data.links?.missing : undefined} />
+          <PageView page={data.page} missingLinks={'links' in data ? data.links?.missing : undefined} wikiId={wikiId} />
         </Main>
         <ConfirmDialog
           open={unsubscribeConfirmOpen}

@@ -13,9 +13,11 @@ import type { TagPage } from '@/types/wiki'
 interface TagPagesProps {
   tag: string
   pages: TagPage[]
+  // Set in class context (/wikis/$wikiId/...) so links stay entity-scoped
+  wikiId?: string
 }
 
-export function TagPages({ tag, pages }: TagPagesProps) {
+export function TagPages({ tag, pages, wikiId }: TagPagesProps) {
   const { formatTimestamp } = useFormat()
   return (
     <div className="space-y-6">
@@ -33,7 +35,7 @@ export function TagPages({ tag, pages }: TagPagesProps) {
           </h1>
         </div>
         <Button variant="outline" asChild>
-          <Link preload={false} to="/tags">
+          <Link preload={false} to={wikiId ? '/$wikiId/tags' : '/tags'} params={wikiId ? { wikiId } : {}}>
             <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
             <Trans>All tags</Trans>
           </Link>
@@ -59,8 +61,8 @@ export function TagPages({ tag, pages }: TagPagesProps) {
           {pages.map((page) => (
             <Link preload={false}
               key={page.page}
-              to="/$page"
-              params={{ page: page.page }}
+              to={wikiId ? '/$wikiId/$page' : '/$page'}
+              params={wikiId ? { wikiId, page: page.page } : { page: page.page }}
               className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors"
             >
               <FileText className="text-muted-foreground h-5 w-5 shrink-0" />

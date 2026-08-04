@@ -12,9 +12,11 @@ import { t } from '@lingui/core/macro'
 
 interface TagsListProps {
   tags: Tag[]
+  // Set in class context (/wikis/$wikiId/...) so tag links stay entity-scoped
+  wikiId?: string
 }
 
-export function TagsList({ tags }: TagsListProps) {
+export function TagsList({ tags, wikiId }: TagsListProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -43,8 +45,8 @@ export function TagsList({ tags }: TagsListProps) {
           {tags.map((tag) => (
             <Link preload={false}
               key={tag.tag}
-              to="/tag/$tag"
-              params={{ tag: tag.tag }}
+              to={wikiId ? '/$wikiId/tag/$tag' : '/tag/$tag'}
+              params={wikiId ? { wikiId, tag: tag.tag } : { tag: tag.tag }}
               className="group"
             >
               <Badge

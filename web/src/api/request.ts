@@ -8,7 +8,19 @@
 // This ensures wiki IDs in URLs aren't doubled when on wiki detail pages
 
 import { type AxiosRequestConfig } from 'axios'
-import { getAppPath, requestHelpers } from '@mochi/web'
+import { getAppPath, isDomainEntityRouting, requestHelpers } from '@mochi/web'
+
+// Check if we're in entity context based on browser URL.
+// Entity context: first URL segment is an entity ID, or domain-routed entity
+// (e.g. docs.mochi-os.org). At the app's class path (/wikis/...) this is false.
+export function isEntityContext(): boolean {
+  if (isDomainEntityRouting()) return true
+  const first = window.location.pathname.match(/^\/([^/]+)/)?.[1] || ''
+  return (
+    /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(first) ||
+    /^[1-9A-HJ-NP-Za-km-z]{50,51}$/.test(first)
+  )
+}
 
 // A protocol-relative URL ("//host/path") also starts with "/", and axios
 // treats it as absolute — so passing it through unchanged would send the

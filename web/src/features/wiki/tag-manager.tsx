@@ -26,9 +26,12 @@ import { usePermissions } from '@/context/wiki-context'
 interface TagManagerProps {
   slug: string
   tags: string[]
+  // Set in class context (/wikis/$wikiId/...) so tag links stay entity-scoped;
+  // omitted in entity context, where the top-level /tag/$tag route resolves.
+  wikiId?: string
 }
 
-export function TagManager({ slug, tags }: TagManagerProps) {
+export function TagManager({ slug, tags, wikiId }: TagManagerProps) {
   const { t } = useLingui()
   const [newTag, setNewTag] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -95,9 +98,15 @@ export function TagManager({ slug, tags }: TagManagerProps) {
       {/* Existing tags */}
       {tags.map((tag) => (
         <Badge key={tag} variant="secondary" className={canEdit ? "group gap-1 pe-1" : ""}>
-          <Link preload={false} to="/tag/$tag" params={{ tag }} className="hover:underline">
-            {tag}
-          </Link>
+          {wikiId ? (
+            <Link preload={false} to="/$wikiId/tag/$tag" params={{ wikiId, tag }} className="hover:underline">
+              {tag}
+            </Link>
+          ) : (
+            <Link preload={false} to="/tag/$tag" params={{ tag }} className="hover:underline">
+              {tag}
+            </Link>
+          )}
           {canEdit && (
             <Tooltip>
               <TooltipTrigger asChild>

@@ -59,7 +59,7 @@ import {
   Link as LinkIcon,
 } from 'lucide-react'
 import endpoints from '@/api/endpoints'
-import { wikisRequest, getRssToken, revokeRssToken } from '@/api/request'
+import { wikisRequest, getRssToken, revokeRssToken, isEntityContext } from '@/api/request'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { usePermissions, useWikiContext } from '@/context/wiki-context'
@@ -181,18 +181,6 @@ export const Route = createFileRoute('/_authenticated/')({
     <GeneralError error={error} reset={reset} minimal mode='inline' />
   ),
 })
-
-// Check if we're in entity context based on browser URL
-// Entity context: first URL segment is an entity ID, or domain-routed entity (e.g. docs.mochi-os.org)
-function isEntityContext(): boolean {
-  if (isDomainEntityRouting()) return true
-  const pathname = window.location.pathname
-  const firstSegment = pathname.match(/^\/([^/]+)/)?.[1] || ''
-  return (
-    /^[1-9A-HJ-NP-Za-km-z]{9}$/.test(firstSegment) ||
-    /^[1-9A-HJ-NP-Za-km-z]{50,51}$/.test(firstSegment)
-  )
-}
 
 // Compute the entity baseURL used for resolving attachment paths in markdown
 // content. Mirrors the logic in $wikiId/route.tsx but for the index route, where

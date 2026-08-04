@@ -32,7 +32,7 @@ msgid "{0, plural, one {# file} other {# files}}"
 msgstr "{0, plural, one {# ફાઇલ} other {# ફાઇલ}}"
 
 #. placeholder {0}: pages.length
-#: src/features/wiki/tag-pages.tsx:44
+#: src/features/wiki/tag-pages.tsx:46
 msgid "{0, plural, one {# page} other {# pages}}"
 msgstr "{0, plural, one {# પૃષ્ઠ} other {# પૃષ્ઠ}}"
 
@@ -59,12 +59,12 @@ msgid "{0} option preview"
 msgstr "{0} વિકલ્પનું પૂર્વાવલોકન"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:918
+#: src/routes/_authenticated/index.tsx:906
 msgid "{0} pages"
 msgstr "{0} પૃષ્ઠો"
 
-#. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] } export function TagPages({ tag, pages }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to="/tags"> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to="/$page" params={{ page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
-#: src/features/wiki/tag-pages.tsx:44
+#. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton } from '@mochi/web' import type { TagPage } from '@/types/wiki' interface TagPagesProps { tag: string pages: TagPage[] // Set in class context (/wikis/$wikiId/...) so links stay entity-scoped wikiId?: string } export function TagPages({ tag, pages, wikiId }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className="space-y-6"> {/* Header */} <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <TagIcon className="h-6 w-6" /> <h1 className="text-2xl font-bold"> <Trans> Pages tagged{' '} <Badge variant="secondary" className="ms-1 text-lg"> {tag} </Badge> </Trans> </h1> </div> <Button variant="outline" asChild> <Link preload={false} to={wikiId ? '/$wikiId/tags' : '/tags'} params={wikiId ? { wikiId } : {}}> <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" /> <Trans>All tags</Trans> </Link> </Button> </div> <p className="text-muted-foreground"> <Trans>{plural(pages.length, { one: '# page', other: '# pages' })} with this tag.</Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className="py-8" /> ) : ( <div className="space-y-2"> {pages.map((page) => ( <Link preload={false} key={page.page} to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: page.page } : { page: page.page }} className="hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <h3 className="font-semibold group-hover:underline"> {page.title} </h3> <p className="text-muted-foreground text-sm"> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className="space-y-6"> <div className="flex items-center justify-between gap-4"> <div className="flex items-center gap-3"> <Skeleton className="h-6 w-6" /> <Skeleton className="h-8 w-48" /> </div> <Skeleton className="h-9 w-24" /> </div> <Skeleton className="h-5 w-32" /> <Separator /> <div className="space-y-2"> {[1, 2, 3, 4].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-4"> <Skeleton className="h-5 w-5" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> </div> ) } 
+#: src/features/wiki/tag-pages.tsx:46
 msgid "{0} with this tag."
 msgstr "આ ટેગ સાથે {0}."
 
@@ -226,9 +226,9 @@ msgstr "ક્રિયાઓ"
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx:717
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
-#: src/features/wiki/tag-manager.tsx:125
-#: src/features/wiki/tag-manager.tsx:130
-#: src/features/wiki/tag-manager.tsx:155
+#: src/features/wiki/tag-manager.tsx:134
+#: src/features/wiki/tag-manager.tsx:139
+#: src/features/wiki/tag-manager.tsx:164
 #: src/features/wiki/wiki-settings.tsx:595
 msgid "Add"
 msgstr "ઉમેરો"
@@ -272,7 +272,7 @@ msgstr "રીડાયરેક્ટ ઉમેરો"
 msgid "Add tag..."
 msgstr "ટૅગ ઉમેરો..."
 
-#: src/features/wiki/tags-list.tsx:38
+#: src/features/wiki/tags-list.tsx:40
 msgid "Add tags to group pages in your wiki."
 msgstr "તમારા wiki માં પૃષ્ઠોને જૂથબદ્ધ કરવા ટૅગ ઉમેરો."
 
@@ -290,7 +290,7 @@ msgid "Add view"
 msgstr "દૃશ્ય ઉમેરો"
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
-#: src/features/wiki/tag-manager.tsx:155
+#: src/features/wiki/tag-manager.tsx:164
 msgid "Adding..."
 msgstr "ઉમેરી રહ્યું છે..."
 
@@ -310,12 +310,16 @@ msgstr "બધા"
 msgid "All files"
 msgstr "બધી ફાઇલો"
 
-#: src/features/wiki/tag-pages.tsx:38
-#: src/features/wiki/tags-list.tsx:23
-#: src/routes/_authenticated/tags.tsx:21
-#: src/routes/_authenticated/tags.tsx:27
-#: src/routes/_authenticated/tags.tsx:38
-#: src/routes/_authenticated/tags.tsx:48
+#: src/features/wiki/tag-pages.tsx:40
+#: src/features/wiki/tags-list.tsx:25
+#: src/routes/_authenticated/$wikiId/tags.tsx:25
+#: src/routes/_authenticated/$wikiId/tags.tsx:31
+#: src/routes/_authenticated/$wikiId/tags.tsx:42
+#: src/routes/_authenticated/$wikiId/tags.tsx:52
+#: src/routes/_authenticated/tags.tsx:28
+#: src/routes/_authenticated/tags.tsx:34
+#: src/routes/_authenticated/tags.tsx:45
+#: src/routes/_authenticated/tags.tsx:55
 msgid "All tags"
 msgstr "બધા ટૅગ"
 
@@ -367,8 +371,8 @@ msgstr "શું તમે ખરેખર લૉગ આઉટ કરવા મ
 
 #: src/features/wiki/wiki-page-content.tsx:394
 #: src/routes/_authenticated/$page/index.tsx:298
-#: src/routes/_authenticated/index.tsx:542
-#: src/routes/_authenticated/index.tsx:941
+#: src/routes/_authenticated/index.tsx:530
+#: src/routes/_authenticated/index.tsx:929
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "શું તમે ખરેખર આ wiki માંથી અનસબ્સ્ક્રાઇબ કરવા માંગો છો?"
 
@@ -497,18 +501,18 @@ msgstr "પૃષ્ઠ પર પાછા"
 #: src/routes/_authenticated/changes.tsx:42
 #: src/routes/_authenticated/changes.tsx:53
 #: src/routes/_authenticated/changes.tsx:63
-#: src/routes/_authenticated/index.tsx:264
+#: src/routes/_authenticated/index.tsx:252
 #: src/routes/_authenticated/join.tsx:64
 #: src/routes/_authenticated/new.tsx:31
 #: src/routes/_authenticated/redirects.tsx:23
 #: src/routes/_authenticated/search.tsx:36
 #: src/routes/_authenticated/settings.tsx:41
-#: src/routes/_authenticated/tag/$tag.tsx:29
-#: src/routes/_authenticated/tag/$tag.tsx:40
-#: src/routes/_authenticated/tag/$tag.tsx:50
-#: src/routes/_authenticated/tags.tsx:27
-#: src/routes/_authenticated/tags.tsx:38
-#: src/routes/_authenticated/tags.tsx:48
+#: src/routes/_authenticated/tag/$tag.tsx:36
+#: src/routes/_authenticated/tag/$tag.tsx:47
+#: src/routes/_authenticated/tag/$tag.tsx:57
+#: src/routes/_authenticated/tags.tsx:34
+#: src/routes/_authenticated/tags.tsx:45
+#: src/routes/_authenticated/tags.tsx:55
 msgid "Back to wikis"
 msgstr "wikis પર પાછા"
 
@@ -539,7 +543,7 @@ msgstr "સ્રોત અને લક્ષ્ય બંને જરૂર�
 msgid "Briefly describe your changes"
 msgstr "તમારા ફેરફારોનું ટૂંકું વર્ણન કરો"
 
-#: src/features/wiki/tags-list.tsx:27
+#: src/features/wiki/tags-list.tsx:29
 msgid "Browse pages by tag. Click a tag to see all pages with that tag."
 msgstr "ટૅગ દ્વારા પૃષ્ઠો બ્રાઉઝ કરો. તે ટૅગ સાથેના બધા પૃષ્ઠો જોવા ટૅગ પર ક્લિક કરો."
 
@@ -564,7 +568,7 @@ msgstr "બ્રાઉઝર સૂચનાઓ"
 #: src/features/wiki/rename-page-dialog.tsx:128
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
-#: src/features/wiki/tag-manager.tsx:147
+#: src/features/wiki/tag-manager.tsx:156
 #: src/features/wiki/wiki-comment-thread.tsx:210
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
@@ -591,14 +595,14 @@ msgid "Change notification category"
 msgstr "સૂચના શ્રેણી બદલો"
 
 #: src/features/wiki/wiki-page-content.tsx:336
-#: src/routes/_authenticated/index.tsx:468
-#: src/routes/_authenticated/index.tsx:737
+#: src/routes/_authenticated/index.tsx:456
+#: src/routes/_authenticated/index.tsx:725
 msgid "Changes"
 msgstr "ફેરફારો"
 
 #: src/features/wiki/wiki-page-content.tsx:338
-#: src/routes/_authenticated/index.tsx:476
-#: src/routes/_authenticated/index.tsx:747
+#: src/routes/_authenticated/index.tsx:464
+#: src/routes/_authenticated/index.tsx:735
 msgid "Changes and comments"
 msgstr "ફેરફારો અને ટિપ્પણીઓ"
 
@@ -728,8 +732,8 @@ msgid "Comment"
 msgstr "ટિપ્પણી"
 
 #: src/features/wiki/wiki-page-content.tsx:337
-#: src/routes/_authenticated/index.tsx:473
-#: src/routes/_authenticated/index.tsx:742
+#: src/routes/_authenticated/index.tsx:461
+#: src/routes/_authenticated/index.tsx:730
 msgid "Comments"
 msgstr "ટિપ્પણીઓ"
 
@@ -863,8 +867,8 @@ msgstr "રીડાયરેક્ટ બનાવો"
 msgid "Create redirect from old URL"
 msgstr "જૂના URL માંથી રીડાયરેક્ટ બનાવો"
 
-#: src/features/wiki/page-view.tsx:299
-#: src/features/wiki/page-view.tsx:304
+#: src/features/wiki/page-view.tsx:301
+#: src/features/wiki/page-view.tsx:306
 #: src/features/wiki/wiki-page-content.tsx:214
 #: src/routes/_authenticated/$page/index.tsx:134
 msgid "Create this page"
@@ -872,7 +876,7 @@ msgstr "આ પૃષ્ઠ બનાવો"
 
 #: src/components/layout/wiki-layout.tsx:137
 #: src/components/layout/wiki-layout.tsx:157
-#: src/routes/_authenticated/index.tsx:789
+#: src/routes/_authenticated/index.tsx:777
 msgid "Create wiki"
 msgstr "wiki બનાવો"
 
@@ -1112,7 +1116,7 @@ msgstr "ડિસ્લેક્સિયા-મૈત્રીપૂર્ણ"
 #: src/features/wiki/wiki-comment-thread.tsx:271
 #: src/features/wiki/wiki-page-content.tsx:280
 #: src/routes/_authenticated/$page/index.tsx:202
-#: src/routes/_authenticated/index.tsx:423
+#: src/routes/_authenticated/index.tsx:411
 msgid "Edit"
 msgstr "સંપાદિત કરો"
 
@@ -1161,7 +1165,7 @@ msgstr "એમ્બેડ લિંક કૉપિ થઈ"
 msgid "Enter a search term"
 msgstr "સર્ચ ટર્મ દાખલ કરો"
 
-#: src/features/wiki/tag-manager.tsx:138
+#: src/features/wiki/tag-manager.tsx:147
 msgid "Enter tag name"
 msgstr "ટેગ નામ દાખલ કરો"
 
@@ -1209,7 +1213,7 @@ msgid "Failed to add account"
 msgstr "એકાઉન્ટ ઉમેરવામાં નિષ્ફળ"
 
 #: ../../../lib/web/src/components/tag-input.tsx:39
-#: src/features/wiki/tag-manager.tsx:57
+#: src/features/wiki/tag-manager.tsx:60
 msgid "Failed to add tag"
 msgstr "ટેગ ઉમેરવામાં નિષ્ફળ"
 
@@ -1257,8 +1261,8 @@ msgstr "વિકિ કાઢી નાખવામાં નિષ્ફળ"
 
 #: ../../../lib/web/src/components/options-menu.tsx:123
 #: src/features/wiki/wiki-page-content.tsx:144
-#: src/routes/_authenticated/index.tsx:339
-#: src/routes/_authenticated/index.tsx:626
+#: src/routes/_authenticated/index.tsx:327
+#: src/routes/_authenticated/index.tsx:614
 msgid "Failed to get RSS token"
 msgstr "RSS ટોકન મેળવવામાં નિષ્ફળ"
 
@@ -1314,7 +1318,7 @@ msgstr "એકાઉન્ટ દૂર કરવામાં નિષ્ફળ
 msgid "Failed to remove replica"
 msgstr "રિપ્લિકા દૂર કરવામાં નિષ્ફળ"
 
-#: src/features/wiki/tag-manager.tsx:71
+#: src/features/wiki/tag-manager.tsx:74
 msgid "Failed to remove tag"
 msgstr "ટેગ દૂર કરવામાં નિષ્ફળ"
 
@@ -1331,8 +1335,8 @@ msgid "Failed to revert page"
 msgstr "પેજ રિવર્ટ કરવામાં નિષ્ફળ"
 
 #: ../../../lib/web/src/components/options-menu.tsx:133
-#: src/routes/_authenticated/index.tsx:348
-#: src/routes/_authenticated/index.tsx:635
+#: src/routes/_authenticated/index.tsx:336
+#: src/routes/_authenticated/index.tsx:623
 msgid "Failed to revoke RSS access"
 msgstr "RSS ઍક્સેસ રદ કરવામાં નિષ્ફળ"
 
@@ -1358,7 +1362,7 @@ msgstr "ઍક્સેસ લેવલ સેટ કરવામાં નિ�
 
 #: src/features/wiki/inline-wiki-search.tsx:104
 #: src/routes/_authenticated/find.tsx:65
-#: src/routes/_authenticated/index.tsx:692
+#: src/routes/_authenticated/index.tsx:680
 msgid "Failed to subscribe"
 msgstr "સબ્સ્ક્રાઇબ કરવામાં નિષ્ફળ"
 
@@ -1368,8 +1372,8 @@ msgstr "વિકિ સિંક કરવામાં નિષ્ફળ"
 
 #: src/features/wiki/wiki-page-content.tsx:79
 #: src/routes/_authenticated/$page/index.tsx:72
-#: src/routes/_authenticated/index.tsx:306
-#: src/routes/_authenticated/index.tsx:952
+#: src/routes/_authenticated/index.tsx:294
+#: src/routes/_authenticated/index.tsx:940
 msgid "Failed to unsubscribe"
 msgstr "અનસબ્સ્ક્રાઇબ કરવામાં નિષ્ફળ"
 
@@ -1492,7 +1496,7 @@ msgstr "પાસવર્ડ છુપાવો"
 #: ../../../lib/web/src/components/audit-timeline.tsx:64
 #: src/features/wiki/wiki-page-content.tsx:293
 #: src/routes/_authenticated/$page/index.tsx:215
-#: src/routes/_authenticated/index.tsx:436
+#: src/routes/_authenticated/index.tsx:424
 msgid "History"
 msgstr "ઇતિહાસ"
 
@@ -1515,7 +1519,7 @@ msgstr "home"
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:192
 #: ../../../lib/web/src/components/layout/top-bar.tsx:71
 #: ../../../lib/web/src/components/layout/top-bar.tsx:100
-#: src/routes/_authenticated/index.tsx:272
+#: src/routes/_authenticated/index.tsx:260
 msgid "Home"
 msgstr "હોમ"
 
@@ -1657,7 +1661,7 @@ msgstr "લાઇટ"
 #: src/features/wiki/wiki-page-content.tsx:224
 #: src/features/wiki/wiki-page-content.tsx:353
 #: src/routes/_authenticated/$page/index.tsx:256
-#: src/routes/_authenticated/index.tsx:495
+#: src/routes/_authenticated/index.tsx:483
 msgid "Link"
 msgstr "લિંક"
 
@@ -1803,15 +1807,15 @@ msgstr "નવી ગેમ"
 #: src/routes/_authenticated/$page/index.tsx:248
 #: src/routes/_authenticated/$wikiId/new.tsx:25
 #: src/routes/_authenticated/$wikiId/new.tsx:36
-#: src/routes/_authenticated/index.tsx:487
+#: src/routes/_authenticated/index.tsx:475
 #: src/routes/_authenticated/new.tsx:24
 #: src/routes/_authenticated/new.tsx:31
 msgid "New page"
 msgstr "નવું પેજ"
 
 #: src/features/wiki/wiki-page-content.tsx:142
-#: src/routes/_authenticated/index.tsx:337
-#: src/routes/_authenticated/index.tsx:624
+#: src/routes/_authenticated/index.tsx:325
+#: src/routes/_authenticated/index.tsx:612
 msgid "New RSS URL copied to clipboard"
 msgstr "નવી RSS URL ક્લિપબોર્ડ પર કૉપિ થઈ"
 
@@ -1882,7 +1886,7 @@ msgstr "હજુ સુધી કોઈ સૂચના નથી"
 msgid "No pages found for \"{debouncedQuery}\""
 msgstr "«{debouncedQuery}» માટે કોઈ પૃષ્ઠ મળ્યું નથી"
 
-#: src/features/wiki/tag-pages.tsx:53
+#: src/features/wiki/tag-pages.tsx:55
 msgid "No pages found with this tag"
 msgstr "આ ટેગ સાથે કોઈ પેજ મળ્યું નથી"
 
@@ -1923,11 +1927,11 @@ msgstr "કોઈ પરિણામો મળ્યા નથી."
 msgid "No revisions found"
 msgstr "કોઈ રિવિઝન મળ્યા નથી"
 
-#: src/features/wiki/tag-manager.tsx:91
+#: src/features/wiki/tag-manager.tsx:94
 msgid "No tags"
 msgstr "કોઈ ટૅગ નથી"
 
-#: src/features/wiki/tags-list.tsx:37
+#: src/features/wiki/tags-list.tsx:39
 msgid "No tags found"
 msgstr "કોઈ ટેગ્સ મળ્યા નથી"
 
@@ -1993,8 +1997,8 @@ msgstr "old-page-name"
 msgid "On"
 msgstr "ચાલુ"
 
-#: src/features/wiki/page-view.tsx:84
-#: src/features/wiki/page-view.tsx:99
+#: src/features/wiki/page-view.tsx:86
+#: src/features/wiki/page-view.tsx:101
 msgid "On this page"
 msgstr "આ પેજ પર"
 
@@ -2003,7 +2007,7 @@ msgid "Oops! Page Not Found!"
 msgstr "ઓહ! પેજ મળ્યું નથી!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:875
+#: src/routes/_authenticated/index.tsx:863
 msgid "Open {0}"
 msgstr "{0} ખોલો"
 
@@ -2069,7 +2073,7 @@ msgstr "માલિક"
 #: src/features/wiki/changes-list.tsx:45
 #: src/features/wiki/wiki-page-content.tsx:275
 #: src/routes/_authenticated/$page/index.tsx:197
-#: src/routes/_authenticated/index.tsx:418
+#: src/routes/_authenticated/index.tsx:406
 msgid "Page"
 msgstr "પેજ"
 
@@ -2095,8 +2099,8 @@ msgstr "પૃષ્ઠ {currentPage} / {totalPages}"
 #: src/routes/_authenticated/$page/index.tsx:127
 #: src/routes/_authenticated/$page/index.tsx:187
 #: src/routes/_authenticated/$page/index.tsx:194
-#: src/routes/_authenticated/index.tsx:408
-#: src/routes/_authenticated/index.tsx:415
+#: src/routes/_authenticated/index.tsx:396
+#: src/routes/_authenticated/index.tsx:403
 msgid "Page actions"
 msgstr "પેજ ક્રિયાઓ"
 
@@ -2104,10 +2108,10 @@ msgstr "પેજ ક્રિયાઓ"
 msgid "Page created"
 msgstr "પેજ બનાવ્યું"
 
-#: src/features/wiki/page-view.tsx:291
+#: src/features/wiki/page-view.tsx:293
 #: src/features/wiki/wiki-page-content.tsx:241
 #: src/routes/_authenticated/$page/index.tsx:164
-#: src/routes/_authenticated/index.tsx:387
+#: src/routes/_authenticated/index.tsx:375
 msgid "Page not found"
 msgstr "પેજ મળ્યું નથી"
 
@@ -2127,7 +2131,7 @@ msgstr "પેજ URL"
 msgid "Page URL is required"
 msgstr "પેજ URL આવશ્યક છે"
 
-#: src/features/wiki/tag-pages.tsx:27
+#: src/features/wiki/tag-pages.tsx:29
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "<0>{tag}</0> ટેગ કરેલા પૃષ્ઠો"
 
@@ -2238,7 +2242,7 @@ msgstr "પાછું ફેરવવા માટેનું કારણ"
 #: src/routes/_authenticated/changes.tsx:42
 #: src/routes/_authenticated/changes.tsx:53
 #: src/routes/_authenticated/changes.tsx:63
-#: src/routes/_authenticated/index.tsx:456
+#: src/routes/_authenticated/index.tsx:444
 msgid "Recent changes"
 msgstr "તાજેતરના ફેરફારો"
 
@@ -2251,7 +2255,7 @@ msgstr "આ wiki ના તમામ પેજમાં તાજેતરના
 msgid "Recommended"
 msgstr "ભલામણ કરેલ"
 
-#: src/routes/_authenticated/index.tsx:799
+#: src/routes/_authenticated/index.tsx:787
 msgid "Recommended wikis"
 msgstr "ભલામણ કરેલ wikis"
 
@@ -2301,8 +2305,8 @@ msgstr "24 કલાકની અંદર સાપેક્ષ, અન્ય�
 #: ../../../lib/web/src/components/comment-composer.tsx:236
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
-#: src/features/wiki/tag-manager.tsx:108
-#: src/features/wiki/tag-manager.tsx:113
+#: src/features/wiki/tag-manager.tsx:117
+#: src/features/wiki/tag-manager.tsx:122
 #: src/features/wiki/wiki-settings.tsx:794
 msgid "Remove"
 msgstr "દૂર કરો"
@@ -2358,7 +2362,7 @@ msgstr "પ્રતિકૃતિ દૂર કરાઈ રહી છે..."
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:287
 #: src/routes/_authenticated/$page/index.tsx:209
-#: src/routes/_authenticated/index.tsx:430
+#: src/routes/_authenticated/index.tsx:418
 msgid "Rename"
 msgstr "નામ બદલો"
 
@@ -2371,8 +2375,8 @@ msgid "Renaming..."
 msgstr "નામ બદલવામાં આવી રહ્યું છે..."
 
 #: src/features/wiki/wiki-page-content.tsx:134
-#: src/routes/_authenticated/index.tsx:329
-#: src/routes/_authenticated/index.tsx:616
+#: src/routes/_authenticated/index.tsx:317
+#: src/routes/_authenticated/index.tsx:604
 msgid "Replace"
 msgstr "બદલો"
 
@@ -2473,8 +2477,8 @@ msgid "Reverting..."
 msgstr "પાછું લાવવામાં આવી રહ્યું છે..."
 
 #: ../../../lib/web/src/components/options-menu.tsx:181
-#: src/routes/_authenticated/index.tsx:479
-#: src/routes/_authenticated/index.tsx:750
+#: src/routes/_authenticated/index.tsx:467
+#: src/routes/_authenticated/index.tsx:738
 msgid "Revoke access"
 msgstr "ઍક્સેસ રદ કરો"
 
@@ -2487,22 +2491,22 @@ msgid "Rows per page"
 msgstr "પ્રતિ પૃષ્ઠ પંક્તિઓ"
 
 #: ../../../lib/web/src/components/options-menu.tsx:131
-#: src/routes/_authenticated/index.tsx:346
-#: src/routes/_authenticated/index.tsx:633
+#: src/routes/_authenticated/index.tsx:334
+#: src/routes/_authenticated/index.tsx:621
 msgid "RSS access revoked"
 msgstr "RSS ઍક્સેસ રદ કરી"
 
 #: ../../../lib/web/src/components/options-menu.tsx:171
 #: src/features/wiki/wiki-page-content.tsx:333
-#: src/routes/_authenticated/index.tsx:462
-#: src/routes/_authenticated/index.tsx:731
+#: src/routes/_authenticated/index.tsx:450
+#: src/routes/_authenticated/index.tsx:719
 msgid "RSS feed"
 msgstr "RSS ફીડ"
 
 #: ../../../lib/web/src/components/options-menu.tsx:121
 #: src/features/wiki/wiki-page-content.tsx:142
-#: src/routes/_authenticated/index.tsx:337
-#: src/routes/_authenticated/index.tsx:624
+#: src/routes/_authenticated/index.tsx:325
+#: src/routes/_authenticated/index.tsx:612
 msgid "RSS URL copied to clipboard"
 msgstr "RSS URL ક્લિપબોર્ડ પર કૉપિ થઈ"
 
@@ -2535,7 +2539,7 @@ msgstr "સાચવી રહ્યું છે..."
 #: src/routes/_authenticated/$page/index.tsx:229
 #: src/routes/_authenticated/$wikiId/search.tsx:31
 #: src/routes/_authenticated/$wikiId/search.tsx:41
-#: src/routes/_authenticated/index.tsx:444
+#: src/routes/_authenticated/index.tsx:432
 #: src/routes/_authenticated/search.tsx:27
 #: src/routes/_authenticated/search.tsx:36
 msgid "Search"
@@ -2561,7 +2565,7 @@ msgstr "સ્થળ માટે શોધો"
 msgid "Search for a place..."
 msgstr "સ્થળ શોધો..."
 
-#: src/routes/_authenticated/index.tsx:775
+#: src/routes/_authenticated/index.tsx:763
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "સબ્સ્ક્રાઇબ કરવા માટે વિકી શોધો, અથવા તમારા પોતાના દસ્તાવેજો પ્રકાશિત કરવા માટે એક બનાવો."
 
@@ -2742,7 +2746,7 @@ msgstr "ઍક્સેસ સેટ કરી રહ્યું છે..."
 #: src/features/wiki/wiki-page-content.tsx:360
 #: src/features/wiki/wiki-settings.tsx:105
 #: src/routes/_authenticated/$page/index.tsx:263
-#: src/routes/_authenticated/index.tsx:502
+#: src/routes/_authenticated/index.tsx:490
 msgid "Settings"
 msgstr "સેટિંગ્સ"
 
@@ -2817,7 +2821,7 @@ msgstr "સ્રોતો"
 msgid "Spacious"
 msgstr "વિશાળ"
 
-#: src/routes/_authenticated/index.tsx:772
+#: src/routes/_authenticated/index.tsx:760
 msgid "Start your first wiki"
 msgstr "તમારી પ્રથમ વિકિ શરૂ કરો"
 
@@ -2832,7 +2836,7 @@ msgstr "વિષય"
 #: ../../../lib/web/src/components/search-entity-dialog.tsx:83
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:195
-#: src/routes/_authenticated/index.tsx:837
+#: src/routes/_authenticated/index.tsx:825
 msgid "Subscribe"
 msgstr "સબ્સ્ક્રાઇબ કરો"
 
@@ -2843,13 +2847,13 @@ msgid "Subscribed"
 msgstr "સબ્સ્ક્રાઇબ કર્યું"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:691
+#: src/routes/_authenticated/index.tsx:679
 msgid "Subscribed to {0}"
 msgstr "{0} પર સબ્સ્ક્રાઇબ કર્યું"
 
 #: src/features/wiki/inline-wiki-search.tsx:102
 #: src/routes/_authenticated/find.tsx:63
-#: src/routes/_authenticated/index.tsx:690
+#: src/routes/_authenticated/index.tsx:678
 msgid "Subscribing..."
 msgstr "સબ્સ્ક્રાઇબ કરી રહ્યું છે..."
 
@@ -2890,7 +2894,7 @@ msgstr "સિંક કરી રહ્યું છે..."
 msgid "System"
 msgstr "સિસ્ટમ"
 
-#: src/features/wiki/page-view.tsx:52
+#: src/features/wiki/page-view.tsx:54
 msgid "Table of contents"
 msgstr "વિષય સૂચિ"
 
@@ -2898,16 +2902,16 @@ msgstr "વિષય સૂચિ"
 msgid "Tag"
 msgstr "ટૅગ"
 
-#: src/features/wiki/tag-manager.tsx:52
+#: src/features/wiki/tag-manager.tsx:55
 msgid "Tag \"{tag}\" added"
 msgstr "ટેગ «{tag}» ઉમેર્યું"
 
-#: src/features/wiki/tag-manager.tsx:68
+#: src/features/wiki/tag-manager.tsx:71
 msgid "Tag \"{tag}\" removed"
 msgstr "ટેગ «{tag}» દૂર કર્યું"
 
 #: ../../../lib/web/src/components/post-tags.tsx:76
-#: src/features/wiki/tag-manager.tsx:44
+#: src/features/wiki/tag-manager.tsx:47
 msgid "Tag already exists"
 msgstr "ટૅગ પહેલેથી જ અસ્તિત્વમાં છે"
 
@@ -2915,10 +2919,14 @@ msgstr "ટૅગ પહેલેથી જ અસ્તિત્વમાં �
 msgid "Tag must be 50 characters or less"
 msgstr "ટૅગ 50 અક્ષરો કે તેથી ઓછા હોવા જોઈએ"
 
-#: src/routes/_authenticated/tag/$tag.tsx:23
-#: src/routes/_authenticated/tag/$tag.tsx:29
-#: src/routes/_authenticated/tag/$tag.tsx:40
-#: src/routes/_authenticated/tag/$tag.tsx:50
+#: src/routes/_authenticated/$wikiId/tag/$tag.tsx:24
+#: src/routes/_authenticated/$wikiId/tag/$tag.tsx:30
+#: src/routes/_authenticated/$wikiId/tag/$tag.tsx:41
+#: src/routes/_authenticated/$wikiId/tag/$tag.tsx:51
+#: src/routes/_authenticated/tag/$tag.tsx:30
+#: src/routes/_authenticated/tag/$tag.tsx:36
+#: src/routes/_authenticated/tag/$tag.tsx:47
+#: src/routes/_authenticated/tag/$tag.tsx:57
 msgid "Tag: {tag}"
 msgstr "ટેગ: {tag}"
 
@@ -2926,7 +2934,7 @@ msgstr "ટેગ: {tag}"
 #: ../../../lib/web/src/components/post-tags.tsx:115
 #: src/features/wiki/wiki-page-content.tsx:321
 #: src/routes/_authenticated/$page/index.tsx:235
-#: src/routes/_authenticated/index.tsx:450
+#: src/routes/_authenticated/index.tsx:438
 msgid "Tags"
 msgstr "ટૅગ્સ"
 
@@ -2965,7 +2973,7 @@ msgstr "રીડાયરેક્ટ કરવા માટેનું હા
 msgid "The existing page to redirect to (e.g., \"new-page\")"
 msgstr "રીડાયરેક્ટ કરવા માટે અસ્તિત્વમાં રહેલું પૃષ્ઠ (દા.ત. «new-page»)"
 
-#: src/features/wiki/page-view.tsx:292
+#: src/features/wiki/page-view.tsx:294
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "«{slug}» પૃષ્ઠ હજુ અસ્તિત્વમાં નથી."
 
@@ -3006,8 +3014,8 @@ msgid "This action cannot be undone. This will permanently delete the wiki and a
 msgstr "આ ક્રિયા પૂર્વવત્ કરી શકાતી નથી. આ વિકિ અને તેની તમામ સામગ્રીને કાયમ માટે કાઢી નાખશે."
 
 #: src/features/wiki/wiki-page-content.tsx:132
-#: src/routes/_authenticated/index.tsx:327
-#: src/routes/_authenticated/index.tsx:614
+#: src/routes/_authenticated/index.tsx:315
+#: src/routes/_authenticated/index.tsx:602
 msgid "This feed URL was already issued and cannot be shown again."
 msgstr "આ ફીડ URL પહેલેથી જારી કરવામાં આવ્યું છે અને ફરીથી બતાવી શકાતું નથી."
 
@@ -3118,7 +3126,7 @@ msgstr "મુસાફરી કરી રહ્યું છે"
 msgid "Try a different search term or filter."
 msgstr "અલગ શોધ શબ્દ અથવા ફિલ્ટર અજમાવી જુઓ."
 
-#: src/features/wiki/tag-pages.tsx:54
+#: src/features/wiki/tag-pages.tsx:56
 msgid "Try a different tag."
 msgstr "અલગ ટૅગ અજમાવો."
 
@@ -3195,19 +3203,19 @@ msgstr "અજાણ્યું"
 #: src/routes/_authenticated/$page/index.tsx:275
 #: src/routes/_authenticated/$page/index.tsx:297
 #: src/routes/_authenticated/$page/index.tsx:299
-#: src/routes/_authenticated/index.tsx:513
-#: src/routes/_authenticated/index.tsx:541
-#: src/routes/_authenticated/index.tsx:543
-#: src/routes/_authenticated/index.tsx:908
-#: src/routes/_authenticated/index.tsx:940
-#: src/routes/_authenticated/index.tsx:942
+#: src/routes/_authenticated/index.tsx:501
+#: src/routes/_authenticated/index.tsx:529
+#: src/routes/_authenticated/index.tsx:531
+#: src/routes/_authenticated/index.tsx:896
+#: src/routes/_authenticated/index.tsx:928
+#: src/routes/_authenticated/index.tsx:930
 msgid "Unsubscribe"
 msgstr "અનસબ્સ્ક્રાઇબ કરો"
 
 #: src/features/wiki/wiki-page-content.tsx:78
 #: src/routes/_authenticated/$page/index.tsx:71
-#: src/routes/_authenticated/index.tsx:305
-#: src/routes/_authenticated/index.tsx:951
+#: src/routes/_authenticated/index.tsx:293
+#: src/routes/_authenticated/index.tsx:939
 msgid "Unsubscribed"
 msgstr "અનસબ્સ્ક્રાઇબ કર્યું"
 
@@ -3215,10 +3223,10 @@ msgstr "અનસબ્સ્ક્રાઇબ કર્યું"
 #: src/features/wiki/wiki-page-content.tsx:372
 #: src/routes/_authenticated/$page/index.tsx:70
 #: src/routes/_authenticated/$page/index.tsx:275
-#: src/routes/_authenticated/index.tsx:304
-#: src/routes/_authenticated/index.tsx:513
-#: src/routes/_authenticated/index.tsx:907
-#: src/routes/_authenticated/index.tsx:950
+#: src/routes/_authenticated/index.tsx:292
+#: src/routes/_authenticated/index.tsx:501
+#: src/routes/_authenticated/index.tsx:895
+#: src/routes/_authenticated/index.tsx:938
 msgid "Unsubscribing..."
 msgstr "અનસબ્સ્ક્રાઇબ કરી રહ્યું છે..."
 
@@ -3243,10 +3251,10 @@ msgstr "અપ્રમાણિત"
 #. placeholder {0}: formatTimestamp(page.updated)
 #. placeholder {0}: formatTimestamp(result.updated)
 #. placeholder {0}: formatTimestamp(wiki.updated)
-#: src/features/wiki/page-view.tsx:262
+#: src/features/wiki/page-view.tsx:264
 #: src/features/wiki/search-page.tsx:117
-#: src/features/wiki/tag-pages.tsx:72
-#: src/routes/_authenticated/index.tsx:924
+#: src/features/wiki/tag-pages.tsx:74
+#: src/routes/_authenticated/index.tsx:912
 msgid "Updated {0}"
 msgstr "અપડેટ થયું {0}"
 
@@ -3406,15 +3414,15 @@ msgstr "જ્યારે અન્ય વિકિ આ વિકિની ન�
 #: src/features/wiki/wiki-page-content.tsx:311
 #: src/routes/_authenticated/$page/index.tsx:225
 #: src/routes/_authenticated/$wikiId/settings.tsx:38
-#: src/routes/_authenticated/index.tsx:440
+#: src/routes/_authenticated/index.tsx:428
 #: src/routes/_authenticated/settings.tsx:37
 msgid "Wiki"
 msgstr "વિકિ"
 
-#: src/routes/_authenticated/index.tsx:718
-#: src/routes/_authenticated/index.tsx:725
-#: src/routes/_authenticated/index.tsx:888
-#: src/routes/_authenticated/index.tsx:895
+#: src/routes/_authenticated/index.tsx:706
+#: src/routes/_authenticated/index.tsx:713
+#: src/routes/_authenticated/index.tsx:876
+#: src/routes/_authenticated/index.tsx:883
 msgid "Wiki actions"
 msgstr "વિકિ ક્રિયાઓ"
 
@@ -3464,8 +3472,8 @@ msgstr "વિકિ સેટિંગ્સ વિભાગો"
 msgid "Wiki synced"
 msgstr "વિકિ સિંક થઈ"
 
-#: src/routes/_authenticated/index.tsx:586
-#: src/routes/_authenticated/index.tsx:707
+#: src/routes/_authenticated/index.tsx:574
+#: src/routes/_authenticated/index.tsx:695
 msgid "Wikis"
 msgstr "વિકિ"
 

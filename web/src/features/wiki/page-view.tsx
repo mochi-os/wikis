@@ -19,6 +19,8 @@ import { t } from '@lingui/core/macro'
 interface PageViewProps {
   page: WikiPage
   missingLinks?: string[]
+  // Set in class context (/wikis/$wikiId/...) so tag links stay entity-scoped
+  wikiId?: string
 }
 
 function findScrollParent(element: HTMLElement | null): HTMLElement | Window {
@@ -104,7 +106,7 @@ function TableOfContents({
   )
 }
 
-export function PageView({ page, missingLinks }: PageViewProps) {
+export function PageView({ page, missingLinks, wikiId }: PageViewProps) {
   const { formatTimestamp } = useFormat()
   const headings = extractTocHeadings(page.content)
   const hasToc = headings.length > 0
@@ -251,7 +253,7 @@ export function PageView({ page, missingLinks }: PageViewProps) {
       <Separator />
 
       <footer className='bg-surface-1 flex flex-wrap items-center justify-between gap-4 rounded-lg border px-3 py-2'>
-        <TagManager slug={page.slug} tags={page.tags} />
+        <TagManager slug={page.slug} tags={page.tags} wikiId={wikiId} />
 
         <div className='text-muted-foreground flex items-center gap-2 text-xs'>
           <span className='bg-background text-foreground rounded border px-1.5 py-0.5 font-mono'>
