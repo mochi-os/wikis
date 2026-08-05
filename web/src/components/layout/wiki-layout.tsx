@@ -51,11 +51,24 @@ function WikiLayoutInner() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
+  // Use router location for reactive URL changes
+  const location = useLocation()
+  const urlEntityId = getEntityIdFromPath(location.pathname)
+
   // Refresh wiki content the moment remote sync data (initial dump or live
   // broadcast) lands locally, instead of waiting for a manual reload. The
   // websocket key is the wiki's fingerprint, matching the server's
-  // mochi.websocket.write(mochi.entity.fingerprint(wiki), ...).
-  useWikiWebsocket(info?.wiki?.fingerprint)
+  // mochi.websocket.write(mochi.entity.fingerprint(wiki), ...). Entity
+  // context carries it in info.wiki, but the class-context info call is
+  // class-wide and has no current wiki, so there the fingerprint comes from
+  // the route - directly when the URL segment is a fingerprint, through the
+  // wiki list when it is a full entity id. On the list page neither exists
+  // and the hook stays idle.
+  const routeFingerprint =
+    urlEntityId && urlEntityId.length === 9
+      ? urlEntityId
+      : info?.wikis?.find((wiki) => wiki.id === urlEntityId)?.fingerprint
+  useWikiWebsocket(info?.wiki?.fingerprint ?? routeFingerprint)
 
   // Handle "All wikis" click - navigate and refresh the list
   const handleAllWikisClick = useCallback(() => {
@@ -63,10 +76,6 @@ function WikiLayoutInner() {
     navigate({ to: '/' })
   }, [queryClient, navigate])
   const createWiki = useCreateWiki()
-
-  // Use router location for reactive URL changes
-  const location = useLocation()
-  const urlEntityId = getEntityIdFromPath(location.pathname)
 
   // Whether we're inside a specific wiki - use URL as source of truth
   const isInWiki = urlEntityId !== null
