@@ -4824,8 +4824,13 @@ def action_rss(a):
     rss_row = None
     if token:
         rss_row = mochi.db.row("select mode from rss where hash=? and entity=?", mochi.crypto.hash.sha256(token), wiki["id"])
-        if rss_row:
-            mode = rss_row["mode"]
+        # The token authorises one wiki. Refuse outright rather than falling
+        # through to check_access below, which resolves against the token's
+        # issuer and would pass for any wiki that issuer owns.
+        if not rss_row:
+            a.error.label(403, "errors.not_allowed")
+            return
+        mode = rss_row["mode"]
 
     if not rss_row and not check_access(a, wiki["id"], "view"):
         a.error.label(403, "errors.not_allowed")
