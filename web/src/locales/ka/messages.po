@@ -18,13 +18,23 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "გთხოვთ, შეამოწმოთ ინტერნეტთან კავშირი და სცადოთ ხელახლა."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:302
+msgid " or "
+msgstr " ან "
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:228
 #: src/features/wiki/wiki-comment-thread.tsx:195
 msgid "(edited)"
 msgstr "(რედაქტირებულია)"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:212
 #: src/features/wiki/wiki-comment-thread.tsx:181
 msgid "(expand)"
 msgstr "(გაშლა)"
+
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:774
+msgid "[not set]"
+msgstr "[არ არის მითითებული]"
 
 #. placeholder {0}: attachments.length
 #: src/features/wiki/attachments-page.tsx:288
@@ -133,6 +143,10 @@ msgstr "{selectedCount, plural, other {მასობრივი მოქმ�
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{sentLabel} / {totalLabel}"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
+msgid "{totalCount, plural, one {# item} other {# items}}"
+msgstr "{totalCount, plural, other {# ერთეული}}"
+
 #: src/features/wiki/wiki-comment-thread.tsx:179
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, other {# პასუხი}}"
@@ -156,6 +170,14 @@ msgstr "*შიგთავსი არ არის*"
 #: ../../../lib/web/src/components/entity/entity-board-card.tsx:421
 msgid "+{0} nested"
 msgstr "+{0} ჩადგმული"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:209
+msgid "+{totalDescendants} more replies"
+msgstr "+{totalDescendants} მეტი პასუხი"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:208
+msgid "1 reply"
+msgstr "1 პასუხი"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:42
 msgid "12 hours"
@@ -233,9 +255,17 @@ msgstr "მოქმედებები"
 msgid "Add"
 msgstr "დამატება"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:360
+msgid "Add a comment..."
+msgstr "კომენტარის დამატება..."
+
 #: ../../../lib/web/src/features/accounts/account-add.tsx:133
 msgid "Add a new account"
 msgstr "ახალი ანგარიშის დამატება"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:106
+msgid "Add a new field to this class"
+msgstr "ამ კლასისთვის ახალი ველის დამატება"
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:148
 msgid "Add access"
@@ -254,13 +284,30 @@ msgstr "დაამატეთ ანგარიში შეტყობი�
 msgid "Add checklist item"
 msgstr "ჩამონათვალის ერთეულის დამატება"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:105
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:233
+msgid "Add field"
+msgstr "ველის დამატება"
+
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx:705
 msgid "Add item..."
 msgstr "ერთეულის დამატება..."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
+msgid "Add link"
+msgstr "ბმულის დამატება"
+
 #: ../../../lib/web/src/features/accounts/account-picker.tsx:102
 msgid "Add new account"
 msgstr "ახალი ანგარიშის დამატება"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:292
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:194
+msgid "Add option"
+msgstr "ვარიანტის დამატება"
 
 #: src/features/wiki/redirects-page.tsx:225
 #: src/features/wiki/wiki-settings.tsx:1026
@@ -284,6 +331,8 @@ msgstr "გუნდის/აპის დამატება"
 msgid "Add to existing notifications"
 msgstr "არსებულ შეტყობინებებში დამატება"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:264
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:519
 #: ../../../lib/web/src/components/view-tabs.tsx:87
 #: ../../../lib/web/src/components/view-tabs.tsx:93
 msgid "Add view"
@@ -336,6 +385,10 @@ msgstr "ნება დართეთ ყველას მოძებნო
 msgid "Allow anyone to search for wiki"
 msgstr "ნებისმიერს wiki-ის ძიების ნება დართე"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:226
+msgid "Allow sort by"
+msgstr "დახარისხების დაშვება"
+
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:178
 msgid "An error occurred"
 msgstr "მოხდა შეცდომა"
@@ -361,6 +414,19 @@ msgstr "ნებისმიერი, ვინც შესულია"
 msgid "Are you absolutely sure?"
 msgstr "ნამდვილად დარწმუნებული ხართ?"
 
+#. placeholder {0}: deleteTarget?.name
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:271
+msgid "Are you sure you want to delete \"{0}\"?"
+msgstr "დარწმუნებული ხართ, რომ გსურთ „{0}“-ის წაშლა?"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:643
+msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
+msgstr "დარწმუნებული ხართ, რომ გსურთ „{name}“ სვეტის წაშლა? ეს შეუქცევადია."
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:485
+msgid "Are you sure you want to delete this comment? This will also delete all replies."
+msgstr "დარწმუნებული ხართ, რომ გსურთ ამ კომენტარის წაშლა? ეს ასევე წაშლის ყველა პასუხს."
+
 #: src/features/wiki/wiki-comment-thread.tsx:373
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "დარწმუნებული ხართ, რომ გსურთ ამ კომენტარის წაშლა? ეს ასევე წაშლის ყველა პასუხს. მოქმედება შეუქცევადია."
@@ -384,10 +450,17 @@ msgstr "ზრდადი"
 msgid "Ascending"
 msgstr "ზრდადობით"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:398
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:403
+msgid "Attach comment files"
+msgstr "კომენტარის ფაილების მიმაგრება"
+
 #: src/features/wiki/comment-form.tsx:154
 msgid "Attach files"
 msgstr "ფაილების მიმაგრება"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:439
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:444
 #: src/features/wiki/wiki-comment-thread.tsx:338
 msgid "Attach reply files"
 msgstr "პასუხის ფაილების მიმაგრება"
@@ -524,15 +597,32 @@ msgstr "ბანერი"
 msgid "Be the first to comment on this page."
 msgstr "იყავით პირველი ვინც დააკომენტარებს ამ გვერდს."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:68
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:215
+msgid "Blocked by"
+msgstr "დაბლოკილია"
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:237
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:247
 msgid "Blocked navigation to untrusted link"
 msgstr "დაბლოკილია უსანდო ბმულზე ნავიგაცია"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:66
+msgid "Blocks"
+msgstr "ბლოკები"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:318
+msgid "Board"
+msgstr "დაფა"
+
 #: ../../../lib/web/src/components/post-tags.tsx:180
 #: ../../../lib/web/src/components/post-tags.tsx:192
 msgid "Boost interest"
 msgstr "ინტერესის გაძლიერება"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:405
+msgid "Border colour"
+msgstr "კონტურის ფერი"
 
 #: src/features/wiki/redirects-page.tsx:199
 #: src/features/wiki/wiki-settings.tsx:993
@@ -551,6 +641,10 @@ msgstr "გვერდების ტეგით დათვალიერ�
 msgid "Browser notifications"
 msgstr "ბრაუზერის შეტყობინებები"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:249
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:169
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:186
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
 #: ../../../lib/web/src/components/step-up-dialog.tsx:363
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
@@ -577,10 +671,14 @@ msgstr "ბრაუზერის შეტყობინებები"
 msgid "Cancel"
 msgstr "გაუქმება"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:415
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:420
 #: src/features/wiki/comment-form.tsx:165
 msgid "Cancel comment"
 msgstr "კომენტარის გაუქმება"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:455
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:460
 #: src/features/wiki/wiki-comment-thread.tsx:348
 msgid "Cancel reply"
 msgstr "პასუხის გაუქმება"
@@ -619,6 +717,14 @@ msgstr "ცვლილებები აქ გამოჩნდება გ
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:198
 msgid "Check \"All\" to see your past notifications."
 msgstr "მონიშნეთ „ყველა“ წინა შეტყობინებების სანახავად."
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
+msgid "Checkbox"
+msgstr "ფლაგი"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:138
+msgid "Checklist"
+msgstr "ჩამონათვალი"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx:37
 msgid "Choose a game from the sidebar or start a new one."
@@ -678,12 +784,21 @@ msgstr "არჩევის გასუფთავება"
 msgid "Clear selection (Escape)"
 msgstr "არჩევის გასუფთავება (Escape)"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:485
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:490
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:358
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:361
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "დახურვა"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:113
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:269
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:273
+msgid "Close dialog"
+msgstr "დიალოგის დახურვა"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:108
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:113
@@ -714,6 +829,19 @@ msgstr "ჩაკეცვა"
 msgid "Collapse sidebar"
 msgstr "გვერდითა პანელის შეკვრა"
 
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:149
+msgid "Colour"
+msgstr "ფერი"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:553
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:558
+msgid "Column actions"
+msgstr "სვეტის მოქმედებები"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:353
+msgid "Columns group by"
+msgstr "სვეტების დაჯგუფება"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:96
 msgid "Comfortable"
 msgstr "კომფორტული"
@@ -731,6 +859,11 @@ msgstr "ბრძანებების პალიტრა"
 msgid "Comment"
 msgstr "კომენტარი"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:330
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:337
+msgid "Comment actions"
+msgstr "კომენტარის მოქმედებები"
+
 #: src/features/wiki/wiki-page-content.tsx:337
 #: src/routes/_authenticated/index.tsx:461
 #: src/routes/_authenticated/index.tsx:730
@@ -745,6 +878,14 @@ msgstr "კომპაქტური"
 #: src/features/wiki/revision-view.tsx:96
 msgid "Compare changes"
 msgstr "ცვლილებების შედარება"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:97
+msgid "Configure option settings"
+msgstr "ვარიანტის პარამეტრების კონფიგურაცია"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:265
+msgid "Configure view settings"
+msgstr "ხედის პარამეტრების კონფიგურაცია"
 
 #: ../../../lib/web/src/components/place-picker.tsx:160
 #: ../../../lib/web/src/components/travelling-picker.tsx:316
@@ -830,6 +971,14 @@ msgstr "ხელახალი ავთენტიფიკაციის �
 msgid "Couldn't verify with that account. Please try again."
 msgstr "ამ ანგარიშით ვერ მოხერხდა გადამოწმება. გთხოვთ, სცადოთ თავიდან."
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:564
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:703
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:475
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:647
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
+msgid "Create"
+msgstr "შექმნა"
+
 #. placeholder {0}: entityLabel.toLowerCase()
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
 msgid "Create {0}"
@@ -880,6 +1029,8 @@ msgstr "ამ გვერდის შექმნა"
 msgid "Create wiki"
 msgstr "wiki-ის შექმნა"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:498
 #: src/features/wiki/redirects-page.tsx:95
 #: src/features/wiki/wiki-settings.tsx:904
 msgid "Created"
@@ -894,6 +1045,7 @@ msgstr "მიმართვის შექმნა..."
 msgid "Creating wiki..."
 msgstr "ვიკის შექმნა..."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:647
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
 #: src/features/wiki/page-editor.tsx:396
 #: src/features/wiki/redirects-page.tsx:274
@@ -928,6 +1080,7 @@ msgstr "ბნელი რეჟიმი"
 msgid "Data conflict"
 msgstr "მონაცემთა კონფლიქტი"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:139
 #: src/features/wiki/attachments-page.tsx:381
 #: src/features/wiki/changes-list.tsx:48
 #: src/features/wiki/page-history.tsx:58
@@ -946,6 +1099,19 @@ msgstr "ნაგულისხმევი"
 msgid "Default AI account"
 msgstr "ნაგულისხმევი AI ანგარიში"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:485
+msgid "Default sort"
+msgstr "ნაგულისხმევი დახარისხება"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:583
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:644
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:318
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:361
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:486
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:173
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:178
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:227
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:272
 #: src/features/wiki/attachments-page.tsx:494
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:641
@@ -963,6 +1129,7 @@ msgstr "წაშლა"
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "„{0}“-ის წაშლა? ეს შეუქცევადია."
 
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:270
 #: src/features/wiki/attachments-page.tsx:492
 #: src/features/wiki/attachments-page.tsx:584
 #: src/features/wiki/attachments-page.tsx:593
@@ -974,9 +1141,28 @@ msgstr "„{0}“-ის წაშლა? ეს შეუქცევადი�
 msgid "Delete attachment"
 msgstr "დანართის წაშლა"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:642
+msgid "Delete column"
+msgstr "სვეტის წაშლა"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:484
 #: src/features/wiki/wiki-comment-thread.tsx:372
 msgid "Delete comment"
 msgstr "კომენტარის წაშლა"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:301
+msgid "Delete field"
+msgstr "ველის წაშლა"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:119
+msgid "Delete option"
+msgstr "ვარიანტის წაშლა"
+
+#. placeholder {0}: opt.name
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:279
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:284
+msgid "Delete option {0}"
+msgstr "ვარიანტის წაშლა {0}"
 
 #: src/features/wiki/delete-page.tsx:56
 #: src/features/wiki/page-editor.tsx:378
@@ -996,6 +1182,10 @@ msgstr "გადამისამართების წაშლა {0}"
 #: src/features/wiki/wiki-settings.tsx:943
 msgid "Delete redirect?"
 msgstr "გადამისამართების წაშლა?"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:290
+msgid "Delete view"
+msgstr "ხედის წაშლა"
 
 #: src/features/wiki/wiki-settings.tsx:463
 #: src/features/wiki/wiki-settings.tsx:474
@@ -1095,6 +1285,12 @@ msgstr "აჩვენებს მობილურის გვერდი�
 msgid "Documents"
 msgstr "დოკუმენტები"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:306
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:524
+msgid "Done"
+msgstr "მზადაა"
+
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:214
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:342
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:352
 msgid "Download"
@@ -1108,10 +1304,16 @@ msgstr "ჩამოტვირთვა ვერ მოხერხდა"
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
 msgstr "ჩავლებით მოათავსეთ ფაილები აქ, ან დააწკაპუნეთ „ფაილების ატვირთვა“ დასაწყებად."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:67
+msgid "Duplicates"
+msgstr "დუბლიკატები"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:146
 msgid "Dyslexia-friendly"
 msgstr "დისლექსიის თავსებადი"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:307
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:352
 #: src/features/wiki/page-editor.tsx:335
 #: src/features/wiki/wiki-comment-thread.tsx:271
 #: src/features/wiki/wiki-page-content.tsx:280
@@ -1128,6 +1330,24 @@ msgstr "{label}-ის რედაქტირება"
 msgid "Edit and view"
 msgstr "რედაქტირება და ნახვა"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:138
+msgid "Edit field"
+msgstr "ველის რედაქტირება"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:139
+msgid "Edit field settings"
+msgstr "ველის პარამეტრების რედაქტირება"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+msgid "Edit option"
+msgstr "ვარიანტის რედაქტირება"
+
+#. placeholder {0}: opt.name
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:264
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:269
+msgid "Edit option {0}"
+msgstr "ვარიანტის რედაქტირება {0}"
+
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:31
 msgid "Edit selected card"
 msgstr "არჩეული ბარათის რედაქტირება"
@@ -1135,6 +1355,10 @@ msgstr "არჩეული ბარათის რედაქტირე�
 #: src/features/wiki/page-editor.tsx:484
 msgid "Edit summary (optional)"
 msgstr "რეზიუმეს რედაქტირება (არასავალდებულო)"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:264
+msgid "Edit view"
+msgstr "ხედის რედაქტირება"
 
 #: src/routes/_authenticated/$page/edit.tsx:36
 #: src/routes/_authenticated/$page/edit.tsx:48
@@ -1223,6 +1447,7 @@ msgstr "ტეგის დამატება ვერ მოხერხდ
 msgid "Failed to copy"
 msgstr "კოპირება ვერ მოხერხდა"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:137
 #: ../../../lib/web/src/components/options-menu.tsx:99
 #: src/components/link-dialog.tsx:43
 msgid "Failed to create link"
@@ -1241,10 +1466,19 @@ msgstr "გადამისამართების შექმნა ვ�
 msgid "Failed to create wiki"
 msgstr "ვიკის შექმნა ვერ მოხერხდა"
 
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:110
 #: src/features/wiki/attachments-page.tsx:248
 #: src/features/wiki/page-editor.tsx:249
 msgid "Failed to delete attachment"
 msgstr "დანართის წაშლა ვერ მოხერხდა"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:207
+msgid "Failed to delete comment"
+msgstr "კომენტარის წაშლა ვერ მოხერხდა"
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:159
+msgid "Failed to delete link"
+msgstr "ბმულის წაშლა ვერ მოხერხდა"
 
 #: src/features/wiki/delete-page.tsx:45
 msgid "Failed to delete page"
@@ -1305,6 +1539,10 @@ msgstr "ვიკის ინფორმაციის ჩატვირთ�
 #: src/routes/_authenticated/index.tsx:137
 msgid "Failed to load wikis"
 msgstr "ვიკების ჩატვირთვა ვერ მოხერხდა"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:170
+msgid "Failed to post comment"
+msgstr "კომენტარის გამოქვეყნება ვერ მოხერხდა"
 
 #: src/features/wiki/wiki-settings.tsx:579
 msgid "Failed to remove access"
@@ -1381,10 +1619,24 @@ msgstr "გამოწერის გაუქმება ვერ მოხ
 msgid "Failed to update access level"
 msgstr "წვდომის დონის განახლება ვერ მოხერხდა"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:190
+msgid "Failed to update comment"
+msgstr "კომენტარის განახლება ვერ მოხერხდა"
+
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:95
+msgid "Failed to upload attachment"
+msgstr "დანართის ატვირთვა ვერ მოხერხდა"
+
 #: src/features/wiki/attachments-page.tsx:149
 #: src/features/wiki/page-editor.tsx:197
 msgid "Failed to upload files"
 msgstr "ფაილების ატვირთვა ვერ მოხერხდა"
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:133
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:150
+msgid "Files"
+msgstr "ფაილები"
 
 #: src/features/wiki/attachments-page.tsx:365
 msgid "Filter"
@@ -1406,6 +1658,10 @@ msgstr "ანაბეჭდი"
 #: ../../../lib/web/src/components/restore-banner.tsx:103
 msgid "Finish moving your account"
 msgstr "დაასრულეთ ანგარიშის გადატანა"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:222
+msgid "Flags"
+msgstr "დროშები"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:116
 msgid "Flat"
@@ -1480,6 +1736,10 @@ msgstr "ბადის ხედი"
 msgid "Group"
 msgstr "ჯგუფი"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:353
+msgid "Group by"
+msgstr "დაჯგუფება"
+
 #. placeholder {0}: name || subject.slice(1)
 #: ../../../lib/web/src/features/access/access-list.tsx:68
 msgid "Group: {0}"
@@ -1531,6 +1791,7 @@ msgstr "მთავარი გვერდი"
 msgid "Hot"
 msgstr "ცხელი"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:153
 #: src/features/wiki/wiki-settings.tsx:742
 msgid "ID"
 msgstr "ID"
@@ -1635,6 +1896,7 @@ msgid "Last synced"
 msgstr "ბოლოს დასინქრონიზდა"
 
 #: ../../../lib/web/src/components/config-drawer.tsx:287
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:312
 msgid "Layout"
 msgstr "განლაგება"
 
@@ -1668,6 +1930,14 @@ msgstr "ბმული"
 #: src/features/wiki/markdown-content.tsx:167
 msgid "Link to {headingText}"
 msgstr "ბმული {headingText}-ზე"
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:279
+msgid "Links"
+msgstr "ბმულები"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:324
+msgid "List"
+msgstr "სია"
 
 #: src/features/wiki/attachments-page.tsx:410
 #: src/features/wiki/attachments-page.tsx:415
@@ -1716,11 +1986,19 @@ msgstr "კატეგორიების მართვა"
 msgid "Manage your connected accounts for notifications and services."
 msgstr "მართეთ თქვენი დაკავშირებული ანგარიშები შეტყობინებებისა და სერვისებისთვის."
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:52
+msgid "Manual"
+msgstr "სახელმძღვანელო"
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:202
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:209
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:224
 msgid "Mark all as read"
 msgstr "ყველას წაკითხულად მონიშვნა"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:199
+msgid "Maximum length"
+msgstr "მაქსიმალური სიგრძე"
 
 #: ../../../lib/web/src/features/accounts/types.ts:17
 msgid "MCP server"
@@ -1741,6 +2019,10 @@ msgstr "შეტყობინება"
 #: ../../../lib/web/src/lib/preference-utils.ts:85
 msgid "Metric"
 msgstr "მეტრიკული"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:188
+msgid "Minimum length"
+msgstr "მინიმალური სიგრძე"
 
 #: ../../../lib/web/src/features/accounts/types.ts:23
 msgid "Mochi web"
@@ -1763,6 +2045,11 @@ msgstr "მეტი ვარიანტი"
 msgid "my-page-name"
 msgstr "დაჩუმებული"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:143
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:128
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:299
 #: src/features/wiki/attachments-page.tsx:382
 #: src/features/wiki/wiki-settings.tsx:391
 msgid "Name"
@@ -1793,6 +2080,7 @@ msgstr "ქსელის შეცდომა"
 msgid "Never"
 msgstr "არასოდეს"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:460
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "ახალი"
@@ -1841,6 +2129,10 @@ msgstr "my-page-name"
 msgid "Next image"
 msgstr "შემდეგი სურათი"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:533
+msgid "No {parentClassNames} to add to"
+msgstr "დასამატებელი {parentClassNames} არ არის"
+
 #: src/features/wiki/wiki-settings.tsx:500
 msgid "No access"
 msgstr "წვდომა არ არის"
@@ -1848,6 +2140,10 @@ msgstr "წვდომა არ არის"
 #: ../../../lib/web/src/features/access/access-list.tsx:165
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "წვდომის წესები არ არის კონფიგურირებული. დაამატეთ წესები იმის მართვისთვის, თუ ვის აქვს წვდომა ამ რესურსზე."
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:65
+msgid "No activity yet"
+msgstr "აქტივობა ჯერ არ არის"
 
 #: src/features/wiki/attachments-page.tsx:441
 msgid "No attachments match your search"
@@ -1862,6 +2158,7 @@ msgstr "დანართები ჯერ არ არის"
 msgid "No changes yet"
 msgstr "ცვლილებები ჯერ არ არის"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:450
 #: src/features/wiki/page-comments.tsx:150
 msgid "No comments yet"
 msgstr "კომენტარები ჯერ არ არის"
@@ -1877,6 +2174,14 @@ msgstr "თამაშები ჯერ არ არის"
 #: ../../../lib/web/src/features/access/access-dialog.tsx:241
 msgid "No groups available"
 msgstr "ხელმისაწვდომი ჯგუფები არ არის"
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:500
+msgid "No item types can be created yet. Create the required parent items first."
+msgstr "ნივთის ტიპების შექმნა ჯერ შეუძლებელია. ჯერ შექმენით საჭირო მშობელი ნივთები."
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
+msgid "No matching objects"
+msgstr "შესაბამისი ობიექტები არ არის"
 
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:193
 msgid "No notifications yet"
@@ -1927,6 +2232,12 @@ msgstr "შედეგები ვერ მოიძებნა."
 msgid "No revisions found"
 msgstr "რევიზიები ვერ მოიძებნა"
 
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:845
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:890
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
+msgid "No status"
+msgstr "სტატუსი არ არის"
+
 #: src/features/wiki/tag-manager.tsx:94
 msgid "No tags"
 msgstr "ტეგების გარეშე"
@@ -1951,12 +2262,26 @@ msgstr "წაუკითხავი შეტყობინებები �
 msgid "No users found"
 msgstr "მომხმარებლები ვერ მოიძებნა"
 
+#: ../../../lib/web/src/components/entity/entity-design-preview.tsx:115
+msgid "No views"
+msgstr "ნახვები არ არის"
+
 #: src/features/wiki/inline-wiki-search.tsx:158
 #: src/routes/_authenticated/find.tsx:101
 msgid "No wikis found"
 msgstr "ვიკიები ვერ მოიძებნა"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:516
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:519
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:365
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:391
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:421
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:497
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:105
 #: ../../../lib/web/src/lib/preference-utils.ts:125
@@ -1975,6 +2300,10 @@ msgstr "ვერ მოიძებნა"
 msgid "Not set"
 msgstr "არ არის დაყენებული"
 
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:668
+msgid "Nothing found"
+msgstr "არაფერი მოიძებნა"
+
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:136
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:150
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:236
@@ -1987,6 +2316,12 @@ msgstr "შეტყობინებები"
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:195
 msgid "Notifications: {0}"
 msgstr "შეტყობინებები: {0}"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:140
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:54
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:499
+msgid "Number"
+msgstr "ნომერი"
 
 #: src/features/wiki/redirects-page.tsx:246
 #: src/features/wiki/wiki-settings.tsx:1044
@@ -2049,6 +2384,11 @@ msgstr "ნავიგაციის გახსნა"
 msgid "Open navigation menu"
 msgstr "ნავიგაციის მენიუს გახსნა"
 
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:108
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:114
+msgid "Open option actions"
+msgstr "ვარიანტის მოქმედებების გახსნა"
+
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:30
 msgid "Open selected card"
 msgstr "არჩეული ბარათის გახსნა"
@@ -2057,6 +2397,26 @@ msgstr "არჩეული ბარათის გახსნა"
 #: ../../../lib/web/src/components/config-drawer.tsx:66
 msgid "Open theme settings"
 msgstr "თემის პარამეტრების გახსნა"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:280
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:285
+msgid "Open view actions"
+msgstr "ხედის მოქმედებების გახსნა"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:150
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:156
+msgid "Open view controls"
+msgstr "ხედის კონტროლის გახსნა"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:200
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:158
+msgid "Option name"
+msgstr "ვარიანტის სახელი"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:241
+msgid "Options"
+msgstr "ვარიანტები"
 
 #: src/routes/_authenticated/join.tsx:95
 msgid "Or enter ID directly"
@@ -2135,6 +2495,10 @@ msgstr "გვერდის URL აუცილებელია"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "გვერდები ტეგით <0>{tag}</0>"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:508
+msgid "Parent"
+msgstr "მშობელი"
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:334
 msgid "Passkey"
 msgstr "Passkey"
@@ -2146,6 +2510,10 @@ msgstr "passkey-ის გადამოწმება ვერ მოხე�
 #: ../../../lib/web/src/components/restore-banner.tsx:152
 msgid "Passkeys"
 msgstr "Passkey-ები"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:210
+msgid "Pattern (regex)"
+msgstr "შაბლონი (regex)"
 
 #: src/features/wiki/wiki-settings.tsx:465
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
@@ -2294,6 +2662,10 @@ msgstr "გადამისამართებები"
 msgid "Reduce interest"
 msgstr "ინტერესის შემცირება"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:65
+msgid "Relates"
+msgstr "ეხება"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:50
 msgid "Relative (5m, 3h, 2d)"
 msgstr "ფარდობითი (5წ, 3ს, 2დ)"
@@ -2303,6 +2675,8 @@ msgid "Relative within 24 hours, else absolute"
 msgstr "ფარდობითი 24 საათში, წინააღმდეგ შემთხვევაში აბსოლუტური"
 
 #: ../../../lib/web/src/components/comment-composer.tsx:236
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:598
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
 #: src/features/wiki/tag-manager.tsx:117
@@ -2340,6 +2714,11 @@ msgstr "ინტერესის წაშლა"
 msgid "Remove item"
 msgstr "ნივთის წაშლა"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:304
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:309
+msgid "Remove link"
+msgstr "ბმულის წაშლა"
+
 #. placeholder {0}: replica.name || replica.id
 #: src/features/wiki/wiki-settings.tsx:770
 #: src/features/wiki/wiki-settings.tsx:776
@@ -2358,6 +2737,8 @@ msgstr "წვდომის წაშლა..."
 msgid "Removing replica..."
 msgstr "რეპლიკის წაშლა..."
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:575
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:632
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:287
@@ -2366,9 +2747,17 @@ msgstr "რეპლიკის წაშლა..."
 msgid "Rename"
 msgstr "სახელის შეცვლა"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:610
+msgid "Rename column"
+msgstr "სვეტის სახელის შეცვლა"
+
 #: src/features/wiki/rename-page-dialog.tsx:99
 msgid "Rename page"
 msgstr "გვერდის სახელის შეცვლა"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:611
+msgid "Rename this board column"
+msgstr "ამ დაფის სვეტის სახელის შეცვლა"
 
 #: src/features/wiki/rename-page-dialog.tsx:132
 msgid "Renaming..."
@@ -2404,11 +2793,14 @@ msgstr "ვიკის რეპლიკაცია"
 msgid "Replicating..."
 msgstr "რეპლიკაცია..."
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:294
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:342
 #: src/features/wiki/wiki-comment-thread.tsx:258
 msgid "Reply"
 msgstr "პასუხი"
 
 #. placeholder {0}: comment.name || comment.author
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:385
 #: src/features/wiki/wiki-comment-thread.tsx:298
 msgid "Reply to {0}..."
 msgstr "პასუხი {0}-ს..."
@@ -2416,6 +2808,10 @@ msgstr "პასუხი {0}-ს..."
 #: src/features/wiki/wiki-page-content.tsx:183
 msgid "Request URL: {baseURL}{slug}"
 msgstr "მოთხოვნის URL: {baseURL}{slug}"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
+msgid "Required"
+msgstr "აუცილებელი"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:367
 msgid "Resend email"
@@ -2486,6 +2882,15 @@ msgstr "წვდომის გაუქმება"
 msgid "Right to Left"
 msgstr "მარჯვნიდან მარცხნივ"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:169
+msgid "Rows"
+msgstr "სტრიქონები"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:379
+msgid "Rows group by"
+msgstr "სტრიქონების დაჯგუფება"
+
 #: ../../../lib/web/src/components/data-table/pagination.tsx:65
 msgid "Rows per page"
 msgstr "სტრიქონები გვერდზე"
@@ -2514,6 +2919,8 @@ msgstr "RSS URL დაკოპირდა"
 msgid "Saturday"
 msgstr "შაბათი"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:269
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:173
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:401
@@ -2532,6 +2939,7 @@ msgstr "ცვლილებების შენახვა"
 msgid "Saving..."
 msgstr "შენახვა..."
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:177
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
 #: ../../../lib/web/src/components/search.tsx:18
@@ -2586,6 +2994,10 @@ msgstr "მოძებნეთ საჯარო ვიკიები ან
 msgid "Search for wikis..."
 msgstr "ვიკიების ძიება..."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:337
+msgid "Search objects..."
+msgstr "ობიექტების ძიება..."
+
 #: src/features/wiki/search-page.tsx:64
 msgid "Search pages by title or content."
 msgstr "გვერდების ძიება სათაურით ან შინაარსით."
@@ -2602,6 +3014,12 @@ msgstr "დროის სარტყლის ძიება..."
 msgid "Search users"
 msgstr "მომხმარებლების ძიება"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:173
+msgid "Search, watch, and sort this view."
+msgstr "ძიება, თვალთვალი და დახარისხება ამ ხედის."
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:181
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:257
 #: ../../../lib/web/src/components/person-picker.tsx:324
 #: ../../../lib/web/src/components/search-entity-dialog.tsx:81
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
@@ -2614,10 +3032,18 @@ msgstr "ძიება..."
 msgid "Searching..."
 msgstr "ძიება..."
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:141
+msgid "Select"
+msgstr "არჩევა"
+
 #. placeholder {0}: item.label.toLowerCase()
 #: ../../../lib/web/src/components/config-drawer.tsx:149
 msgid "Select {0}"
 msgstr "აირჩიეთ {0}"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
+msgid "Select a field"
+msgstr "ველის არჩევა"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx:36
 msgid "Select a game"
@@ -2754,6 +3180,14 @@ msgstr "პარამეტრები"
 msgid "Settings saved"
 msgstr "პარამეტრები შენახულია"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:333
+msgid "Show classes"
+msgstr "კლასების ჩვენება"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:434
+msgid "Show fields"
+msgstr "ველების ჩვენება"
+
 #: src/features/wiki/revision-view.tsx:96
 msgid "Show page"
 msgstr "გვერდის ჩვენება"
@@ -2785,6 +3219,11 @@ msgstr "გასვლა"
 msgid "Signing out..."
 msgstr "გასვლა მიმდინარეობს..."
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:161
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:180
+msgid "Single line of text only"
+msgstr "მხოლოდ ერთი სტრიქონი ტექსტი"
+
 #: src/features/wiki/attachments-page.tsx:383
 msgid "Size"
 msgstr "ზომა"
@@ -2798,6 +3237,7 @@ msgstr "ძირითადზე გადასვლა"
 msgid "Small"
 msgstr "პატარა"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:199
 #: src/features/wiki/attachments-page.tsx:378
 msgid "Sort"
 msgstr "დახარისხება"
@@ -2821,6 +3261,10 @@ msgstr "წყაროები"
 msgid "Spacious"
 msgstr "ფართო"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:451
+msgid "Start the discussion by adding the first comment."
+msgstr "დაიწყეთ დისკუსია პირველი კომენტარის დამატებით."
+
 #: src/routes/_authenticated/index.tsx:760
 msgid "Start your first wiki"
 msgstr "დაიწყეთ თქვენი პირველი ვიკი"
@@ -2832,6 +3276,16 @@ msgstr "თუმცა იყავით ფხიზლად!"
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "თემა"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:431
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:440
+msgid "Submit comment"
+msgstr "კომენტარის გაგზავნა"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:470
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:475
+msgid "Submit reply"
+msgstr "პასუხის გაგზავნა"
 
 #: ../../../lib/web/src/components/search-entity-dialog.tsx:83
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
@@ -2956,6 +3410,10 @@ msgstr "გუნდები/აპები"
 #: ../../../lib/web/src/features/document/document-page.tsx:42
 msgid "Terms and conditions"
 msgstr "წესები და პირობები"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:142
+msgid "Text"
+msgstr "ტექსტი"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:195
 msgid "That code is incorrect or has expired."
@@ -3110,6 +3568,11 @@ msgstr "თემის გადართვა"
 msgid "Toggle view options"
 msgstr "ხედის ვარიანტების გადართვა"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:190
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:267
+msgid "Toggle watched filter"
+msgstr "ყურადღების ფილტრის გადართვა"
+
 #: ../../../lib/web/src/features/errors/general-error.tsx:74
 msgid "Too many requests"
 msgstr "ზედმეტად ბევრი მოთხოვნა"
@@ -3148,6 +3611,11 @@ msgstr "სცადეთ თავიდან"
 #: ../../../lib/web/src/lib/preference-utils.ts:60
 msgid "Tuesday"
 msgstr "სცადეთ სხვა ძიების ტერმინები."
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:130
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:163
+msgid "Type"
+msgstr "სამშაბათი"
 
 #: ../../../lib/web/src/components/command-menu.tsx:52
 msgid "Type a command or search..."
@@ -3240,6 +3708,9 @@ msgstr "ფაილის მხარდაუჭერელი ტიპი:
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "ფაილების მხარდაუჭერელი ტიპები: {names}. მხარდაჭერილი ფაილები: სურათები, PDF, DOC, DOCX, TXT და MD."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:286
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
 #: src/features/wiki/page-editor.tsx:413
 msgid "Untitled"
 msgstr "შეჩერება მოხსნილია"
@@ -3247,6 +3718,11 @@ msgstr "შეჩერება მოხსნილია"
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:135
 msgid "Unverified"
 msgstr "უსათაურო ლისტინგი"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:500
+msgid "Updated"
+msgstr "განაახლეთ ერთეულის დეტალები. ტიპი, ერთეული და ენა ვერ შეიცვლება."
 
 #. placeholder {0}: formatTimestamp(page.updated)
 #. placeholder {0}: formatTimestamp(result.updated)
@@ -3261,6 +3737,11 @@ msgstr "განახლდა {0}"
 #: src/features/wiki/wiki-settings.tsx:561
 msgid "Updating access..."
 msgstr "წვდომის განახლება..."
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:630
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:259
+msgid "Upload"
+msgstr "განახლება მიმდინარეობს..."
 
 #: src/features/wiki/page-editor.tsx:565
 msgid "Upload a file to get started."
@@ -3305,6 +3786,7 @@ msgstr "გამოიყენეთ ავტენტიფიკატო�
 msgid "Use your passkey"
 msgstr "გამოიყენეთ თქვენი passkey"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:143
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:119
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
 msgid "User"
@@ -3370,6 +3852,10 @@ msgstr "ნახვა"
 msgid "View all notifications"
 msgstr "ყველას ნახვა"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:172
+msgid "View controls"
+msgstr "ხედის მართვა"
+
 #: src/features/wiki/wiki-settings.tsx:499
 msgid "View only"
 msgstr "ხედის კონტროლები"
@@ -3378,9 +3864,14 @@ msgstr "ხედის კონტროლები"
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "<0>{slug}</0>-ის ისტორიის ნახვა, მიმდინარე ვერსია {currentVersion}"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:271
 #: ../../../lib/web/src/components/filter-bar.tsx:35
 msgid "Watched"
 msgstr "ყურება"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:194
+msgid "Watched only"
+msgstr "ნანახი"
 
 #. placeholder {0}: account.identifier
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:63
