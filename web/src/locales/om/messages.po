@@ -18,13 +18,23 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "Maaloo walqunnamtii intarneetii kee mirkaneeffadhuutii irra deebi'ii yaali."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:302
+msgid " or "
+msgstr " ykn "
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:228
 #: src/features/wiki/wiki-comment-thread.tsx:195
 msgid "(edited)"
 msgstr "(gulaalame)"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:212
 #: src/features/wiki/wiki-comment-thread.tsx:181
 msgid "(expand)"
 msgstr "(babal'isi)"
+
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:774
+msgid "[not set]"
+msgstr "[hin qindoofne]"
 
 #. placeholder {0}: attachments.length
 #: src/features/wiki/attachments-page.tsx:288
@@ -133,6 +143,10 @@ msgstr "{selectedCount, plural, one {Gochawwan waliigalaa {entityName} # filatam
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{sentLabel} / {totalLabel}"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
+msgid "{totalCount, plural, one {# item} other {# items}}"
+msgstr "{totalCount, plural, one {# wanta} other {# wantoota}}"
+
 #: src/features/wiki/wiki-comment-thread.tsx:179
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {deebii #} other {deebii # dabalataa}}"
@@ -156,6 +170,14 @@ msgstr "*Qabiyyee hin jiru*"
 #: ../../../lib/web/src/components/entity/entity-board-card.tsx:421
 msgid "+{0} nested"
 msgstr "+{0} keessatti"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:209
+msgid "+{totalDescendants} more replies"
+msgstr "+{totalDescendants} deebii dabalataa"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:208
+msgid "1 reply"
+msgstr "Deebii 1"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:42
 msgid "12 hours"
@@ -233,9 +255,17 @@ msgstr "Tarkaanfiilee"
 msgid "Add"
 msgstr "Dabali"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:360
+msgid "Add a comment..."
+msgstr "Yaada dabali..."
+
 #: ../../../lib/web/src/features/accounts/account-add.tsx:133
 msgid "Add a new account"
 msgstr "Akkaawuntii haaraa dabali"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:106
+msgid "Add a new field to this class"
+msgstr "Daree kanatti dirree haaraa dabali"
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:148
 msgid "Add access"
@@ -254,13 +284,30 @@ msgstr "Akkaawuntii dabali beeksisa fi tajaajila fayyadamuuf."
 msgid "Add checklist item"
 msgstr "Tarree shakkii dabali"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:105
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:233
+msgid "Add field"
+msgstr "Dirree dabali"
+
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx:705
 msgid "Add item..."
 msgstr "Wanta dabali..."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
+msgid "Add link"
+msgstr "Hidhaa dabali"
+
 #: ../../../lib/web/src/features/accounts/account-picker.tsx:102
 msgid "Add new account"
 msgstr "Akkaawuntii haaraa dabali"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:291
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:194
+msgid "Add option"
+msgstr "Filannoo dabali"
 
 #: src/features/wiki/redirects-page.tsx:225
 #: src/features/wiki/wiki-settings.tsx:1026
@@ -273,8 +320,8 @@ msgid "Add tag..."
 msgstr "Tag dabali..."
 
 #: src/features/wiki/tags-list.tsx:40
-msgid "Add tags to group pages in your wiki."
-msgstr "Wikii kee keessatti fuula tagiin gurmeessuuf taggii dabali."
+msgid "Add tags from the bottom of any page."
+msgstr "Mata fuula kamiyyuu jalaa asxaalee dabali."
 
 #: ../../../lib/web/src/components/layout/team-switcher.tsx:83
 msgid "Add team/app"
@@ -284,6 +331,8 @@ msgstr "Garee/appii dabali"
 msgid "Add to existing notifications"
 msgstr "Beeksisaalee jiranitti dabali"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:264
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:519
 #: ../../../lib/web/src/components/view-tabs.tsx:87
 #: ../../../lib/web/src/components/view-tabs.tsx:93
 msgid "Add view"
@@ -323,7 +372,7 @@ msgstr "Faayiloota hunda"
 msgid "All tags"
 msgstr "Tag hunda"
 
-#: src/components/layout/wiki-layout.tsx:116
+#: src/components/layout/wiki-layout.tsx:125
 msgid "All wikis"
 msgstr "Wikii hunda"
 
@@ -332,9 +381,13 @@ msgstr "Wikii hunda"
 msgid "Allow anyone to search for {0}"
 msgstr "Namni kamiyyuu {0} akka barbaadu hayyami"
 
-#: src/components/layout/wiki-layout.tsx:160
+#: src/components/layout/wiki-layout.tsx:169
 msgid "Allow anyone to search for wiki"
 msgstr "Eenyu iyyuu wikii barbaaduu hayyami"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
+msgid "Allow sort by"
+msgstr "Akkaataa kana taasifachuu hayyami"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:178
 msgid "An error occurred"
@@ -361,6 +414,19 @@ msgstr "Namni seene kamiyyuu"
 msgid "Are you absolutely sure?"
 msgstr "Dhugumatti mirkanaa'oo dha?"
 
+#. placeholder {0}: deleteTarget?.name
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:271
+msgid "Are you sure you want to delete \"{0}\"?"
+msgstr "\"{0}\" haquu mirkanaa'oo dha?"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:643
+msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
+msgstr "Tarjaa \"{name}\" haquu mirkanaa'oo dha? Kun deebi'uu hin danda'u."
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:485
+msgid "Are you sure you want to delete this comment? This will also delete all replies."
+msgstr "Yaada kana haquu mirkanaa'oo dha? Kun deebii hundi haqama."
+
 #: src/features/wiki/wiki-comment-thread.tsx:373
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Yaada kana haquu mirkanaa'oo dha? Kun deebii hundi haqama. Tarkaanfiin kun deebi'uu hin danda'u."
@@ -384,10 +450,17 @@ msgstr "Olka'aa"
 msgid "Ascending"
 msgstr "Ol kaʼaa"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:398
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:403
+msgid "Attach comment files"
+msgstr "Faayiloota yaadaa hidhi"
+
 #: src/features/wiki/comment-form.tsx:154
 msgid "Attach files"
 msgstr "Faayilii hidhi"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:439
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:444
 #: src/features/wiki/wiki-comment-thread.tsx:338
 msgid "Attach reply files"
 msgstr "Faayiloota deebii hidhi"
@@ -524,15 +597,32 @@ msgstr "Bannerii"
 msgid "Be the first to comment on this page."
 msgstr "Fuula kana irratti yaada kennuu kan jalqaba ta'i."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:68
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:215
+msgid "Blocked by"
+msgstr "Kan dhorkame"
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:237
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:247
 msgid "Blocked navigation to untrusted link"
 msgstr "Karaa hin amanamne irraa qajeelfamni dhorkame"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:66
+msgid "Blocks"
+msgstr "Bloka"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:318
+msgid "Board"
+msgstr "Boordii"
+
 #: ../../../lib/web/src/components/post-tags.tsx:180
 #: ../../../lib/web/src/components/post-tags.tsx:192
 msgid "Boost interest"
 msgstr "Fedhii cimsi"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:405
+msgid "Border colour"
+msgstr "Halluu marsaa"
 
 #: src/features/wiki/redirects-page.tsx:199
 #: src/features/wiki/wiki-settings.tsx:993
@@ -551,6 +641,10 @@ msgstr "Fuulota tagiin daawwadhu. Fuulota tag sana qaban hunda arguuf taggii tuq
 msgid "Browser notifications"
 msgstr "Beeksisa barreessaa"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:249
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:169
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:186
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
 #: ../../../lib/web/src/components/step-up-dialog.tsx:363
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
@@ -577,10 +671,14 @@ msgstr "Beeksisa barreessaa"
 msgid "Cancel"
 msgstr "Haquu"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:415
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:420
 #: src/features/wiki/comment-form.tsx:165
 msgid "Cancel comment"
 msgstr "Yaada haquu"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:455
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:460
 #: src/features/wiki/wiki-comment-thread.tsx:348
 msgid "Cancel reply"
 msgstr "Deebii haquu"
@@ -619,6 +717,14 @@ msgstr "Yeroo fuulonni gulaalaman jijjiiramoonni asitti mul'atu."
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:198
 msgid "Check \"All\" to see your past notifications."
 msgstr "Beeksisawwan darban ilaaluuf \"Hunda\" filadhu."
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
+msgid "Checkbox"
+msgstr "Saanduqa filannoo"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:138
+msgid "Checklist"
+msgstr "Tarree shakkii"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx:37
 msgid "Choose a game from the sidebar or start a new one."
@@ -678,12 +784,21 @@ msgstr "Filannoo cilliisi"
 msgid "Clear selection (Escape)"
 msgstr "Filannoo cilliisi (Escape)"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:485
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:490
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:358
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:361
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "Cufi"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:113
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:269
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:273
+msgid "Close dialog"
+msgstr "Marii cufi"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:108
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:113
@@ -714,6 +829,19 @@ msgstr "Walitti qabi"
 msgid "Collapse sidebar"
 msgstr "Cinaa walitti gargari"
 
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:149
+msgid "Colour"
+msgstr "Halluu"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:553
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:558
+msgid "Column actions"
+msgstr "Gocha utubaa"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:353
+msgid "Columns group by"
+msgstr "Tarjaalee gurmaa'isuu"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:96
 msgid "Comfortable"
 msgstr "Bal'aa"
@@ -731,6 +859,11 @@ msgstr "Paaleetii ajaja"
 msgid "Comment"
 msgstr "Yaada"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:330
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:337
+msgid "Comment actions"
+msgstr "Gocha yaadaa"
+
 #: src/features/wiki/wiki-page-content.tsx:337
 #: src/routes/_authenticated/index.tsx:461
 #: src/routes/_authenticated/index.tsx:730
@@ -745,6 +878,14 @@ msgstr "Compact"
 #: src/features/wiki/revision-view.tsx:96
 msgid "Compare changes"
 msgstr "Jijjiirama wal bira qabi"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:97
+msgid "Configure option settings"
+msgstr "Qindaa'ina filannoo sirreessi"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:265
+msgid "Configure view settings"
+msgstr "Qindaa'ina mul'ataa sirreessi"
 
 #: ../../../lib/web/src/components/place-picker.tsx:160
 #: ../../../lib/web/src/components/travelling-picker.tsx:316
@@ -830,6 +971,14 @@ msgstr "Mirkaneessa irra deebiʼaa jalqabuu hin dandeenye. Maaloo irra deebiʼii
 msgid "Couldn't verify with that account. Please try again."
 msgstr "Akkaawuntii sana waliin mirkaneessuun hin danda'amne. Maaloo irra deebi'ii yaali."
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:564
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:703
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:475
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:647
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
+msgid "Create"
+msgstr "Uumi"
+
 #. placeholder {0}: entityLabel.toLowerCase()
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
 msgid "Create {0}"
@@ -874,12 +1023,14 @@ msgstr "URL moofaa irraa naannessuu uumi"
 msgid "Create this page"
 msgstr "Fuula kana uumi"
 
-#: src/components/layout/wiki-layout.tsx:137
-#: src/components/layout/wiki-layout.tsx:157
+#: src/components/layout/wiki-layout.tsx:146
+#: src/components/layout/wiki-layout.tsx:166
 #: src/routes/_authenticated/index.tsx:777
 msgid "Create wiki"
 msgstr "Wikii uumi"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:498
 #: src/features/wiki/redirects-page.tsx:95
 #: src/features/wiki/wiki-settings.tsx:904
 msgid "Created"
@@ -890,10 +1041,11 @@ msgstr "Uumame"
 msgid "Creating redirect..."
 msgstr "Karaa-deebii uumaa jira..."
 
-#: src/components/layout/wiki-layout.tsx:79
+#: src/components/layout/wiki-layout.tsx:88
 msgid "Creating wiki..."
 msgstr "Wiki uumaa jira..."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:647
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
 #: src/features/wiki/page-editor.tsx:396
 #: src/features/wiki/redirects-page.tsx:274
@@ -928,6 +1080,7 @@ msgstr "Akkaataa dukkanaa"
 msgid "Data conflict"
 msgstr "Walitti bu'iinsa deetaa"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:139
 #: src/features/wiki/attachments-page.tsx:381
 #: src/features/wiki/changes-list.tsx:48
 #: src/features/wiki/page-history.tsx:58
@@ -946,6 +1099,19 @@ msgstr "Idilee"
 msgid "Default AI account"
 msgstr "Akkaawuntii AI idilee"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:485
+msgid "Default sort"
+msgstr "Tartiiba idilee"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:583
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:644
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:318
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:361
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:486
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:173
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:178
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:227
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:272
 #: src/features/wiki/attachments-page.tsx:494
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:641
@@ -963,6 +1129,7 @@ msgstr "Haqi"
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "\"{0}\" haquu? Kun deebi'uu hin danda'u."
 
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:270
 #: src/features/wiki/attachments-page.tsx:492
 #: src/features/wiki/attachments-page.tsx:584
 #: src/features/wiki/attachments-page.tsx:593
@@ -974,9 +1141,28 @@ msgstr "\"{0}\" haquu? Kun deebi'uu hin danda'u."
 msgid "Delete attachment"
 msgstr "Maxxansa haqi"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:642
+msgid "Delete column"
+msgstr "Tarjaa haqi"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:484
 #: src/features/wiki/wiki-comment-thread.tsx:372
 msgid "Delete comment"
 msgstr "Yaada haqi"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:300
+msgid "Delete field"
+msgstr "Dirree haqi"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:119
+msgid "Delete option"
+msgstr "Filannoo haqi"
+
+#. placeholder {0}: opt.name
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:278
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:283
+msgid "Delete option {0}"
+msgstr "Filannoo {0} haqi"
 
 #: src/features/wiki/delete-page.tsx:56
 #: src/features/wiki/page-editor.tsx:378
@@ -996,6 +1182,10 @@ msgstr "Naannessuu {0} haqi"
 #: src/features/wiki/wiki-settings.tsx:943
 msgid "Delete redirect?"
 msgstr "Naannessuu haqu?"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:290
+msgid "Delete view"
+msgstr "Mul'ata haqi"
 
 #: src/features/wiki/wiki-settings.tsx:463
 #: src/features/wiki/wiki-settings.tsx:474
@@ -1095,6 +1285,12 @@ msgstr "Cinaa moobaayilaa mul'isa."
 msgid "Documents"
 msgstr "Galmeewwan"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:305
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:524
+msgid "Done"
+msgstr "Xumurame"
+
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:214
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:342
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:352
 msgid "Download"
@@ -1108,10 +1304,16 @@ msgstr "Buufachuun hin milkoofne"
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
 msgstr "Faayilota asitti harkisii kaa'i, yookiin jalqabuuf \"Faayilota olkaa'i\" cuqaasi."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:67
+msgid "Duplicates"
+msgstr "Lameetfamtoota"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:146
 msgid "Dyslexia-friendly"
 msgstr "Dyslexiyaa Walitti Dhufu"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:307
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:352
 #: src/features/wiki/page-editor.tsx:335
 #: src/features/wiki/wiki-comment-thread.tsx:271
 #: src/features/wiki/wiki-page-content.tsx:280
@@ -1128,6 +1330,24 @@ msgstr "{label} gulaali"
 msgid "Edit and view"
 msgstr "Sirreessuu fi ilaaluu"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:137
+msgid "Edit field"
+msgstr "Iddoo sirreessi"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:138
+msgid "Edit field settings"
+msgstr "Sirreeffama iddoo sirreessi"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+msgid "Edit option"
+msgstr "Filannoo sirreessi"
+
+#. placeholder {0}: opt.name
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:263
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:268
+msgid "Edit option {0}"
+msgstr "Filannoo {0} sirreessi"
+
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:31
 msgid "Edit selected card"
 msgstr "Kaardii filatame sirreessi"
@@ -1135,6 +1355,10 @@ msgstr "Kaardii filatame sirreessi"
 #: src/features/wiki/page-editor.tsx:484
 msgid "Edit summary (optional)"
 msgstr "Cuunfaa sirreessi (filannoo)"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:264
+msgid "Edit view"
+msgstr "Mul'annoo sirreessi"
 
 #: src/routes/_authenticated/$page/edit.tsx:36
 #: src/routes/_authenticated/$page/edit.tsx:48
@@ -1223,6 +1447,7 @@ msgstr "Mallattoo dabaluu hin dandeenye"
 msgid "Failed to copy"
 msgstr "Garagalchuu hin dandeenye"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:137
 #: ../../../lib/web/src/components/options-menu.tsx:99
 #: src/components/link-dialog.tsx:43
 msgid "Failed to create link"
@@ -1237,14 +1462,23 @@ msgstr "Fuula uumuu hin dandeenye"
 msgid "Failed to create redirect"
 msgstr "Deebi'ii ergamuu uumuu hin dandeenye"
 
-#: src/components/layout/wiki-layout.tsx:81
+#: src/components/layout/wiki-layout.tsx:90
 msgid "Failed to create wiki"
 msgstr "Wiki uumuu hin dandeenye"
 
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:110
 #: src/features/wiki/attachments-page.tsx:248
 #: src/features/wiki/page-editor.tsx:249
 msgid "Failed to delete attachment"
 msgstr "Maxxansa haquu hin dandeenye"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:207
+msgid "Failed to delete comment"
+msgstr "Yaada haquu hin dandeenye"
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:159
+msgid "Failed to delete link"
+msgstr "Hidhaa haquu hin dandeenye"
 
 #: src/features/wiki/delete-page.tsx:45
 msgid "Failed to delete page"
@@ -1305,6 +1539,10 @@ msgstr "Odeeffannoo wiki fe'achuu hin dandeenye"
 #: src/routes/_authenticated/index.tsx:137
 msgid "Failed to load wikis"
 msgstr "Wikis fe'achuu hin dandeenye"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:170
+msgid "Failed to post comment"
+msgstr "Yaada maxxansuu hin dandeenye"
 
 #: src/features/wiki/wiki-settings.tsx:579
 msgid "Failed to remove access"
@@ -1382,10 +1620,24 @@ msgstr "Galmee dhaabuu hin dandeenye"
 msgid "Failed to update access level"
 msgstr "Sadarkaa carraa fudhatamuu toattaachuu hin dandeenye"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:190
+msgid "Failed to update comment"
+msgstr "Yaada toattaachuu hin dandeenye"
+
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:95
+msgid "Failed to upload attachment"
+msgstr "Mallattoo olkaa'uu hin dandeenye"
+
 #: src/features/wiki/attachments-page.tsx:149
 #: src/features/wiki/page-editor.tsx:197
 msgid "Failed to upload files"
 msgstr "Faayilota olkaa'uu hin dandeenye"
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:133
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:150
+msgid "Files"
+msgstr "Faayilota"
 
 #: src/features/wiki/attachments-page.tsx:365
 msgid "Filter"
@@ -1395,7 +1647,7 @@ msgstr "Filannoo"
 msgid "Filter..."
 msgstr "Gingilchaa..."
 
-#: src/components/layout/wiki-layout.tsx:136
+#: src/components/layout/wiki-layout.tsx:145
 #: src/routes/_authenticated/find.tsx:99
 msgid "Find wikis"
 msgstr "Wikis argi"
@@ -1407,6 +1659,10 @@ msgstr "Maxxansa quba"
 #: ../../../lib/web/src/components/restore-banner.tsx:103
 msgid "Finish moving your account"
 msgstr "Akkaawuntii kee jijjiiruu fixadhu"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:221
+msgid "Flags"
+msgstr "Mallattoolee"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:116
 msgid "Flat"
@@ -1481,6 +1737,10 @@ msgstr "Mul'annoo girid"
 msgid "Group"
 msgstr "Garee"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:353
+msgid "Group by"
+msgstr "Akkaataa gareessuu"
+
 #. placeholder {0}: name || subject.slice(1)
 #: ../../../lib/web/src/features/access/access-list.tsx:68
 msgid "Group: {0}"
@@ -1532,6 +1792,7 @@ msgstr "Fuula manaa"
 msgid "Hot"
 msgstr "Ho'aa"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
 #: src/features/wiki/wiki-settings.tsx:742
 msgid "ID"
 msgstr "ID"
@@ -1636,6 +1897,7 @@ msgid "Last synced"
 msgstr "Yeroo dhumaa sinkironayseffame"
 
 #: ../../../lib/web/src/components/config-drawer.tsx:287
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:312
 msgid "Layout"
 msgstr "Bocii"
 
@@ -1669,6 +1931,14 @@ msgstr "Hidhaa"
 #: src/features/wiki/markdown-content.tsx:167
 msgid "Link to {headingText}"
 msgstr "{headingText}-tti hidhi"
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:279
+msgid "Links"
+msgstr "Hidhaalee"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:324
+msgid "List"
+msgstr "Tarree"
 
 #: src/features/wiki/attachments-page.tsx:410
 #: src/features/wiki/attachments-page.tsx:415
@@ -1717,11 +1987,19 @@ msgstr "Ramaddilee bulchi"
 msgid "Manage your connected accounts for notifications and services."
 msgstr "Beeksisaa fi tajaajilaaf herregawwan walqabatan kee bulchi."
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:52
+msgid "Manual"
+msgstr "Harkaan"
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:202
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:209
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:224
 msgid "Mark all as read"
 msgstr "Hunda dubbifame jechuu mallatteessi"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:198
+msgid "Maximum length"
+msgstr "Dheerina guddaa"
 
 #: ../../../lib/web/src/features/accounts/types.ts:17
 msgid "MCP server"
@@ -1742,6 +2020,10 @@ msgstr "Ergaa"
 #: ../../../lib/web/src/lib/preference-utils.ts:85
 msgid "Metric"
 msgstr "Metric"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:187
+msgid "Minimum length"
+msgstr "Dheerina xiqqaa"
 
 #: ../../../lib/web/src/features/accounts/types.ts:23
 msgid "Mochi web"
@@ -1764,6 +2046,11 @@ msgstr "Filannoo dabalataa"
 msgid "my-page-name"
 msgstr "my-page-name"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:128
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:299
 #: src/features/wiki/attachments-page.tsx:382
 #: src/features/wiki/wiki-settings.tsx:391
 msgid "Name"
@@ -1794,6 +2081,7 @@ msgstr "Dogoggora networkii"
 msgid "Never"
 msgstr "Gonkumaa"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:460
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "Haaraa"
@@ -1842,6 +2130,10 @@ msgstr "new-page-name"
 msgid "Next image"
 msgstr "Suuraa itti aanu"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:533
+msgid "No {parentClassNames} to add to"
+msgstr "{parentClassNames} itti dabaluuf hin jiru"
+
 #: src/features/wiki/wiki-settings.tsx:500
 msgid "No access"
 msgstr "Itti seenuun hin jiru"
@@ -1849,6 +2141,10 @@ msgstr "Itti seenuun hin jiru"
 #: ../../../lib/web/src/features/access/access-list.tsx:165
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "Seerri itti seenumsaa hin qindaa'amne. Eenyu qabeenya kana itti seenuu danda'u to'achuuf seerota dabali."
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:65
+msgid "No activity yet"
+msgstr "Hanga ammaatti sochiin hin jiru"
 
 #: src/features/wiki/attachments-page.tsx:441
 msgid "No attachments match your search"
@@ -1863,6 +2159,7 @@ msgstr "Hanga ammaatti suuqaalee hin jiru"
 msgid "No changes yet"
 msgstr "Hanga ammaatti jijjiiramni hin jiru"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:450
 #: src/features/wiki/page-comments.tsx:150
 msgid "No comments yet"
 msgstr "Hanga ammaatti yaadni hin jiru"
@@ -1878,6 +2175,14 @@ msgstr "Hanga ammaatti taphaaleen hin jiran"
 #: ../../../lib/web/src/features/access/access-dialog.tsx:241
 msgid "No groups available"
 msgstr "Garreen hin jiran"
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:500
+msgid "No item types can be created yet. Create the required parent items first."
+msgstr "Hanga ammaatti gosti meeshaalee uumamuu hin danda'u. Jalqaba meeshaalee maatii barbaachisaa uumi."
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
+msgid "No matching objects"
+msgstr "Wantoonni walsiman hin jiran"
 
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:193
 msgid "No notifications yet"
@@ -1928,6 +2233,12 @@ msgstr "Bu'aan hin argamne."
 msgid "No revisions found"
 msgstr "Sakatta'iinsi hin argamne"
 
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:845
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:890
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
+msgid "No status"
+msgstr "Haalli hin jiru"
+
 #: src/features/wiki/tag-manager.tsx:94
 msgid "No tags"
 msgstr "Maxxansi hin jiru"
@@ -1952,12 +2263,26 @@ msgstr "Beeksisoonni hin dubbifamne hin jiran"
 msgid "No users found"
 msgstr "Fayyadamtoonni hin argamne"
 
+#: ../../../lib/web/src/components/entity/entity-design-preview.tsx:115
+msgid "No views"
+msgstr "Mul'annoon hin jiru"
+
 #: src/features/wiki/inline-wiki-search.tsx:114
 #: src/routes/_authenticated/find.tsx:101
 msgid "No wikis found"
 msgstr "Wikiin hin argamne"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:516
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:519
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:365
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:391
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:421
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:497
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:105
 #: ../../../lib/web/src/lib/preference-utils.ts:125
@@ -1976,6 +2301,10 @@ msgstr "Hin argamne"
 msgid "Not set"
 msgstr "Hin qabamne"
 
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:668
+msgid "Nothing found"
+msgstr "Wanti argame hin jiru"
+
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:136
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:150
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:236
@@ -1988,6 +2317,12 @@ msgstr "Beeksisaalee"
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:195
 msgid "Notifications: {0}"
 msgstr "Beeksisawwan: {0}"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:140
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:54
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:499
+msgid "Number"
+msgstr "Lakkoofsa"
 
 #: src/features/wiki/redirects-page.tsx:246
 #: src/features/wiki/wiki-settings.tsx:1044
@@ -2050,6 +2385,11 @@ msgstr "Naviigeeshinii bani"
 msgid "Open navigation menu"
 msgstr "Menyuu naviigeeshinii bani"
 
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:108
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:114
+msgid "Open option actions"
+msgstr "Sochiiwwan filannoo bani"
+
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:30
 msgid "Open selected card"
 msgstr "Kaardii filatame bani"
@@ -2058,6 +2398,26 @@ msgstr "Kaardii filatame bani"
 #: ../../../lib/web/src/components/config-drawer.tsx:66
 msgid "Open theme settings"
 msgstr "Qindaa'inoota mata duree bani"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:280
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:285
+msgid "Open view actions"
+msgstr "Sochiiwwan mul'annoo bani"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:150
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:156
+msgid "Open view controls"
+msgstr "To'annoolee mul'annoo bani"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:200
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:158
+msgid "Option name"
+msgstr "Maqaa filannoo"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:240
+msgid "Options"
+msgstr "Filannoowwan"
 
 #: src/routes/_authenticated/join.tsx:95
 msgid "Or enter ID directly"
@@ -2136,6 +2496,10 @@ msgstr "URL fuulaa barbaachisaa dha"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "Fuulonni <0>{tag}</0> taagamane"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:508
+msgid "Parent"
+msgstr "Maatii"
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:334
 msgid "Passkey"
 msgstr "Passkey"
@@ -2147,6 +2511,10 @@ msgstr "Mirkaneessi passkey hin milkoofne. Maaloo irra deebiʼii yaali."
 #: ../../../lib/web/src/components/restore-banner.tsx:152
 msgid "Passkeys"
 msgstr "Passkey-wwan"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:209
+msgid "Pattern (regex)"
+msgstr "Bocaa (regex)"
 
 #: src/features/wiki/wiki-settings.tsx:465
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
@@ -2295,6 +2663,10 @@ msgstr "Deebi'iinsawwan"
 msgid "Reduce interest"
 msgstr "Dantaa hir'isi"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:65
+msgid "Relates"
+msgstr "Walqabata"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:50
 msgid "Relative (5m, 3h, 2d)"
 msgstr "Walqabataa (5m, 3h, 2d)"
@@ -2304,6 +2676,8 @@ msgid "Relative within 24 hours, else absolute"
 msgstr "Sa'aatii 24 keessatti walqabataa, kanaa alatti guutuu"
 
 #: ../../../lib/web/src/components/comment-composer.tsx:236
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:598
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
 #: src/features/wiki/tag-manager.tsx:117
@@ -2341,6 +2715,11 @@ msgstr "Dantaa haqi"
 msgid "Remove item"
 msgstr "Meeshaa haqi"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:304
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:309
+msgid "Remove link"
+msgstr "Hidhata haquu"
+
 #. placeholder {0}: replica.name || replica.id
 #: src/features/wiki/wiki-settings.tsx:770
 #: src/features/wiki/wiki-settings.tsx:776
@@ -2359,6 +2738,8 @@ msgstr "Seensa balleessaa jira..."
 msgid "Removing replica..."
 msgstr "Garagalcha haquu jira..."
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:575
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:632
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:287
@@ -2367,9 +2748,17 @@ msgstr "Garagalcha haquu jira..."
 msgid "Rename"
 msgstr "Maqaa jijjiiri"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:610
+msgid "Rename column"
+msgstr "Maqaa tarjaa jijjiiri"
+
 #: src/features/wiki/rename-page-dialog.tsx:99
 msgid "Rename page"
 msgstr "Maqaa fuulaa jijjiiri"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:611
+msgid "Rename this board column"
+msgstr "Maqaa tarjaa gabatee kanaa jijjiiri"
 
 #: src/features/wiki/rename-page-dialog.tsx:132
 msgid "Renaming..."
@@ -2405,11 +2794,14 @@ msgstr "Wikii dachaasi"
 msgid "Replicating..."
 msgstr "Dachaasaa jira..."
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:294
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:342
 #: src/features/wiki/wiki-comment-thread.tsx:258
 msgid "Reply"
 msgstr "Deebii"
 
 #. placeholder {0}: comment.name || comment.author
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:385
 #: src/features/wiki/wiki-comment-thread.tsx:298
 msgid "Reply to {0}..."
 msgstr "{0} f deebii kenni..."
@@ -2417,6 +2809,10 @@ msgstr "{0} f deebii kenni..."
 #: src/features/wiki/wiki-page-content.tsx:183
 msgid "Request URL: {baseURL}{slug}"
 msgstr "URL Iyyannoo: {baseURL}{slug}"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:224
+msgid "Required"
+msgstr "Barbaachisaa"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:367
 msgid "Resend email"
@@ -2487,6 +2883,15 @@ msgstr "Argama haqi"
 msgid "Right to Left"
 msgstr "Mirgaa Bitaatti"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
+msgid "Rows"
+msgstr "Tarjaalee"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:379
+msgid "Rows group by"
+msgstr "Tarjaalee garreessi"
+
 #: ../../../lib/web/src/components/data-table/pagination.tsx:65
 msgid "Rows per page"
 msgstr "Fuula tokko keessa tarjaalee"
@@ -2515,6 +2920,8 @@ msgstr "URL RSS kilipboordiitti garagalfame"
 msgid "Saturday"
 msgstr "Sanbata"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:269
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:173
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:401
@@ -2533,6 +2940,7 @@ msgstr "Jijjiiramoota olkaa'i"
 msgid "Saving..."
 msgstr "Olkaa'aa jira..."
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:177
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
 #: ../../../lib/web/src/components/search.tsx:18
@@ -2587,6 +2995,10 @@ msgstr "Wikiwwan ifa barbaadi ykn ID entitii kallattii galchi."
 msgid "Search for wikis..."
 msgstr "Wikiwwan barbaadi..."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:337
+msgid "Search objects..."
+msgstr "Wantoota barbaadi..."
+
 #: src/features/wiki/search-page.tsx:64
 msgid "Search pages by title or content."
 msgstr "Fuulota mata duree ykn qabiyyeedhaan barbaadi."
@@ -2603,6 +3015,12 @@ msgstr "Aanaa sa'aatii barbaadi..."
 msgid "Search users"
 msgstr "Fayyadamtoota barbaadi"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:173
+msgid "Search, watch, and sort this view."
+msgstr "Mul'annoo kana barbaadi, ilaali, fi tartiibessi."
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:181
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:257
 #: ../../../lib/web/src/components/person-picker.tsx:324
 #: ../../../lib/web/src/components/search-entity-dialog.tsx:81
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
@@ -2615,10 +3033,18 @@ msgstr "Barbaadi..."
 msgid "Searching..."
 msgstr "Barbaadaa jira..."
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:141
+msgid "Select"
+msgstr "Fili"
+
 #. placeholder {0}: item.label.toLowerCase()
 #: ../../../lib/web/src/components/config-drawer.tsx:149
 msgid "Select {0}"
 msgstr "{0} filadhu"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
+msgid "Select a field"
+msgstr "Dirree fili"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx:36
 msgid "Select a game"
@@ -2755,6 +3181,14 @@ msgstr "Qindaa'inoota"
 msgid "Settings saved"
 msgstr "Qindaa'inoonni olkaa'amaniiru"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:333
+msgid "Show classes"
+msgstr "Gareewwan agarsiisi"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:434
+msgid "Show fields"
+msgstr "Bakkawwan agarsiisi"
+
 #: src/features/wiki/revision-view.tsx:96
 msgid "Show page"
 msgstr "Fuula agarsiisi"
@@ -2786,6 +3220,11 @@ msgstr "Ba'uu"
 msgid "Signing out..."
 msgstr "Bahaa jira..."
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:161
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:179
+msgid "Single line of text only"
+msgstr "Sararoota barreeffamaa qofa"
+
 #: src/features/wiki/attachments-page.tsx:383
 msgid "Size"
 msgstr "Hamma"
@@ -2799,6 +3238,7 @@ msgstr "Gara isa Guddaatti darbi"
 msgid "Small"
 msgstr "Xiqqaa"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:199
 #: src/features/wiki/attachments-page.tsx:378
 msgid "Sort"
 msgstr "Sirreessi"
@@ -2822,6 +3262,10 @@ msgstr "Maddoota"
 msgid "Spacious"
 msgstr "Bal'aa"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:451
+msgid "Start the discussion by adding the first comment."
+msgstr "Yaada jalqabaa dabaluudhaan marii jalqabi."
+
 #: src/routes/_authenticated/index.tsx:760
 msgid "Start your first wiki"
 msgstr "Wiki kee jalqabaa eegali"
@@ -2833,6 +3277,16 @@ msgstr "Garuu nu hordofa!"
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "Mata duree"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:431
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:440
+msgid "Submit comment"
+msgstr "Yaada galchaa"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:470
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:475
+msgid "Submit reply"
+msgstr "Deebii galchaa"
 
 #: ../../../lib/web/src/components/search-entity-dialog.tsx:83
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
@@ -2957,6 +3411,10 @@ msgstr "Gareewwan/Apps"
 #: ../../../lib/web/src/features/document/document-page.tsx:42
 msgid "Terms and conditions"
 msgstr "Haalota fi tarsiimoolee"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:142
+msgid "Text"
+msgstr "Barreeffama"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:195
 msgid "That code is incorrect or has expired."
@@ -3111,6 +3569,11 @@ msgstr "Akeeka jijjiiri"
 msgid "Toggle view options"
 msgstr "Filannoo argaa jijjiiri"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:190
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:267
+msgid "Toggle watched filter"
+msgstr "Wantoota daawwataman jijjiiri"
+
 #: ../../../lib/web/src/features/errors/general-error.tsx:74
 msgid "Too many requests"
 msgstr "Gaaffiiwwan baay'ee garmalee"
@@ -3149,6 +3612,11 @@ msgstr "Jechoota barbaacha biraa yaali."
 #: ../../../lib/web/src/lib/preference-utils.ts:60
 msgid "Tuesday"
 msgstr "Kibxata"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:130
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:162
+msgid "Type"
+msgstr "Akaakuu"
 
 #: ../../../lib/web/src/components/command-menu.tsx:52
 msgid "Type a command or search..."
@@ -3241,6 +3709,9 @@ msgstr "Gosa faayilii hin deeggaramne: {names}. Faayiloota deeggaraman: suuraaww
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Gosoota faayilii hin deeggaramne: {names}. Faayiloota deeggaraman: suuraawwan, PDF, DOC, DOCX, TXT, fi MD."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:286
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
 #: src/features/wiki/page-editor.tsx:413
 msgid "Untitled"
 msgstr "Mata dureen hin qabne"
@@ -3248,6 +3719,11 @@ msgstr "Mata dureen hin qabne"
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:135
 msgid "Unverified"
 msgstr "Hin mirkanaa'amne"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:500
+msgid "Updated"
+msgstr "Haaromfameera"
 
 #. placeholder {0}: formatTimestamp(page.updated)
 #. placeholder {0}: formatTimestamp(result.updated)
@@ -3262,6 +3738,11 @@ msgstr "{0} haaromfameera"
 #: src/features/wiki/wiki-settings.tsx:561
 msgid "Updating access..."
 msgstr "Seensa haaromsaa jira..."
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:630
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:259
+msgid "Upload"
+msgstr "Olfe'i"
 
 #: src/features/wiki/page-editor.tsx:565
 msgid "Upload a file to get started."
@@ -3306,6 +3787,7 @@ msgstr "Akka mana fayyadami"
 msgid "Use your passkey"
 msgstr "Passkey kee fayyadami"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:143
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:119
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
 msgid "User"
@@ -3371,6 +3853,10 @@ msgstr "Hunda daawwadhu"
 msgid "View all notifications"
 msgstr "Beeksisa hunda daawwadhu"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:172
+msgid "View controls"
+msgstr "Toofta daawwannaa"
+
 #: src/features/wiki/wiki-settings.tsx:499
 msgid "View only"
 msgstr "Daawwannaa qofa"
@@ -3379,9 +3865,14 @@ msgstr "Daawwannaa qofa"
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "Seenaa <0>{slug}</0> daawwataa jira, fooyya'iinsa ammaa {currentVersion}"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:271
 #: ../../../lib/web/src/components/filter-bar.tsx:35
 msgid "Watched"
 msgstr "Daawwatame"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:194
+msgid "Watched only"
+msgstr "Kan daawwataman qofa"
 
 #. placeholder {0}: account.identifier
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:63
@@ -3409,8 +3900,8 @@ msgstr "Roobii"
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "Yeroo wikiwwan kaan wiki kana irra deebi'an, asitti mul'atu."
 
-#: src/components/layout/wiki-layout.tsx:108
-#: src/components/layout/wiki-layout.tsx:158
+#: src/components/layout/wiki-layout.tsx:117
+#: src/components/layout/wiki-layout.tsx:167
 #: src/features/wiki/wiki-page-content.tsx:101
 #: src/features/wiki/wiki-page-content.tsx:311
 #: src/routes/_authenticated/$page/index.tsx:225
@@ -3427,7 +3918,7 @@ msgstr "Wiki"
 msgid "Wiki actions"
 msgstr "Hojiwwan wiki"
 
-#: src/components/layout/wiki-layout.tsx:80
+#: src/components/layout/wiki-layout.tsx:89
 msgid "Wiki created"
 msgstr "Wiki uumameera"
 

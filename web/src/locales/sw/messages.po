@@ -18,13 +18,23 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "Tafadhali angalia muunganisho wako wa intaneti na ujaribu tena."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:302
+msgid " or "
+msgstr " au "
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:228
 #: src/features/wiki/wiki-comment-thread.tsx:195
 msgid "(edited)"
 msgstr "(imehaririwa)"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:212
 #: src/features/wiki/wiki-comment-thread.tsx:181
 msgid "(expand)"
 msgstr "(panua)"
+
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:774
+msgid "[not set]"
+msgstr "[haijawekwa]"
 
 #. placeholder {0}: attachments.length
 #: src/features/wiki/attachments-page.tsx:288
@@ -133,6 +143,10 @@ msgstr "{selectedCount, plural, one {Vitendo vya wingi kwa {entityName} # iliyoc
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{sentLabel} kati ya {totalLabel}"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
+msgid "{totalCount, plural, one {# item} other {# items}}"
+msgstr "{totalCount, plural, one {kipengee #} other {vipengee #}}"
+
 #: src/features/wiki/wiki-comment-thread.tsx:179
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {Jibu #} other {+# majibu zaidi}}"
@@ -156,6 +170,14 @@ msgstr "*Hakuna maudhui*"
 #: ../../../lib/web/src/components/entity/entity-board-card.tsx:421
 msgid "+{0} nested"
 msgstr "+{0} zilizopachikwa"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:209
+msgid "+{totalDescendants} more replies"
+msgstr "+{totalDescendants} majibu zaidi"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:208
+msgid "1 reply"
+msgstr "Jibu 1"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:42
 msgid "12 hours"
@@ -233,9 +255,17 @@ msgstr "Vitendo"
 msgid "Add"
 msgstr "Ongeza"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:360
+msgid "Add a comment..."
+msgstr "Ongeza maoni..."
+
 #: ../../../lib/web/src/features/accounts/account-add.tsx:133
 msgid "Add a new account"
 msgstr "Ongeza akaunti mpya"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:106
+msgid "Add a new field to this class"
+msgstr "Ongeza uga mpya kwenye darasa hili"
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:148
 msgid "Add access"
@@ -254,13 +284,30 @@ msgstr "Ongeza akaunti ili kupokea arifa na kutumia huduma."
 msgid "Add checklist item"
 msgstr "Ongeza kipengee cha orodha"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:105
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:233
+msgid "Add field"
+msgstr "Ongeza uga"
+
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx:705
 msgid "Add item..."
 msgstr "Ongeza kipengee..."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
+msgid "Add link"
+msgstr "Ongeza kiungo"
+
 #: ../../../lib/web/src/features/accounts/account-picker.tsx:102
 msgid "Add new account"
 msgstr "Ongeza akaunti mpya"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:291
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:194
+msgid "Add option"
+msgstr "Ongeza chaguo"
 
 #: src/features/wiki/redirects-page.tsx:225
 #: src/features/wiki/wiki-settings.tsx:1026
@@ -273,8 +320,8 @@ msgid "Add tag..."
 msgstr "Ongeza tagi..."
 
 #: src/features/wiki/tags-list.tsx:40
-msgid "Add tags to group pages in your wiki."
-msgstr "Ongeza tagi kupanga kurasa katika wiki yako."
+msgid "Add tags from the bottom of any page."
+msgstr "Ongeza lebo kutoka chini ya ukurasa wowote."
 
 #: ../../../lib/web/src/components/layout/team-switcher.tsx:83
 msgid "Add team/app"
@@ -284,6 +331,8 @@ msgstr "Ongeza timu/programu"
 msgid "Add to existing notifications"
 msgstr "Ongeza kwenye arifa zilizopo"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:264
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:519
 #: ../../../lib/web/src/components/view-tabs.tsx:87
 #: ../../../lib/web/src/components/view-tabs.tsx:93
 msgid "Add view"
@@ -323,7 +372,7 @@ msgstr "Faili zote"
 msgid "All tags"
 msgstr "Tagi zote"
 
-#: src/components/layout/wiki-layout.tsx:116
+#: src/components/layout/wiki-layout.tsx:125
 msgid "All wikis"
 msgstr "Wiki zote"
 
@@ -332,9 +381,13 @@ msgstr "Wiki zote"
 msgid "Allow anyone to search for {0}"
 msgstr "Ruhusu yeyote kutafuta {0}"
 
-#: src/components/layout/wiki-layout.tsx:160
+#: src/components/layout/wiki-layout.tsx:169
 msgid "Allow anyone to search for wiki"
 msgstr "Ruhusu mtu yeyote kutafuta wiki"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
+msgid "Allow sort by"
+msgstr "Ruhusu kupanga kwa"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:178
 msgid "An error occurred"
@@ -361,6 +414,19 @@ msgstr "Yeyote aliyeingia"
 msgid "Are you absolutely sure?"
 msgstr "Una uhakika kabisa?"
 
+#. placeholder {0}: deleteTarget?.name
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:271
+msgid "Are you sure you want to delete \"{0}\"?"
+msgstr "Una uhakika unataka kufuta \"{0}\"?"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:643
+msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
+msgstr "Una uhakika unataka kufuta safu ya \"{name}\"? Hili haliwezi kutenduliwa."
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:485
+msgid "Are you sure you want to delete this comment? This will also delete all replies."
+msgstr "Una uhakika unataka kufuta maoni haya? Hii pia itafuta majibu yote."
+
 #: src/features/wiki/wiki-comment-thread.tsx:373
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Una uhakika unataka kufuta maoni haya? Hii pia itafuta majibu yote. Kitendo hiki hakiwezi kutenduliwa."
@@ -384,10 +450,17 @@ msgstr "Pandisha"
 msgid "Ascending"
 msgstr "Kupanda"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:398
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:403
+msgid "Attach comment files"
+msgstr "Ambatisha faili za maoni"
+
 #: src/features/wiki/comment-form.tsx:154
 msgid "Attach files"
 msgstr "Ambatisha faili"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:439
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:444
 #: src/features/wiki/wiki-comment-thread.tsx:338
 msgid "Attach reply files"
 msgstr "Ambatisha faili za jibu"
@@ -524,15 +597,32 @@ msgstr "Bango"
 msgid "Be the first to comment on this page."
 msgstr "Kuwa wa kwanza kutoa maoni kwenye ukurasa huu."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:68
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:215
+msgid "Blocked by"
+msgstr "Imezuiwa na"
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:237
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:247
 msgid "Blocked navigation to untrusted link"
 msgstr "Imezuia urambazaji kwenda kiungo kisichoaminika"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:66
+msgid "Blocks"
+msgstr "Inazuia"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:318
+msgid "Board"
+msgstr "Ubao"
+
 #: ../../../lib/web/src/components/post-tags.tsx:180
 #: ../../../lib/web/src/components/post-tags.tsx:192
 msgid "Boost interest"
 msgstr "Ongeza mvuto"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:405
+msgid "Border colour"
+msgstr "Rangi ya mpaka"
 
 #: src/features/wiki/redirects-page.tsx:199
 #: src/features/wiki/wiki-settings.tsx:993
@@ -551,6 +641,10 @@ msgstr "Vinjari kurasa kwa tagi. Bofya tagi kuona kurasa zote zenye tagi hiyo."
 msgid "Browser notifications"
 msgstr "Arifa za kivinjari"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:249
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:169
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:186
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
 #: ../../../lib/web/src/components/step-up-dialog.tsx:363
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
@@ -577,10 +671,14 @@ msgstr "Arifa za kivinjari"
 msgid "Cancel"
 msgstr "Ghairi"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:415
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:420
 #: src/features/wiki/comment-form.tsx:165
 msgid "Cancel comment"
 msgstr "Ghairi maoni"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:455
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:460
 #: src/features/wiki/wiki-comment-thread.tsx:348
 msgid "Cancel reply"
 msgstr "Ghairi jibu"
@@ -619,6 +717,14 @@ msgstr "Mabadiliko yataonekana hapa wakati kurasa zinapohaririwa."
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:198
 msgid "Check \"All\" to see your past notifications."
 msgstr "Chagua \"Zote\" ili kuona arifa zako za awali."
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
+msgid "Checkbox"
+msgstr "Kisanduku cha kuteua"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:138
+msgid "Checklist"
+msgstr "Orodha ya ukaguzi"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx:37
 msgid "Choose a game from the sidebar or start a new one."
@@ -678,12 +784,21 @@ msgstr "Futa uteuzi"
 msgid "Clear selection (Escape)"
 msgstr "Futa uteuzi (Escape)"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:485
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:490
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:358
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:361
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "Funga"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:113
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:269
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:273
+msgid "Close dialog"
+msgstr "Funga kidirisha"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:108
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:113
@@ -714,6 +829,19 @@ msgstr "Kunja"
 msgid "Collapse sidebar"
 msgstr "Kunja upau wa pembeni"
 
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:149
+msgid "Colour"
+msgstr "Rangi"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:553
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:558
+msgid "Column actions"
+msgstr "Vitendo vya safu"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:353
+msgid "Columns group by"
+msgstr "Safu zimepangwa kwa"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:96
 msgid "Comfortable"
 msgstr "Starehe"
@@ -731,6 +859,11 @@ msgstr "Kipenyo cha amri"
 msgid "Comment"
 msgstr "Maoni"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:330
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:337
+msgid "Comment actions"
+msgstr "Vitendo vya maoni"
+
 #: src/features/wiki/wiki-page-content.tsx:337
 #: src/routes/_authenticated/index.tsx:461
 #: src/routes/_authenticated/index.tsx:730
@@ -745,6 +878,14 @@ msgstr "Fupi"
 #: src/features/wiki/revision-view.tsx:96
 msgid "Compare changes"
 msgstr "Linganisha mabadiliko"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:97
+msgid "Configure option settings"
+msgstr "Sanidi mipangilio ya chaguo"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:265
+msgid "Configure view settings"
+msgstr "Sanidi mipangilio ya mwonekano"
 
 #: ../../../lib/web/src/components/place-picker.tsx:160
 #: ../../../lib/web/src/components/travelling-picker.tsx:316
@@ -830,6 +971,14 @@ msgstr "Imeshindwa kuanza uthibitishaji upya. Tafadhali jaribu tena."
 msgid "Couldn't verify with that account. Please try again."
 msgstr "Imeshindwa kuthibitisha kwa akaunti hiyo. Tafadhali jaribu tena."
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:564
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:703
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:475
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:647
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
+msgid "Create"
+msgstr "Unda"
+
 #. placeholder {0}: entityLabel.toLowerCase()
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
 msgid "Create {0}"
@@ -874,12 +1023,14 @@ msgstr "Unda uelekezaji kutoka URL ya zamani"
 msgid "Create this page"
 msgstr "Unda ukurasa huu"
 
-#: src/components/layout/wiki-layout.tsx:137
-#: src/components/layout/wiki-layout.tsx:157
+#: src/components/layout/wiki-layout.tsx:146
+#: src/components/layout/wiki-layout.tsx:166
 #: src/routes/_authenticated/index.tsx:777
 msgid "Create wiki"
 msgstr "Unda wiki"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:498
 #: src/features/wiki/redirects-page.tsx:95
 #: src/features/wiki/wiki-settings.tsx:904
 msgid "Created"
@@ -890,10 +1041,11 @@ msgstr "Imeundwa"
 msgid "Creating redirect..."
 msgstr "Inaunda uelekezaji..."
 
-#: src/components/layout/wiki-layout.tsx:79
+#: src/components/layout/wiki-layout.tsx:88
 msgid "Creating wiki..."
 msgstr "Inaunda wiki..."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:647
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
 #: src/features/wiki/page-editor.tsx:396
 #: src/features/wiki/redirects-page.tsx:274
@@ -928,6 +1080,7 @@ msgstr "Hali ya giza"
 msgid "Data conflict"
 msgstr "Mgongano wa data"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:139
 #: src/features/wiki/attachments-page.tsx:381
 #: src/features/wiki/changes-list.tsx:48
 #: src/features/wiki/page-history.tsx:58
@@ -946,6 +1099,19 @@ msgstr "Chaguo-msingi"
 msgid "Default AI account"
 msgstr "Akaunti chaguo-msingi ya AI"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:485
+msgid "Default sort"
+msgstr "Mpangilio chaguo-msingi"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:583
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:644
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:318
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:361
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:486
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:173
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:178
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:227
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:272
 #: src/features/wiki/attachments-page.tsx:494
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:641
@@ -963,6 +1129,7 @@ msgstr "Futa"
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "Futa «{0}»? Hili haliwezi kutenduliwa."
 
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:270
 #: src/features/wiki/attachments-page.tsx:492
 #: src/features/wiki/attachments-page.tsx:584
 #: src/features/wiki/attachments-page.tsx:593
@@ -974,9 +1141,28 @@ msgstr "Futa «{0}»? Hili haliwezi kutenduliwa."
 msgid "Delete attachment"
 msgstr "Futa kiambatisho"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:642
+msgid "Delete column"
+msgstr "Futa safu"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:484
 #: src/features/wiki/wiki-comment-thread.tsx:372
 msgid "Delete comment"
 msgstr "Futa maoni"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:300
+msgid "Delete field"
+msgstr "Futa uga"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:119
+msgid "Delete option"
+msgstr "Futa chaguo"
+
+#. placeholder {0}: opt.name
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:278
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:283
+msgid "Delete option {0}"
+msgstr "Futa chaguo {0}"
 
 #: src/features/wiki/delete-page.tsx:56
 #: src/features/wiki/page-editor.tsx:378
@@ -996,6 +1182,10 @@ msgstr "Futa uelekezaji upya {0}"
 #: src/features/wiki/wiki-settings.tsx:943
 msgid "Delete redirect?"
 msgstr "Futa uelekezaji?"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:290
+msgid "Delete view"
+msgstr "Futa mwonekano"
 
 #: src/features/wiki/wiki-settings.tsx:463
 #: src/features/wiki/wiki-settings.tsx:474
@@ -1095,6 +1285,12 @@ msgstr "Huonyesha utepe wa simu."
 msgid "Documents"
 msgstr "Hati"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:305
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:524
+msgid "Done"
+msgstr "Imekamilika"
+
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:214
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:342
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:352
 msgid "Download"
@@ -1108,10 +1304,16 @@ msgstr "Upakuaji umeshindwa"
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
 msgstr "Buruta na uweke faili hapa, au bofya «Pakia faili» kuanza."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:67
+msgid "Duplicates"
+msgstr "Inarudia"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:146
 msgid "Dyslexia-friendly"
 msgstr "Rahisi kwa dyslexia"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:307
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:352
 #: src/features/wiki/page-editor.tsx:335
 #: src/features/wiki/wiki-comment-thread.tsx:271
 #: src/features/wiki/wiki-page-content.tsx:280
@@ -1128,6 +1330,24 @@ msgstr "Hariri {label}"
 msgid "Edit and view"
 msgstr "Hariri na uangalie"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:137
+msgid "Edit field"
+msgstr "Hariri uga"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:138
+msgid "Edit field settings"
+msgstr "Hariri mipangilio ya uga"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+msgid "Edit option"
+msgstr "Hariri chaguo"
+
+#. placeholder {0}: opt.name
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:263
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:268
+msgid "Edit option {0}"
+msgstr "Hariri chaguo {0}"
+
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:31
 msgid "Edit selected card"
 msgstr "Hariri kadi iliyochaguliwa"
@@ -1135,6 +1355,10 @@ msgstr "Hariri kadi iliyochaguliwa"
 #: src/features/wiki/page-editor.tsx:484
 msgid "Edit summary (optional)"
 msgstr "Muhtasari wa uhariri (hiari)"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:264
+msgid "Edit view"
+msgstr "Hariri mwonekano"
 
 #: src/routes/_authenticated/$page/edit.tsx:36
 #: src/routes/_authenticated/$page/edit.tsx:48
@@ -1223,6 +1447,7 @@ msgstr "Imeshindwa kuongeza tagi"
 msgid "Failed to copy"
 msgstr "Imeshindwa kunakili"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:137
 #: ../../../lib/web/src/components/options-menu.tsx:99
 #: src/components/link-dialog.tsx:43
 msgid "Failed to create link"
@@ -1237,14 +1462,23 @@ msgstr "Imeshindwa kuunda ukurasa"
 msgid "Failed to create redirect"
 msgstr "Imeshindwa kuunda uelekezaji"
 
-#: src/components/layout/wiki-layout.tsx:81
+#: src/components/layout/wiki-layout.tsx:90
 msgid "Failed to create wiki"
 msgstr "Imeshindwa kuunda wiki"
 
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:110
 #: src/features/wiki/attachments-page.tsx:248
 #: src/features/wiki/page-editor.tsx:249
 msgid "Failed to delete attachment"
 msgstr "Imeshindwa kufuta kiambatisho"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:207
+msgid "Failed to delete comment"
+msgstr "Imeshindwa kufuta maoni"
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:159
+msgid "Failed to delete link"
+msgstr "Imeshindwa kufuta kiungo"
 
 #: src/features/wiki/delete-page.tsx:45
 msgid "Failed to delete page"
@@ -1305,6 +1539,10 @@ msgstr "Imeshindwa kupakia maelezo ya wiki"
 #: src/routes/_authenticated/index.tsx:137
 msgid "Failed to load wikis"
 msgstr "Imeshindwa kupakia wikis"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:170
+msgid "Failed to post comment"
+msgstr "Imeshindwa kuchapisha maoni"
 
 #: src/features/wiki/wiki-settings.tsx:579
 msgid "Failed to remove access"
@@ -1382,10 +1620,24 @@ msgstr "Imeshindwa kujiondoa"
 msgid "Failed to update access level"
 msgstr "Imeshindwa kusasisha kiwango cha ufikiaji"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:190
+msgid "Failed to update comment"
+msgstr "Imeshindwa kusasisha maoni"
+
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:95
+msgid "Failed to upload attachment"
+msgstr "Imeshindwa kupakia kiambatisho"
+
 #: src/features/wiki/attachments-page.tsx:149
 #: src/features/wiki/page-editor.tsx:197
 msgid "Failed to upload files"
 msgstr "Imeshindwa kupakia faili"
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:133
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:150
+msgid "Files"
+msgstr "Faili"
 
 #: src/features/wiki/attachments-page.tsx:365
 msgid "Filter"
@@ -1395,7 +1647,7 @@ msgstr "Chuja"
 msgid "Filter..."
 msgstr "Chuja..."
 
-#: src/components/layout/wiki-layout.tsx:136
+#: src/components/layout/wiki-layout.tsx:145
 #: src/routes/_authenticated/find.tsx:99
 msgid "Find wikis"
 msgstr "Tafuta wikis"
@@ -1407,6 +1659,10 @@ msgstr "Alama ya kidole"
 #: ../../../lib/web/src/components/restore-banner.tsx:103
 msgid "Finish moving your account"
 msgstr "Maliza kuhamisha akaunti yako"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:221
+msgid "Flags"
+msgstr "Alama"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:116
 msgid "Flat"
@@ -1481,6 +1737,10 @@ msgstr "Mwonekano wa gridi"
 msgid "Group"
 msgstr "Kikundi"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:353
+msgid "Group by"
+msgstr "Panga kwa makundi"
+
 #. placeholder {0}: name || subject.slice(1)
 #: ../../../lib/web/src/features/access/access-list.tsx:68
 msgid "Group: {0}"
@@ -1532,6 +1792,7 @@ msgstr "Ukurasa wa nyumbani"
 msgid "Hot"
 msgstr "Moto"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
 #: src/features/wiki/wiki-settings.tsx:742
 msgid "ID"
 msgstr "Kitambulisho"
@@ -1636,6 +1897,7 @@ msgid "Last synced"
 msgstr "Imesawazishwa mwisho"
 
 #: ../../../lib/web/src/components/config-drawer.tsx:287
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:312
 msgid "Layout"
 msgstr "Mpangilio"
 
@@ -1669,6 +1931,14 @@ msgstr "Kiungo"
 #: src/features/wiki/markdown-content.tsx:167
 msgid "Link to {headingText}"
 msgstr "Kiungo cha {headingText}"
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:279
+msgid "Links"
+msgstr "Viungo"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:324
+msgid "List"
+msgstr "Orodha"
 
 #: src/features/wiki/attachments-page.tsx:410
 #: src/features/wiki/attachments-page.tsx:415
@@ -1717,11 +1987,19 @@ msgstr "Dhibiti kategoria"
 msgid "Manage your connected accounts for notifications and services."
 msgstr "Dhibiti akaunti zako zilizounganishwa kwa arifa na huduma."
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:52
+msgid "Manual"
+msgstr "Mwongozo"
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:202
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:209
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:224
 msgid "Mark all as read"
 msgstr "Weka zote kama zilizosomwa"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:198
+msgid "Maximum length"
+msgstr "Urefu wa juu"
 
 #: ../../../lib/web/src/features/accounts/types.ts:17
 msgid "MCP server"
@@ -1742,6 +2020,10 @@ msgstr "Ujumbe"
 #: ../../../lib/web/src/lib/preference-utils.ts:85
 msgid "Metric"
 msgstr "Metriki"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:187
+msgid "Minimum length"
+msgstr "Urefu wa chini"
 
 #: ../../../lib/web/src/features/accounts/types.ts:23
 msgid "Mochi web"
@@ -1764,6 +2046,11 @@ msgstr "Chaguo zaidi"
 msgid "my-page-name"
 msgstr "jina-la-ukurasa-wangu"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:128
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:299
 #: src/features/wiki/attachments-page.tsx:382
 #: src/features/wiki/wiki-settings.tsx:391
 msgid "Name"
@@ -1794,6 +2081,7 @@ msgstr "Hitilafu ya mtandao"
 msgid "Never"
 msgstr "Kamwe"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:460
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "Mpya"
@@ -1842,6 +2130,10 @@ msgstr "jina-la-ukurasa-mpya"
 msgid "Next image"
 msgstr "Picha inayofuata"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:533
+msgid "No {parentClassNames} to add to"
+msgstr "Hakuna {parentClassNames} cha kuongeza"
+
 #: src/features/wiki/wiki-settings.tsx:500
 msgid "No access"
 msgstr "Hakuna ufikiaji"
@@ -1849,6 +2141,10 @@ msgstr "Hakuna ufikiaji"
 #: ../../../lib/web/src/features/access/access-list.tsx:165
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "Hakuna sheria za ufikiaji zilizosanidiwa. Ongeza sheria kudhibiti nani anaweza kufikia rasilimali hii."
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:65
+msgid "No activity yet"
+msgstr "Hakuna shughuli bado"
 
 #: src/features/wiki/attachments-page.tsx:441
 msgid "No attachments match your search"
@@ -1863,6 +2159,7 @@ msgstr "Hakuna viambatisho bado"
 msgid "No changes yet"
 msgstr "Hakuna mabadiliko bado"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:450
 #: src/features/wiki/page-comments.tsx:150
 msgid "No comments yet"
 msgstr "Hakuna maoni bado"
@@ -1878,6 +2175,14 @@ msgstr "Hakuna michezo bado"
 #: ../../../lib/web/src/features/access/access-dialog.tsx:241
 msgid "No groups available"
 msgstr "Hakuna vikundi vinavyopatikana"
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:500
+msgid "No item types can be created yet. Create the required parent items first."
+msgstr "Hakuna aina za vipengele zinazoweza kuundwa bado. Unda vipengele vya mzazi vinavyohitajika kwanza."
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
+msgid "No matching objects"
+msgstr "Hakuna vitu vinavyoendana"
 
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:193
 msgid "No notifications yet"
@@ -1928,6 +2233,12 @@ msgstr "Hakuna matokeo yaliyopatikana."
 msgid "No revisions found"
 msgstr "Hakuna marekebisho yaliyopatikana"
 
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:845
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:890
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
+msgid "No status"
+msgstr "Hakuna hali"
+
 #: src/features/wiki/tag-manager.tsx:94
 msgid "No tags"
 msgstr "Hakuna lebo"
@@ -1952,12 +2263,26 @@ msgstr "Hakuna arifa ambazo hazijasomwa"
 msgid "No users found"
 msgstr "Hakuna watumiaji waliopatikana"
 
+#: ../../../lib/web/src/components/entity/entity-design-preview.tsx:115
+msgid "No views"
+msgstr "Hakuna mwonekano"
+
 #: src/features/wiki/inline-wiki-search.tsx:114
 #: src/routes/_authenticated/find.tsx:101
 msgid "No wikis found"
 msgstr "Hakuna wiki zilizopatikana"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:516
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:519
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:365
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:391
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:421
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:497
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:105
 #: ../../../lib/web/src/lib/preference-utils.ts:125
@@ -1976,6 +2301,10 @@ msgstr "Haikupatikana"
 msgid "Not set"
 msgstr "Haijawekwa"
 
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:668
+msgid "Nothing found"
+msgstr "Hakuna kilichopatikana"
+
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:136
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:150
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:236
@@ -1988,6 +2317,12 @@ msgstr "Arifa"
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:195
 msgid "Notifications: {0}"
 msgstr "Arifa: {0}"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:140
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:54
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:499
+msgid "Number"
+msgstr "Nambari"
 
 #: src/features/wiki/redirects-page.tsx:246
 #: src/features/wiki/wiki-settings.tsx:1044
@@ -2050,6 +2385,11 @@ msgstr "Fungua urambazaji"
 msgid "Open navigation menu"
 msgstr "Fungua menyu ya urambazaji"
 
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:108
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:114
+msgid "Open option actions"
+msgstr "Fungua vitendo vya chaguo"
+
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:30
 msgid "Open selected card"
 msgstr "Fungua kadi iliyochaguliwa"
@@ -2058,6 +2398,26 @@ msgstr "Fungua kadi iliyochaguliwa"
 #: ../../../lib/web/src/components/config-drawer.tsx:66
 msgid "Open theme settings"
 msgstr "Fungua mipangilio ya mandhari"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:280
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:285
+msgid "Open view actions"
+msgstr "Fungua vitendo vya mwonekano"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:150
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:156
+msgid "Open view controls"
+msgstr "Fungua udhibiti wa mwonekano"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:200
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:158
+msgid "Option name"
+msgstr "Jina la chaguo"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:240
+msgid "Options"
+msgstr "Chaguo"
 
 #: src/routes/_authenticated/join.tsx:95
 msgid "Or enter ID directly"
@@ -2136,6 +2496,10 @@ msgstr "URL ya ukurasa inahitajika"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "Kurasa zilizo na lebo <0>{tag}</0>"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:508
+msgid "Parent"
+msgstr "Mzazi"
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:334
 msgid "Passkey"
 msgstr "Pasiki"
@@ -2147,6 +2511,10 @@ msgstr "Uthibitishaji wa ufunguo umeshindwa. Tafadhali jaribu tena."
 #: ../../../lib/web/src/components/restore-banner.tsx:152
 msgid "Passkeys"
 msgstr "Passkey"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:209
+msgid "Pattern (regex)"
+msgstr "Muundo (regex)"
 
 #: src/features/wiki/wiki-settings.tsx:465
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
@@ -2295,6 +2663,10 @@ msgstr "Maelekezo"
 msgid "Reduce interest"
 msgstr "Punguza shauku"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:65
+msgid "Relates"
+msgstr "Inahusiana"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:50
 msgid "Relative (5m, 3h, 2d)"
 msgstr "Linganifu (5d, 3s, 2sk)"
@@ -2304,6 +2676,8 @@ msgid "Relative within 24 hours, else absolute"
 msgstr "Linganifu ndani ya saa 24, vinginevyo kamili"
 
 #: ../../../lib/web/src/components/comment-composer.tsx:236
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:598
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
 #: src/features/wiki/tag-manager.tsx:117
@@ -2341,6 +2715,11 @@ msgstr "Ondoa shauku"
 msgid "Remove item"
 msgstr "Ondoa kipengele"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:304
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:309
+msgid "Remove link"
+msgstr "Ondoa kiungo"
+
 #. placeholder {0}: replica.name || replica.id
 #: src/features/wiki/wiki-settings.tsx:770
 #: src/features/wiki/wiki-settings.tsx:776
@@ -2359,6 +2738,8 @@ msgstr "Inaondoa ufikiaji..."
 msgid "Removing replica..."
 msgstr "Inaondoa nakala..."
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:575
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:632
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:287
@@ -2367,9 +2748,17 @@ msgstr "Inaondoa nakala..."
 msgid "Rename"
 msgstr "Badilisha jina"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:610
+msgid "Rename column"
+msgstr "Badilisha jina la safuwima"
+
 #: src/features/wiki/rename-page-dialog.tsx:99
 msgid "Rename page"
 msgstr "Badilisha jina la ukurasa"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:611
+msgid "Rename this board column"
+msgstr "Badilisha jina la safuwima hii ya bao"
 
 #: src/features/wiki/rename-page-dialog.tsx:132
 msgid "Renaming..."
@@ -2405,11 +2794,14 @@ msgstr "Nakili wiki"
 msgid "Replicating..."
 msgstr "Inanakili..."
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:294
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:342
 #: src/features/wiki/wiki-comment-thread.tsx:258
 msgid "Reply"
 msgstr "Jibu"
 
 #. placeholder {0}: comment.name || comment.author
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:385
 #: src/features/wiki/wiki-comment-thread.tsx:298
 msgid "Reply to {0}..."
 msgstr "Jibu kwa {0}..."
@@ -2417,6 +2809,10 @@ msgstr "Jibu kwa {0}..."
 #: src/features/wiki/wiki-page-content.tsx:183
 msgid "Request URL: {baseURL}{slug}"
 msgstr "URL ya ombi: {baseURL}{slug}"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:224
+msgid "Required"
+msgstr "Inahitajika"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:367
 msgid "Resend email"
@@ -2487,6 +2883,15 @@ msgstr "Batilisha ufikiaji"
 msgid "Right to Left"
 msgstr "Kulia kwenda Kushoto"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
+msgid "Rows"
+msgstr "Safu"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:379
+msgid "Rows group by"
+msgstr "Safu zinapangwa kwa"
+
 #: ../../../lib/web/src/components/data-table/pagination.tsx:65
 msgid "Rows per page"
 msgstr "Safu kwa kila ukurasa"
@@ -2515,6 +2920,8 @@ msgstr "URL ya RSS imenakiliwa kwenye ubao wa kunakili"
 msgid "Saturday"
 msgstr "Jumamosi"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:269
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:173
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:401
@@ -2533,6 +2940,7 @@ msgstr "Hifadhi mabadiliko"
 msgid "Saving..."
 msgstr "Inahifadhi..."
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:177
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
 #: ../../../lib/web/src/components/search.tsx:18
@@ -2587,6 +2995,10 @@ msgstr "Tafuta wiki za umma au weka ID ya kitengo moja kwa moja."
 msgid "Search for wikis..."
 msgstr "Tafuta wiki..."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:337
+msgid "Search objects..."
+msgstr "Tafuta vitu..."
+
 #: src/features/wiki/search-page.tsx:64
 msgid "Search pages by title or content."
 msgstr "Tafuta kurasa kwa kichwa au maudhui."
@@ -2603,6 +3015,12 @@ msgstr "Tafuta saa za eneo..."
 msgid "Search users"
 msgstr "Tafuta watumiaji"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:173
+msgid "Search, watch, and sort this view."
+msgstr "Tafuta, tazama, na panga mwonekano huu."
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:181
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:257
 #: ../../../lib/web/src/components/person-picker.tsx:324
 #: ../../../lib/web/src/components/search-entity-dialog.tsx:81
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
@@ -2615,10 +3033,18 @@ msgstr "Tafuta..."
 msgid "Searching..."
 msgstr "Inatafuta..."
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:141
+msgid "Select"
+msgstr "Chagua"
+
 #. placeholder {0}: item.label.toLowerCase()
 #: ../../../lib/web/src/components/config-drawer.tsx:149
 msgid "Select {0}"
 msgstr "Chagua {0}"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
+msgid "Select a field"
+msgstr "Chagua sehemu"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx:36
 msgid "Select a game"
@@ -2755,6 +3181,14 @@ msgstr "Mipangilio"
 msgid "Settings saved"
 msgstr "Mipangilio imehifadhiwa"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:333
+msgid "Show classes"
+msgstr "Onyesha madarasa"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:434
+msgid "Show fields"
+msgstr "Onyesha sehemu"
+
 #: src/features/wiki/revision-view.tsx:96
 msgid "Show page"
 msgstr "Onyesha ukurasa"
@@ -2786,6 +3220,11 @@ msgstr "Toka"
 msgid "Signing out..."
 msgstr "Inaondoka..."
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:161
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:179
+msgid "Single line of text only"
+msgstr "Mstari mmoja tu wa maandishi"
+
 #: src/features/wiki/attachments-page.tsx:383
 msgid "Size"
 msgstr "Ukubwa"
@@ -2799,6 +3238,7 @@ msgstr "Ruka kwa Kuu"
 msgid "Small"
 msgstr "Ndogo"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:199
 #: src/features/wiki/attachments-page.tsx:378
 msgid "Sort"
 msgstr "Panga"
@@ -2822,6 +3262,10 @@ msgstr "Vyanzo"
 msgid "Spacious"
 msgstr "Pana"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:451
+msgid "Start the discussion by adding the first comment."
+msgstr "Anza majadiliano kwa kuongeza maoni ya kwanza."
+
 #: src/routes/_authenticated/index.tsx:760
 msgid "Start your first wiki"
 msgstr "Anza wiki yako ya kwanza"
@@ -2833,6 +3277,16 @@ msgstr "Endelea kufuatilia!"
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "Mada"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:431
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:440
+msgid "Submit comment"
+msgstr "Wasilisha maoni"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:470
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:475
+msgid "Submit reply"
+msgstr "Wasilisha jibu"
 
 #: ../../../lib/web/src/components/search-entity-dialog.tsx:83
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
@@ -2957,6 +3411,10 @@ msgstr "Timu/Programu"
 #: ../../../lib/web/src/features/document/document-page.tsx:42
 msgid "Terms and conditions"
 msgstr "Masharti na vigezo"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:142
+msgid "Text"
+msgstr "Maandishi"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:195
 msgid "That code is incorrect or has expired."
@@ -3111,6 +3569,11 @@ msgstr "Geuza mandhari"
 msgid "Toggle view options"
 msgstr "Geuza chaguzi za mwonekano"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:190
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:267
+msgid "Toggle watched filter"
+msgstr "Geuza kichujio cha kutazamwa"
+
 #: ../../../lib/web/src/features/errors/general-error.tsx:74
 msgid "Too many requests"
 msgstr "Maombi mengi mno"
@@ -3149,6 +3612,11 @@ msgstr "Jaribu maneno tofauti ya utafutaji."
 #: ../../../lib/web/src/lib/preference-utils.ts:60
 msgid "Tuesday"
 msgstr "Jumanne"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:130
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:162
+msgid "Type"
+msgstr "Aina"
 
 #: ../../../lib/web/src/components/command-menu.tsx:52
 msgid "Type a command or search..."
@@ -3241,6 +3709,9 @@ msgstr "Aina ya faili isiyotumika: {names}. Faili zinazotumika: picha, PDF, DOC,
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Aina za faili zisizotumika: {names}. Faili zinazotumika: picha, PDF, DOC, DOCX, TXT, na MD."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:286
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
 #: src/features/wiki/page-editor.tsx:413
 msgid "Untitled"
 msgstr "Bila kichwa"
@@ -3248,6 +3719,11 @@ msgstr "Bila kichwa"
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:135
 msgid "Unverified"
 msgstr "Haijathibitishwa"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:500
+msgid "Updated"
+msgstr "Imesasishwa"
 
 #. placeholder {0}: formatTimestamp(page.updated)
 #. placeholder {0}: formatTimestamp(result.updated)
@@ -3262,6 +3738,11 @@ msgstr "Imesasishwa {0}"
 #: src/features/wiki/wiki-settings.tsx:561
 msgid "Updating access..."
 msgstr "Inasasisha ufikiaji..."
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:630
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:259
+msgid "Upload"
+msgstr "Pakia"
 
 #: src/features/wiki/page-editor.tsx:565
 msgid "Upload a file to get started."
@@ -3306,6 +3787,7 @@ msgstr "Tumia kama nyumbani"
 msgid "Use your passkey"
 msgstr "Tumia ufunguo wako"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:143
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:119
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
 msgid "User"
@@ -3371,6 +3853,10 @@ msgstr "Tazama vyote"
 msgid "View all notifications"
 msgstr "Tazama arifa zote"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:172
+msgid "View controls"
+msgstr "Tazama udhibiti"
+
 #: src/features/wiki/wiki-settings.tsx:499
 msgid "View only"
 msgstr "Tazama tu"
@@ -3379,9 +3865,14 @@ msgstr "Tazama tu"
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "Inaonyesha historia ya <0>{slug}</0>, toleo la sasa {currentVersion}"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:271
 #: ../../../lib/web/src/components/filter-bar.tsx:35
 msgid "Watched"
 msgstr "Imetazamwa"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:194
+msgid "Watched only"
+msgstr "Iliyotazamwa tu"
 
 #. placeholder {0}: account.identifier
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:63
@@ -3409,8 +3900,8 @@ msgstr "Jumatano"
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "Wiki nyingine zikinakili wiki hii, zitaonekana hapa."
 
-#: src/components/layout/wiki-layout.tsx:108
-#: src/components/layout/wiki-layout.tsx:158
+#: src/components/layout/wiki-layout.tsx:117
+#: src/components/layout/wiki-layout.tsx:167
 #: src/features/wiki/wiki-page-content.tsx:101
 #: src/features/wiki/wiki-page-content.tsx:311
 #: src/routes/_authenticated/$page/index.tsx:225
@@ -3427,7 +3918,7 @@ msgstr "Wiki"
 msgid "Wiki actions"
 msgstr "Vitendo vya Wiki"
 
-#: src/components/layout/wiki-layout.tsx:80
+#: src/components/layout/wiki-layout.tsx:89
 msgid "Wiki created"
 msgstr "Wiki imeundwa"
 

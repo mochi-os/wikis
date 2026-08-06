@@ -18,13 +18,23 @@ msgstr ""
 msgid "Please check your internet connection and try again."
 msgstr "Проверьте подключение к интернету и попробуйте снова."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:302
+msgid " or "
+msgstr " или "
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:228
 #: src/features/wiki/wiki-comment-thread.tsx:195
 msgid "(edited)"
 msgstr "(изменено)"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:212
 #: src/features/wiki/wiki-comment-thread.tsx:181
 msgid "(expand)"
 msgstr "(развернуть)"
+
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:774
+msgid "[not set]"
+msgstr "[не задано]"
 
 #. placeholder {0}: attachments.length
 #: src/features/wiki/attachments-page.tsx:288
@@ -133,6 +143,10 @@ msgstr "{selectedCount, plural, one {Массовые действия для # 
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{sentLabel} из {totalLabel}"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
+msgid "{totalCount, plural, one {# item} other {# items}}"
+msgstr "{totalCount, plural, one {# элемент} few {# элемента} many {# элементов} other {# элемента}}"
+
 #: src/features/wiki/wiki-comment-thread.tsx:179
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# ответ} few {ещё +# ответов} many {ещё +# ответов} other {ещё +# ответов}}"
@@ -156,6 +170,14 @@ msgstr "*Нет содержимого*"
 #: ../../../lib/web/src/components/entity/entity-board-card.tsx:421
 msgid "+{0} nested"
 msgstr "+{0} вложенных"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:209
+msgid "+{totalDescendants} more replies"
+msgstr "ещё +{totalDescendants} ответов"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:208
+msgid "1 reply"
+msgstr "1 ответ"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:42
 msgid "12 hours"
@@ -233,9 +255,17 @@ msgstr "Действия"
 msgid "Add"
 msgstr "Добавить"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:360
+msgid "Add a comment..."
+msgstr "Добавить комментарий..."
+
 #: ../../../lib/web/src/features/accounts/account-add.tsx:133
 msgid "Add a new account"
 msgstr "Добавить новый аккаунт"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:106
+msgid "Add a new field to this class"
+msgstr "Добавить новое поле в этот класс"
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:148
 msgid "Add access"
@@ -254,13 +284,30 @@ msgstr "Добавьте аккаунт, чтобы получать уведо�
 msgid "Add checklist item"
 msgstr "Добавить пункт чек-листа"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:105
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:233
+msgid "Add field"
+msgstr "Добавить поле"
+
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx:705
 msgid "Add item..."
 msgstr "Добавить элемент..."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
+msgid "Add link"
+msgstr "Добавить ссылку"
+
 #: ../../../lib/web/src/features/accounts/account-picker.tsx:102
 msgid "Add new account"
 msgstr "Добавить новый аккаунт"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:291
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:194
+msgid "Add option"
+msgstr "Добавить вариант"
 
 #: src/features/wiki/redirects-page.tsx:225
 #: src/features/wiki/wiki-settings.tsx:1026
@@ -273,8 +320,8 @@ msgid "Add tag..."
 msgstr "Добавить тег..."
 
 #: src/features/wiki/tags-list.tsx:40
-msgid "Add tags to group pages in your wiki."
-msgstr "Добавляйте теги, чтобы группировать страницы вашей вики."
+msgid "Add tags from the bottom of any page."
+msgstr "Добавляйте теги внизу любой страницы."
 
 #: ../../../lib/web/src/components/layout/team-switcher.tsx:83
 msgid "Add team/app"
@@ -284,6 +331,8 @@ msgstr "Добавить команду/приложение"
 msgid "Add to existing notifications"
 msgstr "Добавить к существующим уведомлениям"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:264
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:519
 #: ../../../lib/web/src/components/view-tabs.tsx:87
 #: ../../../lib/web/src/components/view-tabs.tsx:93
 msgid "Add view"
@@ -323,7 +372,7 @@ msgstr "Все файлы"
 msgid "All tags"
 msgstr "Все теги"
 
-#: src/components/layout/wiki-layout.tsx:116
+#: src/components/layout/wiki-layout.tsx:125
 msgid "All wikis"
 msgstr "Все вики"
 
@@ -332,9 +381,13 @@ msgstr "Все вики"
 msgid "Allow anyone to search for {0}"
 msgstr "Разрешить всем искать {0}"
 
-#: src/components/layout/wiki-layout.tsx:160
+#: src/components/layout/wiki-layout.tsx:169
 msgid "Allow anyone to search for wiki"
 msgstr "Разрешить всем искать вики"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
+msgid "Allow sort by"
+msgstr "Разрешить сортировку по"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:178
 msgid "An error occurred"
@@ -361,6 +414,19 @@ msgstr "Любой вошедший в систему"
 msgid "Are you absolutely sure?"
 msgstr "Вы абсолютно уверены?"
 
+#. placeholder {0}: deleteTarget?.name
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:271
+msgid "Are you sure you want to delete \"{0}\"?"
+msgstr "Вы уверены, что хотите удалить «{0}»?"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:643
+msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
+msgstr "Вы уверены, что хотите удалить колонку «{name}»? Это необратимо."
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:485
+msgid "Are you sure you want to delete this comment? This will also delete all replies."
+msgstr "Вы уверены, что хотите удалить этот комментарий? Это также удалит все ответы."
+
 #: src/features/wiki/wiki-comment-thread.tsx:373
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "Вы уверены, что хотите удалить этот комментарий? Это также удалит все ответы. Это действие необратимо."
@@ -384,10 +450,17 @@ msgstr "По возр."
 msgid "Ascending"
 msgstr "По возрастанию"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:398
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:403
+msgid "Attach comment files"
+msgstr "Прикрепить файлы к комментарию"
+
 #: src/features/wiki/comment-form.tsx:154
 msgid "Attach files"
 msgstr "Прикрепить файлы"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:439
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:444
 #: src/features/wiki/wiki-comment-thread.tsx:338
 msgid "Attach reply files"
 msgstr "Прикрепить файлы к ответу"
@@ -524,15 +597,32 @@ msgstr "Баннер"
 msgid "Be the first to comment on this page."
 msgstr "Будьте первым, кто прокомментирует эту страницу."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:68
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:215
+msgid "Blocked by"
+msgstr "Блокируется"
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:237
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:247
 msgid "Blocked navigation to untrusted link"
 msgstr "Заблокирован переход по недоверенной ссылке"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:66
+msgid "Blocks"
+msgstr "Блокирует"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:318
+msgid "Board"
+msgstr "Доска"
+
 #: ../../../lib/web/src/components/post-tags.tsx:180
 #: ../../../lib/web/src/components/post-tags.tsx:192
 msgid "Boost interest"
 msgstr "Усилить интерес"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:405
+msgid "Border colour"
+msgstr "Цвет границы"
 
 #: src/features/wiki/redirects-page.tsx:199
 #: src/features/wiki/wiki-settings.tsx:993
@@ -551,6 +641,10 @@ msgstr "Просматривайте страницы по тегам. Нажм�
 msgid "Browser notifications"
 msgstr "Уведомления браузера"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:249
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:169
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:186
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
 #: ../../../lib/web/src/components/step-up-dialog.tsx:363
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
@@ -577,10 +671,14 @@ msgstr "Уведомления браузера"
 msgid "Cancel"
 msgstr "Отмена"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:415
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:420
 #: src/features/wiki/comment-form.tsx:165
 msgid "Cancel comment"
 msgstr "Отменить комментарий"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:455
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:460
 #: src/features/wiki/wiki-comment-thread.tsx:348
 msgid "Cancel reply"
 msgstr "Отменить ответ"
@@ -619,6 +717,14 @@ msgstr "Изменения появятся здесь, когда страни�
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:198
 msgid "Check \"All\" to see your past notifications."
 msgstr "Выберите «Все», чтобы увидеть прошлые уведомления."
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
+msgid "Checkbox"
+msgstr "Флажок"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:138
+msgid "Checklist"
+msgstr "Чек-лист"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx:37
 msgid "Choose a game from the sidebar or start a new one."
@@ -678,12 +784,21 @@ msgstr "Сбросить выбор"
 msgid "Clear selection (Escape)"
 msgstr "Сбросить выбор (Escape)"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:485
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:490
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:358
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:361
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "Закрыть"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:113
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:269
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:273
+msgid "Close dialog"
+msgstr "Закрыть диалог"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:108
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:113
@@ -714,6 +829,19 @@ msgstr "Свернуть"
 msgid "Collapse sidebar"
 msgstr "Свернуть боковую панель"
 
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:149
+msgid "Colour"
+msgstr "Цвет"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:553
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:558
+msgid "Column actions"
+msgstr "Действия со столбцом"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:353
+msgid "Columns group by"
+msgstr "Группировка колонок по"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:96
 msgid "Comfortable"
 msgstr "Удобный"
@@ -731,6 +859,11 @@ msgstr "Палитра команд"
 msgid "Comment"
 msgstr "Комментарий"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:330
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:337
+msgid "Comment actions"
+msgstr "Действия с комментарием"
+
 #: src/features/wiki/wiki-page-content.tsx:337
 #: src/routes/_authenticated/index.tsx:461
 #: src/routes/_authenticated/index.tsx:730
@@ -745,6 +878,14 @@ msgstr "Компактный"
 #: src/features/wiki/revision-view.tsx:96
 msgid "Compare changes"
 msgstr "Сравнить изменения"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:97
+msgid "Configure option settings"
+msgstr "Настроить параметры варианта"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:265
+msgid "Configure view settings"
+msgstr "Настроить параметры вида"
 
 #: ../../../lib/web/src/components/place-picker.tsx:160
 #: ../../../lib/web/src/components/travelling-picker.tsx:316
@@ -830,6 +971,14 @@ msgstr "Не удалось начать повторную аутентифик
 msgid "Couldn't verify with that account. Please try again."
 msgstr "Не удалось выполнить проверку с этой учётной записью. Пожалуйста, попробуйте ещё раз."
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:564
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:703
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:475
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:647
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
+msgid "Create"
+msgstr "Создать"
+
 #. placeholder {0}: entityLabel.toLowerCase()
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
 msgid "Create {0}"
@@ -874,12 +1023,14 @@ msgstr "Создать редирект со старого URL"
 msgid "Create this page"
 msgstr "Создать эту страницу"
 
-#: src/components/layout/wiki-layout.tsx:137
-#: src/components/layout/wiki-layout.tsx:157
+#: src/components/layout/wiki-layout.tsx:146
+#: src/components/layout/wiki-layout.tsx:166
 #: src/routes/_authenticated/index.tsx:777
 msgid "Create wiki"
 msgstr "Создать вики"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:498
 #: src/features/wiki/redirects-page.tsx:95
 #: src/features/wiki/wiki-settings.tsx:904
 msgid "Created"
@@ -890,10 +1041,11 @@ msgstr "Создано"
 msgid "Creating redirect..."
 msgstr "Создание перенаправления..."
 
-#: src/components/layout/wiki-layout.tsx:79
+#: src/components/layout/wiki-layout.tsx:88
 msgid "Creating wiki..."
 msgstr "Создание вики..."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:647
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
 #: src/features/wiki/page-editor.tsx:396
 #: src/features/wiki/redirects-page.tsx:274
@@ -928,6 +1080,7 @@ msgstr "Тёмный режим"
 msgid "Data conflict"
 msgstr "Конфликт данных"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:139
 #: src/features/wiki/attachments-page.tsx:381
 #: src/features/wiki/changes-list.tsx:48
 #: src/features/wiki/page-history.tsx:58
@@ -946,6 +1099,19 @@ msgstr "По умолчанию"
 msgid "Default AI account"
 msgstr "Аккаунт ИИ по умолчанию"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:485
+msgid "Default sort"
+msgstr "Сортировка по умолчанию"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:583
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:644
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:318
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:361
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:486
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:173
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:178
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:227
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:272
 #: src/features/wiki/attachments-page.tsx:494
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:641
@@ -963,6 +1129,7 @@ msgstr "Удалить"
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "Удалить «{0}»? Это действие нельзя отменить."
 
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:270
 #: src/features/wiki/attachments-page.tsx:492
 #: src/features/wiki/attachments-page.tsx:584
 #: src/features/wiki/attachments-page.tsx:593
@@ -974,9 +1141,28 @@ msgstr "Удалить «{0}»? Это действие нельзя отмен�
 msgid "Delete attachment"
 msgstr "Удалить вложение"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:642
+msgid "Delete column"
+msgstr "Удалить колонку"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:484
 #: src/features/wiki/wiki-comment-thread.tsx:372
 msgid "Delete comment"
 msgstr "Удалить комментарий"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:300
+msgid "Delete field"
+msgstr "Удалить поле"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:119
+msgid "Delete option"
+msgstr "Удалить вариант"
+
+#. placeholder {0}: opt.name
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:278
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:283
+msgid "Delete option {0}"
+msgstr "Удалить вариант {0}"
 
 #: src/features/wiki/delete-page.tsx:56
 #: src/features/wiki/page-editor.tsx:378
@@ -996,6 +1182,10 @@ msgstr "Удалить перенаправление {0}"
 #: src/features/wiki/wiki-settings.tsx:943
 msgid "Delete redirect?"
 msgstr "Удалить редирект?"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:290
+msgid "Delete view"
+msgstr "Удалить вид"
 
 #: src/features/wiki/wiki-settings.tsx:463
 #: src/features/wiki/wiki-settings.tsx:474
@@ -1095,6 +1285,12 @@ msgstr "Отображает мобильную боковую панель."
 msgid "Documents"
 msgstr "Документы"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:305
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:524
+msgid "Done"
+msgstr "Готово"
+
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:214
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:342
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:352
 msgid "Download"
@@ -1108,10 +1304,16 @@ msgstr "Не удалось скачать"
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
 msgstr "Перетащите файлы сюда или нажмите «Загрузить файлы», чтобы начать."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:67
+msgid "Duplicates"
+msgstr "Дублирует"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:146
 msgid "Dyslexia-friendly"
 msgstr "Подходит при дислексии"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:307
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:352
 #: src/features/wiki/page-editor.tsx:335
 #: src/features/wiki/wiki-comment-thread.tsx:271
 #: src/features/wiki/wiki-page-content.tsx:280
@@ -1128,6 +1330,24 @@ msgstr "Редактировать {label}"
 msgid "Edit and view"
 msgstr "Редактирование и просмотр"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:137
+msgid "Edit field"
+msgstr "Изменить поле"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:138
+msgid "Edit field settings"
+msgstr "Изменить настройки поля"
+
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+msgid "Edit option"
+msgstr "Изменить вариант"
+
+#. placeholder {0}: opt.name
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:263
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:268
+msgid "Edit option {0}"
+msgstr "Изменить вариант {0}"
+
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:31
 msgid "Edit selected card"
 msgstr "Изменить выбранную карточку"
@@ -1135,6 +1355,10 @@ msgstr "Изменить выбранную карточку"
 #: src/features/wiki/page-editor.tsx:484
 msgid "Edit summary (optional)"
 msgstr "Описание правки (необязательно)"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:264
+msgid "Edit view"
+msgstr "Изменить вид"
 
 #: src/routes/_authenticated/$page/edit.tsx:36
 #: src/routes/_authenticated/$page/edit.tsx:48
@@ -1223,6 +1447,7 @@ msgstr "Не удалось добавить тег"
 msgid "Failed to copy"
 msgstr "Не удалось скопировать"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:137
 #: ../../../lib/web/src/components/options-menu.tsx:99
 #: src/components/link-dialog.tsx:43
 msgid "Failed to create link"
@@ -1237,14 +1462,23 @@ msgstr "Не удалось создать страницу"
 msgid "Failed to create redirect"
 msgstr "Не удалось создать перенаправление"
 
-#: src/components/layout/wiki-layout.tsx:81
+#: src/components/layout/wiki-layout.tsx:90
 msgid "Failed to create wiki"
 msgstr "Не удалось создать вики"
 
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:110
 #: src/features/wiki/attachments-page.tsx:248
 #: src/features/wiki/page-editor.tsx:249
 msgid "Failed to delete attachment"
 msgstr "Не удалось удалить вложение"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:207
+msgid "Failed to delete comment"
+msgstr "Не удалось удалить комментарий"
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:159
+msgid "Failed to delete link"
+msgstr "Не удалось удалить ссылку"
 
 #: src/features/wiki/delete-page.tsx:45
 msgid "Failed to delete page"
@@ -1305,6 +1539,10 @@ msgstr "Не удалось загрузить сведения о вики"
 #: src/routes/_authenticated/index.tsx:137
 msgid "Failed to load wikis"
 msgstr "Не удалось загрузить вики"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:170
+msgid "Failed to post comment"
+msgstr "Не удалось опубликовать комментарий"
 
 #: src/features/wiki/wiki-settings.tsx:579
 msgid "Failed to remove access"
@@ -1382,10 +1620,24 @@ msgstr "Не удалось отписаться"
 msgid "Failed to update access level"
 msgstr "Не удалось обновить уровень доступа"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:190
+msgid "Failed to update comment"
+msgstr "Не удалось обновить комментарий"
+
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:95
+msgid "Failed to upload attachment"
+msgstr "Не удалось загрузить вложение"
+
 #: src/features/wiki/attachments-page.tsx:149
 #: src/features/wiki/page-editor.tsx:197
 msgid "Failed to upload files"
 msgstr "Не удалось загрузить файлы"
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:133
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:150
+msgid "Files"
+msgstr "Файлы"
 
 #: src/features/wiki/attachments-page.tsx:365
 msgid "Filter"
@@ -1395,7 +1647,7 @@ msgstr "Фильтр"
 msgid "Filter..."
 msgstr "Фильтр..."
 
-#: src/components/layout/wiki-layout.tsx:136
+#: src/components/layout/wiki-layout.tsx:145
 #: src/routes/_authenticated/find.tsx:99
 msgid "Find wikis"
 msgstr "Найти вики"
@@ -1407,6 +1659,10 @@ msgstr "Отпечаток"
 #: ../../../lib/web/src/components/restore-banner.tsx:103
 msgid "Finish moving your account"
 msgstr "Завершите перенос аккаунта"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:221
+msgid "Flags"
+msgstr "Флаги"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:116
 msgid "Flat"
@@ -1481,6 +1737,10 @@ msgstr "Вид сеткой"
 msgid "Group"
 msgstr "Группа"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:353
+msgid "Group by"
+msgstr "Группировать по"
+
 #. placeholder {0}: name || subject.slice(1)
 #: ../../../lib/web/src/features/access/access-list.tsx:68
 msgid "Group: {0}"
@@ -1532,6 +1792,7 @@ msgstr "Главная страница"
 msgid "Hot"
 msgstr "Популярное"
 
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
 #: src/features/wiki/wiki-settings.tsx:742
 msgid "ID"
 msgstr "Идентификатор"
@@ -1636,6 +1897,7 @@ msgid "Last synced"
 msgstr "Последняя синхронизация"
 
 #: ../../../lib/web/src/components/config-drawer.tsx:287
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:312
 msgid "Layout"
 msgstr "Макет"
 
@@ -1669,6 +1931,14 @@ msgstr "Ссылка"
 #: src/features/wiki/markdown-content.tsx:167
 msgid "Link to {headingText}"
 msgstr "Ссылка на {headingText}"
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:279
+msgid "Links"
+msgstr "Ссылки"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:324
+msgid "List"
+msgstr "Список"
 
 #: src/features/wiki/attachments-page.tsx:410
 #: src/features/wiki/attachments-page.tsx:415
@@ -1717,11 +1987,19 @@ msgstr "Управлять категориями"
 msgid "Manage your connected accounts for notifications and services."
 msgstr "Управляйте подключёнными аккаунтами для уведомлений и сервисов."
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:52
+msgid "Manual"
+msgstr "Вручную"
+
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:202
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:209
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:224
 msgid "Mark all as read"
 msgstr "Отметить все как прочитанное"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:198
+msgid "Maximum length"
+msgstr "Максимальная длина"
 
 #: ../../../lib/web/src/features/accounts/types.ts:17
 msgid "MCP server"
@@ -1742,6 +2020,10 @@ msgstr "Сообщение"
 #: ../../../lib/web/src/lib/preference-utils.ts:85
 msgid "Metric"
 msgstr "Метрический"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:187
+msgid "Minimum length"
+msgstr "Минимальная длина"
 
 #: ../../../lib/web/src/features/accounts/types.ts:23
 msgid "Mochi web"
@@ -1764,6 +2046,11 @@ msgstr "Больше параметров"
 msgid "my-page-name"
 msgstr "имя-моей-страницы"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:128
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:299
 #: src/features/wiki/attachments-page.tsx:382
 #: src/features/wiki/wiki-settings.tsx:391
 msgid "Name"
@@ -1794,6 +2081,7 @@ msgstr "Ошибка сети"
 msgid "Never"
 msgstr "Никогда"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:460
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "Новый"
@@ -1842,6 +2130,10 @@ msgstr "имя-новой-страницы"
 msgid "Next image"
 msgstr "Следующее изображение"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:533
+msgid "No {parentClassNames} to add to"
+msgstr "Нет {parentClassNames} для добавления"
+
 #: src/features/wiki/wiki-settings.tsx:500
 msgid "No access"
 msgstr "Нет доступа"
@@ -1849,6 +2141,10 @@ msgstr "Нет доступа"
 #: ../../../lib/web/src/features/access/access-list.tsx:165
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "Правила доступа не настроены. Добавьте правила, чтобы контролировать доступ к этому ресурсу."
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:65
+msgid "No activity yet"
+msgstr "Активности пока нет"
 
 #: src/features/wiki/attachments-page.tsx:441
 msgid "No attachments match your search"
@@ -1863,6 +2159,7 @@ msgstr "Вложений пока нет"
 msgid "No changes yet"
 msgstr "Изменений пока нет"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:450
 #: src/features/wiki/page-comments.tsx:150
 msgid "No comments yet"
 msgstr "Комментариев пока нет"
@@ -1878,6 +2175,14 @@ msgstr "Игр пока нет"
 #: ../../../lib/web/src/features/access/access-dialog.tsx:241
 msgid "No groups available"
 msgstr "Нет доступных групп"
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:500
+msgid "No item types can be created yet. Create the required parent items first."
+msgstr "Пока нельзя создать типы элементов. Сначала создайте необходимые родительские элементы."
+
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
+msgid "No matching objects"
+msgstr "Нет подходящих объектов"
 
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:193
 msgid "No notifications yet"
@@ -1928,6 +2233,12 @@ msgstr "Результаты не найдены."
 msgid "No revisions found"
 msgstr "Ревизии не найдены"
 
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:845
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:890
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
+msgid "No status"
+msgstr "Без статуса"
+
 #: src/features/wiki/tag-manager.tsx:94
 msgid "No tags"
 msgstr "Нет тегов"
@@ -1952,12 +2263,26 @@ msgstr "Нет непрочитанных уведомлений"
 msgid "No users found"
 msgstr "Пользователи не найдены"
 
+#: ../../../lib/web/src/components/entity/entity-design-preview.tsx:115
+msgid "No views"
+msgstr "Нет просмотров"
+
 #: src/features/wiki/inline-wiki-search.tsx:114
 #: src/routes/_authenticated/find.tsx:101
 msgid "No wikis found"
 msgstr "Wiki не найдены"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:516
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:519
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:365
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:391
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:421
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:497
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:105
 #: ../../../lib/web/src/lib/preference-utils.ts:125
@@ -1976,6 +2301,10 @@ msgstr "Не найдено"
 msgid "Not set"
 msgstr "Не задано"
 
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:668
+msgid "Nothing found"
+msgstr "Ничего не найдено"
+
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:136
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:150
 #: ../../../lib/web/src/components/notifications-dropdown.tsx:236
@@ -1988,6 +2317,12 @@ msgstr "Уведомления"
 #: ../../../lib/web/src/components/layout/notification-menu.tsx:195
 msgid "Notifications: {0}"
 msgstr "Уведомления: {0}"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:140
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:54
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:499
+msgid "Number"
+msgstr "Число"
 
 #: src/features/wiki/redirects-page.tsx:246
 #: src/features/wiki/wiki-settings.tsx:1044
@@ -2050,6 +2385,11 @@ msgstr "Открыть навигацию"
 msgid "Open navigation menu"
 msgstr "Открыть меню навигации"
 
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:108
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:114
+msgid "Open option actions"
+msgstr "Открыть действия параметра"
+
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:30
 msgid "Open selected card"
 msgstr "Открыть выбранную карточку"
@@ -2058,6 +2398,26 @@ msgstr "Открыть выбранную карточку"
 #: ../../../lib/web/src/components/config-drawer.tsx:66
 msgid "Open theme settings"
 msgstr "Открыть настройки темы"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:280
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:285
+msgid "Open view actions"
+msgstr "Открыть действия просмотра"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:150
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:156
+msgid "Open view controls"
+msgstr "Открыть элементы управления просмотром"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:200
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:158
+msgid "Option name"
+msgstr "Название параметра"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:240
+msgid "Options"
+msgstr "Параметры"
 
 #: src/routes/_authenticated/join.tsx:95
 msgid "Or enter ID directly"
@@ -2136,6 +2496,10 @@ msgstr "Требуется URL страницы"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "Страницы с тегом <0>{tag}</0>"
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:508
+msgid "Parent"
+msgstr "Родитель"
+
 #: ../../../lib/web/src/components/step-up-dialog.tsx:334
 msgid "Passkey"
 msgstr "Passkey"
@@ -2147,6 +2511,10 @@ msgstr "Не удалось проверить ключ доступа. Попр
 #: ../../../lib/web/src/components/restore-banner.tsx:152
 msgid "Passkeys"
 msgstr "Passkeys"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:209
+msgid "Pattern (regex)"
+msgstr "Шаблон (регулярное выражение)"
 
 #: src/features/wiki/wiki-settings.tsx:465
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
@@ -2295,6 +2663,10 @@ msgstr "Перенаправления"
 msgid "Reduce interest"
 msgstr "Снизить интерес"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:65
+msgid "Relates"
+msgstr "Связано с"
+
 #: ../../../lib/web/src/lib/preference-utils.ts:50
 msgid "Relative (5m, 3h, 2d)"
 msgstr "Относительный (5м, 3ч, 2д)"
@@ -2304,6 +2676,8 @@ msgid "Relative within 24 hours, else absolute"
 msgstr "Относительный в пределах 24 часов, иначе абсолютный"
 
 #: ../../../lib/web/src/components/comment-composer.tsx:236
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:598
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:180
 #: src/features/wiki/tag-manager.tsx:117
@@ -2341,6 +2715,11 @@ msgstr "Удалить интерес"
 msgid "Remove item"
 msgstr "Удалить элемент"
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:304
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:309
+msgid "Remove link"
+msgstr "Удалить ссылку"
+
 #. placeholder {0}: replica.name || replica.id
 #: src/features/wiki/wiki-settings.tsx:770
 #: src/features/wiki/wiki-settings.tsx:776
@@ -2359,6 +2738,8 @@ msgstr "Удаление доступа..."
 msgid "Removing replica..."
 msgstr "Удаление реплики..."
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:575
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:632
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:287
@@ -2367,9 +2748,17 @@ msgstr "Удаление реплики..."
 msgid "Rename"
 msgstr "Переименовать"
 
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:610
+msgid "Rename column"
+msgstr "Переименовать столбец"
+
 #: src/features/wiki/rename-page-dialog.tsx:99
 msgid "Rename page"
 msgstr "Переименовать страницу"
+
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:611
+msgid "Rename this board column"
+msgstr "Переименовать этот столбец доски"
 
 #: src/features/wiki/rename-page-dialog.tsx:132
 msgid "Renaming..."
@@ -2405,11 +2794,14 @@ msgstr "Реплицировать wiki"
 msgid "Replicating..."
 msgstr "Репликация..."
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:294
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:342
 #: src/features/wiki/wiki-comment-thread.tsx:258
 msgid "Reply"
 msgstr "Ответить"
 
 #. placeholder {0}: comment.name || comment.author
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:385
 #: src/features/wiki/wiki-comment-thread.tsx:298
 msgid "Reply to {0}..."
 msgstr "Ответить {0}..."
@@ -2417,6 +2809,10 @@ msgstr "Ответить {0}..."
 #: src/features/wiki/wiki-page-content.tsx:183
 msgid "Request URL: {baseURL}{slug}"
 msgstr "URL запроса: {baseURL}{slug}"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:224
+msgid "Required"
+msgstr "Обязательно"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:367
 msgid "Resend email"
@@ -2487,6 +2883,15 @@ msgstr "Отозвать доступ"
 msgid "Right to Left"
 msgstr "Справа налево"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
+msgid "Rows"
+msgstr "Строки"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:379
+msgid "Rows group by"
+msgstr "Группировка строк по"
+
 #: ../../../lib/web/src/components/data-table/pagination.tsx:65
 msgid "Rows per page"
 msgstr "Строк на странице"
@@ -2515,6 +2920,8 @@ msgstr "URL RSS скопирован в буфер обмена"
 msgid "Saturday"
 msgstr "Суббота"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:269
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:173
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:77
 #: src/features/wiki/page-editor.tsx:401
@@ -2533,6 +2940,7 @@ msgstr "Сохранить изменения"
 msgid "Saving..."
 msgstr "Сохранение..."
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:177
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
 #: ../../../lib/web/src/components/search.tsx:18
@@ -2587,6 +2995,10 @@ msgstr "Найдите публичные wiki или введите ID сущн
 msgid "Search for wikis..."
 msgstr "Поиск wiki..."
 
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:337
+msgid "Search objects..."
+msgstr "Поиск объектов..."
+
 #: src/features/wiki/search-page.tsx:64
 msgid "Search pages by title or content."
 msgstr "Поиск страниц по заголовку или содержимому."
@@ -2603,6 +3015,12 @@ msgstr "Поиск часового пояса..."
 msgid "Search users"
 msgstr "Поиск пользователей"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:173
+msgid "Search, watch, and sort this view."
+msgstr "Поиск, наблюдение и сортировка этого представления."
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:181
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:257
 #: ../../../lib/web/src/components/person-picker.tsx:324
 #: ../../../lib/web/src/components/search-entity-dialog.tsx:81
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
@@ -2615,10 +3033,18 @@ msgstr "Поиск..."
 msgid "Searching..."
 msgstr "Поиск..."
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:141
+msgid "Select"
+msgstr "Выбрать"
+
 #. placeholder {0}: item.label.toLowerCase()
 #: ../../../lib/web/src/components/config-drawer.tsx:149
 msgid "Select {0}"
 msgstr "Выбрать {0}"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
+msgid "Select a field"
+msgstr "Выберите поле"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx:36
 msgid "Select a game"
@@ -2755,6 +3181,14 @@ msgstr "Настройки"
 msgid "Settings saved"
 msgstr "Настройки сохранены"
 
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:333
+msgid "Show classes"
+msgstr "Показать классы"
+
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:434
+msgid "Show fields"
+msgstr "Показать поля"
+
 #: src/features/wiki/revision-view.tsx:96
 msgid "Show page"
 msgstr "Показать страницу"
@@ -2786,6 +3220,11 @@ msgstr "Выйти"
 msgid "Signing out..."
 msgstr "Выход..."
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:161
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:179
+msgid "Single line of text only"
+msgstr "Только однострочный текст"
+
 #: src/features/wiki/attachments-page.tsx:383
 msgid "Size"
 msgstr "Размер"
@@ -2799,6 +3238,7 @@ msgstr "Перейти к основному"
 msgid "Small"
 msgstr "Мелкий"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:199
 #: src/features/wiki/attachments-page.tsx:378
 msgid "Sort"
 msgstr "Сортировка"
@@ -2822,6 +3262,10 @@ msgstr "Источники"
 msgid "Spacious"
 msgstr "Просторный"
 
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:451
+msgid "Start the discussion by adding the first comment."
+msgstr "Начните обсуждение, добавив первый комментарий."
+
 #: src/routes/_authenticated/index.tsx:760
 msgid "Start your first wiki"
 msgstr "Создайте свою первую wiki"
@@ -2833,6 +3277,16 @@ msgstr "Следите за обновлениями!"
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "Тема"
+
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:431
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:440
+msgid "Submit comment"
+msgstr "Отправить комментарий"
+
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:470
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:475
+msgid "Submit reply"
+msgstr "Отправить ответ"
 
 #: ../../../lib/web/src/components/search-entity-dialog.tsx:83
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
@@ -2957,6 +3411,10 @@ msgstr "Команды/Приложения"
 #: ../../../lib/web/src/features/document/document-page.tsx:42
 msgid "Terms and conditions"
 msgstr "Условия использования"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:142
+msgid "Text"
+msgstr "Текст"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:195
 msgid "That code is incorrect or has expired."
@@ -3111,6 +3569,11 @@ msgstr "Переключить тему"
 msgid "Toggle view options"
 msgstr "Переключить параметры вида"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:190
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:267
+msgid "Toggle watched filter"
+msgstr "Переключить фильтр отслеживаемых"
+
 #: ../../../lib/web/src/features/errors/general-error.tsx:74
 msgid "Too many requests"
 msgstr "Слишком много запросов"
@@ -3149,6 +3612,11 @@ msgstr "Попробуйте другие условия поиска."
 #: ../../../lib/web/src/lib/preference-utils.ts:60
 msgid "Tuesday"
 msgstr "Вторник"
+
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:130
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:162
+msgid "Type"
+msgstr "Тип"
 
 #: ../../../lib/web/src/components/command-menu.tsx:52
 msgid "Type a command or search..."
@@ -3241,6 +3709,9 @@ msgstr "Неподдерживаемый тип файла: {names}. Подде�
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Неподдерживаемые типы файлов: {names}. Поддерживаемые файлы: изображения, PDF, DOC, DOCX, TXT и MD."
 
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:286
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
 #: src/features/wiki/page-editor.tsx:413
 msgid "Untitled"
 msgstr "Без названия"
@@ -3248,6 +3719,11 @@ msgstr "Без названия"
 #: ../../../lib/web/src/features/accounts/account-manager.tsx:135
 msgid "Unverified"
 msgstr "Не подтверждено"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:500
+msgid "Updated"
+msgstr "Обновлено"
 
 #. placeholder {0}: formatTimestamp(page.updated)
 #. placeholder {0}: formatTimestamp(result.updated)
@@ -3262,6 +3738,11 @@ msgstr "Обновлено {0}"
 #: src/features/wiki/wiki-settings.tsx:561
 msgid "Updating access..."
 msgstr "Обновление доступа..."
+
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:630
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:259
+msgid "Upload"
+msgstr "Загрузить"
 
 #: src/features/wiki/page-editor.tsx:565
 msgid "Upload a file to get started."
@@ -3306,6 +3787,7 @@ msgstr "Использовать как домашнюю"
 msgid "Use your passkey"
 msgstr "Используйте свой ключ доступа"
 
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:143
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:119
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
 msgid "User"
@@ -3371,6 +3853,10 @@ msgstr "Просмотреть всё"
 msgid "View all notifications"
 msgstr "Просмотреть все уведомления"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:172
+msgid "View controls"
+msgstr "Элементы управления просмотром"
+
 #: src/features/wiki/wiki-settings.tsx:499
 msgid "View only"
 msgstr "Только просмотр"
@@ -3379,9 +3865,14 @@ msgstr "Только просмотр"
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "История <0>{slug}</0>, текущая версия {currentVersion}"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:271
 #: ../../../lib/web/src/components/filter-bar.tsx:35
 msgid "Watched"
 msgstr "Отслеживается"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:194
+msgid "Watched only"
+msgstr "Только отслеживаемые"
 
 #. placeholder {0}: account.identifier
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:63
@@ -3409,8 +3900,8 @@ msgstr "Среда"
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "Когда другие wiki будут реплицировать эту wiki, они появятся здесь."
 
-#: src/components/layout/wiki-layout.tsx:108
-#: src/components/layout/wiki-layout.tsx:158
+#: src/components/layout/wiki-layout.tsx:117
+#: src/components/layout/wiki-layout.tsx:167
 #: src/features/wiki/wiki-page-content.tsx:101
 #: src/features/wiki/wiki-page-content.tsx:311
 #: src/routes/_authenticated/$page/index.tsx:225
@@ -3427,7 +3918,7 @@ msgstr "Wiki"
 msgid "Wiki actions"
 msgstr "Действия wiki"
 
-#: src/components/layout/wiki-layout.tsx:80
+#: src/components/layout/wiki-layout.tsx:89
 msgid "Wiki created"
 msgstr "Wiki создана"
 

@@ -37,7 +37,7 @@ export function TagsList({ tags, wikiId }: TagsListProps) {
           <EmptyState
             icon={Tags}
             title={t`No tags found`}
-            description={t`Add tags to group pages in your wiki.`}
+            description={t`Add tags from the bottom of any page.`}
           />
         </div>
       ) : (
