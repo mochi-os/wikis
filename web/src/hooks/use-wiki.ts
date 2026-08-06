@@ -58,11 +58,19 @@ export interface WikiInfoResponse {
   fingerprint?: string
 }
 
-export function useWikiInfo() {
+// wikiId is set in class context when the URL names a wiki: the class-level
+// info action is class-wide and carries no current wiki and no permissions,
+// so shell users' permission-gated controls (tag add, page edit) would stay
+// hidden regardless of their ACL. The wiki-scoped info action returns the
+// same shape plus wiki and permissions. In entity context the plain endpoint
+// already resolves wiki-scoped; prefixing there would double the path.
+export function useWikiInfo(wikiId?: string) {
   return useQuery({
-    queryKey: ['wiki', 'info'],
-    // Use wikisRequest to always fetch from class level (app path)
-    queryFn: () => wikisRequest.get<WikiInfoResponse>(endpoints.wiki.info),
+    queryKey: ['wiki', 'info', wikiId ?? ''],
+    queryFn: () =>
+      wikisRequest.get<WikiInfoResponse>(
+        wikiId ? `${wikiId}/${endpoints.wiki.info}` : endpoints.wiki.info
+      ),
   })
 }
 

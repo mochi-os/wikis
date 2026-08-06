@@ -22,6 +22,22 @@ export function isEntityContext(): boolean {
   )
 }
 
+// Extract the current wiki's entity ID (9-char fingerprint or 50-51 char full
+// ID) from a pathname. Covers both URL shapes: /<app>/<entity>/<page> in class
+// context and /<entity>/<page> in entity context; null when no segment
+// matches (e.g. the wikis list page).
+const ENTITY_ID_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
+
+export function getEntityIdFromPath(pathname: string): string | null {
+  const segments = pathname.split('/').filter(Boolean)
+  for (const segment of segments.slice(0, 2)) {
+    if (ENTITY_ID_PATTERN.test(segment)) {
+      return segment
+    }
+  }
+  return null
+}
+
 // A protocol-relative URL ("//host/path") also starts with "/", and axios
 // treats it as absolute — so passing it through unchanged would send the
 // request off-origin. Scope it like any other relative URL instead.

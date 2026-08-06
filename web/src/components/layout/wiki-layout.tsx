@@ -24,21 +24,7 @@ import { SidebarProvider, useSidebarContext } from '@/context/sidebar-context'
 import { WikiProvider, useWikiContext } from '@/context/wiki-context'
 import { useCreateWiki } from '@/hooks/use-wiki'
 import { useWikiWebsocket } from '@/hooks/use-wiki-websocket'
-
-// Check if a string looks like an entity ID (9-char fingerprint or 50-51 char full ID)
-const ENTITY_ID_PATTERN = /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
-
-// Extract entity ID from pathname
-// URL pattern: /<app>/<entity>/<page> or /<entity>/<page> in entity context
-function getEntityIdFromPath(pathname: string): string | null {
-  const segments = pathname.split('/').filter(Boolean)
-  for (const segment of segments.slice(0, 2)) {
-    if (ENTITY_ID_PATTERN.test(segment)) {
-      return segment
-    }
-  }
-  return null
-}
+import { getEntityIdFromPath } from '@/api/request'
 
 function WikiLayoutInner() {
   const { t } = useLingui()
