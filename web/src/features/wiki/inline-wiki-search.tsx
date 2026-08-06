@@ -2,19 +2,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { useLingui } from '@lingui/react/macro'
 import { useNavigate } from '@tanstack/react-router'
-import { BookOpen } from 'lucide-react'
+import { useLingui } from '@lingui/react/macro'
 import {
   InlineEntitySearch,
   toastAction,
   getErrorMessage,
   type InlineEntitySearchItem,
 } from '@mochi/web'
-import { useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
-import { wikisRequest } from '@/api/request'
+import { BookOpen } from 'lucide-react'
 import endpoints from '@/api/endpoints'
+import { wikisRequest } from '@/api/request'
+import { useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 
 interface DirectoryEntry extends InlineEntitySearchItem {
   fingerprint: string
@@ -85,7 +84,12 @@ export function InlineWikiSearch({
     // The join response, not the directory row, carries the fingerprint and
     // home page the reader has to land on.
     const result = await toastAction(
-      joinWikiWithRetry(joinWiki, wiki.id, wiki.location || undefined, wiki.peer),
+      joinWikiWithRetry(
+        joinWiki,
+        wiki.id,
+        wiki.location || undefined,
+        wiki.peer
+      ),
       {
         loading: t`Subscribing...`,
         success: t`Subscribed`,
