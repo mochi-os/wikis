@@ -18,7 +18,7 @@ import {
   getAppPath,
   useImageObjectUrls,
   textUnchanged,
-  removePendingFile,
+  removePendingFile, moveItem,
   ComposerAttachments,
   SendShortcutHint,
   dropActiveClass,
@@ -315,7 +315,9 @@ export function WikiCommentThread({
             files={replyFiles}
             previewUrls={replyPreviewUrls}
             state={isSubmittingReply ? 'uploading' : replyFailed ? 'error' : 'idle'}
+            progress={progress?.slices}
             onRemove={(file) => setReplyFiles((prev) => removePendingFile(prev, file))}
+            onReorder={(from, to) => setReplyFiles((prev) => moveItem(prev, from, to))}
             // Retry sends the draft, so it is only offered while there is one.
             onRetry={replyDraft.trim() ? () => void handleSubmitReply() : undefined}
           />

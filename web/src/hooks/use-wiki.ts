@@ -445,7 +445,10 @@ export function useCreateComment() {
           { onUploadProgress: onProgress }
         )
       // Only file-carrying comments track upload progress.
-      return data.files?.length ? upload(post) : post()
+      const files = data.files ? Array.from(data.files) : []
+      return files.length
+        ? upload(post, { sizes: files.map((file) => file.size) })
+        : post()
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
@@ -525,21 +528,24 @@ export function useUploadAttachment() {
   const { progress, upload } = useUploadProgress()
   const mutation = useMutation({
     mutationFn: (files: FileList | File[]) => {
+      const picked = Array.from(files)
       const formData = new FormData()
-      Array.from(files).forEach((file) => {
+      picked.forEach((file) => {
         formData.append('files', file)
       })
-      return upload((onProgress) =>
-        requestHelpers.post<AttachmentUploadResponse>(
-          e(endpoints.wiki.attachmentUpload),
-          formData,
-          {
-            onUploadProgress: onProgress,
-            mochi: {
-              showGlobalErrorToast: false,
-            },
-          }
-        )
+      return upload(
+        (onProgress) =>
+          requestHelpers.post<AttachmentUploadResponse>(
+            e(endpoints.wiki.attachmentUpload),
+            formData,
+            {
+              onUploadProgress: onProgress,
+              mochi: {
+                showGlobalErrorToast: false,
+              },
+            }
+          ),
+        { sizes: picked.map((file) => file.size) }
       )
     },
     onSuccess: () => {

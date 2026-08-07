@@ -8,7 +8,7 @@ import {
   IconButton,
   useImageObjectUrls,
   cn,
-  removePendingFile,
+  removePendingFile, moveItem,
   ComposerAttachments,
   SendShortcutHint,
   dropActiveClass,
@@ -131,7 +131,9 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus, progre
         files={files}
         previewUrls={filePreviewUrls}
         state={isSubmitting ? 'uploading' : failed ? 'error' : 'idle'}
+        progress={progress?.slices}
         onRemove={removeFile}
+        onReorder={(from, to) => setFiles((prev) => moveItem(prev, from, to))}
         // Retry sends the draft, so it is only offered while there is one.
         onRetry={body.trim() ? () => void handleSubmit() : undefined}
       />
