@@ -401,6 +401,20 @@ def request_resync(wiki_id):
         mochi.websocket.write(fp, {"type": "wiki/resynced", "wiki": wiki_id})
     return True
 
+# Helper: deliver a subscription-lifecycle event (replicate, unreplicate) to a
+# source whose entity may no longer be resolvable: private entities never list
+# in the directory, and public entries expire while the source is offline. A
+# stored directory-form "p2p/<peer>" server pins the queue row to that peer, so
+# an undeliverable send parks and revives when the peer reconnects, instead of
+# parking unresolvable forever. Hostname servers still route via the directory -
+# resolving one here would put a network dial on a view path.
+def registration_send(server, headers, content):
+    peer = server[len("p2p/"):] if server and server.startswith("p2p/") else ""
+    if peer:
+        mochi.message.send.peer(peer, headers, content)
+    else:
+        mochi.message.send(headers, content)
+
 # maybe_resubscribe re-registers a replica with its source wiki when the
 # subscription has gone idle (idle_resync_age). The source's event_replicate is
 # idempotent and pushes a sync dump, so a bare re-replicate re-adds us and
@@ -411,16 +425,15 @@ def maybe_resubscribe(a, wiki_id):
     user_id = a.user.identity.id if a.user else None
     if not user_id:
         return
-    row = mochi.db.row("select source, name from wikis where id=?", wiki_id)
+    row = mochi.db.row("select source, name, server from wikis where id=?", wiki_id)
     if not row or not row["source"]:
         return
     source = row["source"]
     if mochi.time.now() - mochi.broadcast.seen(source) <= idle_resync_age:
         return
-    mochi.message.send(
+    registration_send(row["server"],
         {"from": wiki_id, "to": source, "service": "wikis", "event": "replicate"},
-        {"name": row["name"]}
-    )
+        {"name": row["name"]})
     mochi.broadcast.touch(source)
 
 # Helper: Broadcast event to all replicas of a wiki via the durable
@@ -1115,7 +1128,7 @@ def action_delete(a):
     if wiki["source"]:
         now = mochi.time.now()
         mochi.db.execute("insert or replace into unreplicated (wiki, source, synced) values (?, ?, ?)", wiki_id, wiki["source"], now)
-        mochi.message.send({"from": wiki_id, "to": wiki["source"], "service": "wikis", "event": "unreplicate"}, {})
+        registration_send(wiki["server"], {"from": wiki_id, "to": wiki["source"], "service": "wikis", "event": "unreplicate"}, {})
 
     return {"data": {"ok": True, "deleted": wiki_id}}
 
@@ -2531,10 +2544,9 @@ def action_unsubscribe(a):
     mochi.db.execute("insert or replace into unreplicated (wiki, source, synced) values (?, ?, ?)", wiki_id, wiki["source"], now)
 
     # Notify source wiki owner to remove us from their replicas list
-    mochi.message.send(
+    registration_send(wiki["server"],
         {"from": wiki["id"], "to": wiki["source"], "service": "wikis", "event": "unreplicate"},
-        {}
-    )
+        {})
 
     return {"data": {"ok": True}}
 
