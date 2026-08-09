@@ -239,6 +239,12 @@ def text_content(e, key, fallback=None):
     return value
 
 
+# Ceiling on replicas per wiki. Generous enough that no real subscriber base
+# reaches it, low enough that the row count cannot be driven to the database's
+# page cap by an attacker minting sender entities.
+REPLICAS_MAXIMUM = 10000
+
+
 # Helper: Check if current user has access to perform an operation
 # Uses hierarchical access levels: edit grants view, view is base level.
 # Users with "manage" or "*" permission automatically have all permissions.
@@ -2832,6 +2838,18 @@ def event_page_create(e):
         mochi.db.execute("update pages set page=?, title=?, content=?, author=?, created=?, updated=?, version=?, deleted=0 where id=?",
             page, title, content, author, created, created, version, id)
     else:
+        # pages(wiki, page) is UNIQUE, so a slug already held by a different
+        # page id makes this insert raise - and Starlark has no try/except, so
+        # the handler dies and the revision below never runs. A remote peer
+        # chooses both the id and the slug, so it can produce that collision
+        # by accident (two people creating the same title) or deliberately.
+        # Refusing the row leaves the existing page intact; the sender keeps
+        # its own copy and the two diverge, which is the honest outcome for a
+        # name that is already taken.
+        if mochi.db.exists("select 1 from pages where wiki=? and page=?", wiki, page):
+            mochi.log.debug("Wiki " + wiki + " already holds slug " + page + ", refusing remote page " + id)
+            return
+
         # Insert new page
         mochi.db.execute("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             id, wiki, page, title, content, author, created, created, version)
@@ -2926,6 +2944,16 @@ def event_page_update(e):
 
     # Never touch a page id that already belongs to a different wiki.
     if existing and existing["wiki"] != wiki:
+        return
+
+    # pages(wiki, page) is UNIQUE. Both branches below can violate it - the
+    # insert with a slug already taken, the update by RENAMING onto one - and
+    # a constraint failure aborts the handler outright, so the revision record
+    # after this never runs. The peer chooses the slug, so the collision is
+    # reachable by accident as well as deliberately.
+    clash = mochi.db.row("select id from pages where wiki=? and page=?", wiki, page)
+    if clash and clash["id"] != id:
+        mochi.log.debug("Wiki " + wiki + " already holds slug " + page + ", refusing remote update to page " + id)
         return
 
     if not existing:
@@ -3371,6 +3399,18 @@ def event_replicate(e):
     # a grant yet (the owner grants it after it registers). Gating on the sender
     # would break every private-wiki join. Fan-out stays safe regardless:
     # broadcast_event filters recipients on view access at send time.
+
+    # Capping `name` bounded each row; it did not bound how MANY. The sender
+    # entity is self-minted, (wiki, id) is the primary key, and core rate
+    # limits per libp2p peer rather than per sender, so one peer still adds a
+    # row per minted identity for as long as it cares to. An existing replica
+    # re-registering is an UPSERT and always allowed - the cap only refuses
+    # NEW ones, so a real subscriber base is never locked out of resyncing.
+    if not mochi.db.exists("select 1 from replicas where wiki=? and id=?", wiki, replica):
+        replica_count = mochi.db.row("select count(*) as total from replicas where wiki=?", wiki)
+        if replica_count and replica_count["total"] >= REPLICAS_MAXIMUM:
+            mochi.log.debug("Wiki " + wiki + " at the replica ceiling, refusing registration from " + replica)
+            return
 
     now = mochi.time.now()
 
@@ -4015,6 +4055,10 @@ def page_comments(wiki_id, page_slug, limit, offset):
         if node["id"] in seen:
             continue
         seen[node["id"]] = True
+        # origin names the REPLICA that submitted the comment and exists only
+        # so replica_can can authorise an edit or delete against it. It is
+        # another user's entity id, and the reader has no use for it.
+        node.pop("origin", None)
         node["markdown"] = mochi.text.markdown(node["body"])
         node["attachments"] = attachment_list(node["id"], wiki_id) or []
         kids = []
@@ -4989,7 +5033,11 @@ def action_rss(a):
                 desc = desc[:500] + "..."
         else:
             title = mochi.app.label("rss.edited", title=row["title"], name=row["name"])
-            desc = row["description"] if row["description"] else "Version " + str(row["version"])
+            # revision_comment resolves a system comment, which is stored as
+            # {"key": ..., "args": ...} JSON - the feed rendered that JSON
+            # verbatim. The fallback was a bare English literal in a feed that
+            # is otherwise fully translated.
+            desc = revision_comment(row["description"]) if row["description"] else mochi.app.label("rss.version", version=str(row["version"]))
 
         link = "/wikis/" + fingerprint + "/" + row["slug"]
 
@@ -5078,7 +5126,11 @@ def action_rss_all(a):
                 desc = desc[:500] + "..."
         else:
             title = wiki_name + ": " + mochi.app.label("rss.edited", title=row["title"], name=row["name"])
-            desc = row["description"] if row["description"] else "Version " + str(row["version"])
+            # revision_comment resolves a system comment, which is stored as
+            # {"key": ..., "args": ...} JSON - the feed rendered that JSON
+            # verbatim. The fallback was a bare English literal in a feed that
+            # is otherwise fully translated.
+            desc = revision_comment(row["description"]) if row["description"] else mochi.app.label("rss.version", version=str(row["version"]))
 
         link = "/wikis/" + wiki_fp + "/" + row["slug"]
 
@@ -5137,8 +5189,15 @@ def opengraph_wiki(params):
             # Use first 200 chars of content as description, stripping markdown
             content = page.get("content", "")
             if content:
-                # Simple markdown stripping: remove common markdown syntax
-                desc = content
+                # Simple markdown stripping: remove common markdown syntax.
+                #
+                # Bounded FIRST, because the result is truncated to 200
+                # characters regardless and the link-stripping loop below
+                # rebuilds the whole string once per link - O(links x length)
+                # over a page that can reach 1MB, on the anonymous crawler
+                # path. 4000 characters is far more than 200 survives, so
+                # nothing a reader sees changes.
+                desc = content[:4000]
                 # Remove headers
                 lines = []
                 for line in desc.split("\n"):
