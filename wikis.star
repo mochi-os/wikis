@@ -22,7 +22,7 @@ def remote_error(a, response, code=502):
         a.error.label(response.get("code", code), response.get("error", "errors.remote"))
 
 def notify(topic, object="", title="", body="", url="", name="", event_id=""):
-	mochi.service.call("notifications", "send", topic, object, title, body, url, mochi.app.label("notifications.topic." + topic.replace("/", ".")), name, "", None, event_id)
+    mochi.service.call("notifications", "send", topic, object, title, body, url, mochi.app.label("notifications.topic." + topic.replace("/", ".")), name, "", None, event_id)
 
 # Database creation
 
@@ -2391,18 +2391,16 @@ def action_settings_set(a):
         if not value:
             a.error.label(400, "errors.home_page_is_required")
             return
-        if len(value) > 100:
-            a.error.label(400, "errors.home_page_slug_too_long_max_100_characters")
-            return
-        for c in value.elems():
-            if not (c.isalnum() or c in "-_/"):
-                a.error.label(400, "errors.invalid_home_page")
-                return
-        # The home slug is fetched by the client exactly like any other page, so
-        # it can shadow a route the same way. A wiki whose home is "delete"
-        # destroys itself the moment anyone opens it.
-        if slug_reserved(value):
-            a.error.label(400, "errors.page_name_reserved", name=value)
+        # Exactly the page-slug rules, via slug_problem. The home value used
+        # to permit "/" and a leading "-", which no page slug may contain - so
+        # a home could be set to a value NO page can ever have, and the wiki's
+        # landing page 404s permanently. Nothing consumed a multi-segment
+        # home: the web passes it as a single route param. slug_problem also
+        # covers the reserved-name case (a wiki whose home is "delete"
+        # destroys itself the moment anyone opens it).
+        problem = slug_problem(value)
+        if problem:
+            a.error.label(400, problem, name=value)
             return
         mochi.db.execute("update wikis set home=? where id=?", value, wiki["id"])
     else:
@@ -3309,11 +3307,8 @@ def event_setting_set(e):
         # unconditionally for source -> replica), so an unvalidated home let a
         # wiki we joined point our client at a route: home="delete" destroyed
         # the local replica the moment its owner opened it.
-        if len(value) > 100 or slug_reserved(value):
+        if slug_problem(value):
             return
-        for c in value.elems():
-            if not (c.isalnum() or c in "-_/"):
-                return
         mochi.db.execute("update wikis set home=? where id=?", value, wiki)
         notify_websocket(wiki)
 
