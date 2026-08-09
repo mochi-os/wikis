@@ -221,6 +221,24 @@ def get_wiki(a):
 # "manage" is separate and grants all permissions (typically owner-only).
 ACCESS_LEVELS = ["view", "edit"]
 
+# Read a text field from a peer-supplied event payload.
+#
+# Content carries no type guarantee: a peer can send a number, list or dict
+# where a string is expected. Starlark has no try/except, so len(), .lower(),
+# .strip() or int() on such a value raises and kills the WHOLE handler - the
+# page never lands, the tag never applies, the replica quietly diverges, and
+# nothing is logged because the abort is not an error path anyone wrote.
+#
+# Returning None for a non-string lets each handler's existing
+# `if not x: return` guard reject it as a malformed payload, which is what it
+# is, instead of the handler dying halfway through.
+def text_content(e, key, fallback=None):
+    value = e.content(key)
+    if type(value) != "string":
+        return fallback
+    return value
+
+
 # Helper: Check if current user has access to perform an operation
 # Uses hierarchical access levels: edit grants view, view is base level.
 # Users with "manage" or "*" permission automatically have all permissions.
@@ -2762,8 +2780,8 @@ def event_page_create(e):
 
     id = e.content("id")
     page = e.content("page")
-    title = e.content("title")
-    content = e.content("content")
+    title = text_content(e, "title")
+    content = text_content(e, "content")
     author = e.content("author")
     created = e.content("created")
     version = e.content("version")
@@ -2867,8 +2885,8 @@ def event_page_update(e):
 
     id = e.content("id")
     page = e.content("page")
-    title = e.content("title")
-    content = e.content("content")
+    title = text_content(e, "title")
+    content = text_content(e, "content")
     author = e.content("author")
     updated = e.content("updated")
     version = e.content("version")
@@ -3050,8 +3068,8 @@ def event_redirect_set(e):
     if not replica_can(wikirow, wiki, sender, "edit"):
         return
 
-    source = e.content("source")
-    target = e.content("target")
+    source = text_content(e, "source")
+    target = text_content(e, "target")
     created = e.content("created")
 
     # Validate required fields
@@ -3151,7 +3169,7 @@ def event_redirect_delete(e):
 # Receive tag/add event
 def event_tag_add(e):
     page = e.content("page")
-    tag = e.content("tag")
+    tag = text_content(e, "tag")
 
     # Validate required fields
     if not page or not tag:
@@ -3250,7 +3268,7 @@ def event_setting_set(e):
         return
 
     name = e.content("name")
-    value = e.content("value")
+    value = text_content(e, "value")
 
     # Validate required fields
     if not name or value == None:
@@ -3274,7 +3292,7 @@ def event_setting_set(e):
 # Handle rename event from source wiki
 def event_rename(e):
     wiki_id = e.header("from")
-    name = e.content("name")
+    name = text_content(e, "name")
     if not name:
         return
 
@@ -3477,8 +3495,8 @@ def event_attachment_create(e):
 
     # Get attachment metadata from event content
     attachment_id = e.content("id")
-    name = e.content("name")
-    content_type = e.content("content_type") or ""
+    name = text_content(e, "name")
+    content_type = text_content(e, "content_type", "")
     created = e.content("created")
     replica = e.content("replica")
 
@@ -4339,7 +4357,7 @@ def event_comment_create(e):
     parent = e.content("parent") or ""
     author = e.content("author")
     name = e.content("name") or ""
-    body = e.content("body")
+    body = text_content(e, "body")
     created = e.content("created")
     signature = e.content("signature") or ""
 
