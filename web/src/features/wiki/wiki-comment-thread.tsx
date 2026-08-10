@@ -18,7 +18,7 @@ import {
   getAppPath,
   useImageObjectUrls,
   textUnchanged,
-  removePendingFile, moveItem,
+  mergePendingFiles, removePendingFile, moveItem,
   ComposerAttachments,
   SendShortcutHint,
   dropActiveClass,
@@ -30,7 +30,6 @@ import {
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
-import { mergePendingFiles } from './composer-files'
 
 interface WikiCommentThreadProps {
   comment: WikiComment

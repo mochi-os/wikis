@@ -8,7 +8,7 @@ import {
   IconButton,
   useImageObjectUrls,
   cn,
-  removePendingFile, moveItem,
+  mergePendingFiles, removePendingFile, moveItem,
   ComposerAttachments,
   SendShortcutHint,
   dropActiveClass,
@@ -20,7 +20,6 @@ import {
 } from '@mochi/web'
 import { Loader2, Paperclip, Send, X } from 'lucide-react'
 import { t } from '@lingui/core/macro'
-import { mergePendingFiles } from './composer-files'
 
 interface CommentFormProps {
   onSubmit: (body: string, files?: File[]) => void | Promise<void>
