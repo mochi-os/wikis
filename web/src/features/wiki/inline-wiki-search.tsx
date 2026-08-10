@@ -2,19 +2,20 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { useEffect, useState } from 'react'
-import { Trans, useLingui } from '@lingui/react/macro'
 import { useNavigate } from '@tanstack/react-router'
-import { Search, Loader2, BookOpen } from 'lucide-react'
-import { Button, GeneralError, Input, toastAction, getErrorMessage } from '@mochi/web'
-import { useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
-import { wikisRequest } from '@/api/request'
+import { useLingui } from '@lingui/react/macro'
+import {
+  InlineEntitySearch,
+  toastAction,
+  getErrorMessage,
+  type InlineEntitySearchItem,
+} from '@mochi/web'
+import { BookOpen } from 'lucide-react'
 import endpoints from '@/api/endpoints'
+import { wikisRequest } from '@/api/request'
+import { useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 
-interface DirectoryEntry {
-  id: string
-  name: string
+interface DirectoryEntry extends InlineEntitySearchItem {
   fingerprint: string
   location?: string
   /** owner's peer from a mochi:// share-link probe; join pins the same peer. */
@@ -25,181 +26,98 @@ interface SearchResponse {
   results: DirectoryEntry[]
 }
 
+type ProbeEntry = {
+  id: string
+  name: string
+  fingerprint?: string
+  server?: string
+  peer?: string
+}
+
 interface InlineWikiSearchProps {
   subscribedIds: Set<string>
   onRefresh?: () => void
 }
 
-export function InlineWikiSearch({ subscribedIds, onRefresh }: InlineWikiSearchProps) {
+export function InlineWikiSearch({
+  subscribedIds,
+  onRefresh,
+}: InlineWikiSearchProps) {
   const { t } = useLingui()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [debouncedQuery, setDebouncedQuery] = useState('')
-  const [results, setResults] = useState<DirectoryEntry[]>([])
-  const [searchError, setSearchError] = useState<Error | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [pendingWikiId, setPendingWikiId] = useState<string | null>(null)
-  const [retryTick, setRetryTick] = useState(0)
   const navigate = useNavigate()
   const joinWiki = useJoinWiki()
 
-  // Debounce search query
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(searchQuery)
-    }, 500)
-    return () => clearTimeout(timer)
-  }, [searchQuery])
-
-  // Search when debounced query changes
-  useEffect(() => {
-    if (debouncedQuery.length === 0) {
-      setResults([])
-      setSearchError(null)
-      return
-    }
-
-    const search = async () => {
-      setIsLoading(true)
-      setSearchError(null)
-      try {
-        // A pasted link (mochi://<peer>/<wiki> or a web URL) resolves via probe -
-        // a directory search can't find a private/unlisted wiki or match a URL.
-        if (/^(mochi:|https?:\/\/)/i.test(debouncedQuery)) {
-          type ProbeEntry = { id: string; name: string; fingerprint?: string; server?: string; peer?: string }
-          const probe = await wikisRequest.post<{ data?: ProbeEntry } & Partial<ProbeEntry>>(
-            endpoints.wiki.probe, { url: debouncedQuery }
-          ).catch(() => null)
-          const data: Partial<ProbeEntry> = probe?.data ?? probe ?? {}
-          setResults(data.id
-            ? [{ id: data.id, name: data.name ?? '', fingerprint: data.fingerprint ?? '',
-                 location: data.server ?? '', peer: data.peer }]
-            : [])
-          return
-        }
-        // wikisRequest already unwraps the outer data envelope
-        // Response is {results: [...]}
-        const response = await wikisRequest.get<SearchResponse>(
-          `${endpoints.wiki.directorySearch}?search=${encodeURIComponent(debouncedQuery)}`
-        )
-        setResults(response.results ?? [])
-      } catch (error) {
-        setSearchError(new Error(getErrorMessage(error, t`Failed to search wikis`)))
-        setResults([])
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    void search()
-  }, [debouncedQuery, retryTick, t])
-
-  const handleSubscribe = async (wiki: DirectoryEntry) => {
-    setPendingWikiId(wiki.id)
+  const search = async (query: string): Promise<DirectoryEntry[]> => {
     try {
-      const result = await toastAction(
-        joinWikiWithRetry(joinWiki, wiki.id, wiki.location || undefined, wiki.peer),
-        {
-          loading: t`Subscribing...`,
-          success: t`Subscribed`,
-          error: (e) => getErrorMessage(e, t`Failed to subscribe`),
-        }
+      // wikisRequest already unwraps the outer data envelope.
+      // Response is {results: [...]}
+      const response = await wikisRequest.get<SearchResponse>(
+        `${endpoints.wiki.directorySearch}?search=${encodeURIComponent(query)}`
       )
-      onRefresh?.()
-      void navigate({
-        to: '/$wikiId/$page',
-        params: {
-          wikiId: result.fingerprint ?? result.id,
-          page: result.home || 'home',
-        },
-      })
-    } catch {
-      // toast already shown
-    } finally {
-      setPendingWikiId(null)
+      return response.results ?? []
+    } catch (error) {
+      // The panel shows error.message, so the server's own wording has to be
+      // pulled out here rather than left inside the axios error.
+      throw new Error(getErrorMessage(error, t`Failed to search wikis`))
     }
   }
 
-  const showResults = debouncedQuery.length > 0
-  const showLoading = isLoading && debouncedQuery.length > 0
+  const probe = async (url: string): Promise<DirectoryEntry[]> => {
+    const probed = await wikisRequest.post<
+      { data?: ProbeEntry } & Partial<ProbeEntry>
+    >(endpoints.wiki.probe, { url })
+    const data: Partial<ProbeEntry> = probed?.data ?? probed ?? {}
+    return data.id
+      ? [
+          {
+            id: data.id,
+            name: data.name ?? '',
+            fingerprint: data.fingerprint ?? '',
+            location: data.server ?? '',
+            peer: data.peer,
+          },
+        ]
+      : []
+  }
+
+  const handleSubscribe = async (wiki: DirectoryEntry) => {
+    // The join response, not the directory row, carries the fingerprint and
+    // home page the reader has to land on.
+    const result = await toastAction(
+      joinWikiWithRetry(
+        joinWiki,
+        wiki.id,
+        wiki.location || undefined,
+        wiki.peer
+      ),
+      {
+        loading: t`Subscribing...`,
+        success: t`Subscribed`,
+        error: (e) => getErrorMessage(e, t`Failed to subscribe`),
+      }
+    )
+    onRefresh?.()
+    void navigate({
+      to: '/$wikiId/$page',
+      params: {
+        wikiId: result.fingerprint ?? result.id,
+        page: result.home || 'home',
+      },
+    })
+  }
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      {/* Search Input */}
-      <div className="relative mb-4">
-        <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-        <Input
-          placeholder={t`Search for wikis...`}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-10 ps-9"
-          autoFocus
-        />
-      </div>
-
-      {/* Results */}
-      {showLoading && (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
-        </div>
-      )}
-
-      {!isLoading && showResults && searchError && (
-        <GeneralError
-          error={searchError}
-          minimal
-          mode="inline"
-          reset={() => setRetryTick((tick) => tick + 1)}
-          className="py-4"
-        />
-      )}
-
-      {!isLoading && showResults && !searchError && results.length === 0 && (
-        <p className="text-muted-foreground text-sm text-center py-4">
-          <Trans>No wikis found</Trans>
-        </p>
-      )}
-
-      {!isLoading && showResults && !searchError && results.length > 0 && (
-        <div className="divide-border divide-y rounded-lg border">
-          {results
-            .filter((wiki) => !subscribedIds.has(wiki.id) && !subscribedIds.has(wiki.fingerprint))
-            .map((wiki) => {
-              const isPending = pendingWikiId === wiki.id
-
-              return (
-                <div
-                  key={wiki.id}
-                  className="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-hover"
-                >
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-500/10">
-                      <BookOpen className="h-4 w-4 text-emerald-600" />
-                    </div>
-                    <div className="flex min-w-0 flex-1 flex-col text-start">
-                      <span className="truncate text-sm font-medium">{wiki.name}</span>
-                      {wiki.fingerprint && (
-                        <span className="text-muted-foreground truncate text-xs">
-                          {wiki.fingerprint.match(/.{1,3}/g)?.join('-')}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={() => handleSubscribe(wiki)}
-                    disabled={isPending}
-                  >
-                    {isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Trans>Subscribe</Trans>
-                    )}
-                  </Button>
-                </div>
-              )
-            })}
-        </div>
-      )}
-    </div>
+    <InlineEntitySearch
+      subscribedIds={subscribedIds}
+      search={search}
+      probe={probe}
+      onSubscribe={handleSubscribe}
+      icon={BookOpen}
+      iconClassName='bg-emerald-500/10 text-emerald-600'
+      placeholder={t`Search for wikis...`}
+      emptyMessage={t`No wikis found`}
+      searchErrorMessage={t`Failed to search wikis`}
+      subscribeLabel={t`Subscribe`}
+    />
   )
 }

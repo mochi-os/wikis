@@ -8,7 +8,7 @@ import {
   IconButton,
   useImageObjectUrls,
   cn,
-  removePendingFile,
+  mergePendingFiles, removePendingFile, moveItem,
   ComposerAttachments,
   SendShortcutHint,
   dropActiveClass,
@@ -20,7 +20,6 @@ import {
 } from '@mochi/web'
 import { Loader2, Paperclip, Send, X } from 'lucide-react'
 import { t } from '@lingui/core/macro'
-import { mergePendingFiles } from './composer-files'
 
 interface CommentFormProps {
   onSubmit: (body: string, files?: File[]) => void | Promise<void>
@@ -131,7 +130,10 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus, progre
         files={files}
         previewUrls={filePreviewUrls}
         state={isSubmitting ? 'uploading' : failed ? 'error' : 'idle'}
+        progress={progress?.slices}
         onRemove={removeFile}
+        onReorder={(from, to) => setFiles((prev) => moveItem(prev, from, to))}
+        groupMedia
         // Retry sends the draft, so it is only offered while there is one.
         onRetry={body.trim() ? () => void handleSubmit() : undefined}
       />

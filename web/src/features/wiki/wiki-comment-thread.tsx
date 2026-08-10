@@ -18,7 +18,7 @@ import {
   getAppPath,
   useImageObjectUrls,
   textUnchanged,
-  removePendingFile,
+  mergePendingFiles, removePendingFile, moveItem,
   ComposerAttachments,
   SendShortcutHint,
   dropActiveClass,
@@ -30,7 +30,6 @@ import {
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
-import { mergePendingFiles } from './composer-files'
 
 interface WikiCommentThreadProps {
   comment: WikiComment
@@ -315,7 +314,10 @@ export function WikiCommentThread({
             files={replyFiles}
             previewUrls={replyPreviewUrls}
             state={isSubmittingReply ? 'uploading' : replyFailed ? 'error' : 'idle'}
+            progress={progress?.slices}
             onRemove={(file) => setReplyFiles((prev) => removePendingFile(prev, file))}
+            onReorder={(from, to) => setReplyFiles((prev) => moveItem(prev, from, to))}
+            groupMedia
             // Retry sends the draft, so it is only offered while there is one.
             onRetry={replyDraft.trim() ? () => void handleSubmitReply() : undefined}
           />
