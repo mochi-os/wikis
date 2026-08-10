@@ -4,7 +4,9 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 import { createContext, useContext, type ReactNode } from 'react'
+import { useLocation } from '@tanstack/react-router'
 import { useWikiInfo, type WikiInfoResponse } from '@/hooks/use-wiki'
+import { getEntityIdFromPath, isEntityContext } from '@/api/request'
 import type { WikiPermissions } from '@/types/wiki'
 interface WikiContextValue {
   info: WikiInfoResponse | undefined
@@ -24,7 +26,14 @@ const defaultPermissions: WikiPermissions = {
 const WikiContext = createContext<WikiContextValue | null>(null)
 
 export function WikiProvider({ children }: { children: ReactNode }) {
-  const { data, isLoading, error, refetch } = useWikiInfo()
+  // In class context, fetch the wiki-scoped info for the wiki named in the
+  // URL so permissions (and the current wiki) reach the shell UI; the
+  // class-wide info has neither. Entity context resolves wiki-scoped as-is.
+  const location = useLocation()
+  const urlWikiId = isEntityContext()
+    ? undefined
+    : (getEntityIdFromPath(location.pathname) ?? undefined)
+  const { data, isLoading, error, refetch } = useWikiInfo(urlWikiId)
 
   const permissions = data?.permissions ?? defaultPermissions
 

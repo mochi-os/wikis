@@ -401,6 +401,20 @@ def request_resync(wiki_id):
         mochi.websocket.write(fp, {"type": "wiki/resynced", "wiki": wiki_id})
     return True
 
+# Helper: deliver a subscription-lifecycle event (replicate, unreplicate) to a
+# source whose entity may no longer be resolvable: private entities never list
+# in the directory, and public entries expire while the source is offline. A
+# stored directory-form "p2p/<peer>" server pins the queue row to that peer, so
+# an undeliverable send parks and revives when the peer reconnects, instead of
+# parking unresolvable forever. Hostname servers still route via the directory -
+# resolving one here would put a network dial on a view path.
+def registration_send(server, headers, content):
+    peer = server[len("p2p/"):] if server and server.startswith("p2p/") else ""
+    if peer:
+        mochi.message.send.peer(peer, headers, content)
+    else:
+        mochi.message.send(headers, content)
+
 # maybe_resubscribe re-registers a replica with its source wiki when the
 # subscription has gone idle (idle_resync_age). The source's event_replicate is
 # idempotent and pushes a sync dump, so a bare re-replicate re-adds us and
@@ -411,16 +425,15 @@ def maybe_resubscribe(a, wiki_id):
     user_id = a.user.identity.id if a.user else None
     if not user_id:
         return
-    row = mochi.db.row("select source, name from wikis where id=?", wiki_id)
+    row = mochi.db.row("select source, name, server from wikis where id=?", wiki_id)
     if not row or not row["source"]:
         return
     source = row["source"]
     if mochi.time.now() - mochi.broadcast.seen(source) <= idle_resync_age:
         return
-    mochi.message.send(
+    registration_send(row["server"],
         {"from": wiki_id, "to": source, "service": "wikis", "event": "replicate"},
-        {"name": row["name"]}
-    )
+        {"name": row["name"]})
     mochi.broadcast.touch(source)
 
 # Helper: Broadcast event to all replicas of a wiki via the durable
@@ -516,9 +529,19 @@ def get_page(wiki, slug):
     page = mochi.db.row("select * from pages where wiki=? and page=? and deleted=0", wiki, slug)
     return page
 
+# Most internal links one page's missing-link check will consider. A page is
+# bounded only by the request body limit, and every link costs a dedupe and a
+# share of the lookup below - on a public wiki, paid by anonymous readers. Real
+# pages are far under this; a page that exceeds it gets its missing-link
+# highlighting truncated rather than costing the reader a worker.
+WIKI_LINKS_MAXIMUM = 500
+
 # Helper: Extract internal wiki links from markdown content
 def extract_wiki_links(content):
     links = []
+    # Membership is a dict, not `url not in links`: that scan is linear, so
+    # deduping n links costs n^2 comparisons, and n is attacker-chosen.
+    seen = {}
     i = 0
     while i < len(content):
         # Look for markdown link pattern: [text](url)
@@ -547,8 +570,11 @@ def extract_wiki_links(content):
                                 url = url.split("#")[0]
                             if "?" in url:
                                 url = url.split("?")[0]
-                            if url and url not in links:
+                            if url and url not in seen:
+                                seen[url] = True
                                 links.append(url)
+                                if len(links) >= WIKI_LINKS_MAXIMUM:
+                                    return links
                     i = k
         i += 1
     return links
@@ -556,15 +582,29 @@ def extract_wiki_links(content):
 # Helper: Find which linked pages don't exist
 def find_missing_links(wiki, content):
     links = extract_wiki_links(content)
+    if not links:
+        return []
+
+    # Two queries for the whole page rather than two per link. This runs for
+    # anonymous readers of a public wiki, so its cost is the reader's, and the
+    # page that sets it is written by anyone with edit access.
+    placeholders = ", ".join(["?" for link in links])
+    present = {}
+    for row in mochi.db.rows(
+        "select page from pages where wiki=? and deleted=0 and page in (" + placeholders + ")",
+        wiki, *links,
+    ) or []:
+        present[row["page"]] = True
+    for row in mochi.db.rows(
+        "select source from redirects where wiki=? and source in (" + placeholders + ")",
+        wiki, *links,
+    ) or []:
+        present[row["source"]] = True
+
     missing = []
     for link in links:
-        # Check if page exists (don't follow redirects for this check)
-        exists = mochi.db.exists("select 1 from pages where wiki=? and page=? and deleted=0", wiki, link)
-        if not exists:
-            # Also check if it's a valid redirect
-            is_redirect = mochi.db.exists("select 1 from redirects where wiki=? and source=?", wiki, link)
-            if not is_redirect:
-                missing.append(link)
+        if link not in present:
+            missing.append(link)
     return missing
 
 # Page slugs and the `home` setting are interpolated into request paths by the
@@ -985,6 +1025,12 @@ def action_resync(a):
     if not wiki:
         a.error.label(404, "errors.wiki_not_found")
         return
+    # Gate before answering: the wiki is addressed by the route, so without this
+    # a stranger could force someone else's replica to pull and re-import, and
+    # the source/no-source answer below would tell them which wikis are replicas.
+    if not check_access(a, wiki["id"], "manage"):
+        a.error.label(403, "errors.access_denied")
+        return
     if not wiki.get("source"):
         # This wiki is itself the canonical source — nothing to resync from.
         return {"data": {"synced": False}}
@@ -1005,6 +1051,18 @@ def rss_tokens_revoke(entity_id):
     for r in mochi.db.rows("select hash from rss where entity=?", entity_id) or []:
         mochi.token.delete(r["hash"])
     mochi.db.execute("delete from rss where entity=?", entity_id)
+
+# Remove every comment in a wiki along with the attachments hanging off it.
+# attachment_clear(wiki_id) does not reach these: a comment's attachments are
+# keyed on the COMMENT id, not the wiki's, so deleting the comments in bulk
+# stranded both the rows and their files permanently - the orphan sweep skips
+# any file that still has a row pointing at it. delete_comment_tree does this
+# correctly for a single thread; the wiki-wide removal paths need the same.
+def delete_wiki_comments(wiki_id):
+    for row in mochi.db.rows("select id from comments where wiki=?", wiki_id) or []:
+        for att in (attachment_list(row["id"], wiki_id) or []):
+            attachment_delete(att["id"])
+    mochi.db.execute("delete from comments where wiki=?", wiki_id)
 
 def action_delete(a):
     if not a.user:
@@ -1043,8 +1101,8 @@ def action_delete(a):
     # 4. Delete redirects
     mochi.db.execute("delete from redirects where wiki=?", wiki_id)
 
-    # 5. Delete comments
-    mochi.db.execute("delete from comments where wiki=?", wiki_id)
+    # 5. Delete comments, and the attachments they own
+    delete_wiki_comments(wiki_id)
 
     # 6. Delete replicas
     mochi.db.execute("delete from replicas where wiki=?", wiki_id)
@@ -1070,7 +1128,7 @@ def action_delete(a):
     if wiki["source"]:
         now = mochi.time.now()
         mochi.db.execute("insert or replace into unreplicated (wiki, source, synced) values (?, ?, ?)", wiki_id, wiki["source"], now)
-        mochi.message.send({"from": wiki_id, "to": wiki["source"], "service": "wikis", "event": "unreplicate"}, {})
+        registration_send(wiki["server"], {"from": wiki_id, "to": wiki["source"], "service": "wikis", "event": "unreplicate"}, {})
 
     return {"data": {"ok": True, "deleted": wiki_id}}
 
@@ -2468,7 +2526,7 @@ def action_unsubscribe(a):
     mochi.db.execute("delete from revisions where page in (select id from pages where wiki=?)", wiki_id)
     mochi.db.execute("delete from pages where wiki=?", wiki_id)
     mochi.db.execute("delete from redirects where wiki=?", wiki_id)
-    mochi.db.execute("delete from comments where wiki=?", wiki_id)
+    delete_wiki_comments(wiki_id)
     mochi.db.execute("delete from replicas where wiki=?", wiki_id)
     rss_tokens_revoke(wiki_id)
     mochi.db.execute("delete from wikis where id=?", wiki_id)
@@ -2486,10 +2544,9 @@ def action_unsubscribe(a):
     mochi.db.execute("insert or replace into unreplicated (wiki, source, synced) values (?, ?, ?)", wiki_id, wiki["source"], now)
 
     # Notify source wiki owner to remove us from their replicas list
-    mochi.message.send(
+    registration_send(wiki["server"],
         {"from": wiki["id"], "to": wiki["source"], "service": "wikis", "event": "unreplicate"},
-        {}
-    )
+        {})
 
     return {"data": {"ok": True}}
 
@@ -3051,6 +3108,13 @@ def event_redirect_set(e):
     # Insert or update redirect
     mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, source, target, created)
 
+    # If this is a source wiki and the event came from a replica, pass it on to
+    # the other replicas. Without this a redirect set on one replica reaches the
+    # source and stops there, so the replicas disagree for good. Same shape as
+    # event_page_delete; the LWW gate above makes the extra delivery harmless.
+    if not wikirow.get("source") and sender:
+        broadcast_event(wiki, "redirect/set", {"source": source, "target": target, "created": created}, exclude=sender)
+
     notify_websocket(wiki)
 
 # Receive redirect/delete event
@@ -3078,6 +3142,9 @@ def event_redirect_delete(e):
         return
 
     mochi.db.execute("delete from redirects where wiki=? and source=?", wiki, source)
+
+    if not wikirow.get("source") and sender:
+        broadcast_event(wiki, "redirect/delete", {"source": source}, exclude=sender)
 
     notify_websocket(wiki)
 
@@ -3123,6 +3190,11 @@ def event_tag_add(e):
     # Insert tag (ignore if already exists)
     mochi.db.execute("insert or ignore into tags (page, tag) values (?, ?)", page, tag)
 
+    # Pass a replica's tag on to the other replicas; insert-or-ignore makes the
+    # extra delivery a no-op for anyone who already has it.
+    if not wikirow.get("source") and sender:
+        broadcast_event(wiki, "tag/add", {"page": page, "tag": tag}, exclude=sender)
+
     notify_websocket(wiki)
 
 # Receive tag/remove event
@@ -3152,6 +3224,9 @@ def event_tag_remove(e):
         return
 
     mochi.db.execute("delete from tags where page=? and tag=?", page, tag)
+
+    if not wikirow.get("source") and sender:
+        broadcast_event(wiki, "tag/remove", {"page": page, "tag": tag}, exclude=sender)
 
     notify_websocket(wiki)
 
@@ -3792,10 +3867,22 @@ def action_subscribe(a):
         a.error.label(404, "errors.wiki_not_found")
         return
 
+    # The wiki comes from the route, not from the caller, so "logged in" is not
+    # the question - without this any authenticated stranger could make someone
+    # else's wiki emit a replicate request, under that owner's identity, to an
+    # entity of the stranger's choosing. Every sibling action (action_sync
+    # below, and the rest) requires manage.
+    if not check_access(a, wiki["id"], "manage"):
+        a.error.label(403, "errors.access_denied")
+        return
+
     # Get target wiki entity to subscribe to
     target = a.input("target")
     if not target:
         a.error.label(400, "errors.target_wiki_entity_is_required")
+        return
+    if not mochi.text.valid(target, "entity"):
+        a.error.label(400, "errors.invalid_target")
         return
 
     if outbound_throttled("subscribe", target):

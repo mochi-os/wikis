@@ -39,6 +39,24 @@ import { requestHelpers, MUTATION_SKIPPED, isMutationSkipped, textUnchanged, use
 import { wikisRequest } from '@/api/request'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 
+// Invalidate a page's cached data whichever route is showing it. The entity
+// routes cache under ['wiki', 'page', slug]; the class routes (/wikis/{wiki}/
+// {page}, where one cache can hold the same slug for several wikis) cache
+// under ['wiki', {wiki}, 'page', slug, baseURL]. Neither is a prefix of the
+// other, so a plain key invalidation refreshes only one of them — which is
+// how an added tag stayed invisible in the shell until a manual reload.
+function invalidatePage(
+  queryClient: ReturnType<typeof useQueryClient>,
+  slug: string
+) {
+  void queryClient.invalidateQueries({
+    predicate: (query) => {
+      const key = query.queryKey
+      return key[0] === 'wiki' && key.includes('page') && key.includes(slug)
+    },
+  })
+}
+
 // Resolve an entity-scoped endpoint URL. When inside a WikiBaseURLProvider
 // (entity context like /wikis/{fingerprint}/...), prefixes the endpoint with the
 // entity base URL to form an absolute path. In class context (no provider), the
@@ -58,11 +76,19 @@ export interface WikiInfoResponse {
   fingerprint?: string
 }
 
-export function useWikiInfo() {
+// wikiId is set in class context when the URL names a wiki: the class-level
+// info action is class-wide and carries no current wiki and no permissions,
+// so shell users' permission-gated controls (tag add, page edit) would stay
+// hidden regardless of their ACL. The wiki-scoped info action returns the
+// same shape plus wiki and permissions. In entity context the plain endpoint
+// already resolves wiki-scoped; prefixing there would double the path.
+export function useWikiInfo(wikiId?: string) {
   return useQuery({
-    queryKey: ['wiki', 'info'],
-    // Use wikisRequest to always fetch from class level (app path)
-    queryFn: () => wikisRequest.get<WikiInfoResponse>(endpoints.wiki.info),
+    queryKey: ['wiki', 'info', wikiId ?? ''],
+    queryFn: () =>
+      wikisRequest.get<WikiInfoResponse>(
+        wikiId ? `${wikiId}/${endpoints.wiki.info}` : endpoints.wiki.info
+      ),
   })
 }
 
@@ -141,9 +167,7 @@ export function useEditPage() {
     },
     onSuccess: (result, variables) => {
       if (isMutationSkipped(result)) return
-      queryClient.invalidateQueries({
-        queryKey: ['wiki', 'page', variables.slug],
-      })
+      invalidatePage(queryClient, variables.slug)
     },
   })
 }
@@ -173,9 +197,7 @@ export function useRevertPage() {
         }
       ),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['wiki', 'page', variables.slug],
-      })
+      invalidatePage(queryClient, variables.slug)
     },
   })
 }
@@ -187,7 +209,7 @@ export function useDeletePage() {
     mutationFn: (slug: string) =>
       requestHelpers.post<PageDeleteResponse>(e(endpoints.wiki.pageDelete(slug))),
     onSuccess: (_, slug) => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'page', slug] })
+      invalidatePage(queryClient, slug)
       queryClient.invalidateQueries({ queryKey: ['wiki', 'tags'] })
     },
   })
@@ -267,9 +289,7 @@ export function useAddTag() {
         tag: data.tag,
       }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['wiki', 'page', variables.slug],
-      })
+      invalidatePage(queryClient, variables.slug)
       queryClient.invalidateQueries({ queryKey: ['wiki', 'tags'] })
       queryClient.invalidateQueries({
         queryKey: ['wiki', 'tag', variables.tag],
@@ -288,9 +308,7 @@ export function useRemoveTag() {
         { tag: data.tag }
       ),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['wiki', 'page', variables.slug],
-      })
+      invalidatePage(queryClient, variables.slug)
       queryClient.invalidateQueries({ queryKey: ['wiki', 'tags'] })
       queryClient.invalidateQueries({
         queryKey: ['wiki', 'tag', variables.tag],
