@@ -7,7 +7,7 @@ import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { useAuthStore, isInShell, ThemeProvider, createQueryClient, getAppPath, getRouterBasepath, I18nProvider, type Catalogs } from '@mochi/web'
+import { useAuthStore, isInShell, ThemeProvider, createQueryClient, getAppBasepath, I18nProvider, type Catalogs } from '@mochi/web'
 // Generated Routes
 import { routeTree } from './routeTree.gen'
 // Styles
@@ -197,19 +197,16 @@ const catalogs: Catalogs = {
 
 const queryClient = createQueryClient()
 
-// Use app path as basepath, ignoring entity fingerprint.
-// Routes use $wikiId to handle entity fingerprints — including the fingerprint
-// in the basepath would cause links to double it (e.g. /wikis/<fp>/<fp>/...).
-function getBasepath(): string {
-  const appPath = getAppPath()
-  if (appPath) return appPath + '/'
-  return getRouterBasepath()
-}
-
+// getAppBasepath keeps the entity fingerprint out of the basepath — the routes
+// carry it as $wikiId — and follows the domain route path when the page is
+// served through one. No createAppHistory here: this route tree is already
+// domain-aware (top-level $page, isDomainEntityRouting branches), so on an
+// entity domain route the URL genuinely has no fingerprint and splicing one in
+// would send "/" to $page as a page named after the fingerprint.
 const router = createRouter({
   routeTree,
   context: { queryClient },
-  basepath: getBasepath(),
+  basepath: getAppBasepath(),
   defaultPreload: false,
 })
 
