@@ -133,6 +133,7 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus, progre
         progress={progress?.slices}
         onRemove={removeFile}
         onReorder={(from, to) => setFiles((prev) => moveItem(prev, from, to))}
+        groupMedia
         // Retry sends the draft, so it is only offered while there is one.
         onRetry={body.trim() ? () => void handleSubmit() : undefined}
       />

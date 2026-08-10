@@ -317,6 +317,7 @@ export function WikiCommentThread({
             progress={progress?.slices}
             onRemove={(file) => setReplyFiles((prev) => removePendingFile(prev, file))}
             onReorder={(from, to) => setReplyFiles((prev) => moveItem(prev, from, to))}
+            groupMedia
             // Retry sends the draft, so it is only offered while there is one.
             onRetry={replyDraft.trim() ? () => void handleSubmitReply() : undefined}
           />
