@@ -44,6 +44,18 @@ function WikiPageRoute() {
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(pageTitle)
 
+  // A page reached through a redirect renders under the requested slug while
+  // its canonical slug differs. Replace the URL with the canonical slug so
+  // the address, the query cache and mutation invalidation all agree.
+  const canonical =
+    data && 'page' in data && typeof data.page === 'object'
+      ? data.page?.slug
+      : undefined
+  useEffect(() => {
+    if (!canonical || canonical === slug) return
+    void navigate({ to: '/$page', params: { page: canonical }, replace: true })
+  }, [canonical, slug, navigate])
+
   // Register page with sidebar context for tree expansion
   const { setPage } = useSidebarContext()
   useEffect(() => {

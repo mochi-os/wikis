@@ -53,11 +53,14 @@ import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 interface WikiPageContentProps {
   wikiId: string
   slug: string
+  // Set by the $wikiId index route's domain branch, where the URL is a single
+  // page-slug segment rather than /$wikiId/$page.
+  domain?: boolean
 }
 
 // Shared page content component used by both the $wikiId/$page route and
 // the $wikiId index route (for domain routing where $wikiId is a page slug).
-export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
+export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) {
   const { t } = useLingui()
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
@@ -117,6 +120,22 @@ export function WikiPageContent({ wikiId, slug }: WikiPageContentProps) {
     if (shouldRedirect) return
     setLastLocation(wiki.fingerprint ?? wiki.id, slug)
   }, [shouldRedirect, wiki.fingerprint, wiki.id, slug])
+
+  // A page reached through a redirect renders under the requested slug while
+  // its canonical slug differs. Replace the URL with the canonical slug so
+  // the address, the query cache and mutation invalidation all agree.
+  const canonical =
+    isValidResponse && 'page' in data && typeof data.page === 'object'
+      ? data.page?.slug
+      : undefined
+  useEffect(() => {
+    if (shouldRedirect || !canonical || canonical === slug) return
+    if (domain) {
+      void navigate({ to: '/$wikiId', params: { wikiId: canonical }, replace: true })
+    } else {
+      void navigate({ to: '/$wikiId/$page', params: { wikiId, page: canonical }, replace: true })
+    }
+  }, [shouldRedirect, canonical, slug, wikiId, domain, navigate])
 
   // Rename dialog state (controlled mode so menu closes when dialog opens)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)

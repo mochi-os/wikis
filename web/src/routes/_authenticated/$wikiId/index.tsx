@@ -20,7 +20,7 @@ function WikiHomePage() {
   if (!ENTITY_ID_PATTERN.test(wikiId)) {
     // wikiId doesn't match a fingerprint/entity ID — it's actually a page slug
     // (domain-routed page where the URL segment was mismatched as $wikiId)
-    return <WikiPageContent wikiId={wiki.fingerprint ?? wiki.id} slug={wikiId} />
+    return <WikiPageContent wikiId={wiki.fingerprint ?? wiki.id} slug={wikiId} domain />
   }
 
   // Redirect to the wiki's home page

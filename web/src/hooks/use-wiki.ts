@@ -39,20 +39,17 @@ import { requestHelpers, MUTATION_SKIPPED, isMutationSkipped, textUnchanged, use
 import { wikisRequest } from '@/api/request'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 
-// Invalidate a page's cached data whichever route is showing it. The entity
-// routes cache under ['wiki', 'page', slug]; the class routes (/wikis/{wiki}/
-// {page}, where one cache can hold the same slug for several wikis) cache
-// under ['wiki', {wiki}, 'page', slug, baseURL]. Neither is a prefix of the
-// other, so a plain key invalidation refreshes only one of them — which is
-// how an added tag stayed invisible in the shell until a manual reload.
-function invalidatePage(
-  queryClient: ReturnType<typeof useQueryClient>,
-  slug: string
-) {
+// Invalidate every cached page query, whichever route is showing it. The
+// entity routes cache under ['wiki', 'page', slug]; the class routes
+// (/wikis/{wiki}/{page}) cache under ['wiki', {wiki}, 'page', slug, baseURL];
+// and a page reached through a redirect is cached under the requested slug
+// while mutations only know the canonical page.slug. No slug filter can match
+// all three, so refresh every page query — at most a couple are ever active.
+function invalidatePage(queryClient: ReturnType<typeof useQueryClient>) {
   void queryClient.invalidateQueries({
     predicate: (query) => {
       const key = query.queryKey
-      return key[0] === 'wiki' && key.includes('page') && key.includes(slug)
+      return key[0] === 'wiki' && key.includes('page')
     },
   })
 }
@@ -165,9 +162,9 @@ export function useEditPage() {
         }
       )
     },
-    onSuccess: (result, variables) => {
+    onSuccess: (result) => {
       if (isMutationSkipped(result)) return
-      invalidatePage(queryClient, variables.slug)
+      invalidatePage(queryClient)
     },
   })
 }
@@ -196,8 +193,8 @@ export function useRevertPage() {
           comment: data.comment,
         }
       ),
-    onSuccess: (_, variables) => {
-      invalidatePage(queryClient, variables.slug)
+    onSuccess: () => {
+      invalidatePage(queryClient)
     },
   })
 }
@@ -208,8 +205,8 @@ export function useDeletePage() {
   return useMutation({
     mutationFn: (slug: string) =>
       requestHelpers.post<PageDeleteResponse>(e(endpoints.wiki.pageDelete(slug))),
-    onSuccess: (_, slug) => {
-      invalidatePage(queryClient, slug)
+    onSuccess: () => {
+      invalidatePage(queryClient)
       queryClient.invalidateQueries({ queryKey: ['wiki', 'tags'] })
     },
   })
@@ -289,7 +286,7 @@ export function useAddTag() {
         tag: data.tag,
       }),
     onSuccess: (_, variables) => {
-      invalidatePage(queryClient, variables.slug)
+      invalidatePage(queryClient)
       queryClient.invalidateQueries({ queryKey: ['wiki', 'tags'] })
       queryClient.invalidateQueries({
         queryKey: ['wiki', 'tag', variables.tag],
@@ -308,7 +305,7 @@ export function useRemoveTag() {
         { tag: data.tag }
       ),
     onSuccess: (_, variables) => {
-      invalidatePage(queryClient, variables.slug)
+      invalidatePage(queryClient)
       queryClient.invalidateQueries({ queryKey: ['wiki', 'tags'] })
       queryClient.invalidateQueries({
         queryKey: ['wiki', 'tag', variables.tag],
@@ -471,9 +468,7 @@ export function useCreateComment() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
       // Update comment count in page data
-      queryClient.invalidateQueries({ queryKey: ['wiki'], predicate: (query) =>
-        query.queryKey.includes('page') && query.queryKey.includes(variables.slug)
-      })
+      invalidatePage(queryClient)
     },
   })
   return { ...mutation, progress }
@@ -522,9 +517,7 @@ export function useDeleteComment() {
       ),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
-      queryClient.invalidateQueries({ queryKey: ['wiki'], predicate: (query) =>
-        query.queryKey.includes('page') && query.queryKey.includes(variables.slug)
-      })
+      invalidatePage(queryClient)
     },
   })
 }
