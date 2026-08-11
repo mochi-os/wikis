@@ -5,7 +5,7 @@
 
 import { useCallback, useRef, useState } from 'react'
 import { MessageSquare } from 'lucide-react'
-import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage, textUnchanged, findCommentTextInTree, useDiscardGuard } from '@mochi/web'
+import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage, textUnchanged, findCommentTextInTree, useDiscardGuard, useAttachmentError } from '@mochi/web'
 import {
   usePageComments,
   useCreateComment,
@@ -80,11 +80,13 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
     [replyingTo, requestReplySwitch, startReply]
   )
 
+  const attachmentError = useAttachmentError()
+
   const handleCreate = async (body: string, files?: File[]) => {
     try {
       await createComment.mutateAsync({ slug, body, files })
     } catch (err) {
-      toast.error(getErrorMessage(err))
+      toast.error(attachmentError(err, getErrorMessage(err)))
       throw err
     }
   }
@@ -98,7 +100,7 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
       setReplyDraft('')
     } catch (err) {
       // Leave the form open with its draft and files so the thread can retry.
-      toast.error(getErrorMessage(err))
+      toast.error(attachmentError(err, getErrorMessage(err)))
       throw err
     }
   }
