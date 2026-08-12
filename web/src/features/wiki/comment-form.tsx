@@ -6,6 +6,7 @@
 import { useCallback, useState, useRef } from 'react'
 import {
   IconButton,
+  Textarea,
   useImageObjectUrls,
   cn,
   mergePendingFiles, removePendingFile, moveItem,
@@ -116,12 +117,12 @@ export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus, progre
       className={cn('space-y-2', isDragActive && dropActiveClass)}
       {...dropzoneProps}
     >
-      <textarea
+      <Textarea
         value={body}
         onChange={(e) => handleBodyChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="border-input bg-background placeholder:text-muted-foreground min-h-16 w-full rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+        className="bg-background rounded-lg text-sm"
         rows={3}
         autoFocus={autoFocus}
         disabled={isSubmitting}

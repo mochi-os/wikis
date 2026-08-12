@@ -13,6 +13,7 @@ import {
   ConfirmDialog,
   EntityAvatar,
   IconButton,
+  Textarea,
   cn,
   useFormat,
   getAppPath,
@@ -197,10 +198,10 @@ export function WikiCommentThread({
 
         {editing ? (
           <div className="space-y-2">
-            <textarea
+            <Textarea
               value={editBody}
               onChange={(e) => setEditBody(e.target.value)}
-              className="border-input bg-background placeholder:text-muted-foreground min-h-16 w-full rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-background rounded-lg text-sm"
               rows={3}
               autoFocus
             />
@@ -293,7 +294,7 @@ export function WikiCommentThread({
           }}
           {...dropzoneProps}
         >
-          <textarea
+          <Textarea
             placeholder={t`Reply to ${comment.name || comment.author}...`}
             value={replyDraft}
             onChange={(e) => handleReplyDraftChange(e.target.value)}
@@ -305,7 +306,7 @@ export function WikiCommentThread({
                 requestCloseReply()
               }
             }}
-            className="border-input bg-background placeholder:text-muted-foreground min-h-16 w-full rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+            className="bg-background rounded-lg text-sm"
             rows={2}
             autoFocus
             disabled={isSubmittingReply}
