@@ -2791,7 +2791,7 @@ def event_page_create(e):
     title = text_content(e, "title")
     content = text_content(e, "content")
     author = e.content("author")
-    created = e.content("created")
+    created = content_number(e, "created", 0)
     version = e.content("version")
     name = e.content("name") or ""
 
@@ -2908,7 +2908,7 @@ def event_page_update(e):
     title = text_content(e, "title")
     content = text_content(e, "content")
     author = e.content("author")
-    updated = e.content("updated")
+    updated = content_number(e, "updated", 0)
     version = e.content("version")
     name = e.content("name") or ""
 
@@ -3100,7 +3100,7 @@ def event_redirect_set(e):
 
     source = text_content(e, "source")
     target = text_content(e, "target")
-    created = e.content("created")
+    created = content_number(e, "created", 0)
 
     # Validate required fields
     if not source or not target or not created:
@@ -3536,7 +3536,7 @@ def event_attachment_create(e):
     attachment_id = e.content("id")
     name = text_content(e, "name")
     content_type = text_content(e, "content_type", "")
-    created = e.content("created")
+    created = content_number(e, "created", 0)
     replica = e.content("replica")
 
     mochi.log.debug("attachment/create: id=%s name=%s replica=%s", attachment_id, name, replica)
@@ -4522,6 +4522,14 @@ def event_comment_edit(e):
     signature = e.content("signature") or ""
 
     if not id or not body or not edited:
+        return
+
+    # Checked, not coerced: `edited` goes into comment_edit_payload below for
+    # signature verification, so rewriting "123" to 123 here would change the
+    # bytes the author signed and refuse a legitimate edit. A value that is not
+    # a number cannot be compared at all (Starlark will not order a string
+    # against an int, and that ends the handler), so refuse the event instead.
+    if not content_is_number(edited):
         return
 
     # Clamp the sender-supplied timestamp to the window event_page_create uses.
