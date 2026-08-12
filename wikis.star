@@ -2553,22 +2553,26 @@ def action_unsubscribe(a):
     rss_tokens_revoke(wiki_id)
     mochi.db.execute("delete from wikis where id=?", wiki_id)
 
+    # Tombstone the unreplication (keyed by the wiki id, recording the source).
+    # synced=now so the unreplicate we send below counts as the first attempt; a
+    # later dropped broadcast re-sends via unreplicate_stale() if the source
+    # missed this one.
+    now = mochi.time.now()
+    mochi.db.execute("insert or replace into unreplicated (wiki, source, synced) values (?, ?, ?)", wiki_id, wiki["source"], now)
+
+    # Notify source wiki owner to remove us from their replicas list. This must
+    # precede mochi.entity.delete below: the message is sent AS this entity, and
+    # both the sender check and the signature read its key from the entities
+    # table. Sent after the delete, the send survives only because the routed
+    # entity still matches, and goes out with no signature at all.
+    registration_send(wiki["server"],
+        {"from": wiki["id"], "to": wiki["source"], "service": "wikis", "event": "unreplicate"},
+        {})
+
     # Clean up attachments, access rules, and entity registration
     attachment_clear(wiki_id)
     mochi.access.clear.resource("wiki/" + wiki_id)
     mochi.entity.delete(wiki_id)
-
-    # Tombstone the unreplication (keyed by our now-deleted wiki id, recording
-    # the source). synced=now so the unreplicate we send below counts as the
-    # first attempt; a later dropped broadcast re-sends via unreplicate_stale()
-    # if the source missed this one.
-    now = mochi.time.now()
-    mochi.db.execute("insert or replace into unreplicated (wiki, source, synced) values (?, ?, ?)", wiki_id, wiki["source"], now)
-
-    # Notify source wiki owner to remove us from their replicas list
-    registration_send(wiki["server"],
-        {"from": wiki["id"], "to": wiki["source"], "service": "wikis", "event": "unreplicate"},
-        {})
 
     return {"data": {"ok": True}}
 
