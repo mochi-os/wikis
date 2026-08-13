@@ -3,45 +3,29 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { Button, DataChip, cn, Tooltip, TooltipTrigger, TooltipContent } from '@mochi/web'
-import { Trans } from '@lingui/react/macro'
-import { ExternalLink } from 'lucide-react'
-import { t } from '@lingui/core/macro'
+import { DataChip, cn } from '@mochi/web'
 
 interface ValueLinkChipProps {
   value: string
-  href?: string
   className?: string
-  chipClassName?: string
 }
 
-export function ValueLinkChip({
-  value,
-  href,
-  className,
-  chipClassName,
-}: ValueLinkChipProps) {
-  const targetHref = href ?? value
-
+// Shows one identifier-ish value: a redirect's source or target slug, or the
+// entity id of the wiki this one replicates.
+//
+// It used to carry an "open in new tab" button whose href fell back to the
+// value itself. Every call site passes a page slug or an entity id, never a
+// URL, so that link resolved relative to the current page and always went
+// nowhere. It was also the one place a redirect source reached an href, which
+// is what made an unvalidated source worth worrying about: React neutralises a
+// javascript: URL there, and that is a property of React rather than of this
+// code. Sources are validated at every write path now (slug_problem in
+// wikis.star), and the button is gone, so neither the broken link nor the sink
+// is left.
+export function ValueLinkChip({ value, className }: ValueLinkChipProps) {
   return (
-    <div className={cn('flex min-w-0 items-center gap-1.5', className)}>
-      <DataChip
-        value={value}
-        className='min-w-0 flex-1'
-        chipClassName={chipClassName}
-        truncate='middle'
-      />
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant='ghost' size='icon' className='size-8 shrink-0' asChild aria-label={t`Open link in new tab`}>
-            <a href={targetHref} target='_blank' rel='noopener noreferrer'>
-              <ExternalLink className='h-3.5 w-3.5' />
-              <span className='sr-only'><Trans>Open link</Trans></span>
-            </a>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>{t`Open link in new tab`}</TooltipContent>
-      </Tooltip>
+    <div className={cn('flex min-w-0 items-center', className)}>
+      <DataChip value={value} className='min-w-0 flex-1' truncate='middle' />
     </div>
   )
 }

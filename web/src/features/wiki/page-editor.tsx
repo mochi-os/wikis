@@ -32,6 +32,7 @@ import {
   getFileIcon,
   getErrorMessage,
   authenticatedUrl,
+  getAppPath,
   extractStatus,
   Tooltip,
   TooltipTrigger,
@@ -86,12 +87,21 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   // 3. URL path (class context like /wikis/$wikiId/...)
   let wikiId = wikiIdProp ?? wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
 
-  // If still no wikiId, try to extract from URL for class context
+  // If still no wikiId, take it from the URL, under whatever prefix this app
+  // is actually served at. "/wikis/" is configuration (app.json "paths"), not a
+  // constant: hardcoding it broke the moment the prefix differed, and under
+  // domain-entity routing - where the first segment is a page slug - it matched
+  // that slug and sent every post-save navigation to a wiki that does not
+  // exist. getAppPath() answers "" in exactly that case, so there is nothing to
+  // match against and the entity-relative branch is taken instead.
   if (!wikiId) {
-    const pathname = window.location.pathname
-    const classContextMatch = pathname.match(/^\/wikis\/([^/]+)\//)
-    if (classContextMatch) {
-      wikiId = classContextMatch[1]
+    const appPath = getAppPath()
+    if (appPath) {
+      const prefix = `${appPath}/`
+      const pathname = window.location.pathname
+      if (pathname.startsWith(prefix)) {
+        wikiId = pathname.slice(prefix.length).split('/')[0] || undefined
+      }
     }
   }
 

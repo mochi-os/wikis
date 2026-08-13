@@ -52,13 +52,6 @@ def database_create():
     # Replicas table - downstream wikis that replicate from this wiki
     mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
 
-    # Unreplicate tombstones - wikis we unreplicated as a replica, keyed by our
-    # local (now-deleted) wiki id, recording the source to notify. Lets a dropped
-    # broadcast re-send the unreplicate to the source (which may have missed our
-    # original one) without keeping the wiki's heavy data around. See
-    # unreplicate_stale().
-    mochi.db.execute("create table if not exists unreplicated (wiki text not null primary key, source text not null, synced integer not null default 0)")
-
     # Comments table
     # origin: the replica entity that submitted this comment over P2P, empty for
     # one authored locally. It is the authorisation key for remote edit/delete -
@@ -175,6 +168,11 @@ def database_upgrade(version):
     	# healthy database re-running it changes nothing.
         attachment_schema_create()
         attachment_migrate()
+    # Schema 11: the unreplicate retry is gone, and `unreplicated` existed only
+    # to feed it. Nothing reads the table now, so drop it rather than leave it
+    # accumulating rows on every unsubscribe.
+    if version == 11:
+        mochi.db.execute("drop table if exists unreplicated")
 
 # Helper: has this outbound operation run within `seconds`? Records the attempt
 # when it has not, so callers just guard on the return value.
@@ -358,27 +356,6 @@ def error_message_timeout(e):
 # return, they re-replicate.
 def error_subscriber_unreachable(e):
     mochi.db.execute("delete from replicas where id=?", e.entity)
-
-# unreplicate_stale: a broadcast arrived for a wiki we no longer hold. If we
-# kept an unreplicate tombstone for it, the source missed our original
-# unreplicate (offline past the queue age) and is still fanning out to us. Re-send
-# the unreplicate to the RECORDED source - never the broadcast sender, which in a
-# chained setup (we were a replica of one wiki and a re-broadcasting source for
-# another) could be a downstream replica whose row we'd wrongly delete. The
-# source's event_unreplicate deletes only (source, us), so this can never remove
-# anyone else's registration. error_message_timeout still covers the dead-host
-# case (us at 0 locations); this covers the alive-but-unreplicated case it can't.
-# Throttled to once per 60s per wiki so a burst of broadcasts can't spam the
-# source before it processes the first unreplicate.
-def unreplicate_stale(wiki):
-    row = mochi.db.row("select source, synced from unreplicated where wiki=?", wiki)
-    if not row:
-        return
-    now = mochi.time.now()
-    if row["synced"] and now - row["synced"] < 60:
-        return
-    mochi.db.execute("update unreplicated set synced=? where wiki=?", now, wiki)
-    mochi.message.send({"from": wiki, "to": row["source"], "service": "wikis", "event": "unreplicate"}, {})
 
 # error_broadcast_gap: core calls this when an unfillable broadcast gap was
 # skipped and events were permanently lost. broadcast/resync can't replay a
@@ -1143,16 +1120,18 @@ def action_delete(a):
     # 10. Clear access rules
     mochi.access.clear.resource("wiki/" + wiki_id)
 
+    # If this was a replica (source set), notify the source to drop us, so
+    # deleting a replica this way doesn't strand us in its replicas list.
+    #
+    # This must precede the entity delete below, for the reason
+    # action_unsubscribe gives: the message is sent AS this entity, and both
+    # the sender check and the signature read its key from the entities table.
+    # Sent after the delete, as it was, core refuses it.
+    if wiki["source"]:
+        registration_send(wiki["server"], {"from": wiki_id, "to": wiki["source"], "service": "wikis", "event": "unreplicate"}, {})
+
     # 11. Delete the entity from the entities table and directory
     mochi.entity.delete(wiki_id)
-
-    # If this was a replica (source set), notify the source to drop us and
-    # tombstone it, matching action_unsubscribe - so deleting a replica via
-    # this path doesn't strand us in the source's replicas list.
-    if wiki["source"]:
-        now = mochi.time.now()
-        mochi.db.execute("insert or replace into unreplicated (wiki, source, synced) values (?, ?, ?)", wiki_id, wiki["source"], now)
-        registration_send(wiki["server"], {"from": wiki_id, "to": wiki["source"], "service": "wikis", "event": "unreplicate"}, {})
 
     return {"data": {"ok": True, "deleted": wiki_id}}
 
@@ -2245,20 +2224,24 @@ def action_redirect_set(a):
     source = source.lower().strip()
     target = target.lower().strip()
 
-    if len(source) > 100:
-        a.error.label(400, "errors.source_too_long")
+    # A redirect source is resolved as a page slug (get_page consults redirects
+    # before pages), so it is held to the page slug rules rather than to length
+    # alone: the length and leading-dash tests that stood here said nothing
+    # about the characters, so a source could be any 100 characters at all -
+    # "javascript:alert(1)" among them, settable with edit rather than manage
+    # access. React neutralises such a value where it is rendered today, which
+    # is one React version or one non-React sink away from not being true.
+    problem = slug_problem(source)
+    if problem:
+        a.error.label(400, problem, name=source)
         return
+
     if len(target) > 100:
         a.error.label(400, "errors.target_too_long_max_100_characters")
         return
 
     if source == target:
         a.error.label(400, "errors.source_target_same")
-        return
-
-    # Check if source is a reserved path
-    if source.startswith("-"):
-        a.error.label(400, "errors.cannot_redirect_reserved_paths")
         return
 
     # Check if target page exists
@@ -2553,13 +2536,6 @@ def action_unsubscribe(a):
     rss_tokens_revoke(wiki_id)
     mochi.db.execute("delete from wikis where id=?", wiki_id)
 
-    # Tombstone the unreplication (keyed by the wiki id, recording the source).
-    # synced=now so the unreplicate we send below counts as the first attempt; a
-    # later dropped broadcast re-sends via unreplicate_stale() if the source
-    # missed this one.
-    now = mochi.time.now()
-    mochi.db.execute("insert or replace into unreplicated (wiki, source, synced) values (?, ?, ?)", wiki_id, wiki["source"], now)
-
     # Notify source wiki owner to remove us from their replicas list. This must
     # precede mochi.entity.delete below: the message is sent AS this entity, and
     # both the sender check and the signature read its key from the entities
@@ -2777,7 +2753,6 @@ def event_page_create(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -2894,7 +2869,6 @@ def event_page_update(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3009,7 +2983,6 @@ def event_page_delete(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3089,7 +3062,6 @@ def event_redirect_set(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3116,10 +3088,16 @@ def event_redirect_set(e):
     # Same 100-character caps action_redirect_set applies. redirects is keyed
     # (wiki, source), so an unbounded source is both an unbounded string and an
     # unbounded number of rows.
-    if len(source) > 100 or len(target) > 100:
+    if len(target) > 100:
         return
 
-    if source == target or source.startswith("-"):
+    # The same page-slug rules the local path applies, so a peer cannot plant a
+    # source the local path would refuse - route-escaping values like ../x, or
+    # anything outside letters, numbers, hyphen and underscore.
+    if slug_problem(source):
+        return
+
+    if source == target:
         return
 
     # A redirect must not shadow a live page. get_page consults redirects
@@ -3174,7 +3152,6 @@ def event_redirect_delete(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3226,7 +3203,6 @@ def event_tag_add(e):
     wiki = pagerow["wiki"]
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3262,7 +3238,6 @@ def event_tag_remove(e):
     wiki = pagerow["wiki"]
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3287,7 +3262,6 @@ def event_setting_set(e):
     # Ensure wiki exists in database
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3632,7 +3606,6 @@ def event_attachment_delete(e):
     # Verify wiki exists and is a source wiki (not a replica)
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     if wikirow.get("source"):
@@ -3688,7 +3661,6 @@ def event_attachment_add(e):
 
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3712,7 +3684,6 @@ def event_attachment_remove(e):
 
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -3817,7 +3788,17 @@ def import_sync_dump(wiki, dump):
             continue
         # redirects is keyed (wiki, source): unbounded source means unbounded
         # rows as well as an unbounded string.
-        if len(source_slug) > 100 or len(target_slug) > 100:
+        if len(target_slug) > 100:
+            continue
+        # The dump comes from another wiki, so hold its redirects to the same
+        # rules as the live paths - the same treatment tags get above. Without
+        # the slug rules a source could carry any characters at all, and
+        # without the shadow test a dump could hide a live page behind a
+        # redirect: get_page consults redirects first, so the page stops
+        # resolving under its own name while nothing is deleted.
+        if slug_problem(source_slug):
+            continue
+        if handle.exists("select 1 from pages where wiki=? and page=? and deleted=0", wiki, source_slug):
             continue
         handle.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, source_slug, target_slug, r.get("created", 0))
 
@@ -4386,7 +4367,6 @@ def event_comment_create(e):
 
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -4507,7 +4487,6 @@ def event_comment_edit(e):
 
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")
@@ -4597,7 +4576,6 @@ def event_comment_delete(e):
 
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
-        unreplicate_stale(wiki)
         return
 
     sender = e.header("from")

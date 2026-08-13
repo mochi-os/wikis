@@ -21,6 +21,7 @@ import {
   ImageLightbox,
   type LightboxMedia,
   useLightboxHash,
+  authenticatedUrl,
   isDomainEntityRouting,
   markdownUrlTransform,
 } from '@mochi/web'
@@ -55,6 +56,22 @@ function resolveAttachmentUrl(baseURL: string, url: string): string {
 function getFullSizeUrl(baseURL: string, url: string): string {
   const resolved = resolveAttachmentUrl(baseURL, url)
   return resolved.replace(/\/thumbnail$/, '')
+}
+
+// The URL to actually fetch the bytes with. An <img src> or an <a href> sends
+// neither the Bearer header nor cookies from the shell's sandboxed iframe, so
+// same-origin resources take the token as a query parameter — the treatment the
+// attachments browser, the editor and the comment gallery already give these
+// exact files. Without it every image embedded in a page, every lightbox
+// full-size URL and every attachment link on a PRIVATE wiki is refused, because
+// serve_attachment gates on view access and an anonymous caller is tested
+// against the "*" grant a private wiki does not carry. The same file loads in
+// the attachments browser, which is what makes it look like a content problem.
+//
+// authenticatedUrl is a no-op outside the shell and for any URL that is not
+// same-origin, so externally hosted images and links are untouched.
+function attachmentResourceUrl(baseURL: string, url: string): string {
+  return authenticatedUrl(resolveAttachmentUrl(baseURL, url))
 }
 
 function extractImageUrls(content: string): string[] {
@@ -117,7 +134,7 @@ export function MarkdownContent({
     return urls.map((url, i) => ({
       id: String(i),
       name: url.split('/').pop() || t`Image`,
-      url: getFullSizeUrl(baseURL, url),
+      url: authenticatedUrl(getFullSizeUrl(baseURL, url)),
       type: 'image' as const,
     }))
   }, [content, baseURL, t])
@@ -252,10 +269,13 @@ export function MarkdownContent({
               </li>
             ),
             img: ({ src, alt, node: _, ...props }) => {
+              // The map is keyed on the plain resolution, so the lookup is
+              // unaffected by whether a token is appended for the fetch.
               const resolvedSrc = src ? resolveAttachmentUrl(baseURL, src) : src
               const index = resolvedSrc
                 ? srcToIndex.get(resolvedSrc)
                 : undefined
+              const fetchableSrc = src ? attachmentResourceUrl(baseURL, src) : src
 
               if (index !== undefined) {
                 return (
@@ -264,12 +284,12 @@ export function MarkdownContent({
                     onClick={() => openLightbox(index)}
                     className='cursor-pointer border-0 bg-transparent p-0'
                   >
-                    <img src={resolvedSrc} alt={alt} className='m-0' />
+                    <img src={fetchableSrc} alt={alt} className='m-0' />
                   </button>
                 )
               }
 
-              return <img src={resolvedSrc} alt={alt} {...props} />
+              return <img src={fetchableSrc} alt={alt} {...props} />
             },
             pre: ({ children }) => {
               const codeElement = Array.isArray(children)
@@ -346,7 +366,7 @@ export function MarkdownContent({
               const kind = classifyWikiLink(href)
 
               if (kind === 'attachment') {
-                const resolvedHref = resolveAttachmentUrl(baseURL, href)
+                const resolvedHref = attachmentResourceUrl(baseURL, href)
                 return (
                   <a href={resolvedHref} target='_blank' rel='noopener noreferrer' {...props}>
                     {children}

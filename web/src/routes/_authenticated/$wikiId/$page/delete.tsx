@@ -36,7 +36,7 @@ function DeletePageRoute() {
 
   // Fetch page data using the wiki's base URL
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['wiki', wikiId, 'page', slug, baseURL],
+    queryKey: ['wiki', baseURL, 'page', slug],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${endpoints.wiki.page(slug)}`),
     enabled: !!slug,

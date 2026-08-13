@@ -31,6 +31,7 @@ import {
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
 import { CommentAttachments } from './comment-attachments'
+import { MarkdownContent } from './markdown-content'
 
 interface WikiCommentThreadProps {
   comment: WikiComment
@@ -233,14 +234,20 @@ export function WikiCommentThread({
           </div>
         ) : (
           <>
-            {comment.markdown ? (
-              <div
-                className="text-foreground max-w-none text-sm leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ul]:list-disc [&_ul]:ps-6 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:ps-6 [&_li]:my-0.5"
-                dangerouslySetInnerHTML={{ __html: comment.markdown }}
+            {/* Rendered here from the comment's own text, not injected from the
+                server's pre-rendered HTML. That HTML is sanitised by a policy
+                that permits an img from any host, while page content restricts
+                images to this origin precisely so that reading a page cannot
+                report the reader's address to a server its author picked - a
+                comment defeated that for every reader of the page. Rendering
+                the same way pages do applies the same policy, and removes the
+                only place this app handed unescaped HTML to the DOM. */}
+            {comment.body ? (
+              <MarkdownContent
+                content={comment.body}
+                className="text-sm leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5"
               />
-            ) : (
-              <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">{comment.body}</p>
-            )}
+            ) : null}
           </>
         )}
 

@@ -39,19 +39,17 @@ import { requestHelpers, MUTATION_SKIPPED, isMutationSkipped, textUnchanged, use
 import { wikisRequest } from '@/api/request'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 
-// Invalidate every cached page query, whichever route is showing it. The
-// entity routes cache under ['wiki', 'page', slug]; the class routes
-// (/wikis/{wiki}/{page}) cache under ['wiki', {wiki}, 'page', slug, baseURL];
-// and a page reached through a redirect is cached under the requested slug
-// while mutations only know the canonical page.slug. No slug filter can match
-// all three, so refresh every page query — at most a couple are ever active.
-function invalidatePage(queryClient: ReturnType<typeof useQueryClient>) {
-  void queryClient.invalidateQueries({
-    predicate: (query) => {
-      const key = query.queryKey
-      return key[0] === 'wiki' && key.includes('page')
-    },
-  })
+// Invalidate every cached page query for this wiki. A page reached through a
+// redirect is cached under the requested slug while mutations only know the
+// canonical page.slug, so no slug filter would match it - but the scope makes
+// the prefix precise enough that refreshing all of them costs one wiki's pages
+// rather than every wiki's. The routes key their page query the same way, so
+// this reaches those too.
+function invalidatePage(
+  queryClient: ReturnType<typeof useQueryClient>,
+  scope: string
+) {
+  void queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'page'] })
 }
 
 // Resolve an entity-scoped endpoint URL. When inside a WikiBaseURLProvider
@@ -61,6 +59,18 @@ function invalidatePage(queryClient: ReturnType<typeof useQueryClient>) {
 function useEntityEndpoint() {
   const baseURL = useWikiBaseURLOptional()?.baseURL
   return (endpoint: string) => baseURL ? `${baseURL}${endpoint}` : endpoint
+}
+
+// The wiki a cached entry belongs to. Every key below carries it, because the
+// $wikiId tree reaches a different wiki on each visit while keys like
+// ['wiki', 'tags'] named none of them: React Query answered from the previous
+// wiki's entry immediately, so opening a second wiki showed the first one's
+// tags, attachments, comments and settings until the refetch landed. The base
+// URL is the wiki's identity here - it carries the fingerprint in entity
+// context, and in class context there is a single wiki in play, for which the
+// empty string is the right and stable answer.
+function useWikiScope(): string {
+  return useWikiBaseURLOptional()?.baseURL ?? ''
 }
 
 // Wiki info
@@ -93,8 +103,9 @@ export function useWikiInfo(wikiId?: string) {
 
 export function usePage(slug: string) {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useQuery({
-    queryKey: ['wiki', 'page', slug],
+    queryKey: ['wiki', scope, 'page', slug],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(
         e(endpoints.wiki.page(slug))
@@ -105,10 +116,11 @@ export function usePage(slug: string) {
 
 export function usePageHistory(slug: string, params?: { limit?: number; offset?: number }) {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   const limit = params?.limit ?? 50
   const offset = params?.offset ?? 0
   return useQuery({
-    queryKey: ['wiki', 'page', slug, 'history', limit, offset],
+    queryKey: ['wiki', scope, 'page', slug, 'history', limit, offset],
     queryFn: () =>
       requestHelpers.get<PageHistoryResponse>(
         `${e(endpoints.wiki.pageHistory(slug))}?limit=${limit}&offset=${offset}`
@@ -119,8 +131,9 @@ export function usePageHistory(slug: string, params?: { limit?: number; offset?:
 
 export function usePageRevision(slug: string, version: number, opts?: { enabled?: boolean }) {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useQuery({
-    queryKey: ['wiki', 'page', slug, 'revision', version],
+    queryKey: ['wiki', scope, 'page', slug, 'revision', version],
     queryFn: () =>
       requestHelpers.get<PageRevisionResponse>(
         e(endpoints.wiki.pageRevision(slug, version))
@@ -134,6 +147,7 @@ export function usePageRevision(slug: string, version: number, opts?: { enabled?
 export function useEditPage() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation<
     MutationFnResult<PageEditResponse>,
     Error,
@@ -164,7 +178,7 @@ export function useEditPage() {
     },
     onSuccess: (result) => {
       if (isMutationSkipped(result)) return
-      invalidatePage(queryClient)
+      invalidatePage(queryClient, scope)
     },
   })
 }
@@ -184,6 +198,7 @@ export function useCreatePage() {
 export function useRevertPage() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation({
     mutationFn: (data: { slug: string; version: number; comment?: string }) =>
       requestHelpers.post<PageRevertResponse>(
@@ -194,7 +209,7 @@ export function useRevertPage() {
         }
       ),
     onSuccess: () => {
-      invalidatePage(queryClient)
+      invalidatePage(queryClient, scope)
     },
   })
 }
@@ -202,12 +217,13 @@ export function useRevertPage() {
 export function useDeletePage() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation({
     mutationFn: (slug: string) =>
       requestHelpers.post<PageDeleteResponse>(e(endpoints.wiki.pageDelete(slug))),
     onSuccess: () => {
-      invalidatePage(queryClient)
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'tags'] })
+      invalidatePage(queryClient, scope)
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'tags'] })
     },
   })
 }
@@ -245,16 +261,18 @@ export function useRenamePage() {
 
 export function useTags() {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useQuery({
-    queryKey: ['wiki', 'tags'],
+    queryKey: ['wiki', scope, 'tags'],
     queryFn: () => requestHelpers.get<TagsResponse>(e(endpoints.wiki.tags)),
   })
 }
 
 export function useTagPages(tag: string) {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useQuery({
-    queryKey: ['wiki', 'tag', tag],
+    queryKey: ['wiki', scope, 'tag', tag],
     queryFn: () =>
       requestHelpers.get<TagPagesResponse>(e(endpoints.wiki.tagPages(tag))),
     enabled: !!tag,
@@ -265,10 +283,11 @@ export function useTagPages(tag: string) {
 
 export function useChanges(params?: { limit?: number; offset?: number }) {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   const limit = params?.limit ?? 50
   const offset = params?.offset ?? 0
   return useQuery({
-    queryKey: ['wiki', 'changes', limit, offset],
+    queryKey: ['wiki', scope, 'changes', limit, offset],
     queryFn: () =>
       requestHelpers.get<ChangesResponse>(
         `${e(endpoints.wiki.changes)}?limit=${limit}&offset=${offset}`
@@ -280,16 +299,17 @@ export function useChanges(params?: { limit?: number; offset?: number }) {
 export function useAddTag() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation({
     mutationFn: (data: { slug: string; tag: string }) =>
       requestHelpers.post<TagAddResponse>(e(endpoints.wiki.tagAdd(data.slug)), {
         tag: data.tag,
       }),
     onSuccess: (_, variables) => {
-      invalidatePage(queryClient)
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'tags'] })
+      invalidatePage(queryClient, scope)
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'tags'] })
       queryClient.invalidateQueries({
-        queryKey: ['wiki', 'tag', variables.tag],
+        queryKey: ['wiki', scope, 'tag', variables.tag],
       })
     },
   })
@@ -298,6 +318,7 @@ export function useAddTag() {
 export function useRemoveTag() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation({
     mutationFn: (data: { slug: string; tag: string }) =>
       requestHelpers.post<TagRemoveResponse>(
@@ -305,10 +326,10 @@ export function useRemoveTag() {
         { tag: data.tag }
       ),
     onSuccess: (_, variables) => {
-      invalidatePage(queryClient)
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'tags'] })
+      invalidatePage(queryClient, scope)
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'tags'] })
       queryClient.invalidateQueries({
-        queryKey: ['wiki', 'tag', variables.tag],
+        queryKey: ['wiki', scope, 'tag', variables.tag],
       })
     },
   })
@@ -318,8 +339,9 @@ export function useRemoveTag() {
 
 export function useSearch(query: string) {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useQuery({
-    queryKey: ['wiki', 'search', query],
+    queryKey: ['wiki', scope, 'search', query],
     queryFn: () =>
       requestHelpers.get<SearchResponse>(e(endpoints.wiki.search), {
         params: { q: query },
@@ -332,8 +354,9 @@ export function useSearch(query: string) {
 
 export function useWikiSettings() {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useQuery({
-    queryKey: ['wiki', 'settings'],
+    queryKey: ['wiki', scope, 'settings'],
     queryFn: () =>
       requestHelpers.get<SettingsResponse>(e(endpoints.wiki.settings)),
   })
@@ -342,11 +365,12 @@ export function useWikiSettings() {
 export function useSetWikiSetting() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation({
     mutationFn: (data: { name: string; value: string }) =>
       requestHelpers.post<SettingsSetResponse>(e(endpoints.wiki.settingsSet), data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'settings'] })
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'settings'] })
       // Also invalidate info since home page setting affects sidebar URLs
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },
@@ -396,8 +420,9 @@ export function useDeleteWiki() {
 
 export function useRedirects() {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useQuery({
-    queryKey: ['wiki', 'redirects'],
+    queryKey: ['wiki', scope, 'redirects'],
     queryFn: () =>
       requestHelpers.get<RedirectsResponse>(e(endpoints.wiki.redirects)),
   })
@@ -406,11 +431,12 @@ export function useRedirects() {
 export function useSetRedirect() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation({
     mutationFn: (data: { source: string; target: string }) =>
       requestHelpers.post<RedirectSetResponse>(e(endpoints.wiki.redirectSet), data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'redirects'] })
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'redirects'] })
     },
   })
 }
@@ -418,11 +444,12 @@ export function useSetRedirect() {
 export function useDeleteRedirect() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation({
     mutationFn: (source: string) =>
       requestHelpers.post<RedirectDeleteResponse>(e(endpoints.wiki.redirectDelete), { source }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'redirects'] })
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'redirects'] })
     },
   })
 }
@@ -431,8 +458,9 @@ export function useDeleteRedirect() {
 
 export function usePageComments(slug: string) {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useQuery({
-    queryKey: ['wiki', 'comments', slug],
+    queryKey: ['wiki', scope, 'comments', slug],
     queryFn: () =>
       requestHelpers.get<CommentsResponse>(e(endpoints.wiki.pageComments(slug))),
     enabled: !!slug,
@@ -443,6 +471,7 @@ export function useCreateComment() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
   const { progress, upload } = useUploadProgress()
+  const scope = useWikiScope()
   const mutation = useMutation({
     mutationFn: (data: { slug: string; body: string; parent?: string; files?: FileList | File[] }) => {
       const formData = new FormData()
@@ -466,9 +495,9 @@ export function useCreateComment() {
         : post()
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'comments', variables.slug] })
       // Update comment count in page data
-      invalidatePage(queryClient)
+      invalidatePage(queryClient, scope)
     },
   })
   return { ...mutation, progress }
@@ -477,6 +506,7 @@ export function useCreateComment() {
 export function useEditComment() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation<
     MutationFnResult<CommentEditResponse>,
     Error,
@@ -501,7 +531,7 @@ export function useEditComment() {
     },
     onSuccess: (result, variables) => {
       if (isMutationSkipped(result)) return
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'comments', variables.slug] })
     },
   })
 }
@@ -509,6 +539,7 @@ export function useEditComment() {
 export function useDeleteComment() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation({
     mutationFn: (data: { slug: string; id: string }) =>
       requestHelpers.post<CommentDeleteResponse>(
@@ -516,8 +547,8 @@ export function useDeleteComment() {
         { id: data.id }
       ),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'comments', variables.slug] })
-      invalidatePage(queryClient)
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'comments', variables.slug] })
+      invalidatePage(queryClient, scope)
     },
   })
 }
@@ -526,8 +557,9 @@ export function useDeleteComment() {
 
 export function useAttachments() {
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useQuery({
-    queryKey: ['wiki', 'attachments'],
+    queryKey: ['wiki', scope, 'attachments'],
     queryFn: () =>
       requestHelpers.get<AttachmentsResponse>(e(endpoints.wiki.attachments)),
   })
@@ -537,6 +569,7 @@ export function useUploadAttachment() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
   const { progress, upload } = useUploadProgress()
+  const scope = useWikiScope()
   const mutation = useMutation({
     mutationFn: (files: FileList | File[]) => {
       const picked = Array.from(files)
@@ -560,7 +593,7 @@ export function useUploadAttachment() {
       )
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'attachments'] })
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'attachments'] })
     },
   })
   return { ...mutation, progress }
@@ -569,6 +602,7 @@ export function useUploadAttachment() {
 export function useDeleteAttachment() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
+  const scope = useWikiScope()
   return useMutation({
     mutationFn: (id: string) =>
       requestHelpers.post<AttachmentDeleteResponse>(
@@ -577,7 +611,7 @@ export function useDeleteAttachment() {
       ),
     onMutate: async (id: string) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['wiki', 'attachments'] })
+      await queryClient.cancelQueries({ queryKey: ['wiki', scope, 'attachments'] })
 
       // Snapshot the previous value
       const previous = queryClient.getQueryData<AttachmentsResponse>([
@@ -604,7 +638,7 @@ export function useDeleteAttachment() {
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', 'attachments'] })
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'attachments'] })
     },
   })
 }
