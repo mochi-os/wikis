@@ -5,7 +5,7 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 {
-	"version": "3.145",
+	"version": "3.146",
 	"label": "app.name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -65,6 +65,7 @@
 		":wiki/-/unsubscribe": {"function": "action_unsubscribe"},
 		":wiki/-/attachment/list": {"function": "action_attachments", "public": true},
 		":wiki/-/attachment/upload": {"function": "action_attachment_upload"},
+		":wiki/-/attachment/update": {"function": "action_attachment_update"},
 		":wiki/-/attachment/delete": {"function": "action_attachment_delete"},
 		":wiki/-/attachments/:id": {"function": "action_attachment", "public": true},
 		":wiki/-/attachments/:id/thumbnail": {"function": "action_attachment_thumbnail", "public": true},
@@ -115,6 +116,7 @@
 		"page/update": {"function": "event_page_update"},
 		"page/delete": {"function": "event_page_delete"},
 		"attachment/create": {"function": "event_attachment_create"},
+		"attachment/update": {"function": "event_attachment_update"},
 		"attachment/delete": {"function": "event_attachment_delete"},
 		"attachment/fetch": {"function": "event_attachment_fetch"},
 		"attachment/add": {"function": "event_attachment_add"},

@@ -192,6 +192,7 @@ export interface Attachment {
   size: number
   type: string
   created: number
+  caption?: string
 }
 
 export interface AttachmentsResponse {
@@ -200,6 +201,10 @@ export interface AttachmentsResponse {
 
 export interface AttachmentUploadResponse {
   attachments: Attachment[]
+}
+
+export interface AttachmentUpdateResponse {
+  attachment: Attachment
 }
 
 export interface AttachmentDeleteResponse {

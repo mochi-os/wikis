@@ -10,6 +10,7 @@ import {
   Upload,
   Trash2,
   Copy,
+  Captions,
   Check,
   Loader2,
   Search,
@@ -45,6 +46,7 @@ import {
   isImage,
   getErrorMessage,
   authenticatedUrl,
+  AttachmentCaptionDialog,
   shellClipboardWrite,
   naturalCompare,
   extractStatus,
@@ -56,6 +58,7 @@ import {
 import {
   useAttachments,
   useUploadAttachment,
+  useUpdateAttachment,
   useDeleteAttachment,
 } from '@/hooks/use-wiki'
 import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
@@ -83,11 +86,13 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null)
+  const [captioning, setCaptioning] = useState<Attachment | null>(null)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { data, isLoading, error, refetch } = useAttachments()
   const uploadMutation = useUploadAttachment()
+  const updateMutation = useUpdateAttachment()
   const deleteMutation = useDeleteAttachment()
   const wikiContext = useWikiBaseURLOptional()
   const baseURL = wikiContext?.baseURL ?? ''
@@ -101,7 +106,11 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      result = result.filter((a) => a.name.toLowerCase().includes(query))
+      result = result.filter(
+        (a) =>
+          a.name.toLowerCase().includes(query) ||
+          a.caption?.toLowerCase().includes(query)
+      )
     }
 
     // Apply type filter
@@ -236,6 +245,19 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
     setPendingDelete(attachment)
   }
 
+  const saveCaption = (attachment: Attachment, caption: string) => {
+    setCaptioning(null)
+    if (caption === (attachment.caption ?? '')) return
+    updateMutation.mutate(
+      { id: attachment.id, caption },
+      {
+        onError: (error) => {
+          toast.error(getErrorMessage(error, t`Failed to save caption`))
+        },
+      }
+    )
+  }
+
   const confirmDelete = () => {
     if (!pendingDelete) return
     const attachment = pendingDelete
@@ -261,6 +283,7 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
     name: a.name,
     url: buildAttachmentUrl(baseURL, a.id),
     type: 'image' as const,
+    caption: a.caption,
   }))
 
   const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } =
@@ -456,6 +479,7 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
                 copiedId={copiedId}
                 isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id}
                 onCopy={handleCopy}
+                onCaption={setCaptioning}
                 onDelete={handleDelete}
                 onOpen={handleOpen}
               />
@@ -470,6 +494,7 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
                 copiedId={copiedId}
                 isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id}
                 onCopy={handleCopy}
+                onCaption={setCaptioning}
                 onDelete={handleDelete}
                 onOpen={handleOpen}
               />
@@ -485,6 +510,19 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
         onOpenChange={(isOpen) => !isOpen && closeLightbox()}
         onIndexChange={setCurrentIndex}
       />
+
+      {captioning && (
+        <AttachmentCaptionDialog
+          item={{
+            name: captioning.name,
+            caption: captioning.caption,
+            previewUrl: `${buildAttachmentUrl(baseURL, captioning.id)}/preview`,
+            previewKind: 'image',
+          }}
+          onSave={(caption) => saveCaption(captioning, caption)}
+          onClose={() => setCaptioning(null)}
+        />
+      )}
 
       <ConfirmDialog
         open={!!pendingDelete}
@@ -505,6 +543,7 @@ interface AttachmentItemProps {
   copiedId: string | null
   isDeleting: boolean
   onCopy: (attachment: Attachment) => void
+  onCaption: (attachment: Attachment) => void
   onDelete: (attachment: Attachment) => void
   onOpen: (attachment: Attachment) => void
 }
@@ -514,6 +553,7 @@ function AttachmentGridItem({
   copiedId,
   isDeleting,
   onCopy,
+  onCaption,
   onDelete,
   onOpen,
 }: AttachmentItemProps) {
@@ -534,7 +574,7 @@ function AttachmentGridItem({
         {isImage(attachment.type) ? (
           <img
             src={`${attachmentUrl}/thumbnail`}
-            alt={attachment.name}
+            alt={attachment.caption || attachment.name}
             className="h-full w-full object-cover"
           />
         ) : (
@@ -547,8 +587,8 @@ function AttachmentGridItem({
         <p className="truncate text-sm font-medium" title={attachment.name}>
           {attachment.name}
         </p>
-        <p className="text-muted-foreground text-xs">
-          {formatFileSize(attachment.size)}
+        <p className="text-muted-foreground truncate text-xs" title={attachment.caption}>
+          {attachment.caption || formatFileSize(attachment.size)}
         </p>
       </div>
 
@@ -574,6 +614,23 @@ function AttachmentGridItem({
           </TooltipTrigger>
           <TooltipContent>{t`Copy embed link`}</TooltipContent>
         </Tooltip>
+        {isImage(attachment.type) && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={(e) => { e.stopPropagation(); onCaption(attachment) }}
+                aria-label={attachment.caption ? t`Edit caption` : t`Add caption`}
+              >
+                <Captions className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {attachment.caption ? t`Edit caption` : t`Add caption`}
+            </TooltipContent>
+          </Tooltip>
+        )}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -602,6 +659,7 @@ function AttachmentListItem({
   copiedId,
   isDeleting,
   onCopy,
+  onCaption,
   onDelete,
   onOpen,
 }: AttachmentItemProps) {
@@ -622,7 +680,7 @@ function AttachmentListItem({
         {isImage(attachment.type) ? (
           <img
             src={`${attachmentUrl}/thumbnail`}
-            alt=""
+            alt={attachment.caption || ''}
             className="h-16 w-16 rounded object-cover"
           />
         ) : (
@@ -639,6 +697,11 @@ function AttachmentListItem({
         >
           {attachment.name}
         </button>
+        {attachment.caption && (
+          <p className="text-muted-foreground truncate text-sm" title={attachment.caption}>
+            {attachment.caption}
+          </p>
+        )}
         <p className="text-muted-foreground text-sm">
           {formatFileSize(attachment.size)} &middot;{' '}
           {formatTimestamp(attachment.created)}
@@ -677,6 +740,23 @@ function AttachmentListItem({
           </TooltipTrigger>
           <TooltipContent>{t`Copy embed link`}</TooltipContent>
         </Tooltip>
+        {isImage(attachment.type) && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onCaption(attachment)}
+                aria-label={attachment.caption ? t`Edit caption` : t`Add caption`}
+              >
+                <Captions className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {attachment.caption ? t`Edit caption` : t`Add caption`}
+            </TooltipContent>
+          </Tooltip>
+        )}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button

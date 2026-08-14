@@ -3640,6 +3640,50 @@ def event_attachment_delete(e):
     mochi.log.debug("Deleted attachment %s from replica %s", attachment_id, sender)
     notify_websocket(wiki)
 
+# P2P event: attachment/update — a replica edited an attachment's caption.
+# Source-side counterpart of action_attachment_update: same sender checks as
+# attachment/delete, the same wiki binding, then apply and restate to the
+# other replicas through attachment/add (a known id is an annotation update).
+def event_attachment_update(e):
+    wiki = e.header("to")
+    if not wiki:
+        return
+
+    wikirow = mochi.db.row("select * from wikis where id=?", wiki)
+    if not wikirow:
+        return
+
+    if wikirow.get("source"):
+        # This wiki is itself a replica, ignore
+        return
+
+    sender = e.header("from")
+    if not validate_event_sender(wikirow, wiki, sender):
+        return
+    if not replica_can(wikirow, wiki, sender, "edit"):
+        return
+
+    attachment_id = e.content("id")
+    if not attachment_id:
+        return
+
+    att = attachment_get(attachment_id)
+    if not att:
+        return
+    obj = att.get("object")
+    if obj != wiki and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
+        return
+
+    caption = attachment_text(e.content("caption", ""), attachment_text_maximum)
+    updated = attachment_update(attachment_id, caption, att.get("description", ""))
+    if not updated:
+        return
+    broadcast_event(wiki, "attachment/add", {"attachments": [{"id": updated["id"], "name": updated["name"],
+        "size": updated["size"], "content_type": updated.get("type") or updated.get("content_type", ""),
+        "caption": updated.get("caption", ""), "description": updated.get("description", ""),
+        "rank": updated.get("rank", 0), "created": updated.get("created", 0)}]}, exclude=sender)
+    notify_websocket(wiki)
+
 # Handle attachment/fetch event - serve attachment file data to requester via stream
 def event_attachment_fetch(e):
     # The library runs the fixed responder sequence: it takes the requester from
@@ -4825,6 +4869,67 @@ def action_attachment_delete(a):
         )
 
     return {"data": {"ok": True}}
+
+# Update an attachment's caption
+def action_attachment_update(a):
+    if not a.user:
+        a.error.label(401, "errors.not_logged_in")
+        return
+
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error.label(404, "errors.wiki_not_found")
+        return
+
+    if not check_access(a, wiki["id"], "edit"):
+        a.error.label(403, "errors.access_denied")
+        return
+
+    id = a.input("id")
+    if not id:
+        a.error.label(400, "errors.attachment_id_is_required")
+        return
+
+    caption = a.input("caption", "")
+    if type(caption) != "string" or len(caption) > 1000:
+        a.error.label(400, "errors.access_denied")
+        return
+
+    # Bind the attachment to this wiki before annotating, for the same reason
+    # action_attachment_delete does: the id resolves across every wiki this
+    # user holds, and edit rights on one must not annotate another's.
+    att = attachment_get(id)
+    if not att:
+        a.error.label(404, "errors.attachment_not_found")
+        return
+    obj = att.get("object")
+    if obj != wiki["id"] and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki["id"]):
+        a.error.label(404, "errors.attachment_not_found")
+        return
+
+    updated = attachment_update(id, caption, att.get("description", ""))
+    if not updated:
+        a.error.label(404, "errors.attachment_not_found")
+        return
+
+    source = wiki.get("source")
+    restatement = {"attachments": [{"id": updated["id"], "name": updated["name"], "size": updated["size"],
+        "content_type": updated.get("type") or updated.get("content_type", ""),
+        "caption": updated.get("caption", ""), "description": updated.get("description", ""),
+        "rank": updated.get("rank", 0), "created": updated.get("created", 0)}]}
+    if source:
+        # Replica: applied locally above; the source applies it and restates
+        # to the other replicas.
+        mochi.message.send(
+            {"from": wiki["id"], "to": source, "service": "wikis", "event": "attachment/update"},
+            {"id": id, "caption": caption}
+        )
+    else:
+        # Source: restate the row to replicas; attachment_store treats a known
+        # id as an annotation update.
+        broadcast_event(wiki["id"], "attachment/add", restatement)
+
+    return {"data": {"attachment": updated}}
 
 # CROSS-APP PROXY ACTIONS
 

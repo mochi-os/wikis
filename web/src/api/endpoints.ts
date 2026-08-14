@@ -75,6 +75,7 @@ const endpoints = {
     // Attachments
     attachments: 'attachment/list',
     attachmentUpload: 'attachment/upload',
+    attachmentUpdate: 'attachment/update',
     attachmentDelete: 'attachment/delete',
   },
 } as const

@@ -32,6 +32,7 @@ import type {
   AttachmentsResponse,
   AttachmentUploadResponse,
   AttachmentDeleteResponse,
+  AttachmentUpdateResponse,
   WikiPermissions,
 } from '@/types/wiki'
 import endpoints from '@/api/endpoints'
@@ -597,6 +598,22 @@ export function useUploadAttachment() {
     },
   })
   return { ...mutation, progress }
+}
+
+export function useUpdateAttachment() {
+  const queryClient = useQueryClient()
+  const e = useEntityEndpoint()
+  const scope = useWikiScope()
+  return useMutation({
+    mutationFn: ({ id, caption }: { id: string; caption: string }) =>
+      requestHelpers.post<AttachmentUpdateResponse>(
+        e(endpoints.wiki.attachmentUpdate),
+        { id, caption }
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'attachments'] })
+    },
+  })
 }
 
 export function useDeleteAttachment() {
