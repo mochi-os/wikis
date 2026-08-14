@@ -575,7 +575,7 @@ function AttachmentGridItem({
           <img
             src={`${attachmentUrl}/thumbnail`}
             alt={attachment.caption || attachment.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover text-transparent"
           />
         ) : (
           <FileIcon className="text-muted-foreground h-12 w-12" />
@@ -681,7 +681,7 @@ function AttachmentListItem({
           <img
             src={`${attachmentUrl}/thumbnail`}
             alt={attachment.caption || ''}
-            className="h-16 w-16 rounded object-cover"
+            className="h-16 w-16 rounded object-cover text-transparent"
           />
         ) : (
           <FileIcon className="text-muted-foreground h-8 w-8" />
