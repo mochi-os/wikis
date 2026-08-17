@@ -3,12 +3,10 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useEffect } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePageTitle, useAuthStore, Main } from '@mochi/web'
 import { PageComments } from '@/features/wiki/page-comments'
-import { useSidebarContext } from '@/context/sidebar-context'
 import { usePermissions } from '@/context/wiki-context'
 import { usePage } from '@/hooks/use-wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
@@ -33,12 +31,6 @@ function CommentsRoute() {
       : slug
   usePageTitle(t`${pageTitle} - Comments`)
 
-  // Register page with sidebar context for tree expansion
-  const { setPage } = useSidebarContext()
-  useEffect(() => {
-    setPage(slug, pageTitle)
-    return () => setPage(null)
-  }, [slug, pageTitle, setPage])
 
   return (
     <>

@@ -3,13 +3,11 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useEffect } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { usePage } from '@/hooks/use-wiki'
 import { GeneralError, usePageTitle, Main, useAuthStore } from '@mochi/web'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
-import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/edit')({
@@ -35,12 +33,6 @@ function WikiPageEditRoute() {
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(t`Edit: ${pageTitle}`)
 
-  // Register page with sidebar context for tree expansion
-  const { setPage } = useSidebarContext()
-  useEffect(() => {
-    setPage(slug, pageTitle)
-    return () => setPage(null)
-  }, [slug, pageTitle, setPage])
 
   if (isLoading) {
     return (

@@ -3,13 +3,11 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useEffect } from 'react'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { z } from 'zod'
 import { usePageTitle, Main } from '@mochi/web'
 import { RevertPage } from '@/features/wiki/revert-page'
-import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 const searchSchema = z.object({
@@ -30,12 +28,6 @@ function RevertPageRoute() {
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   usePageTitle(t`Revert: ${slug}`)
 
-  // Register page with sidebar context for tree expansion
-  const { setPage } = useSidebarContext()
-  useEffect(() => {
-    setPage(slug)
-    return () => setPage(null)
-  }, [slug, setPage])
 
   if (!version || version < 1) {
     return (

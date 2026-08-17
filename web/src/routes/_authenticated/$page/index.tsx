@@ -16,7 +16,6 @@ import {
 } from '@/features/wiki/page-view'
 import { PageHeader } from '@/features/wiki/page-header'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
-import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiContext, usePermissions } from '@/context/wiki-context'
 import { useWikiLinkDialog } from '@/components/link-dialog'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
@@ -56,12 +55,6 @@ function WikiPageRoute() {
     void navigate({ to: '/$page', params: { page: canonical }, replace: true })
   }, [canonical, slug, navigate])
 
-  // Register page with sidebar context for tree expansion
-  const { setPage } = useSidebarContext()
-  useEffect(() => {
-    setPage(slug, pageTitle)
-    return () => setPage(null)
-  }, [slug, pageTitle, setPage])
 
   // Store last visited location (prefer fingerprint for shorter URLs)
   useEffect(() => {

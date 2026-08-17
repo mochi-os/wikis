@@ -3,7 +3,6 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useEffect } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
@@ -18,7 +17,6 @@ import {
 import { DeletePage } from '@/features/wiki/delete-page'
 import endpoints from '@/api/endpoints'
 import { FileX } from 'lucide-react'
-import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
@@ -44,12 +42,6 @@ function DeletePageRoute() {
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(t`Delete: ${pageTitle}`)
 
-  // Register page with sidebar context for tree expansion
-  const { setPage } = useSidebarContext()
-  useEffect(() => {
-    setPage(slug, pageTitle)
-    return () => setPage(null)
-  }, [slug, pageTitle, setPage])
 
   if (isLoading) {
     return (

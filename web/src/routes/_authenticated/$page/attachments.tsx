@@ -3,13 +3,10 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useEffect } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Main, usePageTitle } from '@mochi/web'
 import { AttachmentsPage } from '@/features/wiki/attachments-page'
-import { useSidebarContext } from '@/context/sidebar-context'
-import { usePage } from '@/hooks/use-wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/attachments')({
@@ -22,20 +19,9 @@ function AttachmentsRoute() {
   const slug = params.page ?? ''
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
-  const { data: pageData } = usePage(slug)
-  const isValidResponse = pageData && typeof pageData === 'object'
-  const pageTitle =
-    isValidResponse && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title
-      ? pageData.page.title
-      : slug
+
   usePageTitle(t`Attachments`)
 
-  // Register page with sidebar context for tree expansion
-  const { setPage } = useSidebarContext()
-  useEffect(() => {
-    setPage(slug, pageTitle)
-    return () => setPage(null)
-  }, [slug, pageTitle, setPage])
 
   return (
     <>

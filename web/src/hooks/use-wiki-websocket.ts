@@ -12,42 +12,18 @@
 // remote edit never appears. The Starlark side emits {"type":"wiki/update"}
 // (and {"type":"wiki/resynced"} on resync); here we listen and invalidate the
 // wiki query tree so the content refreshes the moment it lands.
-//
-// The connection itself is the shared entityWebsocketManager, whose close path
-// detaches handlers so the resubscribe on a token refresh cannot orphan a
-// socket that keeps delivering events.
 
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  useAuthStore,
-  entityWebsocketManager,
-  type EntityWebsocketEvent,
-} from "@mochi/web";
+import { useEntityInvalidationWebsocket } from "@mochi/web";
+
+const WIKI_EVENT_TYPES = ["wiki/update", "wiki/resynced"];
+const WIKI_QUERY_KEY = ["wiki"];
 
 // Subscribe to wiki WebSocket events and refresh wiki content when remote
 // data (sync dump or live broadcast) lands locally.
 export function useWikiWebsocket(wikiFingerprint?: string) {
-  const queryClient = useQueryClient();
-  const authReady = useAuthStore((state) => state.isInitialized);
-  const authToken = useAuthStore((state) => state.token);
-
-  useEffect(() => {
-    if (!authReady) return;
-    if (!wikiFingerprint) return;
-
-    const handleMessage = (data: EntityWebsocketEvent) => {
-      switch (data.type) {
-        case "wiki/update":
-        case "wiki/resynced":
-          // The whole wiki query tree (pages list, page content, comments,
-          // tags, redirects, info) is rooted at ['wiki']; a sync delivers any
-          // of these, so refresh the lot. Matches the manual-sync mutation.
-          void queryClient.invalidateQueries({ queryKey: ["wiki"] });
-          break;
-      }
-    };
-
-    return entityWebsocketManager.subscribe(wikiFingerprint, handleMessage);
-  }, [authReady, authToken, wikiFingerprint, queryClient]);
+  useEntityInvalidationWebsocket({
+    fingerprint: wikiFingerprint,
+    eventTypes: WIKI_EVENT_TYPES,
+    queryKey: WIKI_QUERY_KEY,
+  });
 }
