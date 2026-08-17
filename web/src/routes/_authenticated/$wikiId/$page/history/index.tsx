@@ -3,7 +3,7 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
@@ -11,7 +11,6 @@ import { usePageHistory } from '@/hooks/use-wiki'
 import endpoints from '@/api/endpoints'
 import { GeneralError, Main, requestHelpers, usePageTitle } from '@mochi/web'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
-import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import type { PageResponse, PageNotFoundResponse, Revision } from '@/types/wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
@@ -51,12 +50,6 @@ function PageHistoryRoute() {
     setOffset(offset + LIMIT)
   }
 
-  // Register page with sidebar context for tree expansion
-  const { setPage } = useSidebarContext()
-  useEffect(() => {
-    setPage(slug, pageTitle)
-    return () => setPage(null)
-  }, [slug, pageTitle, setPage])
 
   if (isLoading && offset === 0) {
     return (

@@ -3,13 +3,11 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useEffect } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { usePageRevision } from '@/hooks/use-wiki'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
 import { RevisionView, RevisionViewSkeleton } from '@/features/wiki/revision-view'
-import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/history/$version')({
@@ -25,12 +23,6 @@ function RevisionViewRoute() {
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   usePageTitle(`${slug} v${version}`)
 
-  // Register page with sidebar context for tree expansion
-  const { setPage } = useSidebarContext()
-  useEffect(() => {
-    setPage(slug)
-    return () => setPage(null)
-  }, [slug, setPage])
 
   const { data, isLoading, error, refetch } = usePageRevision(slug, version)
 
