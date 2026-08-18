@@ -3,24 +3,8 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useCallback, useState, useRef } from 'react'
-import {
-  IconButton,
-  Textarea,
-  useImageObjectUrls,
-  cn,
-  mergePendingFiles, removePendingFile, moveItem,
-  ComposerAttachments,
-  SendShortcutHint,
-  dropActiveClass,
-  offlineBlocked,
-  useComposerDrop,
-  useDiscardGuard,
-  UploadProgress,
-  type Upload,
-} from '@mochi/web'
-import { Loader2, Paperclip, Send, X } from 'lucide-react'
-import { t } from '@lingui/core/macro'
+import { useCallback, useState } from 'react'
+import { CommentBox, useDiscardGuard, type Upload } from '@mochi/web'
 
 interface CommentFormProps {
   onSubmit: (body: string, files?: File[]) => void | Promise<void>
@@ -31,159 +15,67 @@ interface CommentFormProps {
   progress?: Upload | null
 }
 
+/**
+ * The page-level comment composer: the shared CommentBox with the draft and
+ * its discard guard held here. The box owns its files and reports their
+ * count; clearing it in place means remounting it (the key), since a
+ * composer that is always on screen has nothing to close.
+ */
 export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus, progress }: CommentFormProps) {
   const [body, setBody] = useState('')
-  const [files, setFiles] = useState<File[]>([])
+  const [fileCount, setFileCount] = useState(0)
+  const [boxKey, setBoxKey] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [failed, setFailed] = useState(false)
-  const filePreviewUrls = useImageObjectUrls(files)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const addFiles = useCallback((incoming: File[]) => {
-    setFailed(false)
-    setFiles((prev) => mergePendingFiles(prev, incoming))
-  }, [])
+  // Rejects on failure so the box keeps the draft and its files for Retry;
+  // the caller already reported the error.
+  const handleSubmit = useCallback(
+    async (trimmed: string, files?: File[]) => {
+      setIsSubmitting(true)
+      try {
+        await onSubmit(trimmed, files)
+        setBody('')
+      } finally {
+        setIsSubmitting(false)
+      }
+    },
+    [onSubmit]
+  )
 
-  // Editing the draft after a failure means the red attachments and the Retry
-  // button no longer describe what is in the box.
-  const handleBodyChange = useCallback((value: string) => {
-    setBody(value)
-    setFailed(false)
-  }, [])
-
-  const { isDragActive, dropzoneProps } = useComposerDrop({
-    onFiles: addFiles,
-    disabled: isSubmitting,
-  })
-
-  const handleSubmit = async () => {
-    const trimmed = body.trim()
-    if (!trimmed || isSubmitting || offlineBlocked()) return
-    setIsSubmitting(true)
-    setFailed(false)
-    try {
-      await onSubmit(trimmed, files.length > 0 ? files : undefined)
-      setBody('')
-      setFiles([])
-    } catch {
-      // Keep the draft and the files staged so Retry can send them again;
-      // the caller already reported the error.
-      setFailed(true)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const hasDraft = body.trim().length > 0 || files.length > 0
+  const hasDraft = body.trim().length > 0 || fileCount > 0
 
   // The page-level composer has nothing to close, so discarding clears the
   // form in place. A nested form (with onCancel) closes as well.
   const discard = useCallback(() => {
     setBody('')
-    setFiles([])
-    setFailed(false)
+    setFileCount(0)
+    setBoxKey((key) => key + 1)
     onCancel?.()
   }, [onCancel])
 
   const { requestClose, discardDialog } = useDiscardGuard({
     hasText: body.trim().length > 0,
-    hasFiles: files.length > 0,
+    hasFiles: fileCount > 0,
     onDiscard: discard,
     locked: isSubmitting,
   })
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault()
-      void handleSubmit()
-    } else if (e.key === 'Escape') {
-      requestClose()
-    }
-  }
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      addFiles(Array.from(e.target.files))
-    }
-    e.target.value = ''
-  }
-
-  const removeFile = (file: File) => {
-    setFiles((prev) => removePendingFile(prev, file))
-  }
-
   return (
-    <div
-      className={cn('space-y-2', isDragActive && dropActiveClass)}
-      {...dropzoneProps}
-    >
-      <Textarea
+    <div>
+      <CommentBox
+        key={boxKey}
         value={body}
-        onChange={(e) => handleBodyChange(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onValueChange={setBody}
+        onSubmit={handleSubmit}
+        // Cancel when there is a form to close, or a draft to discard.
+        onClose={onCancel || hasDraft ? requestClose : undefined}
+        onFilesChange={setFileCount}
+        progress={progress}
         placeholder={placeholder}
-        className="bg-background rounded-lg text-sm"
         rows={3}
         autoFocus={autoFocus}
-        disabled={isSubmitting}
+        textareaClassName='bg-background rounded-lg text-sm'
       />
-      <ComposerAttachments
-        files={files}
-        previewUrls={filePreviewUrls}
-        state={isSubmitting ? 'uploading' : failed ? 'error' : 'idle'}
-        progress={progress?.slices}
-        onRemove={removeFile}
-        onReorder={(from, to) => setFiles((prev) => moveItem(prev, from, to))}
-        groupMedia
-        // Retry sends the draft, so it is only offered while there is one.
-        onRetry={body.trim() ? () => void handleSubmit() : undefined}
-      />
-      {isSubmitting && <UploadProgress progress={progress ?? null} />}
-      <div className="flex items-center justify-end gap-2">
-        <SendShortcutHint />
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          onChange={handleFileSelect}
-          className="hidden"
-        />
-        <IconButton
-          type='button'
-          variant='ghost'
-          className='size-8'
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isSubmitting}
-          label={t`Attach files`}
-        >
-          <Paperclip className="size-4" />
-        </IconButton>
-        {(onCancel || hasDraft) && (
-          <IconButton
-            type='button'
-            variant='ghost'
-            className='size-8'
-            onClick={requestClose}
-            disabled={isSubmitting}
-            label={t`Cancel comment`}
-          >
-            <X className="size-4" />
-          </IconButton>
-        )}
-        <IconButton
-          type='button'
-          className='size-8'
-          disabled={!body.trim() || isSubmitting}
-          onClick={() => void handleSubmit()}
-          label={t`Send comment`}
-        >
-          {isSubmitting ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Send className="size-4" />
-          )}
-        </IconButton>
-      </div>
       {discardDialog}
     </div>
   )

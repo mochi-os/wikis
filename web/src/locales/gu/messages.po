@@ -22,13 +22,13 @@ msgstr "કૃપા કરી તમારું ઇન્ટરનેટ ક�
 msgid " or "
 msgstr " અથવા "
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:229
-#: src/features/wiki/wiki-comment-thread.tsx:196
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:190
+#: src/features/wiki/wiki-comment-thread.tsx:167
 msgid "(edited)"
 msgstr "(સંપાદિત)"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:213
-#: src/features/wiki/wiki-comment-thread.tsx:182
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:174
+#: src/features/wiki/wiki-comment-thread.tsx:153
 msgid "(expand)"
 msgstr "(વિસ્તાર કરો)"
 
@@ -164,7 +164,7 @@ msgstr "{totalLabel}માંથી {sentLabel}"
 msgid "{totalCount, plural, one {# item} other {# items}}"
 msgstr "{totalCount, plural, one {# વસ્તુ} other {# વસ્તુઓ}}"
 
-#: src/features/wiki/wiki-comment-thread.tsx:180
+#: src/features/wiki/wiki-comment-thread.tsx:151
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# જવાબ} other {+# વધુ જવાબો}}"
 
@@ -188,11 +188,11 @@ msgstr "*સામગ્રી નથી*"
 msgid "+{0} nested"
 msgstr "+{0} નેસ્ટેડ"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:210
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:171
 msgid "+{totalDescendants} more replies"
 msgstr "+{totalDescendants} વધુ જવાબો"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:209
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
 msgid "1 reply"
 msgstr "1 જવાબ"
 
@@ -272,7 +272,7 @@ msgstr "ક્રિયાઓ"
 msgid "Add"
 msgstr "ઉમેરો"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:365
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:312
 msgid "Add a comment..."
 msgstr "ટિપ્પણી ઉમેરો..."
 
@@ -452,11 +452,11 @@ msgstr "શું તમે ખરેખર \"{0}\" કાઢી નાખવા
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "શું તમે ખરેખર \"{name}\" કૉલમ કાઢી નાખવા માંગો છો? આ પૂર્વવત્ કરી શકાતું નથી."
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:491
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:352
 msgid "Are you sure you want to delete this comment? This will also delete all replies."
 msgstr "શું તમે ખરેખર આ ટિપ્પણી કાઢી નાખવા માંગો છો? આ બધા જવાબો પણ કાઢી નાખશે."
 
-#: src/features/wiki/wiki-comment-thread.tsx:383
+#: src/features/wiki/wiki-comment-thread.tsx:286
 msgid "Are you sure you want to delete this comment? This will also delete all replies. This action cannot be undone."
 msgstr "શું તમે ખરેખર આ ટિપ્પણી કાઢી નાખવા માંગો છો? આ બધા જવાબો પણ કાઢી નાખશે. આ ક્રિયા પૂર્વવત્ કરી શકાતી નથી."
 
@@ -479,18 +479,11 @@ msgstr "ચડતા"
 msgid "Ascending"
 msgstr "ચઢતો ક્રમ"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:408
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:413
+#: ../../../lib/web/src/components/comment-composer.tsx:442
 msgid "Attach comment files"
 msgstr "ટિપ્પણી ફાઇલો જોડો"
 
-#: src/features/wiki/comment-form.tsx:157
-msgid "Attach files"
-msgstr "ફાઇલો જોડો"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:445
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:450
-#: src/features/wiki/wiki-comment-thread.tsx:348
+#: ../../../lib/web/src/components/comment-composer.tsx:441
 msgid "Attach reply files"
 msgstr "જવાબ ફાઇલો જોડો"
 
@@ -672,7 +665,7 @@ msgstr "બ્રાઉઝર સૂચનાઓ"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:461
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:250
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:169
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:186
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
@@ -693,7 +686,7 @@ msgstr "બ્રાઉઝર સૂચનાઓ"
 #: src/features/wiki/revert-page.tsx:90
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:156
-#: src/features/wiki/wiki-comment-thread.tsx:211
+#: src/features/wiki/wiki-comment-thread.tsx:182
 #: src/features/wiki/wiki-settings.tsx:789
 #: src/features/wiki/wiki-settings.tsx:952
 #: src/features/wiki/wiki-settings.tsx:1065
@@ -701,15 +694,11 @@ msgstr "બ્રાઉઝર સૂચનાઓ"
 msgid "Cancel"
 msgstr "રદ કરો"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:425
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:430
-#: src/features/wiki/comment-form.tsx:168
+#: ../../../lib/web/src/components/comment-composer.tsx:442
 msgid "Cancel comment"
 msgstr "ટિપ્પણી રદ કરો"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:461
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:466
-#: src/features/wiki/wiki-comment-thread.tsx:358
+#: ../../../lib/web/src/components/comment-composer.tsx:441
 msgid "Cancel reply"
 msgstr "જવાબ રદ કરો"
 
@@ -822,8 +811,8 @@ msgstr "પસંદગી સાફ કરો (Escape)"
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:506
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:511
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:469
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:472
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:488
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:491
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "બંધ કરો"
@@ -894,13 +883,13 @@ msgstr "કમાન્ડ પેલેટ"
 msgid "Comment"
 msgstr "ટિપ્પણી"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:331
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:338
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:292
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:299
 msgid "Comment actions"
 msgstr "ટિપ્પણી ક્રિયાઓ"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:432
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:444
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:451
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
 #: src/features/wiki/wiki-page-content.tsx:356
 #: src/routes/_authenticated/index.tsx:461
 #: src/routes/_authenticated/index.tsx:730
@@ -1142,9 +1131,9 @@ msgstr "ડિફૉલ્ટ સૉર્ટ"
 
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:583
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:644
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:319
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:362
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:492
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:280
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:323
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:353
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:198
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:203
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:252
@@ -1153,8 +1142,8 @@ msgstr "ડિફૉલ્ટ સૉર્ટ"
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:651
 #: src/features/wiki/redirects-page.tsx:178
-#: src/features/wiki/wiki-comment-thread.tsx:289
-#: src/features/wiki/wiki-comment-thread.tsx:384
+#: src/features/wiki/wiki-comment-thread.tsx:260
+#: src/features/wiki/wiki-comment-thread.tsx:287
 #: src/features/wiki/wiki-page-content.tsx:325
 #: src/features/wiki/wiki-settings.tsx:957
 msgid "Delete"
@@ -1182,8 +1171,8 @@ msgstr "જોડાણ કાઢી નાખો"
 msgid "Delete column"
 msgstr "કૉલમ કાઢી નાખો"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:490
-#: src/features/wiki/wiki-comment-thread.tsx:382
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:351
+#: src/features/wiki/wiki-comment-thread.tsx:285
 msgid "Delete comment"
 msgstr "ટિપ્પણી કાઢી નાખો"
 
@@ -1296,11 +1285,11 @@ msgstr "દિશા"
 msgid "Directory"
 msgstr "નિર્દેશિકા"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:313
+#: ../../../lib/web/src/components/comment-composer.tsx:322
 msgid "Discard"
 msgstr "રદ કરો"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:311
+#: ../../../lib/web/src/components/comment-composer.tsx:320
 msgid "Discard draft?"
 msgstr "ડ્રાફ્ટ રદ કરવો?"
 
@@ -1328,12 +1317,12 @@ msgid "Done"
 msgstr "થઈ ગયું"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:239
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:453
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:472
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
 msgid "Download"
 msgstr "ડાઉનલોડ કરો"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:92
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:111
 msgid "Download failed"
 msgstr "ડાઉનલોડ નિષ્ફળ"
 
@@ -1349,10 +1338,10 @@ msgstr "ડુપ્લિકેટ"
 msgid "Dyslexia-friendly"
 msgstr "ડિસ્લેક્સિયા-મૈત્રીપૂર્ણ"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:308
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:353
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:269
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:314
 #: src/features/wiki/page-editor.tsx:345
-#: src/features/wiki/wiki-comment-thread.tsx:278
+#: src/features/wiki/wiki-comment-thread.tsx:249
 #: src/features/wiki/wiki-page-content.tsx:299
 #: src/routes/_authenticated/$page/index.tsx:214
 #: src/routes/_authenticated/index.tsx:411
@@ -1517,7 +1506,7 @@ msgstr "વિકિ બનાવવામાં નિષ્ફળ"
 msgid "Failed to delete attachment"
 msgstr "એટેચમેન્ટ કાઢી નાખવામાં નિષ્ફળ"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:212
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:191
 msgid "Failed to delete comment"
 msgstr "કમેન્ટ કાઢી નાખવામાં નિષ્ફળ"
 
@@ -1561,7 +1550,7 @@ msgstr "ઍક્સેસ નિયમો લોડ કરવામાં ન�
 msgid "Failed to load history"
 msgstr "ઇતિહાસ લોડ કરવામાં નિષ્ફળ"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:339
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:358
 msgid "Failed to load image"
 msgstr "છબી લોડ કરવામાં નિષ્ફળ"
 
@@ -1573,7 +1562,7 @@ msgstr "રીડાયરેક્ટ્સ લોડ કરવામાં ન
 msgid "Failed to load replicas"
 msgstr "રિપ્લિકાઓ લોડ કરવામાં નિષ્ફળ"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:339
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:358
 msgid "Failed to load video"
 msgstr "વિડિઓ લોડ કરવામાં નિષ્ફળ"
 
@@ -1586,7 +1575,7 @@ msgstr "વિકિ માહિતી લોડ કરવામાં નિ�
 msgid "Failed to load wikis"
 msgstr "વિકિઓ લોડ કરવામાં નિષ્ફળ"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:175
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:154
 msgid "Failed to post comment"
 msgstr "કમેન્ટ પોસ્ટ કરવામાં નિષ્ફળ"
 
@@ -1670,7 +1659,7 @@ msgstr "અનસબ્સ્ક્રાઇબ કરવામાં નિષ�
 msgid "Failed to update access level"
 msgstr "ઍક્સેસ લેવલ અપડેટ કરવામાં નિષ્ફળ"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:195
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:174
 msgid "Failed to update comment"
 msgstr "કમેન્ટ અપડેટ કરવામાં નિષ્ફળ"
 
@@ -1856,7 +1845,7 @@ msgid "Image"
 msgstr "છબી"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:317
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:336
 msgid "Image viewer: {0}"
 msgstr "છબી દર્શક: {0}"
 
@@ -2175,8 +2164,8 @@ msgstr "નવી URL વર્તમાન URL કરતાં અલગ હો
 msgid "new-page-name"
 msgstr "new-page-name"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:530
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:535
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:549
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:554
 msgid "Next image"
 msgstr "આગળની છબી"
 
@@ -2209,7 +2198,7 @@ msgstr "હજુ સુધી કોઈ એટેચમેન્ટ્સ ન�
 msgid "No changes yet"
 msgstr "હજુ સુધી કોઈ ફેરફારો નથી"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:460
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:322
 #: src/features/wiki/page-comments.tsx:152
 msgid "No comments yet"
 msgstr "હજુ સુધી કોઈ કૉમેન્ટ્સ નથી"
@@ -2566,7 +2555,7 @@ msgstr "આ wiki અને તેની તમામ સામગ્રી ક�
 msgid "Pick a date"
 msgstr "તારીખ પસંદ કરો"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:84
+#: ../../../lib/web/src/components/comment-composer.tsx:93
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:323
 msgid "Please check your internet connection and try again."
@@ -2596,8 +2585,8 @@ msgstr "પોસ્ટ્સ અને કૉમેન્ટ્સ"
 msgid "Preview"
 msgstr "પ્રિવ્યૂ"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:514
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:519
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:533
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:538
 msgid "Previous image"
 msgstr "પાછળની છબી"
 
@@ -2836,15 +2825,15 @@ msgstr "wiki ની replicate કરો"
 msgid "Replicating..."
 msgstr "replicate કરી રહ્યું છે..."
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:295
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:343
-#: src/features/wiki/wiki-comment-thread.tsx:265
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:256
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:304
+#: src/features/wiki/wiki-comment-thread.tsx:236
 msgid "Reply"
 msgstr "જવાબ આપો"
 
 #. placeholder {0}: comment.name || comment.author
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:386
-#: src/features/wiki/wiki-comment-thread.tsx:305
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:343
+#: src/features/wiki/wiki-comment-thread.tsx:277
 msgid "Reply to {0}..."
 msgstr "{0} ને જવાબ આપો..."
 
@@ -2971,12 +2960,12 @@ msgid "Saturday"
 msgstr "શનિવાર"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:465
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:270
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:173
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:79
 #: src/features/wiki/page-editor.tsx:411
-#: src/features/wiki/wiki-comment-thread.tsx:231
+#: src/features/wiki/wiki-comment-thread.tsx:202
 msgid "Save"
 msgstr "સાચવો"
 
@@ -3176,10 +3165,6 @@ msgstr "પસંદ કરેલ: <0>{0}</0>"
 msgid "Send again"
 msgstr "ફરી મોકલો"
 
-#: src/features/wiki/comment-form.tsx:178
-msgid "Send comment"
-msgstr "ટિપ્પણી મોકલો"
-
 #: ../../../lib/web/src/components/step-up-dialog.tsx:321
 msgid "Send email"
 msgstr "ઇમેઇલ મોકલો"
@@ -3188,10 +3173,6 @@ msgstr "ઇમેઇલ મોકલો"
 #: ../../../lib/web/src/components/game/game-chat-input.tsx:61
 msgid "Send message"
 msgstr "સંદેશ મોકલો"
-
-#: src/features/wiki/wiki-comment-thread.tsx:367
-msgid "Send reply"
-msgstr "જવાબ મોકલો"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:145
 msgid "Serif"
@@ -3314,7 +3295,7 @@ msgstr "સ્રોતો"
 msgid "Spacious"
 msgstr "વિશાળ"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:461
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:323
 msgid "Start the discussion by adding the first comment."
 msgstr "પ્રથમ ટિપ્પણી ઉમેરીને ચર્ચા શરૂ કરો."
 
@@ -3330,13 +3311,11 @@ msgstr "છતાં અમારી સાથે જોડાયેલા ર�
 msgid "Subject"
 msgstr "વિષય"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:441
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:450
+#: ../../../lib/web/src/components/comment-composer.tsx:442
 msgid "Submit comment"
 msgstr "ટિપ્પણી સબમિટ કરો"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:476
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:481
+#: ../../../lib/web/src/components/comment-composer.tsx:441
 msgid "Submit reply"
 msgstr "જવાબ સબમિટ કરો"
 
@@ -3724,7 +3703,7 @@ msgid "United States"
 msgstr "યુનાઇટેડ સ્ટેટ્સ"
 
 #: ../../../lib/web/src/features/accounts/types.ts:29
-#: src/features/wiki/wiki-comment-thread.tsx:155
+#: src/features/wiki/wiki-comment-thread.tsx:126
 msgid "Unknown"
 msgstr "અજાણ્યું"
 
@@ -3893,7 +3872,7 @@ msgid "Video thumbnail"
 msgstr "વિડિયો થંબનેલ"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:316
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:335
 msgid "Video viewer: {0}"
 msgstr "વિડિઓ દર્શક: {0}"
 
@@ -4065,14 +4044,14 @@ msgstr "તમે બધું જોઈ લીધું!"
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "તમારું ખાતું {source} પરથી અહીં ખસેડવામાં આવ્યું. જ્યાં સુધી તમે ત્યાં તેને કાઢી ન નાખો, સંદેશા અને સૂચનાઓ બંને સર્વર સુધી પહોંચી શકે, કેટલીક સામગ્રી જૂના સર્વરથી પ્રદાન કરાતી રહે, અને ફૉલોઅર્સ ને તમને અહીં શોધવામાં થોડી મિનિટ લાગી શકે."
 
-#: ../../../lib/web/src/components/comment-composer.tsx:304
+#: ../../../lib/web/src/components/comment-composer.tsx:313
 msgid "Your attachments will be lost."
 msgstr "તમારા જોડાણો ખોવાઈ જશે."
 
-#: ../../../lib/web/src/components/comment-composer.tsx:302
+#: ../../../lib/web/src/components/comment-composer.tsx:311
 msgid "Your text and attachments will be lost."
 msgstr "તમારું લખાણ અને જોડાણો ખોવાઈ જશે."
 
-#: ../../../lib/web/src/components/comment-composer.tsx:305
+#: ../../../lib/web/src/components/comment-composer.tsx:314
 msgid "Your text will be lost."
 msgstr "તમારું લખાણ ખોવાઈ જશે."

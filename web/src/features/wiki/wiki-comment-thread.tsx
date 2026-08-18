@@ -3,30 +3,21 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { plural, t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
-import { Check, Loader2, Pencil, Reply, Send, Trash2, X, Paperclip } from 'lucide-react'
+import { Check, Pencil, Reply, Trash2 } from 'lucide-react'
 import {
   Button,
   CommentTreeLayout,
   ConfirmDialog,
   EntityAvatar,
-  IconButton,
+  CommentBox,
   Textarea,
-  cn,
   useFormat,
   getAppPath,
-  useImageObjectUrls,
   textUnchanged,
-  mergePendingFiles, removePendingFile, moveItem,
-  ComposerAttachments,
-  SendShortcutHint,
-  dropActiveClass,
-  offlineBlocked,
-  useComposerDrop,
   useDiscardGuard,
-  UploadProgress,
   type Upload,
 } from '@mochi/web'
 import type { WikiComment } from '@/types/wiki'
@@ -76,63 +67,43 @@ export function WikiCommentThread({
   const [editing, setEditing] = useState(false)
   const [editBody, setEditBody] = useState('')
   const [deleting, setDeleting] = useState(false)
-  const [replyFiles, setReplyFiles] = useState<File[]>([])
+  // The reply box owns its files and reports their count; the guard here and
+  // the one on the page (which arbitrates switching between reply boxes)
+  // read it. The box mounts only while replying, so closing drops the files.
+  const [replyFileCount, setReplyFileCount] = useState(0)
   const [isSubmittingReply, setIsSubmittingReply] = useState(false)
-  const [replyFailed, setReplyFailed] = useState(false)
-  const replyPreviewUrls = useImageObjectUrls(replyFiles)
-  const replyFileRef = useRef<HTMLInputElement>(null)
 
   const isReplying = replyingTo === comment.id
 
   useEffect(() => {
-    if (!isReplying && replyFiles.length > 0) setReplyFiles([])
-  }, [isReplying, replyFiles.length])
+    if (!isReplying) setReplyFileCount(0)
+  }, [isReplying])
 
-  useEffect(() => {
-    if (!isReplying && replyFailed) setReplyFailed(false)
-  }, [isReplying, replyFailed])
-
-  useEffect(() => {
-    if (isReplying) onReplyFilesChange?.(replyFiles.length)
-  }, [isReplying, replyFiles.length, onReplyFilesChange])
-
-  const addReplyFiles = useCallback((incoming: File[]) => {
-    setReplyFailed(false)
-    setReplyFiles((prev) => mergePendingFiles(prev, incoming))
-  }, [])
-
-  // Editing the draft after a failure means the red attachments and the Retry
-  // button no longer describe what is in the box.
-  const handleReplyDraftChange = useCallback(
-    (value: string) => {
-      setReplyFailed(false)
-      onReplyDraftChange(value)
+  const handleReplyFilesChange = useCallback(
+    (count: number) => {
+      setReplyFileCount(count)
+      onReplyFilesChange?.(count)
     },
-    [onReplyDraftChange]
+    [onReplyFilesChange]
   )
 
-  const { isDragActive, dropzoneProps } = useComposerDrop({
-    onFiles: addReplyFiles,
-    disabled: isSubmittingReply,
-  })
-
-  const handleSubmitReply = async () => {
-    if (isSubmittingReply || !replyDraft.trim() || offlineBlocked()) return
-    setIsSubmittingReply(true)
-    setReplyFailed(false)
-    try {
-      await onSubmitReply(comment.id, replyFiles.length > 0 ? replyFiles : undefined)
-    } catch {
-      // The page already reported the error; keep the draft staged for Retry.
-      setReplyFailed(true)
-    } finally {
-      setIsSubmittingReply(false)
-    }
-  }
+  // Rejects on failure so the box keeps its files for Retry; the page already
+  // reported the error.
+  const handleSubmitReply = useCallback(
+    async (_body: string, files?: File[]) => {
+      setIsSubmittingReply(true)
+      try {
+        await onSubmitReply(comment.id, files)
+      } finally {
+        setIsSubmittingReply(false)
+      }
+    },
+    [onSubmitReply, comment.id]
+  )
 
   const { requestClose: requestCloseReply, discardDialog } = useDiscardGuard({
     hasText: replyDraft.trim().length > 0,
-    hasFiles: replyFiles.length > 0,
+    hasFiles: replyFileCount > 0,
     onDiscard: onCancelReply,
     locked: isSubmittingReply,
   })
@@ -294,86 +265,18 @@ export function WikiCommentThread({
       </div>
 
       {isReplying && (
-        <div
-          className={cn('mt-2 space-y-2 border-t pt-2', isDragActive && dropActiveClass)}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') requestCloseReply()
-          }}
-          {...dropzoneProps}
-        >
-          <Textarea
-            placeholder={t`Reply to ${comment.name || comment.author}...`}
-            value={replyDraft}
-            onChange={(e) => handleReplyDraftChange(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                void handleSubmitReply()
-              } else if (e.key === 'Escape') {
-                requestCloseReply()
-              }
-            }}
-            className="bg-background rounded-lg text-sm"
-            rows={2}
-            autoFocus
-            disabled={isSubmittingReply}
-          />
-          <ComposerAttachments
-            files={replyFiles}
-            previewUrls={replyPreviewUrls}
-            state={isSubmittingReply ? 'uploading' : replyFailed ? 'error' : 'idle'}
-            progress={progress?.slices}
-            onRemove={(file) => setReplyFiles((prev) => removePendingFile(prev, file))}
-            onReorder={(from, to) => setReplyFiles((prev) => moveItem(prev, from, to))}
-            groupMedia
-            // Retry sends the draft, so it is only offered while there is one.
-            onRetry={replyDraft.trim() ? () => void handleSubmitReply() : undefined}
-          />
-          {isSubmittingReply && <UploadProgress progress={progress ?? null} />}
-          <div className="flex items-center justify-end gap-2">
-            <SendShortcutHint />
-            <input
-              ref={replyFileRef}
-              type="file"
-              multiple
-              onChange={(e) => { if (e.target.files) { addReplyFiles(Array.from(e.target.files)) } e.target.value = '' }}
-              className="hidden"
-            />
-            <IconButton
-              type='button'
-              variant='ghost'
-              className='size-8'
-              onClick={() => replyFileRef.current?.click()}
-              disabled={isSubmittingReply}
-              label={t`Attach reply files`}
-            >
-              <Paperclip className="size-4" />
-            </IconButton>
-            <IconButton
-              type='button'
-              variant='ghost'
-              className='size-8'
-              onClick={requestCloseReply}
-              disabled={isSubmittingReply}
-              label={t`Cancel reply`}
-            >
-              <X className="size-4" />
-            </IconButton>
-            <IconButton
-              type='button'
-              className='size-8'
-              disabled={!replyDraft.trim() || isSubmittingReply}
-              onClick={() => void handleSubmitReply()}
-              label={t`Send reply`}
-            >
-              {isSubmittingReply ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Send className="size-4" />
-              )}
-            </IconButton>
-          </div>
-        </div>
+        <CommentBox
+          kind='reply'
+          className='mt-2 border-t pt-2'
+          value={replyDraft}
+          onValueChange={onReplyDraftChange}
+          onSubmit={handleSubmitReply}
+          onClose={requestCloseReply}
+          onFilesChange={handleReplyFilesChange}
+          progress={progress}
+          placeholder={t`Reply to ${comment.name || comment.author}...`}
+          autoFocus
+        />
       )}
 
       <ConfirmDialog
