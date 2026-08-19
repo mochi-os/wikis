@@ -157,9 +157,9 @@ def database_upgrade(version):
             mochi.db.execute("alter table comments add column signature text not null default ''")
     # Schema 8: attachments move out of core's managed store into this app's own
     # database, owned by the shared attachments library. Create the table and
-    # copy existing rows across the transition bridge. attachment_migrate aborts
-    # without advancing the version if the bridge is gone (a dormant user
-    # migrating after core's cleanup release), so the step retries later.
+    # copy existing rows out of core's store - through the transition bridge
+    # while a core still has one, else from the export file core's cleanup
+    # wrote before dropping it.
     if version == 8 or version == 9 or version == 10:
     	# The last number re-issues the step: a server that installed the
     	# first library version ahead of its core update paid both earlier
@@ -3623,7 +3623,7 @@ def event_attachment_delete(e):
     if not attachment_id:
         return
 
-    # Bind the attachment to this wiki before deleting - mochi.attachment.delete
+    # Bind the attachment to this wiki before deleting - attachment_delete
     # resolves the id across the owner's whole wikis DB, so without this an
     # edit-replica of one wiki could delete another wiki's attachment by id.
     # Mirrors event_attachment_fetch / serve_attachment.
@@ -4046,7 +4046,7 @@ def action_sync(a):
 # plus N attachment lookups - on a route that is public, so on a public wiki an
 # unauthenticated caller could trigger the whole traversal at will. The queries
 # are now a single read; the attachment lookups cannot be batched, because
-# mochi.attachment.list takes one object at a time, so they stay proportional to
+# attachment_list takes one object at a time, so they stay proportional to
 # the comments actually returned - which is what bounding the top level buys.
 #
 # Walked iteratively with a visited set rather than recursively. `parent` is not
@@ -4659,8 +4659,8 @@ def event_comment_delete(e):
 
 # HTTP handlers serving a wiki's attachments (and thumbnails). Public routes,
 # so anonymous viewers can load a public wiki's attachments; access is enforced
-# here on a.user, never on ambient ownership. Core's a.write.attachment serves
-# the bytes with no access check of its own, so this handler is the gate: it
+# here on a.user, never on ambient ownership. The library's attachment_serve performs
+# no access check of its own, so this handler is the gate: it
 # reuses the action_attachments view check and additionally binds the
 # attachment to this wiki (attached to the wiki itself or to one of its
 # comments), so one wiki's attachment can't be fetched via another wiki's route.
@@ -4801,7 +4801,7 @@ def action_attachment_delete(a):
 
     source = wiki.get("source")
 
-    # Bind the attachment to this wiki before deleting. mochi.attachment.delete
+    # Bind the attachment to this wiki before deleting. attachment_delete
     # resolves the id with a bare `where id = ?` across the owner's whole wikis
     # database (core/server/attachments.go), and every wiki that user holds -
     # owned and replicated - shares it. Without this, edit rights on ONE wiki
