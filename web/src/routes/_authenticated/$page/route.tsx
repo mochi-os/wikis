@@ -38,11 +38,9 @@ interface InfoResponse {
   fingerprint?: string
 }
 
-// Layout for the top-level $page tree, which renders when the wiki is named
-// by the URL context rather than a path segment: a domain route (the wiki is
-// the hostname) or direct entity routing (the fingerprint is the basepath).
-// Mirrors $wikiId/route.tsx — the children are the same page components, and
-// they read the wiki and their endpoint base from WikiBaseURLProvider.
+// Layout for the top-level $page tree: the wiki is named by the URL context
+// (domain route or direct entity routing) rather than a path segment. Mirrors
+// $wikiId/route.tsx.
 export const Route = createFileRoute('/_authenticated/$page')({
   loader: async (): Promise<WikiRouteData> => {
     // getApiBasepath resolves the entity endpoint prefix for whichever

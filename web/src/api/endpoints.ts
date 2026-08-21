@@ -19,16 +19,11 @@ const endpoints = {
     join: '-/subscribe',
     directorySearch: '-/directory/search',
     recommendations: '-/recommendations',
-    // Pages. The slug goes under a `pages/` container rather than straight into
-    // the action slot: baseURL already ends in `/-/`, so a bare slug made a page
-    // named after an action resolve to that action - fetching a page called
-    // 'delete' hit :wiki/-/delete and destroyed the wiki.
-    //
-    // Every interpolated value is encoded. The server now restricts slugs to
-    // alphanumerics, hyphens and underscores on all write paths, local and
-    // remote, so nothing reaching these builders should need it - this is the
-    // second line of that defence, and the one place it still earns its keep is
-    // tagPages, since tags created before that rule can hold anything.
+    // Pages live under a `pages/` container: baseURL ends in `/-/`, so a bare
+    // slug named after an action (e.g. 'delete') would resolve to that action.
+    // Values are encoded as a second line of defence; the server restricts
+    // slugs on every write path, but tags created before that rule can hold
+    // anything.
     page: (slug: string) => `pages/${encodeURIComponent(slug)}`,
     pageEdit: (slug: string) => `pages/${encodeURIComponent(slug)}/edit`,
     pageHistory: (slug: string) => `pages/${encodeURIComponent(slug)}/history`,

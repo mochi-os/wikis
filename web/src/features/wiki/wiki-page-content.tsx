@@ -144,9 +144,8 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
   const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all', regenerate = false) => {
     try {
       const { token, exists } = await getRssToken(wikiId, mode, regenerate)
-      // Only the hash is stored, so an already-issued URL cannot be shown
-      // again. Offer to replace it rather than silently minting a new one,
-      // which would break whatever reader is polling the old URL.
+      // Only the hash is stored; replacing the issued URL is the user's call,
+      // since it breaks any reader polling it.
       if (exists) {
         toast.info(t`This feed URL was already issued and cannot be shown again.`, {
           action: {

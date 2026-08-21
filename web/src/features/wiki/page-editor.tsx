@@ -87,13 +87,10 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   // 3. URL path (class context like /wikis/$wikiId/...)
   let wikiId = wikiIdProp ?? wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
 
-  // If still no wikiId, take it from the URL, under whatever prefix this app
-  // is actually served at. "/wikis/" is configuration (app.json "paths"), not a
-  // constant: hardcoding it broke the moment the prefix differed, and under
-  // domain-entity routing - where the first segment is a page slug - it matched
-  // that slug and sent every post-save navigation to a wiki that does not
-  // exist. getAppPath() answers "" in exactly that case, so there is nothing to
-  // match against and the entity-relative branch is taken instead.
+  // Fall back to the URL under the app's actual prefix - "/wikis/" is app.json
+  // configuration, not a constant. Under domain-entity routing getAppPath() is
+  // "" and the first segment is a page slug, so there is nothing to match and
+  // the entity-relative branch is taken.
   if (!wikiId) {
     const appPath = getAppPath()
     if (appPath) {

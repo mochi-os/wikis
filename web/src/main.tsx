@@ -197,12 +197,9 @@ const catalogs: Catalogs = {
 
 const queryClient = createQueryClient()
 
-// getAppBasepath keeps the entity fingerprint out of the basepath — the routes
-// carry it as $wikiId — and follows the domain route path when the page is
-// served through one. No createAppHistory here: this route tree is already
-// domain-aware (top-level $page, isDomainEntityRouting branches), so on an
-// entity domain route the URL genuinely has no fingerprint and splicing one in
-// would send "/" to $page as a page named after the fingerprint.
+// No createAppHistory: this route tree is domain-aware (top-level $page,
+// isDomainEntityRouting), so on an entity domain route the URL has no
+// fingerprint and splicing one in would route "/" to $page.
 const router = createRouter({
   routeTree,
   context: { queryClient },

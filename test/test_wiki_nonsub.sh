@@ -4,12 +4,8 @@
 # This file is part of Mochi, licensed under the GNU AGPL v3 with the
 # Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-# Wiki P2P non-subscriber test suite
-# Tests access model: wikis require joining (local copy) for full interaction
-#
-# Unlike forums/feeds where non-subscribers can interact with public content,
-# wikis require users to "join" (create a local replica) for full access.
-# This test demonstrates that model.
+# Wiki P2P non-subscriber test suite: unlike forums/feeds, a non-subscriber
+# cannot interact with a public wiki without joining (creating a local replica).
 
 set -e
 

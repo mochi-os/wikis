@@ -40,12 +40,9 @@ import { requestHelpers, MUTATION_SKIPPED, isMutationSkipped, textUnchanged, use
 import { wikisRequest } from '@/api/request'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 
-// Invalidate every cached page query for this wiki. A page reached through a
-// redirect is cached under the requested slug while mutations only know the
-// canonical page.slug, so no slug filter would match it - but the scope makes
-// the prefix precise enough that refreshing all of them costs one wiki's pages
-// rather than every wiki's. The routes key their page query the same way, so
-// this reaches those too.
+// No slug filter: a page reached through a redirect is cached under the
+// requested slug, which mutations do not know. The scope keeps this to one
+// wiki's pages.
 function invalidatePage(
   queryClient: ReturnType<typeof useQueryClient>,
   scope: string
@@ -62,14 +59,10 @@ function useEntityEndpoint() {
   return (endpoint: string) => baseURL ? `${baseURL}${endpoint}` : endpoint
 }
 
-// The wiki a cached entry belongs to. Every key below carries it, because the
-// $wikiId tree reaches a different wiki on each visit while keys like
-// ['wiki', 'tags'] named none of them: React Query answered from the previous
-// wiki's entry immediately, so opening a second wiki showed the first one's
-// tags, attachments, comments and settings until the refetch landed. The base
-// URL is the wiki's identity here - it carries the fingerprint in entity
-// context, and in class context there is a single wiki in play, for which the
-// empty string is the right and stable answer.
+// Every query key carries the wiki, or React Query answers a second wiki's
+// visit from the first one's cache. The base URL carries the fingerprint in
+// entity context; in class context one wiki is in play and '' is the stable
+// answer.
 function useWikiScope(): string {
   return useWikiBaseURLOptional()?.baseURL ?? ''
 }
@@ -84,12 +77,9 @@ export interface WikiInfoResponse {
   fingerprint?: string
 }
 
-// wikiId is set in class context when the URL names a wiki: the class-level
-// info action is class-wide and carries no current wiki and no permissions,
-// so shell users' permission-gated controls (tag add, page edit) would stay
-// hidden regardless of their ACL. The wiki-scoped info action returns the
-// same shape plus wiki and permissions. In entity context the plain endpoint
-// already resolves wiki-scoped; prefixing there would double the path.
+// In class context the URL's wiki is prefixed so the wiki-scoped info action
+// answers (the class-level one carries no wiki or permissions). In entity
+// context the plain endpoint already resolves wiki-scoped.
 export function useWikiInfo(wikiId?: string) {
   return useQuery({
     queryKey: ['wiki', 'info', wikiId ?? ''],

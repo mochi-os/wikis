@@ -74,12 +74,9 @@ export const wikisRequest = {
   },
 }
 
-// Get RSS token for a wiki entity and mode.
-//
-// The server keeps only the token's hash, so an already-issued URL cannot be
-// handed back: the response is `{exists: true}` instead, and the caller has to
-// ask for `regenerate` to mint a replacement. Re-issuing silently would break
-// whatever reader is already polling the old URL.
+// The server keeps only the token's hash, so an issued URL cannot be returned
+// again: the response is `{exists: true}` and the caller must pass `regenerate`
+// to mint a replacement.
 export async function getRssToken(
   entity: string,
   mode: 'changes' | 'comments' | 'all',

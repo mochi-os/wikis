@@ -3,19 +3,9 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-// WebSocket hook for real-time wiki updates.
-//
-// Incoming P2P sync (the initial dump applied by import_sync_dump, and live
-// page/comment/tag broadcasts applied by the event_* handlers) writes straight
-// to the local DB. Without a notification the open UI keeps showing stale data
-// until the next manual reload — a freshly-subscribed wiki looks empty, and a
-// remote edit never appears. The Starlark side emits {"type":"wiki/update"}
-// (and {"type":"wiki/resynced"} on resync); here we listen and invalidate the
-// wiki query tree so the content refreshes the moment it lands.
-//
-// The connection itself is the shared entityWebsocketManager, whose close path
-// detaches handlers so the resubscribe on a token refresh cannot orphan a
-// socket that keeps delivering events.
+// Refreshes the wiki query tree when P2P sync (initial dump or live broadcast)
+// writes to the local DB. The Starlark side emits {"type":"wiki/update"} and
+// {"type":"wiki/resynced"} on the wiki's fingerprint.
 
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";

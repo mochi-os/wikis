@@ -4,15 +4,11 @@
 # This file is part of Mochi, licensed under the GNU AGPL v3 with the
 # Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-# Helper: send a notification through the user's notifications app.
-# Mirrors apps/forums/forums.star `notify()`. The topic-label key resolves
-# to the per-locale string in apps/wikis/labels/<lang>.conf under
-# `notifications.topic.<topic-with-dots>` so the notifications app can
-# render the topic header in the user's language.
-# remote_error surfaces a failed mochi.remote.request: core-authored
-# transport failures (marked "transport") become a translated generic
-# error with the detail kept in the server log; far-end app answers
-# pass through unchanged.
+# remote_error: a core transport failure (marked "transport") becomes a
+# translated generic error with the detail logged; a far-end app answer passes
+# through. notify: the topic header label is
+# `notifications.topic.<topic-with-dots>` in labels/<lang>.conf, mirroring
+# forums.
 def remote_error(a, response, code=502):
     if response.get("transport"):
         mochi.log.info("Remote transport error: %s", response.get("error", ""))
@@ -52,13 +48,9 @@ def database_create():
     # Replicas table - downstream wikis that replicate from this wiki
     mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
 
-    # Comments table
-    # origin: the replica entity that submitted this comment over P2P, empty for
-    # one authored locally. It is the authorisation key for remote edit/delete -
-    # a replica may only mutate what it submitted. See event_comment_edit.
-    # signature: the author's own ed25519 signature over the comment, which is
-    # what makes `author` mean anything on a replicated wiki. origin proves which
-    # replica sent a comment, not who wrote it; only this proves authorship. See
+    # origin: the replica that submitted the comment over P2P ('' when local) -
+    # the key for remote edit/delete. signature: the author's ed25519 signature;
+    # origin proves which replica sent it, only this proves who wrote it. See
     # comment_create_payload.
     mochi.db.execute("create table if not exists comments (id text primary key, wiki text not null references wikis(id), page text not null, parent text not null default '', author text not null, name text not null default '', body text not null, created integer not null, edited integer not null default 0, deleted integer not null default 0, origin text not null default '', signature text not null default '')")
     mochi.db.execute("create index if not exists comments_wiki on comments(wiki)")
@@ -66,11 +58,8 @@ def database_create():
     mochi.db.execute("create index if not exists comments_parent on comments(parent)")
     mochi.db.execute("create index if not exists comments_created on comments(created)")
 
-    # RSS tokens table
-    # The token itself is never stored - only its SHA256, the same digest core
-    # keeps. A feed URL in a backup would otherwise be a working remote
-    # credential long after the backup leaked, which content in the same backup
-    # is not: content is a one-time disclosure, a token keeps letting you back in.
+    # RSS tokens: only the SHA256 is stored (the digest core keeps), so a leaked
+    # backup holds no working feed credential.
     mochi.db.execute("create table if not exists rss (hash text not null primary key, entity text not null, mode text not null, created integer not null, unique(entity, mode))")
 
     # Outbound-request throttle. Core rate-limits inbound P2P and outbound HTTP
@@ -82,31 +71,20 @@ def database_create():
     attachment_schema_create()
 
 def database_upgrade(version):
-    # Schema 2: the replicas.peer column is gone - the core per-user directory
-    # now carries the route to a private replica, so the owner no longer stores
-    # each replica's peer (see #209 / #220). Drop the now-unused column.
+    # Schema 2: drop replicas.peer - the core per-user directory carries the
+    # route (#209, #220).
     if version == 2:
         for c in mochi.db.table("replicas"):
             if c["name"] == "peer":
                 mochi.db.execute("alter table replicas drop column peer")
                 break
-    # Schema 3: drop the pre-2026-07 broadcast tables left in the app data DB
-    # when broadcast state moved to the per-app system DB - inert, but stale
-    # sequence/log copies mislead diagnosis. (This case previously lived in a
-    # second database_upgrade definition that shadowed this one, so it never
-    # ran; merged here.)
+    # Schema 3: drop the broadcast tables left behind when broadcast state moved
+    # to the per-app system DB.
     if version == 3:
         for table in ["sequence", "log", "acknowledged", "received"]:
             mochi.db.execute("drop table if exists " + table)
-    # Schema 4: comments.origin records which replica submitted a comment, so a
-    # remote edit/delete can be confined to that replica's own submissions. The
-    # P2P handlers previously required only general wiki edit access, letting an
-    # edit-capable replica - or anyone at all on a public wiki, since
-    # event_replicate has no access gate and "+" grants edit - rewrite or hard
-    # delete ANY comment, including the owner's, and have the source rebroadcast
-    # it as authoritative. Comments carry no revision history, so that was
-    # unrecoverable. Existing rows default to '' and are therefore remotely
-    # immutable: the safe direction for rows whose origin we cannot know.
+    # Schema 4: comments.origin confines remote edit/delete to the submitting
+    # replica. Existing rows default to '' and are therefore remotely immutable.
     if version == 4:
         found = False
         for c in mochi.db.table("comments"):
@@ -115,12 +93,7 @@ def database_upgrade(version):
                 break
         if not found:
             mochi.db.execute("alter table comments add column origin text not null default ''")
-    # Schema 5: the outbound-request throttle table. Every action that reaches a
-    # third-party wiki over P2P was unbounded - request_resync had a 60-second
-    # gate but action_resync cleared it deliberately, and sync/probe/join/
-    # subscribe had none at all - so an authenticated user could point this
-    # server's outbound traffic at an entity of their choosing and repeat it as
-    # fast as HTTP allowed.
+    # Schema 5: outbound-request throttle table (see throttled()).
     if version == 5:
         mochi.db.execute("create table if not exists throttle (key text not null primary key, last integer not null)")
     # Schema 6: rss stores the token's SHA256 rather than the token. Existing
@@ -133,20 +106,9 @@ def database_upgrade(version):
         for r in rows:
             mochi.db.execute("insert or ignore into rss (hash, entity, mode, created) values (?, ?, ?, ?)",
                 mochi.crypto.hash.sha256(r["token"]), r["entity"], r["mode"], r["created"])
-    # Schema 7: comments.signature carries the author's own signature over the
-    # comment. Schema 4's origin column confined remote EDITS and DELETES to the
-    # replica that submitted a comment, but creation stayed forgeable: wikis
-    # replication authenticates a wiki entity rather than a person, so
-    # event_comment_create had no sender identity to bind `author` against and
-    # took it verbatim off the wire. Any replica with edit access could post a
-    # comment in anyone's name and have the source rebroadcast it as
-    # authoritative. A Mochi entity id IS its base58 ed25519 public key, so an
-    # author-made signature closes that with no key exchange or directory
-    # lookup - see comment_create_payload and mochi.entity.verify.
-    #
-    # Existing rows default to '' and stay as they are: they were accepted under
-    # the old rules and their authorship cannot be established after the fact.
-    # Only inbound events are held to the new requirement.
+    # Schema 7: comments.signature, the author's own signature (see
+    # comment_create_payload). Existing rows stay '' - their authorship cannot
+    # be established after the fact; only inbound events require it.
     if version == 7:
         found = False
         for c in mochi.db.table("comments"):
@@ -155,17 +117,13 @@ def database_upgrade(version):
                 break
         if not found:
             mochi.db.execute("alter table comments add column signature text not null default ''")
-    # Schema 8: attachments move out of core's managed store into this app's own
-    # database, owned by the shared attachments library. Create the table and
-    # copy existing rows out of core's store - through the transition bridge
-    # while a core still has one, else from the export file core's cleanup
-    # wrote before dropping it.
+    # Schema 8: attachments move into this database under the shared library;
+    # existing rows come from core's transition bridge while one exists, else
+    # from the export file core wrote before dropping its table.
     if version == 8 or version == 9 or version == 10:
-    	# The last number re-issues the step: a server that installed the
-    	# first library version ahead of its core update paid both earlier
-    	# numbers for a raise inside the bridge call and was left at full
-    	# schema with no attachments table. The step is idempotent, so a
-    	# healthy database re-running it changes nothing.
+    	# 9 and 10 re-run the step: a library installed ahead of its core update
+    	# consumed those numbers without creating the table. The step is
+    	# idempotent.
         attachment_schema_create()
         attachment_migrate()
     # Schema 11: the unreplicate retry is gone, and `unreplicated` existed only
@@ -174,17 +132,9 @@ def database_upgrade(version):
     if version == 11:
         mochi.db.execute("drop table if exists unreplicated")
 
-# Helper: has this outbound operation run within `seconds`? Records the attempt
-# when it has not, so callers just guard on the return value.
-#
-# Core rate-limits inbound P2P and outbound HTTP, but NOT outbound
-# mochi.remote.request, so anything that reaches a third-party wiki has to
-# bound itself. Two keys are used together: a per-target one, which stops a
-# single victim being hammered, and a global "outbound" one, which stops the
-# same volume being spread across many targets instead.
-#
-# Old rows are pruned on write, so the table cannot grow without limit from
-# probing many distinct targets.
+# Has this outbound operation run within `seconds`? Records the attempt when
+# not. Core rate-limits inbound P2P and outbound HTTP but not outbound
+# mochi.remote.request, so the app bounds itself.
 def throttled(key, seconds):
     now = mochi.time.now()
     row = mochi.db.row("select last from throttle where key=?", key)
@@ -212,24 +162,14 @@ def get_wiki(a):
         return None
     return mochi.db.row("select * from wikis where id=?", wiki)
 
-# Access level hierarchy: edit > view
-# Each level grants access to that operation and all operations below it.
-# "edit" includes delete capability.
-# "none" explicitly blocks all access (stored as deny rules for all levels).
-# "manage" is separate and grants all permissions (typically owner-only).
+# Access levels, lowest first; each includes those below it and "edit" includes
+# delete. "none" stores deny rules for every level; "manage" is separate and
+# never grantable here (owner only).
 ACCESS_LEVELS = ["view", "edit"]
 
-# Read a text field from a peer-supplied event payload.
-#
-# Content carries no type guarantee: a peer can send a number, list or dict
-# where a string is expected. Starlark has no try/except, so len(), .lower(),
-# .strip() or int() on such a value raises and kills the WHOLE handler - the
-# page never lands, the tag never applies, the replica quietly diverges, and
-# nothing is logged because the abort is not an error path anyone wrote.
-#
-# Returning None for a non-string lets each handler's existing
-# `if not x: return` guard reject it as a malformed payload, which is what it
-# is, instead of the handler dying halfway through.
+# Read a text field from a peer-supplied payload. A non-string returns
+# `fallback` so the caller's `if not x: return` rejects it; calling len() or
+# .lower() on it would abort the whole handler instead.
 def text_content(e, key, fallback=None):
     value = e.content(key)
     if type(value) != "string":
@@ -324,19 +264,12 @@ def validate_event_sender(wikirow, wiki, sender):
     update_replica_seen(wiki, sender)
     return True
 
-# Helper: authorize a replica-originated mutation on the source side.
-# validate_event_sender only proves the sender is a registered replica
-# (authenticity); it does NOT check the replica's access level. When we are the
-# source, the replica must additionally hold `operation` access (e.g. "edit")
-# for the change to apply — otherwise a view-only replica's edits would be
-# accepted upstream and replicated onward. Source->replica propagation (we are a
-# replica, sender is our authoritative source) is always allowed.
+# Authorise a replica-originated mutation. validate_event_sender proves only
+# that the sender is a registered replica; on the source it must also hold
+# `operation` access. Source -> replica is always allowed.
 def replica_can(wikirow, wiki, sender, operation):
-    # access-ok: source -> replica propagation. The caller IS consulted, just
-    # earlier and by a different means: validate_event_sender has already proved
-    # sender == our recorded source before this runs, so the authorisation is
-    # complete. Not the repositories owner==0 shape, where nothing had checked
-    # the caller at any point.
+    # access-ok: source -> replica propagation; validate_event_sender already
+    # proved sender == our recorded source.
     if wikirow.get("source"):
         return True
     return check_event_access(sender, wiki, operation)
@@ -369,11 +302,8 @@ def error_broadcast_gap(e):
 # have pruned us after a long idle). Matches core's broadcast_log_age.
 idle_resync_age = 7 * 86400
 
-# request_resync pulls a fresh sync dump from the source wiki when an
-# incoming event references a page or comment we haven't seen. The
-# source's event_sync is the canonical state; import_sync_dump applies it
-# idempotently. Throttled to one call per 60 seconds per wiki. Only
-# meaningful for replicas — source wikis are the canonical state.
+# Pull a fresh sync dump from the source when an event references a page or
+# comment we have not seen; import_sync_dump applies it idempotently.
 def request_resync(wiki_id):
     """Returns True iff a fresh sync dump was actually fetched and applied."""
     row = mochi.db.row("select source, server, synced from wikis where id=?", wiki_id)
@@ -386,12 +316,8 @@ def request_resync(wiki_id):
     peer = None
     if row["server"]:
         peer = mochi.remote.peer(row["server"])
-    # Guard the shape before .get, as action_join and action_sync already do.
-    # Their comment justifies it on source/peer being user-supplied, which is
-    # not true here - the source comes from our own row - but the answer is
-    # attacker-controlled either way, and a scalar or null reply raises and
-    # aborts whichever handler triggered the resync. event_redirect_set calls
-    # this on a missing target, so a peer can reach it on demand.
+    # The reply is attacker-controlled: a scalar or null raises on .get and
+    # aborts whichever handler triggered the resync.
     dump = mochi.remote.request(row["source"], "wikis", "sync", {}, peer)
     if not dump or type(dump) != "dict" or dump.get("status") != "200":
         return False
@@ -402,13 +328,11 @@ def request_resync(wiki_id):
         mochi.websocket.write(fp, {"type": "wiki/resynced", "wiki": wiki_id})
     return True
 
-# Helper: deliver a subscription-lifecycle event (replicate, unreplicate) to a
-# source whose entity may no longer be resolvable: private entities never list
-# in the directory, and public entries expire while the source is offline. A
-# stored directory-form "p2p/<peer>" server pins the queue row to that peer, so
-# an undeliverable send parks and revives when the peer reconnects, instead of
-# parking unresolvable forever. Hostname servers still route via the directory -
-# resolving one here would put a network dial on a view path.
+# Deliver a replicate/unreplicate to a source that may no longer resolve
+# (private entities never list; public entries expire offline). A stored
+# "p2p/<peer>" server pins the queue row to that peer so the send parks until it
+# reconnects; hostname servers route via the directory - resolving here would
+# dial on a view path.
 def registration_send(server, headers, content):
     peer = server[len("p2p/"):] if server and server.startswith("p2p/") else ""
     if peer:
@@ -416,12 +340,9 @@ def registration_send(server, headers, content):
     else:
         mochi.message.send(headers, content)
 
-# maybe_resubscribe re-registers a replica with its source wiki when the
-# subscription has gone idle (idle_resync_age). The source's event_replicate is
-# idempotent and pushes a sync dump, so a bare re-replicate re-adds us and
-# re-syncs; touch() stamps the idle timer (keyed by source - the broadcast key)
-# so a quiet wiki re-registers at most once per window and a dead source isn't
-# re-poked per view.
+# Re-register with the source when the subscription has gone idle
+# (idle_resync_age): event_replicate is idempotent and pushes a sync dump.
+# touch() is keyed by source, so a dead source is poked once per window.
 def maybe_resubscribe(a, wiki_id):
     user_id = a.user.identity.id if a.user else None
     if not user_id:
@@ -456,11 +377,9 @@ def broadcast_event(wiki, event, data, exclude=None):
         recipients.append(r["id"])
     mochi.broadcast.send(wiki, wiki, recipients, "wikis", event, data, exclude or "")
 
-# notify_websocket: tell any locally-open wiki UI that this wiki's content
-# changed, so the web refreshes pages/comments/tags the moment remote sync data
-# (the initial dump or a live broadcast) lands locally instead of staying stale
-# until a manual reload. The key is the wiki's fingerprint, matching the web's
-# websocket connection key. Distinct from notify(), which sends push/email.
+# Tell any open wiki UI that content changed; keyed by the wiki's fingerprint,
+# matching the web's websocket key. Distinct from notify(), which sends
+# push/email.
 def notify_websocket(wiki):
     if not wiki:
         return
@@ -530,11 +449,8 @@ def get_page(wiki, slug):
     page = mochi.db.row("select * from pages where wiki=? and page=? and deleted=0", wiki, slug)
     return page
 
-# Most internal links one page's missing-link check will consider. A page is
-# bounded only by the request body limit, and every link costs a dedupe and a
-# share of the lookup below - on a public wiki, paid by anonymous readers. Real
-# pages are far under this; a page that exceeds it gets its missing-link
-# highlighting truncated rather than costing the reader a worker.
+# Most internal links one page's missing-link check considers; beyond this the
+# highlighting is truncated rather than costing an anonymous reader a worker.
 WIKI_LINKS_MAXIMUM = 500
 
 # Helper: Extract internal wiki links from markdown content
@@ -608,35 +524,11 @@ def find_missing_links(wiki, content):
             missing.append(link)
     return missing
 
-# Page slugs and the `home` setting are interpolated into request paths by the
-# web and Android clients, so a slug matching a route segment resolves to that
-# route instead of the page.
-#
-# The API side of that is now structural rather than a denylist: page reads live
-# under :wiki/-/pages/:page, so the slug always sits in a parameter position and
-# can never shadow an action - including actions added years from now. The API
-# action segments this list used to carry (delete, settings, tag, rss, ...) went
-# with the legacy :wiki/-/:page routes.
-#
-# What remains is owned by the CLIENT, not by app.json, so no route change frees
-# it: these are the web router's wiki-level screens plus the server's files
-# routes. A page named "settings" would still be shadowed by the settings screen
-# in the browser. Small and stable - it grows only when a new wiki-level screen
-# is added, which is rare and visible.
-# Names a page may not take, because the client would route them to one of its
-# own screens instead and the page would be unreachable.
-#
-# The list is longer than the /<wiki>/<page> routes need, and deliberately so.
-# The SPA has two page-route families: /<wiki>/<page> for main-site routing,
-# whose only siblings are changes, new, search and settings, and a bare /<page>
-# for domain-entity routing (isDomainEntityRouting), where the slug sits at the
-# top level alongside every screen the app has. This list covers both, so do not
-# trim it back to the first family's siblings.
-#
-# assets and images are the server's own `files` routes rather than client ones.
-# Two-segment client routes (tag/<tag>, errors/<error>) need no entry: a slug
-# cannot contain a slash, so a page named "tag" resolves to /tag, which matches
-# no route and falls through correctly.
+# Names a page may not take: the client would route them to one of its own
+# screens. The list is owned by the web router plus the server's files routes
+# (assets, images), not by app.json, and covers domain-entity routing where a
+# bare /<page> sits beside every screen - do not trim it to the /<wiki>/<page>
+# siblings.
 reserved_pages = [
     "401", "403", "404", "500", "503",
     "assets", "changes", "find", "images", "join", "new",
@@ -650,20 +542,11 @@ def slug_reserved(slug):
         return False
     return slug.split("/")[0] in reserved_pages
 
-# Helper: what is wrong with this page slug, as a label key, or None if it is
-# usable? Every path that accepts a slug - local action and remote event alike -
-# must go through here. While the remote paths were more permissive than the
-# local ones, a slug no user could type was plantable over P2P, and the client's
-# own request for that page then resolved somewhere else: the web builds
-# `pages/<slug>` against a baseURL ending in `/-/`, and dot segments collapse
-# before the request is sent, so `../delete` selects the wiki's delete action
-# and `../../../<id>/-/delete` reaches a different wiki entirely (both confirmed
-# against a running server). Rejecting the characters is what closes that, so
-# the charset test cannot be folded into slug_reserved, which deliberately
-# tolerates slashes for the multi-segment `home` setting.
-#
-# The emptiness check stays with the callers: each one names the missing field
-# differently, and remote paths reject rather than report.
+# What is wrong with this slug, as a label key, or None. Every slug path, local
+# action and remote event, goes through here: the charset rule is what stops a
+# planted `../delete` collapsing into another route in the client's
+# `pages/<slug>` request. Callers check emptiness; slug_reserved alone tolerates
+# slashes for `home`.
 def slug_problem(slug):
     if len(slug) > 100:
         return "errors.url_too_long"
@@ -676,11 +559,9 @@ def slug_problem(slug):
         return "errors.page_name_reserved"
     return None
 
-# Helper: what is wrong with this tag, as a label key, or None if it is usable?
-# Same shape and same reason as slug_problem: action_tag_add applied these two
-# rules and event_tag_add applied neither, so a peer could append rows to the
-# tags table without limit - the table is keyed (page, tag), so every distinct
-# value is another row. Callers check emptiness themselves.
+# What is wrong with this tag, as a label key, or None. Applied on the event
+# path too: tags is keyed (page, tag), so every distinct unbounded value is
+# another row. Callers check emptiness.
 def tag_problem(tag):
     if len(tag) > 50:
         return "errors.tag_too_long_max_50_characters"
@@ -689,22 +570,10 @@ def tag_problem(tag):
             return "errors.invalid_tag"
     return None
 
-# Helpers: does this global id already belong to a DIFFERENT wiki?
-#
-# Page, comment and revision ids are global uids, and every wiki a user holds -
-# owned and replicated - shares one database. A sync dump is authored entirely
-# by the remote wiki, so without these checks a wiki you merely joined can name
-# your other wikis' ids and have its own rows written over them. That is not
-# only destructive: a page re-parented into the joined wiki's replica lands
-# inside an entity the remote party can read back via event_sync, so it
-# exfiltrates private pages as well as destroying them.
-#
-# Mirrors foreign_object / foreign_comment in projects and crm, and the guard
-# event_page_create already applies on the event path.
-# `handle` is an open mochi.db.transaction when the caller has one. These run
-# inside import_sync_dump, which writes through a transaction, and a plain
-# mochi.db read would not see rows that import wrote but has not committed -
-# page_outside_wiki in particular relies on the dump's own pages being visible.
+# Does this global id already belong to a DIFFERENT wiki? Every wiki a user
+# holds shares one database, so a sync dump could otherwise overwrite - and via
+# event_sync read back - another wiki's rows. `handle` is the caller's open
+# transaction: import_sync_dump's reads must see its own uncommitted writes.
 def foreign_page(page_id, wiki_id, handle=None):
     if not page_id:
         return False
@@ -731,23 +600,15 @@ def page_outside_wiki(page_id, wiki_id, handle=None):
         return not handle.exists(query, page_id, wiki_id)
     return not mochi.db.exists(query, page_id, wiki_id)
 
-# Helper: P2P version fields arrive as raw CBOR and are never type-checked by
-# core. A non-integer is stored verbatim in an INTEGER column and then poisons
-# every later comparison - Starlark refuses to order across types - which
-# permanently breaks that page for editing AND replication. Bound it too, so a
-# huge value can't pin a page above every future legitimate edit.
+# P2P version fields are never type-checked by core. A non-integer stored in the
+# column breaks every later comparison (Starlark refuses to order across types);
+# the upper bound stops a page being pinned above all future edits.
 def valid_version(value):
     return type(value) == "int" and value > 0 and value < 1000000000
 
-# Helper: Create a revision for a page
-# System-generated revision comments are stored as a label key plus arguments
-# rather than English prose. The row is read back by whoever is looking at the
-# history, and it travels in sync dumps, so storing the key lets each reader -
-# and each peer - render it in their own language. A user-supplied comment is
-# plain text and passes through both helpers untouched.
-#
-# Rows written before this change keep their English text and cannot be
-# retranslated: the words are all that was ever stored.
+# System revision comments are stored as a label key plus arguments so each
+# reader and peer renders them in their own language; a user-supplied comment is
+# plain text and passes through untouched.
 def system_comment(key, **args):
     return json.encode({"key": key, "args": args})
 
@@ -786,11 +647,9 @@ def stream_asset(a, entity_id, service, asset):
     if "data" in header:
         return {"data": header["data"]}
     a.header("Content-Type", header.get("content_type", "application/octet-stream"))
-    # Bytes to relay per slot, matching what the people app accepts on upload.
-    # Without a cap, a peer answering for a person can stream indefinitely through
-    # this route, which is public. Only the three binary slots reach here - style
-    # and information returned above as data - so an unrecognised slot falls back
-    # to the largest of them rather than breaking a route that would otherwise work.
+    # Per-slot byte caps matching what the people app accepts on upload; the
+    # route is public, so an uncapped stream could run indefinitely. Unknown
+    # slots fall back to the largest cap.
     caps = {"avatar": 2 * 1024 * 1024, "banner": 10 * 1024 * 1024, "favicon": 64 * 1024}
     a.write.stream(s, maximum=caps.get(asset, 10 * 1024 * 1024))
     return None
@@ -1053,12 +912,9 @@ def rss_tokens_revoke(entity_id):
         mochi.token.delete(r["hash"])
     mochi.db.execute("delete from rss where entity=?", entity_id)
 
-# Remove every comment in a wiki along with the attachments hanging off it.
-# attachment_clear(wiki_id) does not reach these: a comment's attachments are
-# keyed on the COMMENT id, not the wiki's, so deleting the comments in bulk
-# stranded both the rows and their files permanently - the orphan sweep skips
-# any file that still has a row pointing at it. delete_comment_tree does this
-# correctly for a single thread; the wiki-wide removal paths need the same.
+# Remove a wiki's comments with their attachments. attachment_clear(wiki_id)
+# does not reach these: a comment's attachments are keyed on the comment id, and
+# the orphan sweep skips any file that still has a row.
 def delete_wiki_comments(wiki_id):
     for row in mochi.db.rows("select id from comments where wiki=?", wiki_id) or []:
         for att in (attachment_list(row["id"], wiki_id) or []):
@@ -1120,13 +976,9 @@ def action_delete(a):
     # 10. Clear access rules
     mochi.access.clear.resource("wiki/" + wiki_id)
 
-    # If this was a replica (source set), notify the source to drop us, so
-    # deleting a replica this way doesn't strand us in its replicas list.
-    #
-    # This must precede the entity delete below, for the reason
-    # action_unsubscribe gives: the message is sent AS this entity, and both
-    # the sender check and the signature read its key from the entities table.
-    # Sent after the delete, as it was, core refuses it.
+    # A replica tells its source to drop it. Must precede the entity delete: the
+    # message is sent AS this entity, and the sender check and signature read
+    # its key from the entities table.
     if wiki["source"]:
         registration_send(wiki["server"], {"from": wiki_id, "to": wiki["source"], "service": "wikis", "event": "unreplicate"}, {})
 
@@ -1147,12 +999,10 @@ def action_info_class(a):
         # Logged-in owner sees all their wikis (owned + subscribed replicas)
         wikis_raw = mochi.db.rows(columns)
     else:
-        # Anonymous callers (this action is public) run as the host owner, so the
-        # query would otherwise return every wiki the owner has, including private
-        # ones. Restrict to locally-owned wikis (source='') that grant public view
-        # access. Check access with mochi.access.check(None, ...) directly — NOT
-        # check_access(), which calls mochi.entity.get() and would treat the
-        # thread-local owner as the wiki owner and bypass the access rules.
+        # Anonymous callers run as the host owner, so list only locally-owned
+        # wikis granting public view.
+        # mochi.access.check(None, ...) directly - check_access() resolves the
+        # thread-local owner and would pass.
         wikis_raw = mochi.db.rows(columns + " where w.source=''")
         wikis_raw = [w for w in wikis_raw if mochi.access.check(None, "wiki/" + w["id"], "view")]
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
@@ -1338,13 +1188,9 @@ def action_info_entity(a):
         # already one of their own wikis or replicas.
         wikis_raw = mochi.db.rows(columns)
     else:
-        # Anonymous callers (this action is public) run as the entity owner, so
-        # the query would otherwise return every wiki the owner has, including
-        # private ones. Restrict to locally-owned wikis (source='') that grant
-        # public view access. Check access with mochi.access.check(None, ...)
-        # directly - NOT check_access(), which calls mochi.entity.get() and
-        # would treat the thread-local owner as the wiki owner and bypass the
-        # access rules. Mirrors action_info_class.
+        # Anonymous callers run as the entity owner, so list only locally-owned
+        # wikis granting public view.
+        # mochi.access.check(None, ...) directly, not check_access() - as in action_info_class.
         wikis_raw = mochi.db.rows(columns + " where w.source=''")
         wikis_raw = [w for w in wikis_raw if mochi.access.check(None, "wiki/" + w["id"], "view")]
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
@@ -2224,13 +2070,9 @@ def action_redirect_set(a):
     source = source.lower().strip()
     target = target.lower().strip()
 
-    # A redirect source is resolved as a page slug (get_page consults redirects
-    # before pages), so it is held to the page slug rules rather than to length
-    # alone: the length and leading-dash tests that stood here said nothing
-    # about the characters, so a source could be any 100 characters at all -
-    # "javascript:alert(1)" among them, settable with edit rather than manage
-    # access. React neutralises such a value where it is rendered today, which
-    # is one React version or one non-React sink away from not being true.
+    # A redirect source resolves as a page slug (get_page consults redirects
+    # first), so it takes the page slug rules, not just a length cap -
+    # "javascript:alert(1)" is settable with edit access otherwise.
     problem = slug_problem(source)
     if problem:
         a.error.label(400, problem, name=source)
@@ -2259,11 +2101,9 @@ def action_redirect_set(a):
     now = mochi.time.now()
     mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki["id"], source, target, now)
 
-    # Source broadcasts to its replicas; a replica notifies its source, which
-    # re-broadcasts. Without the second branch a replica's change applied
-    # locally and reached nobody - broadcast_event walks the replicas table,
-    # which on a replica is empty, so it was a silent no-op. Matches how pages,
-    # comments, tags and attachments have always propagated.
+    # A source broadcasts to its replicas; a replica sends upstream and the
+    # source re-broadcasts. broadcast_event on a replica is a silent no-op (its
+    # replicas table is empty).
     event_data = {"source": source, "target": target, "created": now}
     upstream = wiki.get("source")
     if upstream:
@@ -2374,13 +2214,9 @@ def action_settings_set(a):
         if not value:
             a.error.label(400, "errors.home_page_is_required")
             return
-        # Exactly the page-slug rules, via slug_problem. The home value used
-        # to permit "/" and a leading "-", which no page slug may contain - so
-        # a home could be set to a value NO page can ever have, and the wiki's
-        # landing page 404s permanently. Nothing consumed a multi-segment
-        # home: the web passes it as a single route param. slug_problem also
-        # covers the reserved-name case (a wiki whose home is "delete"
-        # destroys itself the moment anyone opens it).
+        # Exactly the page-slug rules: a home no page can have 404s the landing
+        # page permanently, and a reserved one ("delete") destroys the wiki when
+        # opened. Nothing consumes a multi-segment home.
         problem = slug_problem(value)
         if problem:
             a.error.label(400, problem, name=value)
@@ -2390,13 +2226,9 @@ def action_settings_set(a):
         a.error.label(400, "errors.unknown_setting", name=name)
         return
 
-    # Settings are source-owned, like the wiki name and unlike redirects. There
-    # is deliberately no upstream route: event_setting_set gates on
-    # replica_can(..., "manage"), and manage is never grantable - ACCESS_LEVELS
-    # is ["view", "edit"] and action_access_set refuses anything else - so a
-    # replica could never satisfy it. A replica changing its own home page is a
-    # local preference, and this broadcast is a no-op there rather than a
-    # missing route.
+    # Settings are source-owned: event_setting_set requires "manage", which is
+    # never grantable, so there is no upstream route. A replica's home change is
+    # a local preference; broadcast_event is a no-op there.
     if not wiki.get("source"):
         broadcast_event(wiki["id"], "setting/set", {"name": name, "value": value})
 
@@ -2432,13 +2264,9 @@ def action_rename(a):
     # Update local database
     mochi.db.execute("update wikis set name=? where id=?", name, wiki["id"])
 
-    # Rename is deliberately one-directional, unlike the redirect and settings
-    # actions beside it. event_rename resolves its target with
-    # `select id from wikis where source=?`, which only ever matches a wiki
-    # whose SOURCE is the sender - so a replica sending upstream would match
-    # nothing. A replica renaming its own copy is therefore a local label, and
-    # this broadcast is a no-op there (its replicas table is empty) rather than
-    # a missing route.
+    # Rename is source-only: event_rename resolves its target by `source=?`, so
+    # an upstream send from a replica matches nothing. A replica's rename is a
+    # local label; broadcast_event is a no-op there.
     if not wiki.get("source"):
         broadcast_event(wiki["id"], "rename", {"name": name})
 
@@ -2536,11 +2364,9 @@ def action_unsubscribe(a):
     rss_tokens_revoke(wiki_id)
     mochi.db.execute("delete from wikis where id=?", wiki_id)
 
-    # Notify source wiki owner to remove us from their replicas list. This must
-    # precede mochi.entity.delete below: the message is sent AS this entity, and
-    # both the sender check and the signature read its key from the entities
-    # table. Sent after the delete, the send survives only because the routed
-    # entity still matches, and goes out with no signature at all.
+    # Must precede mochi.entity.delete: the message is sent AS this entity, and
+    # the sender check and signature read its key from the entities table -
+    # after the delete it goes out unsigned.
     registration_send(wiki["server"],
         {"from": wiki["id"], "to": wiki["source"], "service": "wikis", "event": "unreplicate"},
         {})
@@ -2774,11 +2600,9 @@ def event_page_create(e):
     if not id or not page or not title or not author or not created or not version:
         return
 
-    # Enforce the same length caps as action_page_edit, so a replica can't push
-    # an oversized row that we'd then store and replicate onward. `name` rides
-    # into a revisions row whose id is a fresh uid every time, so `insert or
-    # ignore` never ignores: unbounded here means one permanent oversized row
-    # per event, and a new page id per event skips the version gate entirely.
+    # Same length caps as action_page_edit. Each event is a fresh revision row
+    # (and a fresh page id skips the version gate), so an unbounded field here
+    # is permanent storage per event.
     if len(title) > 255 or (content and len(content) > 1000000):
         return
     if name and not mochi.text.valid(name, "name"):
@@ -2815,14 +2639,9 @@ def event_page_create(e):
         mochi.db.execute("update pages set page=?, title=?, content=?, author=?, created=?, updated=?, version=?, deleted=0 where id=?",
             page, title, content, author, created, created, version, id)
     else:
-        # pages(wiki, page) is UNIQUE, so a slug already held by a different
-        # page id makes this insert raise - and Starlark has no try/except, so
-        # the handler dies and the revision below never runs. A remote peer
-        # chooses both the id and the slug, so it can produce that collision
-        # by accident (two people creating the same title) or deliberately.
-        # Refusing the row leaves the existing page intact; the sender keeps
-        # its own copy and the two diverge, which is the honest outcome for a
-        # name that is already taken.
+        # pages(wiki, page) is UNIQUE and a constraint failure aborts the
+        # handler before the revision below. The peer chooses id and slug, so
+        # refuse the collision and leave the existing page intact.
         if mochi.db.exists("select 1 from pages where wiki=? and page=?", wiki, page):
             mochi.log.debug("Wiki " + wiki + " already holds slug " + page + ", refusing remote page " + id)
             return
@@ -2922,11 +2741,9 @@ def event_page_update(e):
     if existing and existing["wiki"] != wiki:
         return
 
-    # pages(wiki, page) is UNIQUE. Both branches below can violate it - the
-    # insert with a slug already taken, the update by RENAMING onto one - and
-    # a constraint failure aborts the handler outright, so the revision record
-    # after this never runs. The peer chooses the slug, so the collision is
-    # reachable by accident as well as deliberately.
+    # pages(wiki, page) is UNIQUE: an insert on a taken slug or an update
+    # renaming onto one aborts the handler before the revision record. The peer
+    # chooses the slug, so refuse the clash.
     clash = mochi.db.row("select id from pages where wiki=? and page=?", wiki, page)
     if clash and clash["id"] != id:
         mochi.log.debug("Wiki " + wiki + " already holds slug " + page + ", refusing remote update to page " + id)
@@ -2999,14 +2816,9 @@ def event_page_delete(e):
     if not id or not deleted or not version:
         return
 
-    # Same version check event_page_create and event_page_update apply. Without
-    # it the supplied version is stored as-is, and the gate below only requires
-    # it to be higher: a delete carrying 10**18 wins, and every version derived
-    # from the row afterwards - the restore path takes version+1 - then exceeds
-    # what valid_version accepts, so every replica silently drops it. The page
-    # comes back on the owner's screen and stays deleted everywhere else, for
-    # good. This also rejects a non-integer version, which would otherwise
-    # reach the comparison below and abort the handler.
+    # Same version check as event_page_create/update. An unbounded delete
+    # version would make every later version - restore takes version+1 - fail
+    # valid_version on the replicas, so the page stays deleted there.
     if not valid_version(version):
         return
 
@@ -3100,12 +2912,9 @@ def event_redirect_set(e):
     if source == target:
         return
 
-    # A redirect must not shadow a live page. get_page consults redirects
-    # BEFORE pages, so a redirect whose source is an existing page's slug hides
-    # that page from every reader while deleting nothing - the page simply
-    # stops resolving under its own name. action_redirect_set refuses this;
-    # the event path did not, and the write is a `replace`, so it also
-    # overwrote any redirect already there.
+    # A redirect must not shadow a live page: get_page consults redirects first,
+    # so one whose source is an existing slug hides that page from every reader.
+    # Same rule as action_redirect_set.
     if mochi.db.exists("select 1 from pages where wiki=? and page=? and deleted=0", wiki, source):
         return
 
@@ -3122,11 +2931,9 @@ def event_redirect_set(e):
     if created > now + 86400 or created < now - 31536000:
         return
 
-    # LWW gate: an event whose `created` is no newer than the locally
-    # recorded one is a stale duplicate from a concurrent setter on
-    # another replica — drop it rather than overwriting our newer state.
-    # Same-millisecond ties between hosts let whichever event arrived
-    # first stick (rare in practice for user-edited redirects).
+    # LWW gate: an event no newer than the local row is a stale duplicate from a
+    # concurrent setter; drop it. Same-millisecond ties let whichever arrived
+    # first stick.
     local = mochi.db.row("select created from redirects where wiki=? and source=?", wiki, source)
     if local and local["created"] >= created:
         return
@@ -3280,11 +3087,9 @@ def event_setting_set(e):
 
     # Only allow known settings
     if name == "home":
-        # Mirror action_settings_set's validation. This handler accepts the
-        # value straight from our source wiki (replica_can returns True
-        # unconditionally for source -> replica), so an unvalidated home let a
-        # wiki we joined point our client at a route: home="delete" destroyed
-        # the local replica the moment its owner opened it.
+        # Same validation as action_settings_set: the source is trusted by
+        # replica_can, and an unvalidated home ("delete") would point the client
+        # at a route that destroys the replica.
         if slug_problem(value):
             return
         mochi.db.execute("update wikis set home=? where id=?", value, wiki)
@@ -3352,33 +3157,22 @@ def event_replicate(e):
     if not replica or not mochi.text.valid(replica, "entity"):
         return
 
-    # Get optional name from content. Bound it: an entity id IS an ed25519
-    # public key, so a caller mints unlimited claim-verifiable senders offline,
-    # (wiki, id) is the primary key so each is a new row, and core rate-limits
-    # per libp2p peer rather than per sender entity. With `name` bounded only by
-    # the 16MB wire frame, roughly 1,700 messages filled the victim's wikis
-    # database to its 26.8GB page cap, after which EVERY write to it fails.
-    # valid() caps "name" at 1000 characters.
+    # Bound `name`: sender entities are self-minted, (wiki, id) is the primary
+    # key and core rate-limits per libp2p peer, so an unbounded name is
+    # unbounded storage. valid() caps "name" at 1000 characters.
     name = e.content("name") or ""
     if name and not mochi.text.valid(name, "name"):
         return
 
-    # NO view gate here, deliberately, and it must not be added by analogy with
-    # forums' event_subscribe_event. Wikis authorises the join one step earlier:
-    # action_join pulls the sync dump via mochi.remote.request, which core stamps
-    # with the PERSON's identity, and event_sync gates that on check_event_access.
-    # Only afterwards does the joiner create its local replica entity and send
-    # this registration - so the sender here is always brand new and cannot hold
-    # a grant yet (the owner grants it after it registers). Gating on the sender
-    # would break every private-wiki join. Fan-out stays safe regardless:
-    # broadcast_event filters recipients on view access at send time.
+    # No view gate here, and do not add one by analogy with forums: action_join
+    # is authorised earlier, when event_sync gates the dump on the person's
+    # identity. The sender entity is new and cannot hold a grant yet, so gating
+    # it would break every private-wiki join. broadcast_event filters on view at
+    # send time.
 
-    # Capping `name` bounded each row; it did not bound how MANY. The sender
-    # entity is self-minted, (wiki, id) is the primary key, and core rate
-    # limits per libp2p peer rather than per sender, so one peer still adds a
-    # row per minted identity for as long as it cares to. An existing replica
-    # re-registering is an UPSERT and always allowed - the cap only refuses
-    # NEW ones, so a real subscriber base is never locked out of resyncing.
+    # Cap NEW registrations only: sender entities are self-minted and core
+    # rate-limits per peer, so the row count is otherwise unbounded. An existing
+    # replica re-registering is an upsert and always allowed.
     if not mochi.db.exists("select 1 from replicas where wiki=? and id=?", wiki, replica):
         replica_count = mochi.db.row("select count(*) as total from replicas where wiki=?", wiki)
         if replica_count and replica_count["total"] >= REPLICAS_MAXIMUM:
@@ -3519,12 +3313,9 @@ def event_attachment_create(e):
         mochi.log.debug("attachment/create: missing required fields")
         return
 
-    # The stream target must be the peer that sent this event. `replica` is
-    # event content, so without this an authorised replica could name any
-    # entity and make us open an outbound stream to it, storing whatever came
-    # back under an id of its choosing - the source acting as a deputy against
-    # a third party. The legitimate sender sets replica to its own wiki id,
-    # which is exactly the `from` header, so this rejects nothing real.
+    # The stream target must be the sender: `replica` is event content, so
+    # otherwise an authorised replica could make us open an outbound stream to
+    # any entity and store whatever came back under its chosen id.
     if replica != sender:
         mochi.log.debug("attachment/create: replica %s is not the sender %s", replica, sender)
         return
@@ -3579,11 +3370,9 @@ def event_attachment_create(e):
 
     if attachment:
         mochi.log.debug("Created attachment %s from replica %s", attachment_id, replica)
-        # Tell the other replicas through this app's own event, the same way an
-        # upload here does, rather than through a fan-out from the server. The
-        # handler checks the sender's edit access before storing; the server's
-        # path checked nothing, so anyone able to reach it could place a row.
-        # The replica that supplied the file already has it.
+        # Tell the other replicas through this app's own event, as an upload
+        # here does; the handler checks the sender's edit access before storing.
+        # The supplying replica already has the file.
         broadcast_event(wiki, "attachment/add", {
             "attachments": [{
                 "id": attachment["id"],
@@ -3686,12 +3475,9 @@ def event_attachment_update(e):
 
 # Handle attachment/fetch event - serve attachment file data to requester via stream
 def event_attachment_fetch(e):
-    # The library runs the fixed responder sequence: it takes the requester from
-    # the signed header, authorizes it against this wiki, binds the requested
-    # attachment to the wiki (directly or via one of its comments) so a viewer of
-    # one wiki cannot pull a private sibling's attachment by id, and streams the
-    # bytes (or a rendered image variant). The two callbacks are this app's
-    # judgement: view access, and comment membership.
+    # attachment_respond takes the requester from the signed header, authorises
+    # via the first callback, binds the attachment to this wiki (directly or
+    # through a comment via `member`) and streams the bytes.
     wiki = e.header("to")
     attachment_respond(e, wiki,
         lambda sender, container: check_event_access(sender, container, "view"),
@@ -3754,15 +3540,11 @@ def import_sync_dump(wiki, dump):
     if not dump or type(dump) != "dict" or dump.get("status") != "200":
         return False
 
-    # One transaction for the whole dump. Every row here is authored by the
-    # remote wiki, and Starlark has no try/except, so a single malformed entry
-    # aborts the handler mid-import; without this the pages already written
-    # stayed and the comments never arrived. Reads go through the handle too,
-    # or they would not see what this import has written but not committed -
-    # page_outside_wiki depends on exactly that.
-    #
-    # Fields are read with .get and defaults rather than [...] for the same
-    # reason: a missing key should skip its own row, not discard the dump.
+    # One transaction for the whole dump: a malformed row aborts the handler (no
+    # try/except), and a partial import would leave pages without their
+    # comments. Reads go through the handle to see uncommitted rows
+    # (page_outside_wiki depends on it); fields use .get so a missing key skips
+    # its row, not the dump.
     handle = mochi.db.transaction()
 
     # Import pages
@@ -3834,12 +3616,9 @@ def import_sync_dump(wiki, dump):
         # rows as well as an unbounded string.
         if len(target_slug) > 100:
             continue
-        # The dump comes from another wiki, so hold its redirects to the same
-        # rules as the live paths - the same treatment tags get above. Without
-        # the slug rules a source could carry any characters at all, and
-        # without the shadow test a dump could hide a live page behind a
-        # redirect: get_page consults redirects first, so the page stops
-        # resolving under its own name while nothing is deleted.
+        # Same rules as the live paths: slug charset, and no shadowing of a live
+        # page (get_page consults redirects first, so a shadowed page stops
+        # resolving while nothing is deleted).
         if slug_problem(source_slug):
             continue
         if handle.exists("select 1 from pages where wiki=? and page=? and deleted=0", wiki, source_slug):
@@ -3869,11 +3648,10 @@ def import_sync_dump(wiki, dump):
             continue
         if slug_problem(c.get("page", "")):
             continue
-        # A dump is the other way a comment can arrive, so it gets the same
-        # authorship rule as event_comment_create - otherwise forging a comment
-        # would just mean waiting to be resynced instead of sending an event.
-        # An edited comment is attested by its edit signature (which covers the
-        # current body); an unedited one by its create signature.
+        # Same authorship rule as event_comment_create, or forging would just
+        # mean waiting for a resync. An edited comment is attested by its edit
+        # signature (covering the current body), an unedited one by its create
+        # signature.
         author = c.get("author", "")
         name = c.get("name", "")
         body = c.get("body", "")
@@ -3893,11 +3671,9 @@ def import_sync_dump(wiki, dump):
         parent = c.get("parent", "")
         if parent and foreign_comment(parent, wiki, handle):
             parent = ""
-        # origin = the wiki this dump came from. A dump is only ever imported on
-        # a replica, where replica_can already grants the source everything, so
-        # the value is not load-bearing for authorisation here - but recording
-        # it keeps the column meaningful rather than leaving these rows at ''
-        # and relying on that short-circuit to stay true.
+        # origin is the dump's source; on a replica it is not consulted
+        # (replica_can grants the source everything) but the column stays
+        # meaningful.
         handle.execute("replace into comments (id, wiki, page, parent, author, name, body, created, edited, deleted, origin, signature) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             id, wiki, c.get("page", ""), parent, author, name, body, created, edited, c.get("deleted", 0), dump.get("source") or "", signature)
         imported_comments.append(c)
@@ -3925,11 +3701,9 @@ def import_sync_dump(wiki, dump):
         attachments = dump.get("attachments") or []
         if attachments:
             attachment_store(attachments, source, wiki)
-        # Only for comments that actually landed under this wiki. core's
-        # api_attachment_store performs no object validation and uses
-        # `replace into`, so an unvalidated comment id would let a dump inject
-        # attachment rows against another wiki's comment - or overwrite its
-        # existing ones.
+        # Only comments that landed under this wiki: attachment_store validates
+        # no object and uses `replace into`, so an unvalidated comment id could
+        # inject or overwrite rows against another wiki's comment.
         for c in imported_comments:
             c_atts = c.get("attachments") or []
             if c_atts:
@@ -3949,11 +3723,9 @@ def action_subscribe(a):
         a.error.label(404, "errors.wiki_not_found")
         return
 
-    # The wiki comes from the route, not from the caller, so "logged in" is not
-    # the question - without this any authenticated stranger could make someone
-    # else's wiki emit a replicate request, under that owner's identity, to an
-    # entity of the stranger's choosing. Every sibling action (action_sync
-    # below, and the rest) requires manage.
+    # The wiki comes from the route, not the caller: without manage, any
+    # authenticated stranger could make someone else's wiki send a replicate
+    # request under its owner's identity. Every sibling action requires manage.
     if not check_access(a, wiki["id"], "manage"):
         a.error.label(403, "errors.access_denied")
         return
@@ -4013,11 +3785,9 @@ def action_sync(a):
             a.error.label(502, "errors.unable_to_connect_to_server")
             return
 
-    # Request sync from target. target/server are user-supplied, so a hostile
-    # or non-Mochi peer can answer with a CBOR scalar or null rather than a
-    # dict; check for a dict BEFORE calling .get, or the .get aborts the whole
-    # action with a raw-traceback 500 instead of this labelled error. Also
-    # require status 200, matching request_resync and action_join.
+    # target/server are user-supplied, so the reply may be a scalar or null;
+    # test for a dict before .get or the action dies with a raw 500 instead of
+    # this labelled error. Status 200 required, as in request_resync.
     dump = mochi.remote.request(target, "wikis", "sync", {}, peer)
     if not dump or type(dump) != "dict" or dump.get("error") or dump.get("status") != "200":
         a.error.label(500, "errors.failed_to_receive_sync_data")
@@ -4038,21 +3808,11 @@ def action_sync(a):
 
 # COMMENTS
 
-# Helper: Build comment tree recursively for a page
-# Build the comment tree from ONE query instead of one per parent, and return
-# (top-level slice, total top-level count).
-#
-# The old shape recursed per node, so a page with N comments cost N+1 queries
-# plus N attachment lookups - on a route that is public, so on a public wiki an
-# unauthenticated caller could trigger the whole traversal at will. The queries
-# are now a single read; the attachment lookups cannot be batched, because
-# attachment_list takes one object at a time, so they stay proportional to
-# the comments actually returned - which is what bounding the top level buys.
-#
-# Walked iteratively with a visited set rather than recursively. `parent` is not
-# a foreign key, so a corrupt or hostile chain can point anywhere; a cycle is
-# unreachable from the roots, but the guard costs nothing and the old code's
-# depth cap is kept for the same reason.
+# Build a page's comment tree from one query; returns (top-level slice, total
+# top-level count). Walked iteratively with a visited set and a depth cap:
+# `parent` is not a foreign key, so a hostile chain can point anywhere.
+# Attachment lookups stay one per returned comment (attachment_list takes one
+# object).
 def page_comments(wiki_id, page_slug, limit, offset):
     rows = mochi.db.rows("select * from comments where wiki=? and page=? and deleted=0 order by created desc", wiki_id, page_slug) or []
 
@@ -4144,44 +3904,29 @@ def action_page_comments(a):
     return {"data": {"comments": comments, "count": count, "total": total,
                      "truncated": offset + len(comments) < total}}
 
-# Helper: canonical bytes a comment signature is made over.
-#
-# Length-prefixing each field ("12:hello world") rather than joining on a
-# separator means no field content can be arranged to look like a different
-# split of the same string - a body containing the separator would otherwise let
-# two different comments share one payload, and a signature transplanted between
-# them would verify. The leading scheme tag keeps create and edit assertions from
-# ever being interchangeable, and gives a version to bump if the field set
-# changes.
+# Canonical bytes a comment signature is made over. Fields are length-prefixed
+# ("12:hello world") so no content can masquerade as a different split; the
+# leading scheme tag keeps create and edit payloads distinct and carries the
+# version to bump if the field set changes.
 def signature_payload(scheme, parts):
     out = scheme
     for p in parts:
-        # Numbers go through int() before str(), so a timestamp that came back
-        # from a replay as 1750000000.0 rather than 1750000000 still produces the
-        # same payload the author signed. Both sides derive the string from the
-        # value, so a formatting difference is an unverifiable comment, not a
-        # visible error - the failure would look like arbitrary comment loss.
+        # Numbers go through int() before str(): a timestamp replayed as
+        # 1750000000.0 must produce the bytes the author signed, or the comment
+        # silently fails verification.
         s = p if type(p) == "string" else str(int(p))
         out += ":" + str(len(s)) + ":" + s
     return out
 
-# Helper: the wiki id every host agrees on, for use inside a signature payload.
-#
-# A wiki entity id is PER HOST: a replica holds its own local entity whose
-# `source` names the origin, so the same wiki is `12a3...` on the replica and
-# `129n...` on the owner. Signing the local id would make every signature fail
-# the moment it crossed a host boundary - which is exactly what it did on the
-# first run of the P2P flows. The source id is the one value both sides share,
-# and on the origin itself there is no source, so it is its own canonical id.
+# The wiki id every host agrees on: a replica's local entity id differs from the
+# owner's, so a signature over the local id fails across hosts. The source id is
+# shared; on the origin the wiki is its own source.
 def canonical_wiki(wikirow, fallback):
     return wikirow.get("source") or fallback
 
-# Helper: what the author signs when creating a comment. Binds the comment to
-# its author, its place (wiki, page, thread parent), its content and its time,
-# so none of those can be altered by a relaying replica without breaking the
-# signature. `name` is included because it is the string actually rendered next
-# to the comment - leaving it unbound would let a relay keep a valid signature
-# while displaying someone else's name.
+# What the author signs on create: author, place (wiki, page, parent), content
+# and time, so a relay cannot alter any of them. `name` is bound because it is
+# the string rendered beside the comment.
 def comment_create_payload(id, wiki, page, parent, author, name, body, created):
     return signature_payload("wikis.comment.create.1",
         [id, wiki, page, parent, author, name, body, created])
@@ -4319,10 +4064,8 @@ def action_comment_edit(a):
 
     now = mochi.time.now()
 
-    # Re-sign: the create signature covers the original body, so without this the
-    # stored text would no longer match anything the author attested to. The
-    # author check above proves a.user is the comment's author, so signing as
-    # comment["author"] is signing as themselves.
+    # Re-sign: the create signature covers the original body. The author check
+    # above proves a.user is comment["author"], so this signs as themselves.
     signature = mochi.entity.sign(comment["author"],
         comment_edit_payload(id, canonical_wiki(wiki, wiki["id"]), comment["author"], body, now))
     if not signature:
@@ -4431,13 +4174,9 @@ def event_comment_create(e):
     if not id or not page or not author or not body or not created:
         return
 
-    # Enforce the same cap as action_comment_create, so a replica can't push an
-    # oversized comment that we'd then store and replicate onward. The id is
-    # attacker-chosen, so each event is a new row: an unbounded name or slug
-    # here is unbounded permanent storage, per comment.
-    #
-    # These run before the signature check purely so an oversized body is thrown
-    # away without hashing it first; none of them trust the content.
+    # Same caps as action_comment_create; the id is attacker-chosen, so each
+    # event is a permanent row. Run before the signature check so an oversized
+    # body is dropped without hashing it.
     if len(body) > 100000:
         return
     if name and not mochi.text.valid(name, "name"):
@@ -4445,30 +4184,19 @@ def event_comment_create(e):
     if slug_problem(page):
         return
 
-    # The author must have signed this comment themselves. Everything above only
-    # establishes that an authorised REPLICA sent it; `author` is a person and
-    # nothing in the envelope speaks for that person, which is why this path was
-    # forgeable until now. An entity id is its own ed25519 public key, so the
-    # claim checks out against `author` alone - no key exchange, no directory
-    # lookup, and no trust in the relaying replica or the source wiki.
-    #
-    # Unsigned is refused rather than accepted-and-flagged. A signature that is
-    # optional proves nothing: an attacker simply omits it, and a name rendered
-    # next to an unverified comment is read as authorship regardless. The cost is
-    # that a replica still running an older wikis has its comments dropped here
-    # until it updates.
+    # The author must have signed this themselves: everything above proves only
+    # that an authorised replica sent it. An entity id is its own ed25519 public
+    # key, so `author` alone verifies. Unsigned is refused, not flagged - an
+    # optional signature proves nothing - so a pre-signature wikis has its
+    # comments dropped here.
     if not mochi.entity.verify(author, comment_create_payload(id, canonical_wiki(wikirow, wiki), page, parent, author, name, body, created), signature):
         mochi.log.debug("wikis: rejected comment %s on wiki %s from %s: bad or missing author signature for %s" % (id, wiki, sender, author))
         return
 
-    # Don't thread onto a comment that belongs to a different wiki - a foreign
-    # parent lets deletes/rendering cross wiki boundaries. A parent not present
-    # yet is left as-is for out-of-order delivery.
-    #
-    # This is a LOCAL correction, so it is kept out of `parent`: that value is
-    # covered by the signature verified above, and rebroadcasting a rewritten one
-    # would invalidate the signature for every downstream replica. Each host
-    # re-derives its own threading from what the author actually signed.
+    # A parent in a different wiki is dropped locally (a missing one is kept for
+    # out-of-order delivery). The correction stays out of `parent`: that value
+    # is signed, and rebroadcasting a rewritten one would invalidate the
+    # signature downstream - each host re-derives its own threading.
     stored_parent = parent
     if stored_parent:
         parent_row = mochi.db.row("select wiki from comments where id=?", stored_parent)
@@ -4547,11 +4275,9 @@ def event_comment_edit(e):
     if not id or not body or not edited:
         return
 
-    # Checked, not coerced: `edited` goes into comment_edit_payload below for
-    # signature verification, so rewriting "123" to 123 here would change the
-    # bytes the author signed and refuse a legitimate edit. A value that is not
-    # a number cannot be compared at all (Starlark will not order a string
-    # against an int, and that ends the handler), so refuse the event instead.
+    # Checked, not coerced: `edited` feeds comment_edit_payload, so rewriting
+    # "123" to 123 would change the signed bytes. A non-number cannot be
+    # compared either (Starlark will not order str against int).
     if not content_is_number(edited):
         return
 
@@ -4571,27 +4297,16 @@ def event_comment_edit(e):
         request_resync(wiki)
         return
 
-    # The new body must be signed by the comment's ORIGINAL author, taken from
-    # our own row rather than from the event - otherwise a sender could rewrite
-    # the body and hand us a signature made by whoever they liked.
-    #
-    # This deliberately ends remote body-editing by the wiki's manage-holders: a
-    # moderator rewriting someone else's words while their name stays on them is
-    # the same forgery this whole change exists to stop, and it cannot be done
-    # without the author's key. Moderation keeps its real remedy, delete, which
-    # is unchanged and still available to manage-holders.
+    # The new body must be signed by the ORIGINAL author from our own row, or a
+    # sender could rewrite the body and supply any signer. This deliberately
+    # ends remote body-editing by manage-holders; moderation keeps delete.
     if not mochi.entity.verify(local["author"], comment_edit_payload(id, canonical_wiki(wikirow, wiki), local["author"], body, edited), signature):
         mochi.log.debug("wikis: rejected edit of comment %s on wiki %s from %s: bad or missing author signature for %s" % (id, wiki, sender, local["author"]))
         return
 
-    # A replica may only edit a comment IT submitted. replica_can above proves
-    # only that the sender holds general edit access on this wiki, which on a
-    # public wiki is everyone - without this, any replica could rewrite the
-    # owner's comment (or a third replica's) while keeping their name on it, and
-    # we would rebroadcast the forgery as authoritative. Comments have no
-    # revision history, so that is unrecoverable. A locally-authored comment has
-    # origin='' and is never remotely editable; the wiki's own manage-holders
-    # keep their moderation route.
+    # A replica may only edit a comment it submitted: replica_can proves general
+    # edit access, which on a public wiki is everyone. Locally-authored comments
+    # (origin='') are never remotely editable.
     if local["origin"] != sender and not replica_can(wikirow, wiki, sender, "manage"):
         return
     if local["edited"] >= edited:
@@ -4657,13 +4372,9 @@ def event_comment_delete(e):
 
 # ATTACHMENTS
 
-# HTTP handlers serving a wiki's attachments (and thumbnails). Public routes,
-# so anonymous viewers can load a public wiki's attachments; access is enforced
-# here on a.user, never on ambient ownership. The library's attachment_serve performs
-# no access check of its own, so this handler is the gate: it
-# reuses the action_attachments view check and additionally binds the
-# attachment to this wiki (attached to the wiki itself or to one of its
-# comments), so one wiki's attachment can't be fetched via another wiki's route.
+# Attachment routes are public so anonymous viewers can load a public wiki's
+# files; serve_attachment is the gate (on a.user, never ambient ownership) and
+# binds the attachment to this wiki.
 def action_attachment(a):
     serve_attachment(a, "")
 
@@ -4680,14 +4391,10 @@ def serve_attachment(a, variant):
         a.error.label(404, "errors.attachment_not_found")
         return
 
-    # The library serves the bytes with no access check of its own, so this
-    # handler is the gate: view access first, then the serve binds the
-    # attachment to this wiki (directly or via one of its comments). The gate
-    # and the binding both run for wikis we own AND for replicas - never defer
-    # to "the source enforces access on pull": a revoked or deleted source
-    # would keep a locally-cached copy serving. check_access derives its
-    # subject from a.user, so an anonymous caller is tested against the "*"
-    # grant alone (a public wiki carries it, a private wiki does not).
+    # The gate and the binding run for replicas too - never defer to "the source
+    # enforces access on pull": a revoked or deleted source would keep a cached
+    # copy serving. check_access takes its subject from a.user, so an anonymous
+    # caller is tested against the "*" grant alone.
     if not check_access(a, wiki["id"], "view"):
         a.error.label(403, "attachment.errors.denied")
         return
@@ -4801,14 +4508,10 @@ def action_attachment_delete(a):
 
     source = wiki.get("source")
 
-    # Bind the attachment to this wiki before deleting. attachment_delete
-    # resolves the id with a bare `where id = ?` across the owner's whole wikis
-    # database (core/server/attachments.go), and every wiki that user holds -
-    # owned and replicated - shares it. Without this, edit rights on ONE wiki
-    # let a caller destroy an attachment belonging to any other wiki of the same
-    # owner, including private ones they cannot view. Matches the binding
-    # event_attachment_delete, event_attachment_remove, event_attachment_fetch
-    # and serve_attachment all apply.
+    # Bind the attachment to this wiki before deleting: attachment_delete
+    # resolves a bare id across the owner's whole wikis database, which every
+    # wiki they hold shares. Same binding as the event handlers and
+    # serve_attachment.
     att = attachment_get(id)
     if not att:
         a.error.label(404, "errors.attachment_not_found")
@@ -5255,14 +4958,12 @@ def opengraph_wiki(params):
     if not wiki:
         return og
 
-    # OpenGraph is rendered for anonymous crawlers and link previews, and core
-    # runs it in the owner's database context with no caller identity, so treat
-    # every request as untrusted: a private wiki must leak nothing at all, not
-    # even its name. Check with mochi.access.check(None, ...) directly - NOT
-    # check_access(), whose mochi.entity.get() short-circuit resolves the
-    # thread-local owner and would pass. Entity privacy is the wrong test here:
-    # a joined replica's local entity is private whatever the source's privacy,
-    # so it would also suppress previews for public replicated wikis.
+    # OpenGraph runs in the owner's database context with no caller identity, so
+    # a private wiki must leak
+    # nothing, not even its name. mochi.access.check(None, ...) directly -
+    # check_access() would pass via the
+    # thread-local owner - and not entity privacy, which is private on every
+    # replica regardless of the source.
     if not mochi.access.check(None, "wiki/" + wiki["id"], "view"):
         return og
 
@@ -5279,14 +4980,9 @@ def opengraph_wiki(params):
             # Use first 200 chars of content as description, stripping markdown
             content = page.get("content", "")
             if content:
-                # Simple markdown stripping: remove common markdown syntax.
-                #
-                # Bounded FIRST, because the result is truncated to 200
-                # characters regardless and the link-stripping loop below
-                # rebuilds the whole string once per link - O(links x length)
-                # over a page that can reach 1MB, on the anonymous crawler
-                # path. 4000 characters is far more than 200 survives, so
-                # nothing a reader sees changes.
+                # Bound first: the result is truncated to 200 characters anyway,
+                # and the link-stripping loop below is O(links x length) over a
+                # page that can reach 1MB, on the anonymous crawler path.
                 desc = content[:4000]
                 # Remove headers
                 lines = []

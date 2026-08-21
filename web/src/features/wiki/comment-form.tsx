@@ -16,10 +16,8 @@ interface CommentFormProps {
 }
 
 /**
- * The page-level comment composer: the shared CommentBox with the draft and
- * its discard guard held here. The box owns its files and reports their
- * count; clearing it in place means remounting it (the key), since a
- * composer that is always on screen has nothing to close.
+ * Page-level comment composer. The CommentBox owns its files, so clearing it
+ * means remounting it (boxKey).
  */
 export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus, progress }: CommentFormProps) {
   const [body, setBody] = useState('')

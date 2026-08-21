@@ -205,14 +205,9 @@ export function WikiCommentThread({
           </div>
         ) : (
           <>
-            {/* Rendered here from the comment's own text, not injected from the
-                server's pre-rendered HTML. That HTML is sanitised by a policy
-                that permits an img from any host, while page content restricts
-                images to this origin precisely so that reading a page cannot
-                report the reader's address to a server its author picked - a
-                comment defeated that for every reader of the page. Rendering
-                the same way pages do applies the same policy, and removes the
-                only place this app handed unescaped HTML to the DOM. */}
+            {/* Rendered from the comment's own markdown, never the server's pre-rendered HTML: that sanitiser
+                permits images from any host, while page rendering restricts them to this origin so a reader's
+                address cannot be reported to a host the author picked. */}
             {comment.body ? (
               <MarkdownContent
                 content={comment.body}

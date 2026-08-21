@@ -4,15 +4,10 @@
 # This file is part of Mochi, licensed under the GNU AGPL v3 with the
 # Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-# Wikis unreplicate-tombstone test (dual-identity, instance 2).
-#
-# Validates the stale-roster cleanup: when a replica unsubscribes but its
-# unreplicate is lost (source offline), a later dropped broadcast re-sends the
-# unreplicate to the RECORDED source via the unreplicated tombstone, so the
-# source prunes the dead replica. Asserts on real wikis.db state.
-#
-# Topology: admin (dev1) sources a wiki; user (dev21=019eb703) joins it as a
-# replica. Both on instance 2 (port 8082); P2P loops back but every handler runs.
+# Wikis unreplicate-tombstone test: a replica's lost unreplicate is re-sent to
+# the recorded source on the next dropped broadcast and the source prunes the
+# replica. Asserts on wikis.db state. Topology: admin (dev1) sources the wiki;
+# user (dev21=019eb703) joins as a replica; both on instance 2 (8082).
 import json, subprocess, sqlite3, sys, time, urllib.request, urllib.error
 
 SCRIPTS = "/home/alistair/mochi/claude/scripts"

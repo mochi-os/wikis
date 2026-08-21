@@ -11,12 +11,9 @@ import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 import { isEntityContext } from '@/api/request'
 
 export const Route = createFileRoute('/_authenticated/redirects')({
-  // Entity routing only ({entity}/redirects): the fetch resolves against the
-  // entity in the URL, and there is no class-level redirects action. At the
-  // class path the request falls through to the SPA catch-all, which
-  // answers 200 with HTML - and request() does not throw on a non-object
-  // body, so the page rendered empty rather than failing. Same guard as
-  // tags.tsx, which is the identically-shaped route that already had it.
+  // Entity routing only ({entity}/redirects): there is no class-level action,
+  // and at the class path the request falls through to the SPA catch-all, which
+  // answers 200 HTML and renders an empty page.
   beforeLoad: () => {
     if (!isEntityContext()) throw redirect({ to: '/' })
   },

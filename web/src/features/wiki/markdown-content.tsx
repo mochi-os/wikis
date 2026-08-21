@@ -58,18 +58,10 @@ function getFullSizeUrl(baseURL: string, url: string): string {
   return resolved.replace(/\/thumbnail$/, '')
 }
 
-// The URL to actually fetch the bytes with. An <img src> or an <a href> sends
-// neither the Bearer header nor cookies from the shell's sandboxed iframe, so
-// same-origin resources take the token as a query parameter — the treatment the
-// attachments browser, the editor and the comment gallery already give these
-// exact files. Without it every image embedded in a page, every lightbox
-// full-size URL and every attachment link on a PRIVATE wiki is refused, because
-// serve_attachment gates on view access and an anonymous caller is tested
-// against the "*" grant a private wiki does not carry. The same file loads in
-// the attachments browser, which is what makes it look like a content problem.
-//
-// authenticatedUrl is a no-op outside the shell and for any URL that is not
-// same-origin, so externally hosted images and links are untouched.
+// <img src> and <a href> send neither the Bearer header nor cookies from the
+// shell's sandboxed iframe, so same-origin attachment URLs carry the token as a
+// query parameter or a private wiki's images and links are refused.
+// authenticatedUrl leaves external and out-of-shell URLs untouched.
 function attachmentResourceUrl(baseURL: string, url: string): string {
   return authenticatedUrl(resolveAttachmentUrl(baseURL, url))
 }
