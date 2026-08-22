@@ -3132,13 +3132,14 @@ def event_information(e):
     if not row:
         e.write({"error": "errors.wiki_not_found", "code": 404})
         return
-    # A private wiki's name/fingerprint is only disclosed to a caller with
-    # view access - knowing the id (e.g. from a share link) must not reveal it.
-    entity = mochi.entity.info(wiki)
-    if entity and entity.get("privacy", "public") == "private":
-        if not check_event_access(e.header("from"), wiki, "view"):
-            e.write({"error": "errors.access_denied", "code": 403})
-            return
+    # The name/fingerprint is only disclosed to a caller with view access -
+    # knowing the id (e.g. from a share link) must not reveal it. Access is
+    # grants plus membership, never the entity's privacy field, which decides
+    # directory publication only; a public wiki carries the wildcard view grant
+    # creation writes and passes this same check.
+    if not check_event_access(e.header("from"), wiki, "view"):
+        e.write({"error": "errors.access_denied", "code": 403})
+        return
     e.write({"name": row["name"], "fingerprint": mochi.entity.fingerprint(wiki) or ""})
 
 def event_replicate(e):
