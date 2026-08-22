@@ -2575,7 +2575,7 @@ def action_search(a):
 
 # Helper: Check if incoming page update should be applied (conflict resolution)
 # Returns True if incoming update wins, False if local version should be kept
-def should_apply_update(local, version, updated, author):
+def should_apply_update(local, version, updated, content):
     if not local:
         return True
     if version > local["version"]:
@@ -2587,8 +2587,31 @@ def should_apply_update(local, version, updated, author):
         return True
     if updated < local["updated"]:
         return False
-    # Same version + same timestamp: lower author ID wins (older entity)
-    return author < local["author"]
+    # Same version + same timestamp: order on the content itself. This used to
+    # compare author ids, which decided the tie on a value the peer chooses -
+    # a low-sorting id won every collision. Both hosts hold both texts, so
+    # ordering on the text is deterministic and converges either way round,
+    # and it cannot be steered without also changing what gets written.
+    return content < local["content"]
+
+# Helper: who an inbound page event is attributed to. Authorship on the wire is
+# a claim, not a fact: nothing binds `author` to the sender, and it drives the
+# resolved display name (action_page_revisions) and the proxied person avatar
+# (action_revision_asset), so honouring it is impersonation.
+#
+# On a REPLICA the sender is our source, which is the authority for its own wiki
+# and relays edits written by many people - its attribution stands. On a SOURCE
+# the sender is a registered replica: attribute to the identity it proved when
+# it registered, falling back to the replica entity for a registration predating
+# that binding. Returns the author and the display name to store; a name is only
+# kept alongside an attribution we did not derive ourselves.
+def event_author(wikirow, wiki, sender, claim, name):
+    if wikirow.get("source"):
+        return claim, name
+    row = mochi.db.row("select identity from replicas where wiki=? and id=?", wiki, sender)
+    if row and row["identity"]:
+        return row["identity"], ""
+    return sender, ""
 
 # Receive page/create event
 def event_page_create(e):
@@ -2628,6 +2651,8 @@ def event_page_create(e):
     if name and not mochi.text.valid(name, "name"):
         return
 
+    author, name = event_author(wikirow, wiki, sender, author, name)
+
     # Same slug rules as the local actions: a remote peer must not be able to
     # plant a page whose name shadows or escapes a route on our side.
     if slug_problem(page):
@@ -2652,7 +2677,7 @@ def event_page_create(e):
 
     if existing:
         # Apply conflict resolution
-        if not should_apply_update(existing, version, created, author):
+        if not should_apply_update(existing, version, created, content):
             return
 
         # Update existing page (may be restoring a deleted page)
@@ -2739,6 +2764,8 @@ def event_page_update(e):
     if name and not mochi.text.valid(name, "name"):
         return
 
+    author, name = event_author(wikirow, wiki, sender, author, name)
+
     # Same slug rules as the local actions - a rename arriving over P2P must
     # not be able to move a page onto a route-shadowing or route-escaping name.
     if slug_problem(page):
@@ -2775,7 +2802,7 @@ def event_page_update(e):
             id, wiki, page, title, content, author, updated, updated, version)
     else:
         # Apply conflict resolution
-        if not should_apply_update(existing, version, updated, author):
+        if not should_apply_update(existing, version, updated, content):
             return
 
         # Update page
