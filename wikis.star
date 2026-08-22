@@ -46,7 +46,10 @@ def database_create():
     mochi.db.execute("create table if not exists redirects (wiki text not null references wikis(id), source text not null, target text not null, created integer not null, primary key (wiki, source))")
 
     # Replicas table - downstream wikis that replicate from this wiki
-    mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
+    # identity: the person whose view access the fan-out checks, proved by
+    # signature at registration. The id column is the replica ENTITY, which is
+    # only ever an address - no access rule ever names it.
+    mochi.db.execute("create table if not exists replicas (wiki text not null references wikis(id), id text not null, name text not null default '', identity text not null default '', subscribed integer not null, seen integer not null default 0, synced integer not null default 0, primary key (wiki, id))")
 
     # origin: the replica that submitted the comment over P2P ('' when local) -
     # the key for remote edit/delete. signature: the author's ed25519 signature;
@@ -131,6 +134,17 @@ def database_upgrade(version):
     # accumulating rows on every unsubscribe.
     if version == 11:
         mochi.db.execute("drop table if exists unreplicated")
+    # Schema 12: replicas.identity carries the person whose view access the
+    # fan-out checks. Existing rows stay '' and keep falling back to the entity
+    # until the replica re-registers with a signed identity.
+    if version == 12:
+        found = False
+        for c in mochi.db.table("replicas"):
+            if c["name"] == "identity":
+                found = True
+                break
+        if not found:
+            mochi.db.execute("alter table replicas add column identity text not null default ''")
 
 # Has this outbound operation run within `seconds`? Records the attempt when
 # not. Core rate-limits inbound P2P and outbound HTTP but not outbound
@@ -355,7 +369,7 @@ def maybe_resubscribe(a, wiki_id):
         return
     registration_send(row["server"],
         {"from": wiki_id, "to": source, "service": "wikis", "event": "replicate"},
-        {"name": row["name"]})
+        replicate_content(row["name"], wiki_id, source, user_id))
     mochi.broadcast.touch(source)
 
 # Helper: Broadcast event to all replicas of a wiki via the durable
@@ -366,10 +380,15 @@ def broadcast_event(wiki, event, data, exclude=None):
     if not wiki:
         return
     resource = "wiki/" + wiki
-    replicas = mochi.db.rows("select id from replicas where wiki=?", wiki)
+    replicas = mochi.db.rows("select id, identity from replicas where wiki=?", wiki)
     recipients = []
     for r in replicas:
-        if not mochi.access.check(r["id"], resource, "view"):
+        # The replica entity is an address, never the subject of an access rule:
+        # grants go to person identities and to the * / + wildcards. Check the
+        # identity the replica proved when it registered; a row predating that
+        # binding falls back to the entity, which only a public wiki's wildcard
+        # can satisfy - which is exactly how private wikis lost their fan-out.
+        if not mochi.access.check(r["identity"] or r["id"], resource, "view"):
             continue
         # A replica is a private entity on the subscriber's server, not
         # directory-listed; the core per-user directory carries the route
@@ -859,14 +878,15 @@ def action_join(a):
 
     # Register as a replica with the source wiki to receive updates. A private
     # source is not in the directory, so pin the peer we joined through.
+    content = replicate_content(name, entity, source, creator)
     if peer:
         mochi.message.send.peer(peer,
             {"from": entity, "to": source, "service": "wikis", "event": "replicate"},
-            {"name": name})
+            content)
     else:
         mochi.message.send(
             {"from": entity, "to": source, "service": "wikis", "event": "replicate"},
-            {"name": name}
+            content
         )
     mochi.broadcast.touch(source)
 
@@ -3169,7 +3189,19 @@ def event_replicate(e):
     # is authorised earlier, when event_sync gates the dump on the person's
     # identity. The sender entity is new and cannot hold a grant yet, so gating
     # it would break every private-wiki join. broadcast_event filters on view at
-    # send time.
+    # send time - on the identity bound below, not on this entity, which holds
+    # no grant and never will.
+
+    # The identity whose access the fan-out checks. Signed as that identity over
+    # (replica, wiki, identity), so a peer cannot name a grant-holder it is not.
+    # An unsigned or unverifiable claim leaves this empty and the fan-out falls
+    # back to the entity, which is what a replica predating the binding sends.
+    identity = ""
+    claimed = e.content("identity")
+    signature = e.content("signature")
+    if type(claimed) == "string" and type(signature) == "string" and claimed and signature:
+        if mochi.text.valid(claimed, "entity") and mochi.entity.verify(claimed, replicate_payload(replica, wiki, claimed), signature):
+            identity = claimed
 
     # Cap NEW registrations only: sender entities are self-minted and core
     # rate-limits per peer, so the row count is otherwise unbounded. An existing
@@ -3185,9 +3217,13 @@ def event_replicate(e):
     # Use UPSERT to handle concurrent replicate requests atomically. The core
     # per-user directory learns the replica's route from this (claim-verified)
     # registration, so no peer is stored on the row.
-    mochi.db.execute("""insert into replicas (wiki, id, name, subscribed, seen, synced) values (?, ?, ?, ?, 0, 0)
-        on conflict(wiki, id) do update set name=excluded.name""",
-        wiki, replica, name, now)
+    # An unsigned re-registration must not clear an identity already bound: a
+    # legacy resubscribe would otherwise silently demote the replica back to the
+    # entity check and stop its fan-out again.
+    mochi.db.execute("""insert into replicas (wiki, id, name, identity, subscribed, seen, synced) values (?, ?, ?, ?, ?, 0, 0)
+        on conflict(wiki, id) do update set name=excluded.name,
+            identity=case when excluded.identity='' then replicas.identity else excluded.identity end""",
+        wiki, replica, name, identity, now)
 
 # Handle unreplication notification - remove replica and revoke access
 def event_unreplicate(e):
@@ -3747,7 +3783,7 @@ def action_subscribe(a):
     # Send replicate request to target
     mochi.message.send(
         {"from": wiki["id"], "to": target, "service": "wikis", "event": "replicate"},
-        {"name": a.user.identity.name or ""}
+        replicate_content(a.user.identity.name or "", wiki["id"], target, a.user.identity.id)
     )
 
     return {"data": {"ok": True}}
@@ -3802,7 +3838,7 @@ def action_sync(a):
     # Subscribe to the source wiki for future updates
     mochi.message.send(
         {"from": wiki["id"], "to": target, "service": "wikis", "event": "replicate"},
-        {"name": wiki.get("name") or ""}
+        replicate_content(wiki.get("name") or "", wiki["id"], target, a.user.identity.id if a.user else "")
     )
 
     return {"data": {"ok": True}}
@@ -3931,6 +3967,29 @@ def canonical_wiki(wikirow, fallback):
 def comment_create_payload(id, wiki, page, parent, author, name, body, created):
     return signature_payload("wikis.comment.create.1",
         [id, wiki, page, parent, author, name, body, created])
+
+# Helper: what a joining user signs when registering as a replica. `from` on a
+# replicate carries the replica ENTITY, which is never the subject of an access
+# rule - grants only ever go to person identities - so without this the source
+# has no authenticated way to know whose view access to check when it fans out,
+# and a private wiki's every broadcast drops the replica it just admitted.
+# Binding the entity and the source into the payload stops a signature made for
+# one replica or one wiki being replayed for another.
+def replicate_payload(replica, source, identity):
+    return signature_payload("wikis.replicate.1", [replica, source, identity])
+
+# Helper: the content of a replicate registration. An unsignable identity sends
+# the bare name rather than refusing: the registration still works, it just
+# falls back to the entity check, which is what a source predating the binding
+# does anyway.
+def replicate_content(name, replica, source, identity):
+    content = {"name": name or ""}
+    if identity:
+        signature = mochi.entity.sign(identity, replicate_payload(replica, source, identity))
+        if signature:
+            content["identity"] = identity
+            content["signature"] = signature
+    return content
 
 # Helper: what the author signs when editing their comment. A create signature
 # covers the original body, so an edit needs its own or the stored body would no
