@@ -14,11 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: ../../../lib/web/src/lib/error-normalizer.ts:223
+#: ../../../lib/web/src/lib/error-normalizer.ts:215
 msgid "Please check your internet connection and try again."
 msgstr "Comprueba tu conexión a internet e inténtalo de nuevo."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:300
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:301
 msgid " or "
 msgstr " o "
 
@@ -32,7 +32,7 @@ msgstr "(editado)"
 msgid "(expand)"
 msgstr "(expandir)"
 
-#: ../../../lib/web/src/components/entity/entity-board-container.tsx:752
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:753
 msgid "[not set]"
 msgstr "[sin definir]"
 
@@ -51,10 +51,10 @@ msgstr "{0, plural, one {# página} other {# páginas}}"
 msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# resultado} other {# resultados}}"
 
-#. placeholder {0}: selectedValues.size
-#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:66
-msgid "{0, plural, one {# selected} other {# selected}}"
-msgstr "{0, plural, one {# seleccionado} other {# seleccionados}}"
+#. placeholder {0}: comments.length
+#: src/features/wiki/page-comments.tsx:180
+msgid "{0, plural, one {Showing the first # comment.} other {Showing the first # comments.}}"
+msgstr "{0, plural, one {Se muestra el primer # comentario.} other {Se muestran los primeros # comentarios.}}"
 
 #. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Upload, Trash2, Copy, Captions, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, X, Image, ExternalLink, } from 'lucide-react' import { toast, Alert, AlertDescription, AlertTitle, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, AttachmentCaptionDialog, shellClipboardWrite, naturalCompare, extractStatus, Tooltip, TooltipTrigger, TooltipContent, UploadProgress, } from '@mochi/web' import { useAttachments, useUploadAttachment, useUpdateAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload' // eslint-disable-next-line @typescript-eslint/no-empty-object-type interface AttachmentsPageProps {} type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`) } export function AttachmentsPage(_props: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const [captioning, setCaptioning] = useState<Attachment | null>(null) const [uploadError, setUploadError] = useState<string | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const updateMutation = useUpdateAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter( (a) => a.name.toLowerCase().includes(query) || a.caption?.toLowerCase().includes(query) ) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const getAttachmentValidationError = (files: File[]) => { const unsupported = files.filter((file) => !isSupportedAttachmentFile(file)) if (unsupported.length === 0) { return null } const names = unsupported.slice(0, 3).map((file) => file.name).join(', ') return unsupported.length === 1 ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` } const getUploadErrorMessage = (error: unknown) => { const status = extractStatus(error) if (status === 413) { return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.` } const message = getErrorMessage(error, t`Failed to upload files`) if (message === 'Network Error') { return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.` } if (message.toLowerCase().includes('storage limit exceeded')) { return t`Upload failed because this account has reached its storage limit.` } if (message.toLowerCase().includes('file too large')) { return t`This file is too large to upload. Try a smaller file.` } return message } const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length === 0) { return } const validationError = getAttachmentValidationError(fileArray) if (validationError) { setUploadError(validationError) return } setUploadError(null) const fileCount = fileArray.length uploadMutation.mutate(fileArray, { onSuccess: () => { setUploadError(null) toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { setUploadError(getUploadErrorMessage(error)) }, }) } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${encodeURIComponent(attachment.id)}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const saveCaption = (attachment: Attachment, caption: string) => { setCaptioning(null) if (caption === (attachment.caption ?? '')) return updateMutation.mutate( { id: attachment.id, caption }, { onError: (error) => { toast.error(getErrorMessage(error, t`Failed to save caption`)) }, } ) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, caption: a.caption, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Upload + stats */} <div className="flex items-center justify-between gap-4"> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept={ATTACHMENT_ACCEPT} /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <UploadProgress progress={uploadMutation.progress} /> <Alert> <AlertTitle><Trans>Upload guidance</Trans></AlertTitle> <AlertDescription> <p><Trans>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</Trans></p> <p><Trans>Large uploads may be limited by your server or proxy configuration.</Trans></p> </AlertDescription> </Alert> {uploadError ? ( <Alert variant="destructive"> <AlertTitle><Trans>Upload failed</Trans></AlertTitle> <AlertDescription>{uploadError}</AlertDescription> </Alert> ) : null} <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} > <X className="h-3 w-3" /> </Button> </TooltipTrigger> <TooltipContent>{t`Clear search`}</TooltipContent> </Tooltip> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Grid view`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} > <List className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`List view`}</TooltipContent> </Tooltip> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> {captioning && ( <AttachmentCaptionDialog item={{ name: captioning.name, caption: captioning.caption, previewUrl: `${buildAttachmentUrl(baseURL, captioning.id)}/preview`, previewKind: 'image', }} onSave={(caption) => saveCaption(captioning, caption)} onClose={() => setCaptioning(null)} /> )} <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onCaption: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-hover relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || attachment.name} className="h-full w-full object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground truncate text-xs" title={attachment.caption}> {attachment.caption || formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCaption(attachment) }} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-hover flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || ''} className="h-16 w-16 rounded object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> {attachment.caption && ( <p className="text-muted-foreground truncate text-sm" title={attachment.caption}> {attachment.caption} </p> )} <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} > <ExternalLink className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Open attachment`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCaption(attachment)} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
 #. placeholder {1}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Upload, Trash2, Copy, Captions, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, X, Image, ExternalLink, } from 'lucide-react' import { toast, Alert, AlertDescription, AlertTitle, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, AttachmentCaptionDialog, shellClipboardWrite, naturalCompare, extractStatus, Tooltip, TooltipTrigger, TooltipContent, UploadProgress, } from '@mochi/web' import { useAttachments, useUploadAttachment, useUpdateAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload' // eslint-disable-next-line @typescript-eslint/no-empty-object-type interface AttachmentsPageProps {} type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`) } export function AttachmentsPage(_props: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const [captioning, setCaptioning] = useState<Attachment | null>(null) const [uploadError, setUploadError] = useState<string | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const updateMutation = useUpdateAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter( (a) => a.name.toLowerCase().includes(query) || a.caption?.toLowerCase().includes(query) ) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const getAttachmentValidationError = (files: File[]) => { const unsupported = files.filter((file) => !isSupportedAttachmentFile(file)) if (unsupported.length === 0) { return null } const names = unsupported.slice(0, 3).map((file) => file.name).join(', ') return unsupported.length === 1 ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` } const getUploadErrorMessage = (error: unknown) => { const status = extractStatus(error) if (status === 413) { return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.` } const message = getErrorMessage(error, t`Failed to upload files`) if (message === 'Network Error') { return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.` } if (message.toLowerCase().includes('storage limit exceeded')) { return t`Upload failed because this account has reached its storage limit.` } if (message.toLowerCase().includes('file too large')) { return t`This file is too large to upload. Try a smaller file.` } return message } const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length === 0) { return } const validationError = getAttachmentValidationError(fileArray) if (validationError) { setUploadError(validationError) return } setUploadError(null) const fileCount = fileArray.length uploadMutation.mutate(fileArray, { onSuccess: () => { setUploadError(null) toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { setUploadError(getUploadErrorMessage(error)) }, }) } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${encodeURIComponent(attachment.id)}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const saveCaption = (attachment: Attachment, caption: string) => { setCaptioning(null) if (caption === (attachment.caption ?? '')) return updateMutation.mutate( { id: attachment.id, caption }, { onError: (error) => { toast.error(getErrorMessage(error, t`Failed to save caption`)) }, } ) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, caption: a.caption, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Upload + stats */} <div className="flex items-center justify-between gap-4"> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept={ATTACHMENT_ACCEPT} /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <UploadProgress progress={uploadMutation.progress} /> <Alert> <AlertTitle><Trans>Upload guidance</Trans></AlertTitle> <AlertDescription> <p><Trans>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</Trans></p> <p><Trans>Large uploads may be limited by your server or proxy configuration.</Trans></p> </AlertDescription> </Alert> {uploadError ? ( <Alert variant="destructive"> <AlertTitle><Trans>Upload failed</Trans></AlertTitle> <AlertDescription>{uploadError}</AlertDescription> </Alert> ) : null} <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} > <X className="h-3 w-3" /> </Button> </TooltipTrigger> <TooltipContent>{t`Clear search`}</TooltipContent> </Tooltip> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Grid view`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} > <List className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`List view`}</TooltipContent> </Tooltip> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> {captioning && ( <AttachmentCaptionDialog item={{ name: captioning.name, caption: captioning.caption, previewUrl: `${buildAttachmentUrl(baseURL, captioning.id)}/preview`, previewKind: 'image', }} onSave={(caption) => saveCaption(captioning, caption)} onClose={() => setCaptioning(null)} /> )} <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onCaption: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-hover relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || attachment.name} className="h-full w-full object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground truncate text-xs" title={attachment.caption}> {attachment.caption || formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCaption(attachment) }} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-hover flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || ''} className="h-16 w-16 rounded object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> {attachment.caption && ( <p className="text-muted-foreground truncate text-sm" title={attachment.caption}> {attachment.caption} </p> )} <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} > <ExternalLink className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Open attachment`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCaption(attachment)} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
@@ -63,13 +63,8 @@ msgstr "{0, plural, one {# seleccionado} other {# seleccionados}}"
 msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
-#. placeholder {0}: item.label
-#: ../../../lib/web/src/components/config-drawer.tsx:160
-msgid "{0} option preview"
-msgstr "Vista previa de la opción {0}"
-
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:905
+#: src/routes/_authenticated/index.tsx:906
 msgid "{0} pages"
 msgstr "{0} páginas"
 
@@ -78,24 +73,24 @@ msgstr "{0} páginas"
 msgid "{0} with this tag."
 msgstr "{0} con esta etiqueta."
 
-#: src/features/wiki/wiki-page-content.tsx:316
+#: src/features/wiki/wiki-page-content.tsx:317
 #: src/routes/_authenticated/$page/index.tsx:233
 msgid "{commentCount, plural, one {1 comment} other {# comments}}"
 msgstr "{commentCount, plural, one {1 comentario} other {# comentarios}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:175
+#: ../../../lib/web/src/lib/locale-format.ts:176
 msgid "{count, plural, one {#d} other {#d}}"
 msgstr "{count, plural, one {#d} other {#d}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:171
+#: ../../../lib/web/src/lib/locale-format.ts:172
 msgid "{count, plural, one {#h} other {#h}}"
 msgstr "{count, plural, one {#h} other {#h}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:167
+#: ../../../lib/web/src/lib/locale-format.ts:168
 msgid "{count, plural, one {#m} other {#m}}"
 msgstr "{count, plural, one {#min} other {#min}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:179
+#: ../../../lib/web/src/lib/locale-format.ts:180
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#sem} other {#sem}}"
 
@@ -112,7 +107,7 @@ msgid "{entityLabel} name is required"
 msgstr "El nombre de {entityLabel} es obligatorio"
 
 #: src/features/wiki/attachments-page.tsx:189
-#: src/features/wiki/page-editor.tsx:234
+#: src/features/wiki/page-editor.tsx:235
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# archivo subido} other {# archivos subidos}}"
 
@@ -139,28 +134,12 @@ msgstr "{pageTitle} - Comentarios"
 msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
 msgstr "{renamedCount, plural, one {Se ha renombrado 1 página} other {Se han renombrado # páginas}}"
 
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:200
-msgid "{selectedCount, plural, one {{entityName} selected} other {{manyName} selected}}"
-msgstr "{selectedCount, plural, one {{entityName} seleccionado} other {{manyName} seleccionados}}"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:42
-msgid "{selectedCount, plural, one {# {entityName} selected. Bulk actions toolbar is available.} other {# {manyName} selected. Bulk actions toolbar is available.}}"
-msgstr "{selectedCount, plural, one {# {entityName} seleccionado. La barra de acciones masivas está disponible.} other {# {manyName} seleccionados. La barra de acciones masivas está disponible.}}"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:192
-msgid "{selectedCount, plural, one {# selected} other {# selected}}"
-msgstr "{selectedCount, plural, one {# seleccionados} other {# seleccionados}}"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:139
-msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
-msgstr "{selectedCount, plural, one {Acciones masivas para # {entityName} seleccionado} other {Acciones masivas para # {manyName} seleccionados}}"
-
-#: ../../../lib/web/src/components/attachment-composer.tsx:241
+#: ../../../lib/web/src/components/attachment-composer.tsx:248
 #: ../../../lib/web/src/components/ui/upload-progress.tsx:52
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{sentLabel} de {totalLabel}"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:528
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:530
 msgid "{totalCount, plural, one {# item} other {# items}}"
 msgstr "{totalCount, plural, one {# elemento} other {# elementos}}"
 
@@ -174,12 +153,12 @@ msgstr "{unreadCount, plural, one {Abrir menú (# notificación sin leer)} other
 
 #: src/routes/_authenticated/$wikiId/settings.tsx:39
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
-#: src/routes/_authenticated/settings.tsx:44
-#: src/routes/_authenticated/settings.tsx:47
+#: src/routes/_authenticated/settings.tsx:45
+#: src/routes/_authenticated/settings.tsx:48
 msgid "{wikiName} settings"
 msgstr "Ajustes de {wikiName}"
 
-#: src/features/wiki/page-editor.tsx:420
+#: src/features/wiki/page-editor.tsx:421
 msgid "*No content*"
 msgstr "*Sin contenido*"
 
@@ -220,55 +199,39 @@ msgstr "Acceso"
 msgid "Access denied"
 msgstr "Acceso denegado"
 
-#: ../../../lib/web/src/features/errors/forbidden.tsx:16
-msgid "Access Forbidden"
-msgstr "Acceso prohibido"
-
 #: ../../../lib/web/src/features/access/access-list.tsx:197
 msgid "Access level"
 msgstr "Nivel de acceso"
 
-#: src/features/wiki/wiki-settings.tsx:562
+#: src/features/wiki/wiki-settings.tsx:563
 msgid "Access level updated"
 msgstr "Nivel de acceso actualizado"
 
-#: src/features/wiki/wiki-settings.tsx:578
+#: src/features/wiki/wiki-settings.tsx:579
 msgid "Access removed"
 msgstr "Acceso eliminado"
 
-#: src/features/wiki/wiki-settings.tsx:549
+#: src/features/wiki/wiki-settings.tsx:550
 msgid "Access set for {subjectName}"
 msgstr "Acceso establecido para {subjectName}"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:216
-msgid "Account added"
-msgstr "Cuenta añadida"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:232
-msgid "Account removed"
-msgstr "Cuenta eliminada"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:139
 msgid "Account type"
 msgstr "Tipo de cuenta"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:242
-msgid "Account verified"
-msgstr "Cuenta verificada"
-
 #: src/features/wiki/page-history.tsx:60
 #: src/features/wiki/redirects-page.tsx:96
-#: src/features/wiki/wiki-settings.tsx:745
+#: src/features/wiki/wiki-settings.tsx:746
 msgid "Actions"
 msgstr "Acciones"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:711
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:720
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
 #: src/features/wiki/tag-manager.tsx:134
 #: src/features/wiki/tag-manager.tsx:139
 #: src/features/wiki/tag-manager.tsx:164
-#: src/features/wiki/wiki-settings.tsx:595
+#: src/features/wiki/wiki-settings.tsx:596
 msgid "Add"
 msgstr "Añadir"
 
@@ -289,15 +252,10 @@ msgid "Add access"
 msgstr "Añadir acceso"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:132
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:288
 msgid "Add account"
 msgstr "Añadir cuenta"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:297
-msgid "Add an account to receive notifications and use services."
-msgstr "Añade una cuenta para recibir notificaciones y usar servicios."
-
-#: ../../../lib/web/src/components/attachment-composer.tsx:284
+#: ../../../lib/web/src/components/attachment-composer.tsx:291
 #: src/features/wiki/attachments-page.tsx:624
 #: src/features/wiki/attachments-page.tsx:630
 #: src/features/wiki/attachments-page.tsx:750
@@ -305,7 +263,7 @@ msgstr "Añade una cuenta para recibir notificaciones y usar servicios."
 msgid "Add caption"
 msgstr "Añadir leyenda"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:681
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:690
 msgid "Add checklist item"
 msgstr "Añadir elemento a la lista"
 
@@ -314,17 +272,13 @@ msgstr "Añadir elemento a la lista"
 msgid "Add field"
 msgstr "Añadir campo"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:699
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:708
 msgid "Add item..."
 msgstr "Añadir elemento..."
 
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
 msgid "Add link"
 msgstr "Añadir enlace"
-
-#: ../../../lib/web/src/features/accounts/account-picker.tsx:102
-msgid "Add new account"
-msgstr "Añadir nueva cuenta"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
@@ -335,22 +289,17 @@ msgid "Add option"
 msgstr "Añadir opción"
 
 #: src/features/wiki/redirects-page.tsx:225
-#: src/features/wiki/wiki-settings.tsx:1026
+#: src/features/wiki/wiki-settings.tsx:1027
 msgid "Add redirect"
 msgstr "Añadir redirección"
 
 #: ../../../lib/web/src/components/post-tags.tsx:137
-#: ../../../lib/web/src/components/tag-input.tsx:40
 msgid "Add tag..."
 msgstr "Añadir etiqueta..."
 
 #: src/features/wiki/tags-list.tsx:40
 msgid "Add tags from the bottom of any page."
 msgstr "Añade etiquetas desde la parte inferior de cualquier página."
-
-#: ../../../lib/web/src/components/layout/team-switcher.tsx:83
-msgid "Add team/app"
-msgstr "Añadir equipo/app"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:175
 msgid "Add to existing notifications"
@@ -368,17 +317,9 @@ msgstr "Añadir vista"
 msgid "Adding..."
 msgstr "Añadiendo..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:72
-msgid "Adjust the appearance and layout to suit your preferences."
-msgstr "Ajusta la apariencia y la disposición a tus preferencias."
-
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:41
 msgid "AI"
 msgstr "IA"
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:163
-msgid "All"
-msgstr "Todos"
 
 #: src/features/wiki/attachments-page.tsx:391
 msgid "All files"
@@ -418,7 +359,7 @@ msgstr "Permitir ordenar por"
 msgid "An error occurred"
 msgstr "Se produjo un error"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:275
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:266
 msgid "An unexpected error occurred"
 msgstr "Se produjo un error inesperado"
 
@@ -427,11 +368,11 @@ msgid "Android push"
 msgstr "Push de Android"
 
 #: ../../../lib/web/src/features/access/access-list.tsx:45
-#: ../../../lib/web/src/features/access/types.ts:42
+#: ../../../lib/web/src/features/access/types.ts:36
 msgid "Anyone"
 msgstr "Cualquiera"
 
-#: ../../../lib/web/src/features/access/types.ts:41
+#: ../../../lib/web/src/features/access/types.ts:35
 msgid "Anyone who is logged in"
 msgstr "Cualquiera que haya iniciado sesión"
 
@@ -439,7 +380,7 @@ msgstr "Cualquiera que haya iniciado sesión"
 msgid "Anything subscribed to this feed will stop receiving it. You can copy a new URL afterwards."
 msgstr "Todo lo suscrito a este canal dejará de recibirlo. Después puedes copiar una URL nueva."
 
-#: src/features/wiki/wiki-settings.tsx:480
+#: src/features/wiki/wiki-settings.tsx:481
 msgid "Are you absolutely sure?"
 msgstr "¿Estás totalmente seguro?"
 
@@ -448,7 +389,7 @@ msgstr "¿Estás totalmente seguro?"
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "¿Seguro que quieres eliminar \"{0}\"?"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:627
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:629
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "¿Seguro que quieres eliminar la columna \"{name}\"? Esto no se puede deshacer."
 
@@ -464,16 +405,12 @@ msgstr "¿Seguro que quieres eliminar este comentario? También se eliminarán t
 msgid "Are you sure you want to log out? You will need to log in again to access your account."
 msgstr "¿Seguro que quieres cerrar sesión? Necesitarás volver a iniciar sesión para acceder a tu cuenta."
 
-#: src/features/wiki/wiki-page-content.tsx:411
+#: src/features/wiki/wiki-page-content.tsx:412
 #: src/routes/_authenticated/$page/index.tsx:310
-#: src/routes/_authenticated/index.tsx:528
-#: src/routes/_authenticated/index.tsx:928
+#: src/routes/_authenticated/index.tsx:529
+#: src/routes/_authenticated/index.tsx:929
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "¿Seguro que quieres anular la suscripción a este wiki?"
-
-#: ../../../lib/web/src/components/data-table/column-header.tsx:59
-msgid "Asc"
-msgstr "Asc"
 
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx:27
 msgid "Ascending"
@@ -488,13 +425,13 @@ msgid "Attach reply files"
 msgstr "Adjuntar ficheros a la respuesta"
 
 #: src/features/wiki/attachments-page.tsx:266
-#: src/features/wiki/page-editor.tsx:251
+#: src/features/wiki/page-editor.tsx:252
 msgid "Attachment deleted"
 msgstr "Adjunto eliminado"
 
-#: src/features/wiki/page-editor.tsx:363
-#: src/features/wiki/page-editor.tsx:368
-#: src/features/wiki/page-editor.tsx:375
+#: src/features/wiki/page-editor.tsx:364
+#: src/features/wiki/page-editor.tsx:369
+#: src/features/wiki/page-editor.tsx:376
 #: src/routes/_authenticated/$page/attachments.tsx:31
 #: src/routes/_authenticated/$page/attachments.tsx:42
 #: src/routes/_authenticated/$wikiId/$page/attachments.tsx:41
@@ -503,11 +440,11 @@ msgid "Attachments"
 msgstr "Adjuntos"
 
 #: ../../../lib/web/src/features/access/access-list.tsx:46
-#: ../../../lib/web/src/features/access/types.ts:41
+#: ../../../lib/web/src/features/access/types.ts:35
 msgid "Authenticated users"
 msgstr "Usuarios autenticados"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:317
+#: ../../../lib/web/src/components/step-up-dialog.tsx:318
 msgid "Authenticator code"
 msgstr "Código del autenticador"
 
@@ -542,7 +479,6 @@ msgstr "Atrás"
 msgid "Back to history"
 msgstr "Volver al historial"
 
-#: ../../../lib/web/src/features/errors/forbidden.tsx:28
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:28
 #: ../../../lib/web/src/features/errors/unauthorized-error.tsx:28
 msgid "Back to home"
@@ -593,15 +529,15 @@ msgstr "Volver a la página"
 #: src/routes/_authenticated/$page/index.tsx:178
 #: src/routes/_authenticated/$page/index.tsx:300
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
-#: src/routes/_authenticated/changes.tsx:48
-#: src/routes/_authenticated/changes.tsx:59
-#: src/routes/_authenticated/changes.tsx:69
+#: src/routes/_authenticated/changes.tsx:49
+#: src/routes/_authenticated/changes.tsx:60
+#: src/routes/_authenticated/changes.tsx:70
 #: src/routes/_authenticated/index.tsx:252
 #: src/routes/_authenticated/join.tsx:64
 #: src/routes/_authenticated/new.tsx:31
-#: src/routes/_authenticated/redirects.tsx:29
-#: src/routes/_authenticated/search.tsx:42
-#: src/routes/_authenticated/settings.tsx:47
+#: src/routes/_authenticated/redirects.tsx:30
+#: src/routes/_authenticated/search.tsx:43
+#: src/routes/_authenticated/settings.tsx:48
 #: src/routes/_authenticated/tag/$tag.tsx:36
 #: src/routes/_authenticated/tag/$tag.tsx:47
 #: src/routes/_authenticated/tag/$tag.tsx:57
@@ -624,8 +560,8 @@ msgstr "Sé el primero en comentar esta página."
 msgid "Blocked by"
 msgstr "Bloqueado por"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:225
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:235
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:242
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:252
 msgid "Blocked navigation to untrusted link"
 msgstr "Se ha bloqueado la navegación a un enlace no fiable"
 
@@ -647,11 +583,11 @@ msgid "Border colour"
 msgstr "Color del borde"
 
 #: src/features/wiki/redirects-page.tsx:199
-#: src/features/wiki/wiki-settings.tsx:993
+#: src/features/wiki/wiki-settings.tsx:994
 msgid "Both source and target are required"
 msgstr "Tanto el origen como el destino son obligatorios"
 
-#: src/features/wiki/page-editor.tsx:495
+#: src/features/wiki/page-editor.tsx:496
 msgid "Briefly describe your changes"
 msgstr "Describe brevemente tus cambios"
 
@@ -663,13 +599,13 @@ msgstr "Examina páginas por etiqueta. Pulsa una etiqueta para ver todas las pá
 msgid "Browser notifications"
 msgstr "Notificaciones del navegador"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:419
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:612
+#: ../../../lib/web/src/components/attachment-composer.tsx:426
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:166
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:183
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
-#: ../../../lib/web/src/components/step-up-dialog.tsx:365
+#: ../../../lib/web/src/components/step-up-dialog.tsx:366
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
@@ -679,7 +615,7 @@ msgstr "Notificaciones del navegador"
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
-#: src/features/wiki/page-editor.tsx:396
+#: src/features/wiki/page-editor.tsx:397
 #: src/features/wiki/redirects-page.tsx:173
 #: src/features/wiki/redirects-page.tsx:271
 #: src/features/wiki/rename-page-dialog.tsx:128
@@ -687,9 +623,9 @@ msgstr "Notificaciones del navegador"
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:156
 #: src/features/wiki/wiki-comment-thread.tsx:182
-#: src/features/wiki/wiki-settings.tsx:789
-#: src/features/wiki/wiki-settings.tsx:952
-#: src/features/wiki/wiki-settings.tsx:1065
+#: src/features/wiki/wiki-settings.tsx:790
+#: src/features/wiki/wiki-settings.tsx:953
+#: src/features/wiki/wiki-settings.tsx:1066
 #: src/routes/_authenticated/join.tsx:120
 msgid "Cancel"
 msgstr "Cancelar"
@@ -702,29 +638,29 @@ msgstr "Cancelar comentario"
 msgid "Cancel reply"
 msgstr "Cancelar respuesta"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:379
-#: ../../../lib/web/src/components/attachment-composer.tsx:414
+#: ../../../lib/web/src/components/attachment-composer.tsx:386
+#: ../../../lib/web/src/components/attachment-composer.tsx:421
 msgid "Caption"
 msgstr "Leyenda"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:97
+#: ../../../lib/web/src/components/notification-category-button.tsx:99
 msgid "Category for these notifications"
 msgstr "Categoría para estas notificaciones"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:78
-#: ../../../lib/web/src/components/notification-category-button.tsx:89
+#: ../../../lib/web/src/components/notification-category-button.tsx:80
+#: ../../../lib/web/src/components/notification-category-button.tsx:91
 msgid "Change notification category"
 msgstr "Cambiar la categoría de la notificación"
 
-#: src/features/wiki/wiki-page-content.tsx:353
-#: src/routes/_authenticated/index.tsx:454
-#: src/routes/_authenticated/index.tsx:723
+#: src/features/wiki/wiki-page-content.tsx:354
+#: src/routes/_authenticated/index.tsx:455
+#: src/routes/_authenticated/index.tsx:724
 msgid "Changes"
 msgstr "Cambios"
 
-#: src/features/wiki/wiki-page-content.tsx:355
-#: src/routes/_authenticated/index.tsx:462
-#: src/routes/_authenticated/index.tsx:733
+#: src/features/wiki/wiki-page-content.tsx:356
+#: src/routes/_authenticated/index.tsx:463
+#: src/routes/_authenticated/index.tsx:734
 msgid "Changes and comments"
 msgstr "Cambios y comentarios"
 
@@ -738,10 +674,6 @@ msgstr "Cambios de la versión {0} → {1}"
 msgid "Changes will appear here when pages are edited."
 msgstr "Los cambios aparecerán aquí cuando se editen las páginas."
 
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:198
-msgid "Check \"All\" to see your past notifications."
-msgstr "Marca «Todo» para ver tus notificaciones anteriores."
-
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
 msgid "Checkbox"
 msgstr "Casilla"
@@ -750,28 +682,12 @@ msgstr "Casilla"
 msgid "Checklist"
 msgstr "Lista de comprobación"
 
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:33
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:35
 msgid "Choose a game from the sidebar or start a new one."
 msgstr "Elige una partida en la barra lateral o inicia una nueva."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:329
-msgid "Choose between default expanded, compact icon-only, or full layout mode"
-msgstr "Elige entre modo expandido por defecto, compacto solo con iconos, o disposición completa"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:271
-msgid "Choose between inset, floating, or standard sidebar layout"
-msgstr "Elige entre disposición de barra lateral incrustada, flotante o estándar"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:372
-msgid "Choose between left-to-right or right-to-left site direction"
-msgstr "Elige entre dirección del sitio de izquierda a derecha o de derecha a izquierda"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:227
-msgid "Choose between system preference, light mode, or dark mode"
-msgstr "Elige entre la preferencia del sistema, modo claro o modo oscuro"
-
-#: ../../../lib/web/src/components/language-picker.tsx:263
-#: ../../../lib/web/src/components/language-picker.tsx:270
+#: ../../../lib/web/src/components/language-picker.tsx:264
+#: ../../../lib/web/src/components/language-picker.tsx:271
 msgid "Choose language"
 msgstr "Elige el idioma"
 
@@ -788,28 +704,14 @@ msgstr "Borrar"
 msgid "Clear all"
 msgstr "Borrar todo"
 
-#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:144
-msgid "Clear filters"
-msgstr "Borrar filtros"
-
 #: ../../../lib/web/src/components/search-input.tsx:26
 #: src/features/wiki/attachments-page.tsx:375
 #: src/features/wiki/attachments-page.tsx:380
 msgid "Clear search"
 msgstr "Borrar búsqueda"
 
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:167
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:171
-msgid "Clear selection"
-msgstr "Borrar selección"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:168
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:175
-msgid "Clear selection (Escape)"
-msgstr "Borrar selección (Escape)"
-
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:500
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:505
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:501
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:506
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:468
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:471
@@ -829,8 +731,8 @@ msgstr "Cerrar diálogo"
 msgid "Close navigation"
 msgstr "Cerrar navegación"
 
-#: ../../../lib/web/src/components/layout/right-panel.tsx:265
-#: ../../../lib/web/src/components/layout/right-panel.tsx:268
+#: ../../../lib/web/src/components/layout/right-panel.tsx:234
+#: ../../../lib/web/src/components/layout/right-panel.tsx:237
 msgid "Close panel"
 msgstr "Cerrar panel"
 
@@ -857,8 +759,8 @@ msgstr "Contraer barra lateral"
 msgid "Colour"
 msgstr "Color"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:537
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:542
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:539
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
 msgid "Column actions"
 msgstr "Acciones de columna"
 
@@ -869,10 +771,6 @@ msgstr "Las columnas se agrupan por"
 #: ../../../lib/web/src/lib/preference-utils.ts:91
 msgid "Comfortable"
 msgstr "Cómodo"
-
-#: ../../../lib/web/src/components/coming-soon.tsx:12
-msgid "Coming Soon!"
-msgstr "¡Próximamente!"
 
 #: ../../../lib/web/src/components/ui/command.tsx:34
 msgid "Command Palette"
@@ -890,13 +788,12 @@ msgstr "Acciones del comentario"
 
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:431
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
-#: src/features/wiki/wiki-page-content.tsx:354
-#: src/routes/_authenticated/index.tsx:459
-#: src/routes/_authenticated/index.tsx:728
+#: src/features/wiki/wiki-page-content.tsx:355
+#: src/routes/_authenticated/index.tsx:460
+#: src/routes/_authenticated/index.tsx:729
 msgid "Comments"
 msgstr "Comentarios"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:316
 #: ../../../lib/web/src/lib/preference-utils.ts:90
 msgid "Compact"
 msgstr "Compacto"
@@ -922,15 +819,11 @@ msgstr "Confirmar"
 msgid "Connected"
 msgstr "Conectado"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:191
-msgid "Connected accounts"
-msgstr "Cuentas conectadas"
-
 #: ../../../lib/web/src/lib/chat-ui.ts:21
 msgid "Connecting..."
 msgstr "Conectando..."
 
-#: src/features/wiki/page-editor.tsx:476
+#: src/features/wiki/page-editor.tsx:477
 msgid "Content"
 msgstr "Contenido"
 
@@ -950,7 +843,7 @@ msgstr "Información y detalles contextuales."
 msgid "Continue"
 msgstr "Continuar"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:354
+#: ../../../lib/web/src/components/step-up-dialog.tsx:355
 msgid "Continue with {label}"
 msgstr "Continuar con {label}"
 
@@ -981,26 +874,26 @@ msgstr "No se pudo cargar la versión anterior para la comparación."
 msgid "Could not load this document. Please try again later."
 msgstr "No se ha podido cargar este documento. Inténtalo de nuevo más tarde."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:111
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:128
 msgid "Couldn't load notifications"
 msgstr "No se pudieron cargar las notificaciones"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:181
+#: ../../../lib/web/src/components/step-up-dialog.tsx:182
 msgid "Couldn't send the code. Please try again."
 msgstr "No se ha podido enviar el código. Inténtalo de nuevo."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:135
+#: ../../../lib/web/src/components/step-up-dialog.tsx:136
 msgid "Couldn't start re-authentication. Please try again."
 msgstr "No se ha podido iniciar la reautenticación. Inténtalo de nuevo."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:223
+#: ../../../lib/web/src/components/step-up-dialog.tsx:224
 msgid "Couldn't verify with that account. Please try again."
 msgstr "No se pudo verificar con esa cuenta. Inténtalo de nuevo."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:548
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:687
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:490
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:654
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:550
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:689
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:491
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx:675
 msgid "Create"
 msgstr "Crear"
@@ -1010,7 +903,7 @@ msgstr "Crear"
 msgid "Create {0}"
 msgstr "Crear {0}"
 
-#: src/features/wiki/wiki-settings.tsx:1034
+#: src/features/wiki/wiki-settings.tsx:1035
 msgid "Create a redirect from one URL to another."
 msgstr "Crea una redirección de una URL a otra."
 
@@ -1019,7 +912,7 @@ msgid "Create a redirect from one URL to another. The source URL must not be an 
 msgstr "Crear una redirección de una URL a otra. La URL de origen no debe ser una página existente."
 
 #: src/features/wiki/redirects-page.tsx:85
-#: src/features/wiki/wiki-settings.tsx:894
+#: src/features/wiki/wiki-settings.tsx:895
 msgid "Create a redirect to forward one URL to another."
 msgstr "Crea una redirección para reenviar una URL a otra."
 
@@ -1027,14 +920,14 @@ msgstr "Crea una redirección para reenviar una URL a otra."
 msgid "Create new item"
 msgstr "Crear nuevo elemento"
 
-#: src/features/wiki/page-editor.tsx:402
+#: src/features/wiki/page-editor.tsx:403
 msgid "Create page"
 msgstr "Crear página"
 
 #: src/features/wiki/redirects-page.tsx:231
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1032
-#: src/features/wiki/wiki-settings.tsx:1068
+#: src/features/wiki/wiki-settings.tsx:1033
+#: src/features/wiki/wiki-settings.tsx:1069
 msgid "Create redirect"
 msgstr "Crear redirección"
 
@@ -1044,26 +937,26 @@ msgstr "Crear redirección desde la URL antigua"
 
 #: src/features/wiki/page-view.tsx:301
 #: src/features/wiki/page-view.tsx:306
-#: src/features/wiki/wiki-page-content.tsx:231
+#: src/features/wiki/wiki-page-content.tsx:232
 #: src/routes/_authenticated/$page/index.tsx:146
 msgid "Create this page"
 msgstr "Crear esta página"
 
 #: src/components/layout/wiki-layout.tsx:132
 #: src/components/layout/wiki-layout.tsx:152
-#: src/routes/_authenticated/index.tsx:775
+#: src/routes/_authenticated/index.tsx:776
 msgid "Create wiki"
 msgstr "Crear wiki"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:492
 #: src/features/wiki/redirects-page.tsx:95
-#: src/features/wiki/wiki-settings.tsx:904
+#: src/features/wiki/wiki-settings.tsx:905
 msgid "Created"
 msgstr "Creado"
 
 #: src/features/wiki/redirects-page.tsx:207
-#: src/features/wiki/wiki-settings.tsx:1005
+#: src/features/wiki/wiki-settings.tsx:1006
 msgid "Creating redirect..."
 msgstr "Creando redirección..."
 
@@ -1071,11 +964,11 @@ msgstr "Creando redirección..."
 msgid "Creating wiki..."
 msgstr "Creando wiki..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:654
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
-#: src/features/wiki/page-editor.tsx:402
+#: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1068
+#: src/features/wiki/wiki-settings.tsx:1069
 msgid "Creating..."
 msgstr "Creando..."
 
@@ -1091,18 +984,11 @@ msgstr "Ubicación actual"
 msgid "Custom"
 msgstr "Personalizado"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:219
-#: ../../../lib/web/src/components/theme-switch.tsx:52
 #: ../../../lib/web/src/lib/preference-utils.ts:15
 msgid "Dark"
 msgstr "Oscuro"
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:87
-#: ../../../lib/web/src/components/profile-dropdown.tsx:123
-msgid "Dark mode"
-msgstr "Modo oscuro"
-
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:259
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:250
 msgid "Data conflict"
 msgstr "Conflicto de datos"
 
@@ -1117,10 +1003,6 @@ msgstr "Fecha"
 msgid "Decline"
 msgstr "Rechazar"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:311
-msgid "Default"
-msgstr "Predeterminado"
-
 #: ../../../lib/web/src/features/accounts/account-add.tsx:185
 msgid "Default AI account"
 msgstr "Cuenta de IA predeterminada"
@@ -1129,8 +1011,8 @@ msgstr "Cuenta de IA predeterminada"
 msgid "Default sort"
 msgstr "Orden predeterminado"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:567
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:569
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:280
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:323
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:353
@@ -1140,18 +1022,18 @@ msgstr "Orden predeterminado"
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:314
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/page-editor.tsx:647
+#: src/features/wiki/page-editor.tsx:648
 #: src/features/wiki/redirects-page.tsx:178
 #: src/features/wiki/wiki-comment-thread.tsx:255
 #: src/features/wiki/wiki-comment-thread.tsx:282
-#: src/features/wiki/wiki-page-content.tsx:323
-#: src/features/wiki/wiki-settings.tsx:957
+#: src/features/wiki/wiki-page-content.tsx:324
+#: src/features/wiki/wiki-settings.tsx:958
 msgid "Delete"
 msgstr "Eliminar"
 
 #. placeholder {0}: pendingDelete.name
 #: src/features/wiki/attachments-page.tsx:531
-#: src/features/wiki/page-editor.tsx:644
+#: src/features/wiki/page-editor.tsx:645
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "¿Eliminar «{0}»? Esta acción no se puede deshacer."
 
@@ -1161,13 +1043,13 @@ msgstr "¿Eliminar «{0}»? Esta acción no se puede deshacer."
 #: src/features/wiki/attachments-page.tsx:650
 #: src/features/wiki/attachments-page.tsx:768
 #: src/features/wiki/attachments-page.tsx:777
-#: src/features/wiki/page-editor.tsx:597
-#: src/features/wiki/page-editor.tsx:606
-#: src/features/wiki/page-editor.tsx:641
+#: src/features/wiki/page-editor.tsx:598
+#: src/features/wiki/page-editor.tsx:607
+#: src/features/wiki/page-editor.tsx:642
 msgid "Delete attachment"
 msgstr "Eliminar adjunto"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:626
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
 msgid "Delete column"
 msgstr "Eliminar columna"
 
@@ -1191,21 +1073,21 @@ msgid "Delete option {0}"
 msgstr "Eliminar opción {0}"
 
 #: src/features/wiki/delete-page.tsx:56
-#: src/features/wiki/page-editor.tsx:384
-#: src/features/wiki/page-editor.tsx:389
+#: src/features/wiki/page-editor.tsx:385
+#: src/features/wiki/page-editor.tsx:390
 msgid "Delete page"
 msgstr "Eliminar página"
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:153
 #: src/features/wiki/redirects-page.tsx:159
-#: src/features/wiki/wiki-settings.tsx:933
-#: src/features/wiki/wiki-settings.tsx:939
+#: src/features/wiki/wiki-settings.tsx:934
+#: src/features/wiki/wiki-settings.tsx:940
 msgid "Delete redirect {0}"
 msgstr "Eliminar redirección {0}"
 
 #: src/features/wiki/redirects-page.tsx:163
-#: src/features/wiki/wiki-settings.tsx:943
+#: src/features/wiki/wiki-settings.tsx:944
 msgid "Delete redirect?"
 msgstr "¿Eliminar redirección?"
 
@@ -1213,9 +1095,9 @@ msgstr "¿Eliminar redirección?"
 msgid "Delete view"
 msgstr "Eliminar vista"
 
-#: src/features/wiki/wiki-settings.tsx:463
-#: src/features/wiki/wiki-settings.tsx:474
-#: src/features/wiki/wiki-settings.tsx:482
+#: src/features/wiki/wiki-settings.tsx:464
+#: src/features/wiki/wiki-settings.tsx:475
+#: src/features/wiki/wiki-settings.tsx:483
 msgid "Delete wiki"
 msgstr "Eliminar wiki"
 
@@ -1237,22 +1119,18 @@ msgid "Delete: {pageTitle}"
 msgstr "Eliminar: {pageTitle}"
 
 #: src/features/wiki/redirects-page.tsx:118
-#: src/features/wiki/wiki-settings.tsx:864
+#: src/features/wiki/wiki-settings.tsx:865
 msgid "Deleting redirect..."
 msgstr "Eliminando redirección..."
 
-#: src/features/wiki/wiki-settings.tsx:346
+#: src/features/wiki/wiki-settings.tsx:347
 msgid "Deleting wiki..."
 msgstr "Eliminando wiki..."
 
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/wiki-settings.tsx:474
+#: src/features/wiki/wiki-settings.tsx:475
 msgid "Deleting..."
 msgstr "Eliminando..."
-
-#: ../../../lib/web/src/components/data-table/column-header.tsx:63
-msgid "Desc"
-msgstr "Desc"
 
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx:27
 msgid "Descending"
@@ -1266,7 +1144,7 @@ msgstr "Descripción"
 msgid "Details Panel"
 msgstr "Panel de detalles"
 
-#: ../../../lib/web/src/components/language-picker.tsx:239
+#: ../../../lib/web/src/components/language-picker.tsx:240
 #: ../../../lib/web/src/components/timezone-select.tsx:46
 #: ../../../lib/web/src/components/timezone-select.tsx:83
 #: ../../../lib/web/src/lib/preference-utils.ts:23
@@ -1276,10 +1154,6 @@ msgstr "Panel de detalles"
 #: ../../../lib/web/src/lib/preference-utils.ts:79
 msgid "Detect from web browser"
 msgstr "Detectar desde el navegador web"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:341
-msgid "Direction"
-msgstr "Dirección"
 
 #: ../../../lib/web/src/components/person-picker.tsx:214
 msgid "Directory"
@@ -1303,7 +1177,7 @@ msgstr "Desconectado"
 msgid "Dismiss"
 msgstr "Descartar"
 
-#: ../../../lib/web/src/components/ui/sidebar.tsx:238
+#: ../../../lib/web/src/components/ui/sidebar.tsx:258
 msgid "Displays the mobile sidebar."
 msgstr "Muestra la barra lateral móvil."
 
@@ -1322,7 +1196,7 @@ msgstr "Hecho"
 msgid "Download"
 msgstr "Descargar"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:99
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:98
 msgid "Download failed"
 msgstr "Error al descargar"
 
@@ -1334,17 +1208,17 @@ msgstr "Arrastra y suelta ficheros aquí, o pulsa «Subir ficheros» para empeza
 msgid "Duplicates"
 msgstr "Duplica"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:141
+#: ../../../lib/web/src/lib/preference-utils.ts:134
 msgid "Dyslexia-friendly"
 msgstr "Apto para dislexia"
 
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:269
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:314
-#: src/features/wiki/page-editor.tsx:341
+#: src/features/wiki/page-editor.tsx:342
 #: src/features/wiki/wiki-comment-thread.tsx:244
-#: src/features/wiki/wiki-page-content.tsx:297
+#: src/features/wiki/wiki-page-content.tsx:298
 #: src/routes/_authenticated/$page/index.tsx:214
-#: src/routes/_authenticated/index.tsx:409
+#: src/routes/_authenticated/index.tsx:410
 msgid "Edit"
 msgstr "Editar"
 
@@ -1352,11 +1226,11 @@ msgstr "Editar"
 msgid "Edit {label}"
 msgstr "Editar {label}"
 
-#: src/features/wiki/wiki-settings.tsx:498
+#: src/features/wiki/wiki-settings.tsx:499
 msgid "Edit and view"
 msgstr "Editar y ver"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:284
+#: ../../../lib/web/src/components/attachment-composer.tsx:291
 #: src/features/wiki/attachments-page.tsx:624
 #: src/features/wiki/attachments-page.tsx:630
 #: src/features/wiki/attachments-page.tsx:750
@@ -1386,7 +1260,7 @@ msgstr "Editar opción {0}"
 msgid "Edit selected card"
 msgstr "Editar tarjeta seleccionada"
 
-#: src/features/wiki/page-editor.tsx:490
+#: src/features/wiki/page-editor.tsx:491
 msgid "Edit summary (optional)"
 msgstr "Resumen de la edición (opcional)"
 
@@ -1411,7 +1285,7 @@ msgstr "Editar: {pageTitle}"
 msgid "Email"
 msgstr "Correo electrónico"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:291
+#: ../../../lib/web/src/components/step-up-dialog.tsx:292
 msgid "Email code"
 msgstr "Código por correo"
 
@@ -1427,23 +1301,23 @@ msgstr "Introduce un término de búsqueda"
 msgid "Enter tag name"
 msgstr "Introduce el nombre de la etiqueta"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:301
+#: ../../../lib/web/src/components/step-up-dialog.tsx:302
 msgid "Enter the code from your email"
 msgstr "Introduce el código de tu correo electrónico"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:326
+#: ../../../lib/web/src/components/step-up-dialog.tsx:327
 msgid "Enter your authenticator code"
 msgstr "Introduce el código de tu aplicación de autenticación"
 
-#: src/features/wiki/wiki-settings.tsx:397
+#: src/features/wiki/wiki-settings.tsx:398
 msgid "Entity ID"
 msgstr "ID de entidad"
 
-#: src/features/wiki/wiki-page-content.tsx:198
+#: src/features/wiki/wiki-page-content.tsx:199
 msgid "Error: Received invalid response from server."
 msgstr "Error: se ha recibido una respuesta no válida del servidor."
 
-#: src/features/wiki/wiki-settings.tsx:445
+#: src/features/wiki/wiki-settings.tsx:446
 msgid "Example: \"home\", \"welcome\", \"index\""
 msgstr "Ejemplo: «home», «welcome», «index»"
 
@@ -1462,15 +1336,10 @@ msgstr "Expandir barra lateral"
 msgid "External URL"
 msgstr "URL externa"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:131
+#: ../../../lib/web/src/lib/preference-utils.ts:124
 msgid "Extra large"
 msgstr "Extra grande"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:225
-msgid "Failed to add account"
-msgstr "Error al añadir la cuenta"
-
-#: ../../../lib/web/src/components/tag-input.tsx:39
 #: src/features/wiki/tag-manager.tsx:60
 msgid "Failed to add tag"
 msgstr "Error al añadir la etiqueta"
@@ -1487,12 +1356,12 @@ msgstr "Error al copiar"
 msgid "Failed to create link"
 msgstr "Error al crear el enlace"
 
-#: src/features/wiki/page-editor.tsx:285
+#: src/features/wiki/page-editor.tsx:286
 msgid "Failed to create page"
 msgstr "Error al crear la página"
 
 #: src/features/wiki/redirects-page.tsx:209
-#: src/features/wiki/wiki-settings.tsx:1007
+#: src/features/wiki/wiki-settings.tsx:1008
 msgid "Failed to create redirect"
 msgstr "Error al crear la redirección"
 
@@ -1502,7 +1371,7 @@ msgstr "Error al crear el wiki"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:130
 #: src/features/wiki/attachments-page.tsx:270
-#: src/features/wiki/page-editor.tsx:255
+#: src/features/wiki/page-editor.tsx:256
 msgid "Failed to delete attachment"
 msgstr "Error al eliminar el adjunto"
 
@@ -1519,18 +1388,18 @@ msgid "Failed to delete page"
 msgstr "Error al eliminar la página"
 
 #: src/features/wiki/redirects-page.tsx:120
-#: src/features/wiki/wiki-settings.tsx:866
+#: src/features/wiki/wiki-settings.tsx:867
 msgid "Failed to delete redirect"
 msgstr "Error al eliminar la redirección"
 
-#: src/features/wiki/wiki-settings.tsx:348
+#: src/features/wiki/wiki-settings.tsx:349
 msgid "Failed to delete wiki"
 msgstr "Error al eliminar el wiki"
 
 #: ../../../lib/web/src/components/options-menu.tsx:122
-#: src/features/wiki/wiki-page-content.tsx:161
-#: src/routes/_authenticated/index.tsx:325
-#: src/routes/_authenticated/index.tsx:612
+#: src/features/wiki/wiki-page-content.tsx:162
+#: src/routes/_authenticated/index.tsx:326
+#: src/routes/_authenticated/index.tsx:613
 msgid "Failed to get RSS token"
 msgstr "Error al obtener el token RSS"
 
@@ -1538,15 +1407,15 @@ msgstr "Error al obtener el token RSS"
 msgid "Failed to join wiki"
 msgstr "Error al unirse al wiki"
 
-#: ../../../lib/web/src/hooks/use-load-more.ts:77
+#: ../../../lib/web/src/hooks/use-load-more.ts:78
 msgid "Failed to load"
 msgstr "Error al cargar"
 
-#: src/features/wiki/wiki-settings.tsx:534
+#: src/features/wiki/wiki-settings.tsx:535
 msgid "Failed to load access rules"
 msgstr "Error al cargar las reglas de acceso"
 
-#: ../../../lib/web/src/components/audit-timeline.tsx:65
+#: ../../../lib/web/src/components/audit-timeline.tsx:68
 msgid "Failed to load history"
 msgstr "Error al cargar el historial"
 
@@ -1554,11 +1423,11 @@ msgstr "Error al cargar el historial"
 msgid "Failed to load image"
 msgstr "No se pudo cargar la imagen"
 
-#: src/features/wiki/wiki-settings.tsx:848
+#: src/features/wiki/wiki-settings.tsx:849
 msgid "Failed to load redirects"
 msgstr "Error al cargar las redirecciones"
 
-#: src/features/wiki/wiki-settings.tsx:657
+#: src/features/wiki/wiki-settings.tsx:658
 msgid "Failed to load replicas"
 msgstr "Error al cargar las réplicas"
 
@@ -1566,7 +1435,7 @@ msgstr "Error al cargar las réplicas"
 msgid "Failed to load video"
 msgstr "No se pudo cargar el vídeo"
 
-#: src/routes/_authenticated/$page/route.tsx:57
+#: src/routes/_authenticated/$page/route.tsx:58
 #: src/routes/_authenticated/$wikiId/route.tsx:66
 msgid "Failed to load wiki info"
 msgstr "Error al cargar la información del wiki"
@@ -1579,15 +1448,11 @@ msgstr "Error al cargar los wikis"
 msgid "Failed to post comment"
 msgstr "Error al publicar el comentario"
 
-#: src/features/wiki/wiki-settings.tsx:579
+#: src/features/wiki/wiki-settings.tsx:580
 msgid "Failed to remove access"
 msgstr "Error al quitar el acceso"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:234
-msgid "Failed to remove account"
-msgstr "Error al quitar la cuenta"
-
-#: src/features/wiki/wiki-settings.tsx:676
+#: src/features/wiki/wiki-settings.tsx:677
 msgid "Failed to remove replica"
 msgstr "Error al quitar la réplica"
 
@@ -1599,7 +1464,7 @@ msgstr "Error al quitar la etiqueta"
 msgid "Failed to rename page"
 msgstr "Error al renombrar la página"
 
-#: src/features/wiki/wiki-settings.tsx:281
+#: src/features/wiki/wiki-settings.tsx:282
 msgid "Failed to rename wiki"
 msgstr "Error al renombrar el wiki"
 
@@ -1608,8 +1473,8 @@ msgid "Failed to revert page"
 msgstr "Error al revertir la página"
 
 #: ../../../lib/web/src/components/options-menu.tsx:133
-#: src/routes/_authenticated/index.tsx:334
-#: src/routes/_authenticated/index.tsx:621
+#: src/routes/_authenticated/index.tsx:335
+#: src/routes/_authenticated/index.tsx:622
 msgid "Failed to revoke RSS access"
 msgstr "No se pudo revocar el acceso RSS"
 
@@ -1617,11 +1482,11 @@ msgstr "No se pudo revocar el acceso RSS"
 msgid "Failed to save caption"
 msgstr "No se pudo guardar la leyenda"
 
-#: src/features/wiki/page-editor.tsx:307
+#: src/features/wiki/page-editor.tsx:308
 msgid "Failed to save page"
 msgstr "Error al guardar la página"
 
-#: src/features/wiki/wiki-settings.tsx:305
+#: src/features/wiki/wiki-settings.tsx:306
 msgid "Failed to save settings"
 msgstr "Error al guardar los ajustes"
 
@@ -1630,32 +1495,28 @@ msgstr "Error al guardar los ajustes"
 msgid "Failed to search wikis"
 msgstr "Error al buscar wikis"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:257
-msgid "Failed to send verification code"
-msgstr "Error al enviar el código de verificación"
-
-#: src/features/wiki/wiki-settings.tsx:550
+#: src/features/wiki/wiki-settings.tsx:551
 msgid "Failed to set access level"
 msgstr "Error al establecer el nivel de acceso"
 
 #: src/features/wiki/inline-wiki-search.tsx:96
 #: src/routes/_authenticated/find.tsx:65
-#: src/routes/_authenticated/index.tsx:678
+#: src/routes/_authenticated/index.tsx:679
 msgid "Failed to subscribe"
 msgstr "Error al suscribirse"
 
-#: src/features/wiki/wiki-settings.tsx:327
+#: src/features/wiki/wiki-settings.tsx:328
 msgid "Failed to sync wiki"
 msgstr "Error al sincronizar el wiki"
 
 #: src/features/wiki/wiki-page-content.tsx:82
 #: src/routes/_authenticated/$page/index.tsx:84
 #: src/routes/_authenticated/index.tsx:294
-#: src/routes/_authenticated/index.tsx:939
+#: src/routes/_authenticated/index.tsx:940
 msgid "Failed to unsubscribe"
 msgstr "Error al cancelar la suscripción"
 
-#: src/features/wiki/wiki-settings.tsx:563
+#: src/features/wiki/wiki-settings.tsx:564
 msgid "Failed to update access level"
 msgstr "Error al actualizar el nivel de acceso"
 
@@ -1668,11 +1529,11 @@ msgid "Failed to upload attachment"
 msgstr "Error al subir el adjunto"
 
 #: src/features/wiki/attachments-page.tsx:158
-#: src/features/wiki/page-editor.tsx:203
+#: src/features/wiki/page-editor.tsx:204
 msgid "Failed to upload files"
 msgstr "Error al subir los archivos"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:588
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:589
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:155
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:175
 msgid "Files"
@@ -1682,16 +1543,12 @@ msgstr "Archivos"
 msgid "Filter"
 msgstr "Filtrar"
 
-#: ../../../lib/web/src/components/data-table/toolbar.tsx:30
-msgid "Filter..."
-msgstr "Filtrar..."
-
 #: src/components/layout/wiki-layout.tsx:131
 #: src/routes/_authenticated/find.tsx:99
 msgid "Find wikis"
 msgstr "Buscar wikis"
 
-#: src/features/wiki/wiki-settings.tsx:401
+#: src/features/wiki/wiki-settings.tsx:402
 msgid "Fingerprint"
 msgstr "Huella"
 
@@ -1706,10 +1563,6 @@ msgstr "Indicadores"
 #: ../../../lib/web/src/lib/preference-utils.ts:111
 msgid "Flat"
 msgstr "Plana"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:258
-msgid "Floating"
-msgstr "Flotante"
 
 #. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link preload={false} to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
 #: src/features/wiki/search-page.tsx:81
@@ -1731,41 +1584,15 @@ msgstr "De"
 #: ../../../lib/web/src/lib/preference-utils.ts:89
 #: ../../../lib/web/src/lib/preference-utils.ts:99
 #: ../../../lib/web/src/lib/preference-utils.ts:110
-#: ../../../lib/web/src/lib/preference-utils.ts:119
-#: ../../../lib/web/src/lib/preference-utils.ts:127
-#: ../../../lib/web/src/lib/preference-utils.ts:138
+#: ../../../lib/web/src/lib/preference-utils.ts:120
+#: ../../../lib/web/src/lib/preference-utils.ts:131
 msgid "From theme"
 msgstr "Del tema"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:321
-msgid "Full layout"
-msgstr "Diseño completo"
-
-#: ../../../lib/web/src/features/errors/forbidden.tsx:26
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:26
 #: ../../../lib/web/src/features/errors/unauthorized-error.tsx:26
 msgid "Go back"
 msgstr "Volver"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:82
-msgid "Go to first page"
-msgstr "Ir a la primera página"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:128
-msgid "Go to last page"
-msgstr "Ir a la última página"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:119
-msgid "Go to next page"
-msgstr "Ir a la página siguiente"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:106
-msgid "Go to page {pageNumber}"
-msgstr "Ir a la página {pageNumber}"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:91
-msgid "Go to previous page"
-msgstr "Ir a la página anterior"
 
 #: src/features/wiki/attachments-page.tsx:419
 #: src/features/wiki/attachments-page.tsx:424
@@ -1785,18 +1612,10 @@ msgstr "Agrupar por"
 msgid "Group: {0}"
 msgstr "Grupo: {0}"
 
-#: ../../../lib/web/src/components/data-table/column-header.tsx:70
-msgid "Hide"
-msgstr "Ocultar"
-
-#: ../../../lib/web/src/components/password-input.tsx:27
-msgid "Hide password"
-msgstr "Ocultar contraseña"
-
-#: ../../../lib/web/src/components/audit-timeline.tsx:58
-#: src/features/wiki/wiki-page-content.tsx:310
+#: ../../../lib/web/src/components/audit-timeline.tsx:61
+#: src/features/wiki/wiki-page-content.tsx:311
 #: src/routes/_authenticated/$page/index.tsx:227
-#: src/routes/_authenticated/index.tsx:422
+#: src/routes/_authenticated/index.tsx:423
 msgid "History"
 msgstr "Historial"
 
@@ -1811,7 +1630,7 @@ msgstr "Historial"
 msgid "History: {pageTitle}"
 msgstr "Historial: {pageTitle}"
 
-#: src/features/wiki/wiki-settings.tsx:442
+#: src/features/wiki/wiki-settings.tsx:443
 msgid "home"
 msgstr "home"
 
@@ -1823,7 +1642,7 @@ msgstr "home"
 msgid "Home"
 msgstr "Inicio"
 
-#: src/features/wiki/wiki-settings.tsx:430
+#: src/features/wiki/wiki-settings.tsx:431
 msgid "Home page"
 msgstr "Página de inicio"
 
@@ -1832,15 +1651,15 @@ msgid "Hot"
 msgstr "Popular"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
-#: src/features/wiki/wiki-settings.tsx:742
+#: src/features/wiki/wiki-settings.tsx:743
 msgid "ID"
 msgstr "ID"
 
-#: src/features/wiki/wiki-settings.tsx:388
+#: src/features/wiki/wiki-settings.tsx:389
 msgid "Identity"
 msgstr "Identidad"
 
-#: src/features/wiki/markdown-content.tsx:127
+#: src/features/wiki/markdown-content.tsx:128
 msgid "Image"
 msgstr "Imagen"
 
@@ -1853,7 +1672,7 @@ msgstr "Visor de imágenes: {0}"
 msgid "Images"
 msgstr "Imágenes"
 
-#: src/features/wiki/page-editor.tsx:515
+#: src/features/wiki/page-editor.tsx:516
 msgid "images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration."
 msgstr "imágenes, PDF, DOC, DOCX, TXT y MD. Las subidas grandes también pueden estar limitadas por la configuración de tu servidor o proxy."
 
@@ -1861,7 +1680,7 @@ msgstr "imágenes, PDF, DOC, DOCX, TXT y MD. Las subidas grandes también pueden
 msgid "Imperial"
 msgstr "Imperial"
 
-#: ../../../lib/web/src/features/access/types.ts:42
+#: ../../../lib/web/src/features/access/types.ts:36
 msgid "Including anonymous users"
 msgstr "Incluidos los usuarios anónimos"
 
@@ -1873,33 +1692,21 @@ msgstr "Avatar con iniciales"
 msgid "Initials avatar for {name}"
 msgstr "Avatar con iniciales de {name}"
 
-#: src/features/wiki/page-editor.tsx:356
+#: src/features/wiki/page-editor.tsx:357
 msgid "Insert"
 msgstr "Insertar"
 
-#: src/features/wiki/page-editor.tsx:506
+#: src/features/wiki/page-editor.tsx:507
 msgid "Insert attachment"
 msgstr "Insertar adjunto"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:253
-msgid "Inset"
-msgstr "Insertado"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "Intereses"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:544
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:550
 msgid "Invalid date"
 msgstr "Fecha no válida"
-
-#: ../../../lib/web/src/components/tag-input.tsx:38
-msgid "Invalid tag: letters, numbers, spaces, hyphens, and slashes only (max 50 chars)"
-msgstr "Etiqueta no válida: solo letras, números, espacios, guiones y barras (máximo 50 caracteres)"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:245
-msgid "Invalid verification code"
-msgstr "Código de verificación no válido"
 
 #: src/routes/_authenticated/$page/revert.tsx:45
 #: src/routes/_authenticated/$wikiId/$page/revert.tsx:46
@@ -1914,7 +1721,7 @@ msgstr "Parece que la página que buscas <0/>no existe o se ha eliminado."
 msgid "Joined wiki"
 msgstr "Te has unido al wiki"
 
-#: ../../../lib/web/src/lib/locale-format.ts:164
+#: ../../../lib/web/src/lib/locale-format.ts:165
 msgid "Just now"
 msgstr "Ahora mismo"
 
@@ -1923,7 +1730,7 @@ msgid "Keyboard shortcuts"
 msgstr "Atajos de teclado"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:103
-#: ../../../lib/web/src/lib/preference-utils.ts:130
+#: ../../../lib/web/src/lib/preference-utils.ts:123
 msgid "Large"
 msgstr "Grande"
 
@@ -1931,43 +1738,31 @@ msgstr "Grande"
 msgid "Large uploads may be limited by your server or proxy configuration."
 msgstr "Las subidas grandes pueden estar limitadas por la configuración de tu servidor o proxy."
 
-#: src/features/wiki/wiki-settings.tsx:744
+#: src/features/wiki/wiki-settings.tsx:745
 msgid "Last synced"
 msgstr "Última sincronización"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:287
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:306
 msgid "Layout"
 msgstr "Diseño"
-
-#: ../../../lib/web/src/components/learn-more.tsx:33
-#: ../../../lib/web/src/components/learn-more.tsx:38
-msgid "Learn more"
-msgstr "Más información"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:355
-msgid "Left to Right"
-msgstr "De izquierda a derecha"
 
 #: ../../../lib/web/src/components/post-tags.tsx:72
 msgid "Letters, numbers, spaces, and hyphens only"
 msgstr "Solo letras, números, espacios y guiones"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:214
-#: ../../../lib/web/src/components/theme-switch.tsx:45
 #: ../../../lib/web/src/lib/preference-utils.ts:14
 msgid "Light"
 msgstr "Claro"
 
 #: ../../../lib/web/src/components/options-menu.tsx:190
-#: src/features/wiki/wiki-page-content.tsx:241
-#: src/features/wiki/wiki-page-content.tsx:370
+#: src/features/wiki/wiki-page-content.tsx:242
+#: src/features/wiki/wiki-page-content.tsx:371
 #: src/routes/_authenticated/$page/index.tsx:268
-#: src/routes/_authenticated/index.tsx:481
+#: src/routes/_authenticated/index.tsx:482
 msgid "Link"
 msgstr "Enlace"
 
-#: src/features/wiki/markdown-content.tsx:175
+#: src/features/wiki/markdown-content.tsx:176
 msgid "Link to {headingText}"
 msgstr "Enlace a {headingText}"
 
@@ -1990,7 +1785,7 @@ msgstr "Vista de lista"
 msgid "Load more"
 msgstr "Cargar más"
 
-#: ../../../lib/web/src/components/ui/loading-content.tsx:25
+#: ../../../lib/web/src/components/ui/loading-content.tsx:26
 msgid "Loading content…"
 msgstr "Cargando contenido…"
 
@@ -1999,8 +1794,6 @@ msgstr "Cargando contenido…"
 msgid "Loading..."
 msgstr "Cargando..."
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:69
-#: ../../../lib/web/src/components/profile-dropdown.tsx:98
 #: ../../../lib/web/src/components/sign-out-dialog.tsx:26
 #: ../../../lib/web/src/components/sign-out-dialog.tsx:28
 msgid "Log out"
@@ -2018,21 +1811,16 @@ msgstr "Sesión cerrada correctamente"
 msgid "Logging out…"
 msgstr "Cerrando sesión…"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:125
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
 msgid "Manage categories"
 msgstr "Gestionar categorías"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:192
-msgid "Manage your connected accounts for notifications and services."
-msgstr "Gestiona tus cuentas conectadas para notificaciones y servicios."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:52
 msgid "Manual"
 msgstr "Manual"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:190
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:197
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:224
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:207
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:214
 msgid "Mark all as read"
 msgstr "Marcar todo como leído"
 
@@ -2081,29 +1869,29 @@ msgstr "Lunes"
 msgid "More options"
 msgstr "Más opciones"
 
-#: src/features/wiki/page-editor.tsx:445
+#: src/features/wiki/page-editor.tsx:446
 msgid "my-page-name"
 msgstr "nombre-de-mi-página"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:598
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:600
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:125
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:293
 #: src/features/wiki/attachments-page.tsx:405
-#: src/features/wiki/wiki-settings.tsx:391
+#: src/features/wiki/wiki-settings.tsx:392
 msgid "Name"
 msgstr "Nombre"
 
-#: src/features/wiki/wiki-settings.tsx:270
-msgid "Name cannot contain < or > characters"
-msgstr "El nombre no puede contener los caracteres < o >"
+#: src/features/wiki/wiki-settings.tsx:271
+msgid "Name cannot contain < or > characters, or line breaks"
+msgstr "El nombre no puede contener los caracteres < o >, ni saltos de línea"
 
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
 msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
 msgstr "El nombre no puede contener corchetes angulares, barra invertida, punto y coma, comillas ni comillas invertidas"
 
-#: src/features/wiki/wiki-settings.tsx:269
+#: src/features/wiki/wiki-settings.tsx:270
 msgid "Name must be 100 characters or less"
 msgstr "El nombre debe tener 100 caracteres o menos"
 
@@ -2112,38 +1900,38 @@ msgid "Name must be 1000 characters or less"
 msgstr "El nombre debe tener 1000 caracteres o menos"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:53
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:322
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:313
 msgid "Network error"
 msgstr "Error de red"
 
-#: src/features/wiki/wiki-settings.tsx:758
+#: src/features/wiki/wiki-settings.tsx:759
 msgid "Never"
 msgstr "Nunca"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:475
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:476
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "Nuevo"
 
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:37
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:49
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:39
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:51
 msgid "New game"
 msgstr "Nueva partida"
 
-#: src/features/wiki/wiki-page-content.tsx:362
+#: src/features/wiki/wiki-page-content.tsx:363
 #: src/routes/_authenticated/$page/index.tsx:154
 #: src/routes/_authenticated/$page/index.tsx:260
 #: src/routes/_authenticated/$wikiId/new.tsx:25
 #: src/routes/_authenticated/$wikiId/new.tsx:36
-#: src/routes/_authenticated/index.tsx:473
+#: src/routes/_authenticated/index.tsx:474
 #: src/routes/_authenticated/new.tsx:24
 #: src/routes/_authenticated/new.tsx:31
 msgid "New page"
 msgstr "Nueva página"
 
-#: src/features/wiki/wiki-page-content.tsx:159
-#: src/routes/_authenticated/index.tsx:323
-#: src/routes/_authenticated/index.tsx:610
+#: src/features/wiki/wiki-page-content.tsx:160
+#: src/routes/_authenticated/index.tsx:324
+#: src/routes/_authenticated/index.tsx:611
 msgid "New RSS URL copied to clipboard"
 msgstr "Nueva URL del RSS copiada al portapapeles"
 
@@ -2160,7 +1948,7 @@ msgid "New URL must be different from current URL"
 msgstr "La nueva URL debe ser distinta de la actual"
 
 #: src/features/wiki/redirects-page.tsx:258
-#: src/features/wiki/wiki-settings.tsx:1056
+#: src/features/wiki/wiki-settings.tsx:1057
 msgid "new-page-name"
 msgstr "nombre-nueva-página"
 
@@ -2169,11 +1957,11 @@ msgstr "nombre-nueva-página"
 msgid "Next image"
 msgstr "Siguiente imagen"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:554
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:555
 msgid "No {parentClassNames} to add to"
 msgstr "No hay {parentClassNames} a los que añadir"
 
-#: src/features/wiki/wiki-settings.tsx:500
+#: src/features/wiki/wiki-settings.tsx:501
 msgid "No access"
 msgstr "Sin acceso"
 
@@ -2190,7 +1978,7 @@ msgid "No attachments match your search"
 msgstr "Ningún adjunto coincide con tu búsqueda"
 
 #: src/features/wiki/attachments-page.tsx:464
-#: src/features/wiki/page-editor.tsx:570
+#: src/features/wiki/page-editor.tsx:571
 msgid "No attachments yet"
 msgstr "Aún no hay adjuntos"
 
@@ -2203,11 +1991,7 @@ msgstr "Aún no hay cambios"
 msgid "No comments yet"
 msgstr "Aún no hay comentarios"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:295
-msgid "No connected accounts"
-msgstr "No hay cuentas conectadas"
-
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:46
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:48
 msgid "No games yet"
 msgstr "Aún no hay partidas"
 
@@ -2215,17 +1999,13 @@ msgstr "Aún no hay partidas"
 msgid "No groups available"
 msgstr "No hay grupos disponibles"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:521
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "Aún no se pueden crear tipos de elementos. Crea primero los elementos principales necesarios."
 
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
 msgid "No matching objects"
 msgstr "No hay objetos coincidentes"
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
-msgid "No notifications yet"
-msgstr "Aún no hay notificaciones"
 
 #: src/features/wiki/search-page.tsx:74
 msgid "No pages found for \"{debouncedQuery}\""
@@ -2235,7 +2015,7 @@ msgstr "No se han encontrado páginas para «{debouncedQuery}»"
 msgid "No pages found with this tag"
 msgstr "No se encontraron páginas con esta etiqueta"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:336
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:341
 #: ../../../lib/web/src/components/person-picker.tsx:84
 msgid "No people found"
 msgstr "No se encontraron personas"
@@ -2244,28 +2024,22 @@ msgstr "No se encontraron personas"
 msgid "No places found"
 msgstr "No se encontraron lugares"
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:58
-msgid "No profile"
-msgstr "Sin perfil"
-
 #: src/features/wiki/redirects-page.tsx:84
-#: src/features/wiki/wiki-settings.tsx:893
+#: src/features/wiki/wiki-settings.tsx:894
 msgid "No redirects configured"
 msgstr "No hay redirecciones configuradas"
 
-#: src/features/wiki/wiki-settings.tsx:723
-#: src/features/wiki/wiki-settings.tsx:807
+#: src/features/wiki/wiki-settings.tsx:724
+#: src/features/wiki/wiki-settings.tsx:808
 msgid "No replicas yet"
 msgstr "Aún no hay réplicas"
 
 #: ../../../lib/web/src/components/inline-entity-search.tsx:64
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:82
 #: ../../../lib/web/src/components/search-entity-page.tsx:73
 msgid "No results found"
 msgstr "No se han encontrado resultados"
 
 #: ../../../lib/web/src/components/command-menu.tsx:55
-#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:94
 msgid "No results found."
 msgstr "No se encontraron resultados."
 
@@ -2273,8 +2047,8 @@ msgstr "No se encontraron resultados."
 msgid "No revisions found"
 msgstr "No se encontraron revisiones"
 
-#: ../../../lib/web/src/components/entity/entity-board-container.tsx:823
-#: ../../../lib/web/src/components/entity/entity-board-container.tsx:868
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:824
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:869
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
 msgid "No status"
 msgstr "Sin estado"
@@ -2291,11 +2065,11 @@ msgstr "No se encontraron etiquetas"
 msgid "No time zone found."
 msgstr "No se encontró ninguna zona horaria."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:104
+#: ../../../lib/web/src/components/notification-category-button.tsx:106
 msgid "No topic record yet — try again after the next notification."
 msgstr "Aún no hay registro del tema; vuelve a intentarlo tras la próxima notificación."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:122
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:139
 msgid "No unread notifications"
 msgstr "No hay notificaciones sin leer"
 
@@ -2313,9 +2087,9 @@ msgid "No wikis found"
 msgstr "No se encontraron wikis"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:537
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:540
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:541
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:545
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:382
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
@@ -2325,15 +2099,14 @@ msgstr "No se encontraron wikis"
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:100
-#: ../../../lib/web/src/lib/preference-utils.ts:120
 msgid "None"
 msgstr "Ninguno"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:129
+#: ../../../lib/web/src/lib/preference-utils.ts:122
 msgid "Normal"
 msgstr "Normal"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:267
+#: ../../../lib/web/src/components/attachment-image.tsx:50
 #: ../../../lib/web/src/features/errors/general-error.tsx:67
 msgid "Not found"
 msgstr "No encontrado"
@@ -2346,16 +2119,8 @@ msgstr "Sin establecer"
 msgid "Nothing found"
 msgstr "No se encontró nada"
 
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:136
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:150
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:236
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:257
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:261
-msgid "Notifications"
-msgstr "Notificaciones"
-
 #. placeholder {0}: unread.length
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:183
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:200
 msgid "Notifications: {0}"
 msgstr "Notificaciones: {0}"
 
@@ -2366,7 +2131,7 @@ msgid "Number"
 msgstr "Número"
 
 #: src/features/wiki/redirects-page.tsx:246
-#: src/features/wiki/wiki-settings.tsx:1044
+#: src/features/wiki/wiki-settings.tsx:1045
 msgid "old-page-name"
 msgstr "nombre-página-antigua"
 
@@ -2384,14 +2149,9 @@ msgid "Oops! Page Not Found!"
 msgstr "¡Vaya! Página no encontrada"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:862
+#: src/routes/_authenticated/index.tsx:863
 msgid "Open {0}"
 msgstr "Abrir {0}"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:156
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:166
-msgid "Open account actions"
-msgstr "Abrir acciones de cuenta"
 
 #: ../../../lib/web/src/components/layout/nav-group.tsx:199
 #: ../../../lib/web/src/components/layout/nav-group.tsx:204
@@ -2412,11 +2172,6 @@ msgstr "Abrir menú"
 msgid "Open navigation"
 msgstr "Abrir navegación"
 
-#: ../../../lib/web/src/components/layout/top-nav.tsx:38
-#: ../../../lib/web/src/components/layout/top-nav.tsx:44
-msgid "Open navigation menu"
-msgstr "Abrir menú de navegación"
-
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:105
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:111
 msgid "Open option actions"
@@ -2425,11 +2180,6 @@ msgstr "Abrir acciones de la opción"
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:30
 msgid "Open selected card"
 msgstr "Abrir tarjeta seleccionada"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:58
-#: ../../../lib/web/src/components/config-drawer.tsx:66
-msgid "Open theme settings"
-msgstr "Abrir ajustes del tema"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:274
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:279
@@ -2464,9 +2214,9 @@ msgid "Owner"
 msgstr "Propietario"
 
 #: src/features/wiki/changes-list.tsx:45
-#: src/features/wiki/wiki-page-content.tsx:292
+#: src/features/wiki/wiki-page-content.tsx:293
 #: src/routes/_authenticated/$page/index.tsx:209
-#: src/routes/_authenticated/index.tsx:404
+#: src/routes/_authenticated/index.tsx:405
 msgid "Page"
 msgstr "Página"
 
@@ -2479,48 +2229,43 @@ msgstr "La página «{slug}» no existe"
 msgid "Page \"{title}\" deleted"
 msgstr "Página «{title}» eliminada"
 
-#: ../../../lib/web/src/components/data-table/pagination.tsx:43
-#: ../../../lib/web/src/components/data-table/pagination.tsx:71
-msgid "Page {currentPage} of {totalPages}"
-msgstr "Página {currentPage} de {totalPages}"
-
-#: src/features/wiki/wiki-page-content.tsx:218
-#: src/features/wiki/wiki-page-content.tsx:224
-#: src/features/wiki/wiki-page-content.tsx:282
-#: src/features/wiki/wiki-page-content.tsx:289
+#: src/features/wiki/wiki-page-content.tsx:219
+#: src/features/wiki/wiki-page-content.tsx:225
+#: src/features/wiki/wiki-page-content.tsx:283
+#: src/features/wiki/wiki-page-content.tsx:290
 #: src/routes/_authenticated/$page/index.tsx:132
 #: src/routes/_authenticated/$page/index.tsx:139
 #: src/routes/_authenticated/$page/index.tsx:199
 #: src/routes/_authenticated/$page/index.tsx:206
-#: src/routes/_authenticated/index.tsx:394
-#: src/routes/_authenticated/index.tsx:401
+#: src/routes/_authenticated/index.tsx:395
+#: src/routes/_authenticated/index.tsx:402
 msgid "Page actions"
 msgstr "Acciones de la página"
 
-#: src/features/wiki/page-editor.tsx:277
+#: src/features/wiki/page-editor.tsx:278
 msgid "Page created"
 msgstr "Página creada"
 
 #: src/features/wiki/page-view.tsx:293
-#: src/features/wiki/wiki-page-content.tsx:258
+#: src/features/wiki/wiki-page-content.tsx:259
 #: src/routes/_authenticated/$page/index.tsx:176
-#: src/routes/_authenticated/index.tsx:373
+#: src/routes/_authenticated/index.tsx:374
 msgid "Page not found"
 msgstr "Página no encontrada"
 
-#: src/features/wiki/page-editor.tsx:299
+#: src/features/wiki/page-editor.tsx:300
 msgid "Page saved"
 msgstr "Página guardada"
 
-#: src/features/wiki/page-editor.tsx:432
+#: src/features/wiki/page-editor.tsx:433
 msgid "Page title"
 msgstr "Título de la página"
 
-#: src/features/wiki/page-editor.tsx:439
+#: src/features/wiki/page-editor.tsx:440
 msgid "Page URL"
 msgstr "URL de la página"
 
-#: src/features/wiki/page-editor.tsx:269
+#: src/features/wiki/page-editor.tsx:270
 msgid "Page URL is required"
 msgstr "La URL de la página es obligatoria"
 
@@ -2528,15 +2273,15 @@ msgstr "La URL de la página es obligatoria"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "Páginas etiquetadas con <0>{tag}</0>"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:529
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:530
 msgid "Parent"
 msgstr "Principal"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:336
+#: ../../../lib/web/src/components/step-up-dialog.tsx:337
 msgid "Passkey"
 msgstr "Clave de acceso"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:206
+#: ../../../lib/web/src/components/step-up-dialog.tsx:207
 msgid "Passkey verification failed. Please try again."
 msgstr "La verificación con la clave de acceso ha fallado. Inténtalo de nuevo."
 
@@ -2548,17 +2293,13 @@ msgstr "Claves de acceso"
 msgid "Pattern (regex)"
 msgstr "Patrón (regex)"
 
-#: src/features/wiki/wiki-settings.tsx:465
+#: src/features/wiki/wiki-settings.tsx:466
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Eliminar permanentemente este wiki y todo su contenido. Esta acción no se puede deshacer."
 
-#: ../../../lib/web/src/components/date-picker.tsx:20
-msgid "Pick a date"
-msgstr "Elige una fecha"
-
 #: ../../../lib/web/src/components/comment-composer.tsx:89
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:323
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:314
 msgid "Please check your internet connection and try again."
 msgstr "Comprueba tu conexión a internet e inténtalo de nuevo."
 
@@ -2582,7 +2323,7 @@ msgstr "Publicaciones"
 msgid "Posts and comments"
 msgstr "Publicaciones y comentarios"
 
-#: src/features/wiki/page-editor.tsx:346
+#: src/features/wiki/page-editor.tsx:347
 msgid "Preview"
 msgstr "Vista previa"
 
@@ -2600,10 +2341,6 @@ msgstr "Privacidad"
 msgid "Processing…"
 msgstr "Procesando…"
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:114
-msgid "Profile"
-msgstr "Perfil"
-
 #: ../../../lib/web/src/components/person-picker.tsx:200
 msgid "Project members"
 msgstr "Miembros del proyecto"
@@ -2616,8 +2353,8 @@ msgstr "Notificación push"
 msgid "Raised"
 msgstr "Elevada"
 
-#: src/features/wiki/page-editor.tsx:455
-#: src/features/wiki/page-editor.tsx:461
+#: src/features/wiki/page-editor.tsx:456
+#: src/features/wiki/page-editor.tsx:462
 msgid "Re-derive from title"
 msgstr "Volver a derivar del título"
 
@@ -2633,17 +2370,17 @@ msgstr "Vuelve a registrar tus llaves de acceso en este servidor"
 msgid "Reason for reverting"
 msgstr "Motivo de la reversión"
 
-#: src/features/wiki/wiki-page-content.tsx:344
+#: src/features/wiki/wiki-page-content.tsx:345
 #: src/routes/_authenticated/$page/index.tsx:253
 #: src/routes/_authenticated/$wikiId/changes.tsx:27
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
-#: src/routes/_authenticated/changes.tsx:30
-#: src/routes/_authenticated/changes.tsx:48
-#: src/routes/_authenticated/changes.tsx:59
-#: src/routes/_authenticated/changes.tsx:69
-#: src/routes/_authenticated/index.tsx:442
+#: src/routes/_authenticated/changes.tsx:31
+#: src/routes/_authenticated/changes.tsx:49
+#: src/routes/_authenticated/changes.tsx:60
+#: src/routes/_authenticated/changes.tsx:70
+#: src/routes/_authenticated/index.tsx:443
 msgid "Recent changes"
 msgstr "Cambios recientes"
 
@@ -2651,12 +2388,11 @@ msgstr "Cambios recientes"
 msgid "Recent edits across all pages in this wiki."
 msgstr "Ediciones recientes en todas las páginas de este wiki."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:220
 #: ../../../lib/web/src/components/search-entity-page.tsx:243
 msgid "Recommended"
 msgstr "Recomendado"
 
-#: src/routes/_authenticated/index.tsx:785
+#: src/routes/_authenticated/index.tsx:786
 msgid "Recommended wikis"
 msgstr "Wikis recomendados"
 
@@ -2669,12 +2405,12 @@ msgstr "Reconectando ({retries})..."
 msgid "Redirect \"{0}\" deleted"
 msgstr "Redirección «{0}» eliminada"
 
-#: src/features/wiki/wiki-settings.tsx:865
+#: src/features/wiki/wiki-settings.tsx:866
 msgid "Redirect \"{source}\" deleted"
 msgstr "Redirección «{source}» eliminada"
 
 #: src/features/wiki/redirects-page.tsx:208
-#: src/features/wiki/wiki-settings.tsx:1006
+#: src/features/wiki/wiki-settings.tsx:1007
 msgid "Redirect created"
 msgstr "Redirección creada"
 
@@ -2684,9 +2420,9 @@ msgstr "Redirigiendo al inicio de sesión."
 
 #: src/features/wiki/redirects-page.tsx:73
 #: src/features/wiki/wiki-settings.tsx:106
-#: src/features/wiki/wiki-settings.tsx:881
-#: src/routes/_authenticated/redirects.tsx:26
-#: src/routes/_authenticated/redirects.tsx:29
+#: src/features/wiki/wiki-settings.tsx:882
+#: src/routes/_authenticated/redirects.tsx:27
+#: src/routes/_authenticated/redirects.tsx:30
 msgid "Redirects"
 msgstr "Redirecciones"
 
@@ -2707,14 +2443,13 @@ msgstr "Relativo (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "Relativo en las últimas 24 horas; de lo contrario, absoluto"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:278
-#: ../../../lib/web/src/components/attachment-composer.tsx:323
+#: ../../../lib/web/src/components/attachment-composer.tsx:285
+#: ../../../lib/web/src/components/attachment-composer.tsx:330
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
 #: ../../../lib/web/src/features/access/access-list.tsx:270
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:180
 #: src/features/wiki/tag-manager.tsx:117
 #: src/features/wiki/tag-manager.tsx:122
-#: src/features/wiki/wiki-settings.tsx:794
+#: src/features/wiki/wiki-settings.tsx:795
 msgid "Remove"
 msgstr "Eliminar"
 
@@ -2743,7 +2478,7 @@ msgstr "¿Eliminar el acceso?"
 msgid "Remove interest"
 msgstr "Eliminar interés"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:665
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:674
 msgid "Remove item"
 msgstr "Eliminar elemento"
 
@@ -2753,34 +2488,34 @@ msgid "Remove link"
 msgstr "Quitar enlace"
 
 #. placeholder {0}: replica.name || replica.id
-#: src/features/wiki/wiki-settings.tsx:770
-#: src/features/wiki/wiki-settings.tsx:776
+#: src/features/wiki/wiki-settings.tsx:771
+#: src/features/wiki/wiki-settings.tsx:777
 msgid "Remove replica {0}"
 msgstr "Quitar réplica {0}"
 
-#: src/features/wiki/wiki-settings.tsx:780
+#: src/features/wiki/wiki-settings.tsx:781
 msgid "Remove replica?"
 msgstr "¿Eliminar la réplica?"
 
-#: src/features/wiki/wiki-settings.tsx:577
+#: src/features/wiki/wiki-settings.tsx:578
 msgid "Removing access..."
 msgstr "Eliminando acceso..."
 
-#: src/features/wiki/wiki-settings.tsx:674
+#: src/features/wiki/wiki-settings.tsx:675
 msgid "Removing replica..."
 msgstr "Eliminando réplica..."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:559
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:561
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:618
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
-#: src/features/wiki/wiki-page-content.tsx:304
+#: src/features/wiki/wiki-page-content.tsx:305
 #: src/routes/_authenticated/$page/index.tsx:221
-#: src/routes/_authenticated/index.tsx:416
+#: src/routes/_authenticated/index.tsx:417
 msgid "Rename"
 msgstr "Renombrar"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:594
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:596
 msgid "Rename column"
 msgstr "Renombrar columna"
 
@@ -2788,7 +2523,7 @@ msgstr "Renombrar columna"
 msgid "Rename page"
 msgstr "Renombrar página"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:595
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
 msgid "Rename this board column"
 msgstr "Renombrar esta columna del tablero"
 
@@ -2796,21 +2531,21 @@ msgstr "Renombrar esta columna del tablero"
 msgid "Renaming..."
 msgstr "Renombrando..."
 
-#: src/features/wiki/wiki-page-content.tsx:151
-#: src/routes/_authenticated/index.tsx:315
-#: src/routes/_authenticated/index.tsx:602
+#: src/features/wiki/wiki-page-content.tsx:152
+#: src/routes/_authenticated/index.tsx:316
+#: src/routes/_authenticated/index.tsx:603
 msgid "Replace"
 msgstr "Reemplazar"
 
-#: src/features/wiki/wiki-settings.tsx:675
+#: src/features/wiki/wiki-settings.tsx:676
 msgid "Replica \"{displayName}\" removed"
 msgstr "Réplica \"{displayName}\" eliminada"
 
 #: src/features/wiki/wiki-settings.tsx:108
-#: src/features/wiki/wiki-settings.tsx:691
-#: src/features/wiki/wiki-settings.tsx:704
-#: src/features/wiki/wiki-settings.tsx:718
-#: src/features/wiki/wiki-settings.tsx:735
+#: src/features/wiki/wiki-settings.tsx:692
+#: src/features/wiki/wiki-settings.tsx:705
+#: src/features/wiki/wiki-settings.tsx:719
+#: src/features/wiki/wiki-settings.tsx:736
 msgid "Replicas"
 msgstr "Réplicas"
 
@@ -2838,7 +2573,7 @@ msgstr "Responder"
 msgid "Reply to {0}..."
 msgstr "Responder a {0}..."
 
-#: src/features/wiki/wiki-page-content.tsx:200
+#: src/features/wiki/wiki-page-content.tsx:201
 msgid "Request URL: {baseURL}{slug}"
 msgstr "URL de la solicitud: {baseURL}{slug}"
 
@@ -2846,25 +2581,11 @@ msgstr "URL de la solicitud: {baseURL}{slug}"
 msgid "Required"
 msgstr "Obligatorio"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:369
+#: ../../../lib/web/src/components/step-up-dialog.tsx:370
 msgid "Resend email"
 msgstr "Reenviar correo"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:87
-#: ../../../lib/web/src/components/data-table/toolbar.tsx:82
-msgid "Reset"
-msgstr "Restablecer"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:122
-#: ../../../lib/web/src/components/config-drawer.tsx:127
-msgid "Reset {title}"
-msgstr "Restablecer {title}"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:85
-msgid "Reset all settings to default values"
-msgstr "Restablecer todos los ajustes a sus valores predeterminados"
-
-#: ../../../lib/web/src/components/attachment-composer.tsx:341
+#: ../../../lib/web/src/components/attachment-composer.tsx:348
 msgid "Retry"
 msgstr "Reintentar"
 
@@ -2910,18 +2631,14 @@ msgid "Revoke"
 msgstr "Revocar"
 
 #: ../../../lib/web/src/components/options-menu.tsx:181
-#: src/routes/_authenticated/index.tsx:465
-#: src/routes/_authenticated/index.tsx:736
+#: src/routes/_authenticated/index.tsx:466
+#: src/routes/_authenticated/index.tsx:737
 msgid "Revoke access"
 msgstr "Revocar acceso"
 
 #: ../../../lib/web/src/components/options-menu.tsx:241
 msgid "Revoke RSS access?"
 msgstr "¿Revocar el acceso RSS?"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:362
-msgid "Right to Left"
-msgstr "De derecha a izquierda"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
@@ -2932,27 +2649,23 @@ msgstr "Filas"
 msgid "Rows group by"
 msgstr "Agrupar filas por"
 
-#: ../../../lib/web/src/components/data-table/pagination.tsx:65
-msgid "Rows per page"
-msgstr "Filas por página"
-
 #: ../../../lib/web/src/components/options-menu.tsx:131
-#: src/routes/_authenticated/index.tsx:332
-#: src/routes/_authenticated/index.tsx:619
+#: src/routes/_authenticated/index.tsx:333
+#: src/routes/_authenticated/index.tsx:620
 msgid "RSS access revoked"
 msgstr "Acceso RSS revocado"
 
 #: ../../../lib/web/src/components/options-menu.tsx:171
-#: src/features/wiki/wiki-page-content.tsx:350
-#: src/routes/_authenticated/index.tsx:448
-#: src/routes/_authenticated/index.tsx:717
+#: src/features/wiki/wiki-page-content.tsx:351
+#: src/routes/_authenticated/index.tsx:449
+#: src/routes/_authenticated/index.tsx:718
 msgid "RSS feed"
 msgstr "Feed RSS"
 
 #: ../../../lib/web/src/components/options-menu.tsx:120
-#: src/features/wiki/wiki-page-content.tsx:159
-#: src/routes/_authenticated/index.tsx:323
-#: src/routes/_authenticated/index.tsx:610
+#: src/features/wiki/wiki-page-content.tsx:160
+#: src/routes/_authenticated/index.tsx:324
+#: src/routes/_authenticated/index.tsx:611
 msgid "RSS URL copied to clipboard"
 msgstr "URL del RSS copiada al portapapeles"
 
@@ -2960,24 +2673,24 @@ msgstr "URL del RSS copiada al portapapeles"
 msgid "Saturday"
 msgstr "Sábado"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:423
+#: ../../../lib/web/src/components/attachment-composer.tsx:430
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:170
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:79
-#: src/features/wiki/page-editor.tsx:407
+#: src/features/wiki/page-editor.tsx:408
 #: src/features/wiki/wiki-comment-thread.tsx:202
 msgid "Save"
 msgstr "Guardar"
 
-#: src/features/wiki/wiki-settings.tsx:451
+#: src/features/wiki/wiki-settings.tsx:452
 msgid "Save changes"
 msgstr "Guardar cambios"
 
-#: src/features/wiki/page-editor.tsx:407
-#: src/features/wiki/wiki-settings.tsx:279
-#: src/features/wiki/wiki-settings.tsx:303
-#: src/features/wiki/wiki-settings.tsx:451
+#: src/features/wiki/page-editor.tsx:408
+#: src/features/wiki/wiki-settings.tsx:280
+#: src/features/wiki/wiki-settings.tsx:304
+#: src/features/wiki/wiki-settings.tsx:452
 msgid "Saving..."
 msgstr "Guardando..."
 
@@ -2985,13 +2698,13 @@ msgstr "Guardando..."
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
 #: ../../../lib/web/src/components/search.tsx:18
-#: src/features/wiki/wiki-page-content.tsx:332
+#: src/features/wiki/wiki-page-content.tsx:333
 #: src/routes/_authenticated/$page/index.tsx:241
 #: src/routes/_authenticated/$wikiId/search.tsx:31
 #: src/routes/_authenticated/$wikiId/search.tsx:41
-#: src/routes/_authenticated/index.tsx:430
-#: src/routes/_authenticated/search.tsx:33
-#: src/routes/_authenticated/search.tsx:42
+#: src/routes/_authenticated/index.tsx:431
+#: src/routes/_authenticated/search.tsx:34
+#: src/routes/_authenticated/search.tsx:43
 msgid "Search"
 msgstr "Buscar"
 
@@ -3015,7 +2728,7 @@ msgstr "Buscar un lugar"
 msgid "Search for a place..."
 msgstr "Busca un lugar..."
 
-#: src/routes/_authenticated/index.tsx:761
+#: src/routes/_authenticated/index.tsx:762
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "Busca un wiki al que suscribirte, o crea uno para publicar tu propia documentación."
 
@@ -3064,12 +2777,10 @@ msgstr "Busca, observa y ordena esta vista."
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
 #: ../../../lib/web/src/components/inline-entity-search.tsx:63
 #: ../../../lib/web/src/components/person-picker.tsx:324
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:81
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "Buscar..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:178
 #: ../../../lib/web/src/components/search-entity-page.tsx:201
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
@@ -3079,16 +2790,11 @@ msgstr "Buscando..."
 msgid "Select"
 msgstr "Seleccionar"
 
-#. placeholder {0}: item.label.toLowerCase()
-#: ../../../lib/web/src/components/config-drawer.tsx:149
-msgid "Select {0}"
-msgstr "Selecciona {0}"
-
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:356
 msgid "Select a field"
 msgstr "Selecciona un campo"
 
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:32
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:34
 msgid "Select a game"
 msgstr "Selecciona una partida"
 
@@ -3100,25 +2806,17 @@ msgstr "Selecciona un usuario, grupo u otra regla para conceder acceso."
 msgid "Select access rule"
 msgstr "Seleccionar regla de acceso"
 
-#: ../../../lib/web/src/features/accounts/account-picker.tsx:34
-msgid "Select account"
-msgstr "Selecciona una cuenta"
-
 #: ../../../lib/web/src/features/accounts/account-add.tsx:142
 msgid "Select account type"
 msgstr "Seleccionar tipo de cuenta"
 
-#: src/features/wiki/page-editor.tsx:508
+#: src/features/wiki/page-editor.tsx:509
 msgid "Select an attachment to insert into your page, or upload a new file."
 msgstr "Selecciona un adjunto para insertarlo en tu página o sube un archivo nuevo."
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:231
 msgid "Select group"
 msgstr "Seleccionar grupo"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:305
-msgid "Select layout style"
-msgstr "Seleccionar estilo de diseño"
 
 #: ../../../lib/web/src/components/place-picker.tsx:49
 msgid "Select location"
@@ -3136,26 +2834,10 @@ msgstr "Selecciona una persona..."
 msgid "Select previous card"
 msgstr "Seleccionar tarjeta anterior"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:247
-msgid "Select sidebar style"
-msgstr "Seleccionar estilo de barra lateral"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:349
-msgid "Select site direction"
-msgstr "Seleccionar dirección del sitio"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:203
-msgid "Select theme preference"
-msgstr "Seleccionar preferencia de tema"
-
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:252
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:335
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:257
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:340
 msgid "Select..."
 msgstr "Seleccionar..."
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:206
-msgid "selected"
-msgstr "seleccionados"
 
 #. placeholder {0}: getSelectedName()
 #: ../../../lib/web/src/features/access/access-dialog.tsx:309
@@ -3166,7 +2848,7 @@ msgstr "Seleccionado: <0>{0}</0>"
 msgid "Send again"
 msgstr "Enviar de nuevo"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:309
+#: ../../../lib/web/src/components/step-up-dialog.tsx:310
 msgid "Send email"
 msgstr "Enviar correo"
 
@@ -3175,12 +2857,12 @@ msgstr "Enviar correo"
 msgid "Send message"
 msgstr "Enviar mensaje"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:140
+#: ../../../lib/web/src/lib/preference-utils.ts:133
 msgid "Serif"
 msgstr "Con serifa"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:279
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:305
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:270
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:296
 msgid "Server error"
 msgstr "Error del servidor"
 
@@ -3189,7 +2871,7 @@ msgstr "Error del servidor"
 msgid "Server rules"
 msgstr "Normas del servidor"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:229
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:220
 msgid "Session expired. Please log in again."
 msgstr "La sesión ha caducado. Vuelve a iniciar sesión."
 
@@ -3197,21 +2879,21 @@ msgstr "La sesión ha caducado. Vuelve a iniciar sesión."
 msgid "Set origin and destination"
 msgstr "Establecer origen y destino"
 
-#: src/features/wiki/wiki-settings.tsx:548
+#: src/features/wiki/wiki-settings.tsx:549
 msgid "Setting access..."
 msgstr "Estableciendo acceso..."
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:119
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:125
 #: ../../../lib/web/src/components/options-menu.tsx:196
-#: src/features/wiki/wiki-page-content.tsx:377
+#: src/features/wiki/wiki-page-content.tsx:378
 #: src/features/wiki/wiki-settings.tsx:105
 #: src/routes/_authenticated/$page/index.tsx:275
-#: src/routes/_authenticated/index.tsx:488
+#: src/routes/_authenticated/index.tsx:489
 msgid "Settings"
 msgstr "Ajustes"
 
-#: src/features/wiki/wiki-settings.tsx:304
+#: src/features/wiki/wiki-settings.tsx:305
 msgid "Settings saved"
 msgstr "Ajustes guardados"
 
@@ -3227,10 +2909,6 @@ msgstr "Mostrar campos"
 msgid "Show page"
 msgstr "Mostrar página"
 
-#: ../../../lib/web/src/components/password-input.tsx:27
-msgid "Show password"
-msgstr "Mostrar contraseña"
-
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:33
 msgid "Show this help"
 msgstr "Mostrar esta ayuda"
@@ -3239,9 +2917,7 @@ msgstr "Mostrar esta ayuda"
 msgid "Showing {totalShown} of {total}"
 msgstr "Mostrando {totalShown} de {total}"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:239
-#: ../../../lib/web/src/components/config-drawer.tsx:263
-#: ../../../lib/web/src/components/ui/sidebar.tsx:237
+#: ../../../lib/web/src/components/ui/sidebar.tsx:257
 msgid "Sidebar"
 msgstr "Barra lateral"
 
@@ -3263,12 +2939,8 @@ msgstr "Solo una línea de texto"
 msgid "Size"
 msgstr "Tamaño"
 
-#: ../../../lib/web/src/components/skip-to-main.tsx:11
-msgid "Skip to Main"
-msgstr "Saltar al contenido principal"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:101
-#: ../../../lib/web/src/lib/preference-utils.ts:128
+#: ../../../lib/web/src/lib/preference-utils.ts:121
 msgid "Small"
 msgstr "Pequeño"
 
@@ -3278,13 +2950,13 @@ msgid "Sort"
 msgstr "Ordenar"
 
 #: src/features/wiki/redirects-page.tsx:92
-#: src/features/wiki/wiki-settings.tsx:421
-#: src/features/wiki/wiki-settings.tsx:901
+#: src/features/wiki/wiki-settings.tsx:422
+#: src/features/wiki/wiki-settings.tsx:902
 msgid "Source"
 msgstr "Fuente"
 
 #: src/features/wiki/redirects-page.tsx:241
-#: src/features/wiki/wiki-settings.tsx:1039
+#: src/features/wiki/wiki-settings.tsx:1040
 msgid "Source URL"
 msgstr "URL de origen"
 
@@ -3300,13 +2972,9 @@ msgstr "Espacioso"
 msgid "Start the discussion by adding the first comment."
 msgstr "Inicia el debate añadiendo el primer comentario."
 
-#: src/routes/_authenticated/index.tsx:758
+#: src/routes/_authenticated/index.tsx:759
 msgid "Start your first wiki"
 msgstr "Crea tu primer wiki"
-
-#: ../../../lib/web/src/components/coming-soon.tsx:15
-msgid "Stay tuned though!"
-msgstr "¡Permanece atento!"
 
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
@@ -3322,31 +2990,30 @@ msgstr "Enviar respuesta"
 
 #: ../../../lib/web/src/components/inline-entity-search.tsx:66
 #: ../../../lib/web/src/components/recommended-entities.tsx:58
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:83
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:120
-#: src/routes/_authenticated/index.tsx:824
+#: src/routes/_authenticated/index.tsx:825
 msgid "Subscribe"
 msgstr "Suscribirse"
 
 #: src/features/wiki/inline-wiki-search.tsx:95
-#: src/features/wiki/wiki-settings.tsx:743
+#: src/features/wiki/wiki-settings.tsx:744
 #: src/routes/_authenticated/find.tsx:64
 msgid "Subscribed"
 msgstr "Suscrito"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:677
+#: src/routes/_authenticated/index.tsx:678
 msgid "Subscribed to {0}"
 msgstr "Suscrito a {0}"
 
 #: src/features/wiki/inline-wiki-search.tsx:94
 #: src/routes/_authenticated/find.tsx:63
-#: src/routes/_authenticated/index.tsx:676
+#: src/routes/_authenticated/index.tsx:677
 msgid "Subscribing..."
 msgstr "Suscribiendo..."
 
-#: src/features/wiki/wiki-settings.tsx:411
+#: src/features/wiki/wiki-settings.tsx:412
 msgid "Subscription"
 msgstr "Suscripción"
 
@@ -3354,7 +3021,7 @@ msgstr "Suscripción"
 msgid "Sunday"
 msgstr "Domingo"
 
-#: src/features/wiki/page-editor.tsx:513
+#: src/features/wiki/page-editor.tsx:514
 msgid "Supported files"
 msgstr "Archivos compatibles"
 
@@ -3366,30 +3033,24 @@ msgstr "Archivos compatibles: imágenes, PDF, DOC, DOCX, TXT y MD."
 msgid "Switch to view 1-9"
 msgstr "Cambiar a vista 1-9"
 
-#: src/features/wiki/wiki-settings.tsx:416
+#: src/features/wiki/wiki-settings.tsx:417
 msgid "Sync now"
 msgstr "Sincronizar ahora"
 
-#: src/features/wiki/wiki-settings.tsx:325
-#: src/features/wiki/wiki-settings.tsx:416
+#: src/features/wiki/wiki-settings.tsx:326
+#: src/features/wiki/wiki-settings.tsx:417
 msgid "Syncing..."
 msgstr "Sincronizando..."
 
-#: ../../../lib/web/src/components/audit-timeline.tsx:104
-#: ../../../lib/web/src/components/config-drawer.tsx:209
-#: ../../../lib/web/src/components/theme-switch.tsx:59
+#: ../../../lib/web/src/components/audit-timeline.tsx:107
 #: ../../../lib/web/src/lib/preference-utils.ts:16
-#: ../../../lib/web/src/lib/preference-utils.ts:139
+#: ../../../lib/web/src/lib/preference-utils.ts:132
 msgid "System"
 msgstr "Sistema"
 
 #: src/features/wiki/page-view.tsx:54
 msgid "Table of contents"
 msgstr "Índice"
-
-#: ../../../lib/web/src/components/tag-input.tsx:95
-msgid "Tag"
-msgstr "Etiqueta"
 
 #: src/features/wiki/tag-manager.tsx:55
 msgid "Tag \"{tag}\" added"
@@ -3421,25 +3082,21 @@ msgstr "Etiqueta: {tag}"
 
 #: ../../../lib/web/src/components/post-tags.tsx:101
 #: ../../../lib/web/src/components/post-tags.tsx:115
-#: src/features/wiki/wiki-page-content.tsx:338
+#: src/features/wiki/wiki-page-content.tsx:339
 #: src/routes/_authenticated/$page/index.tsx:247
-#: src/routes/_authenticated/index.tsx:436
+#: src/routes/_authenticated/index.tsx:437
 msgid "Tags"
 msgstr "Etiquetas"
 
 #: src/features/wiki/redirects-page.tsx:94
-#: src/features/wiki/wiki-settings.tsx:903
+#: src/features/wiki/wiki-settings.tsx:904
 msgid "Target"
 msgstr "Destino"
 
 #: src/features/wiki/redirects-page.tsx:253
-#: src/features/wiki/wiki-settings.tsx:1051
+#: src/features/wiki/wiki-settings.tsx:1052
 msgid "Target URL"
 msgstr "URL de destino"
-
-#: ../../../lib/web/src/components/layout/team-switcher.tsx:63
-msgid "Teams/Apps"
-msgstr "Equipos/aplicaciones"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx:19
 #: ../../../lib/web/src/features/document/document-page.tsx:42
@@ -3450,7 +3107,7 @@ msgstr "Términos y condiciones"
 msgid "Text"
 msgstr "Texto"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:192
+#: ../../../lib/web/src/components/step-up-dialog.tsx:193
 msgid "That code is incorrect or has expired."
 msgstr "Ese código es incorrecto o ha caducado."
 
@@ -3467,7 +3124,7 @@ msgstr "Era demasiado grande para subir. Elimina o reduce archivos e inténtalo 
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "El ID de entidad del wiki que quieres replicar."
 
-#: src/features/wiki/wiki-settings.tsx:1059
+#: src/features/wiki/wiki-settings.tsx:1060
 msgid "The existing page to redirect to"
 msgstr "La página existente a la que redirigir"
 
@@ -3479,7 +3136,7 @@ msgstr "La página existente a la que redirigir (p. ej., «página-nueva»)"
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "La página «{slug}» aún no existe."
 
-#: src/features/wiki/wiki-settings.tsx:432
+#: src/features/wiki/wiki-settings.tsx:433
 msgid "The page that users see when they first visit the wiki."
 msgstr "La página que los usuarios ven al visitar el wiki por primera vez."
 
@@ -3491,11 +3148,7 @@ msgstr "No se ha podido encontrar el contenido solicitado."
 msgid "The server returned a web page instead of data."
 msgstr "El servidor devolvió una página web en lugar de datos."
 
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:15
-msgid "The site is not available at the moment."
-msgstr "El sitio no está disponible en este momento."
-
-#: src/features/wiki/wiki-settings.tsx:1047
+#: src/features/wiki/wiki-settings.tsx:1048
 msgid "The URL that will be redirected"
 msgstr "La URL que se redirigirá"
 
@@ -3503,49 +3156,37 @@ msgstr "La URL que se redirigirá"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "La URL que se redirigirá (p. ej., «página-antigua»)"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:195
-msgid "Theme"
-msgstr "Tema"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:70
-msgid "Theme Settings"
-msgstr "Ajustes de tema"
-
-#: src/features/wiki/wiki-settings.tsx:481
+#: src/features/wiki/wiki-settings.tsx:482
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "Esta acción no se puede deshacer. Eliminará permanentemente el wiki y todo su contenido."
 
-#: src/features/wiki/wiki-page-content.tsx:149
-#: src/routes/_authenticated/index.tsx:313
-#: src/routes/_authenticated/index.tsx:600
+#: src/features/wiki/wiki-page-content.tsx:150
+#: src/routes/_authenticated/index.tsx:314
+#: src/routes/_authenticated/index.tsx:601
 msgid "This feed URL was already issued and cannot be shown again."
 msgstr "Esta URL del canal ya se emitió y no se puede volver a mostrar."
 
 #: src/features/wiki/attachments-page.tsx:155
-#: src/features/wiki/page-editor.tsx:200
+#: src/features/wiki/page-editor.tsx:201
 msgid "This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit."
 msgstr "Este archivo es demasiado grande para el límite de subida actual del servidor. Prueba con un archivo más pequeño o aumenta el límite de tamaño de subida del servidor o proxy."
 
 #: src/features/wiki/attachments-page.tsx:166
-#: src/features/wiki/page-editor.tsx:211
+#: src/features/wiki/page-editor.tsx:212
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "Este archivo es demasiado grande para subirlo. Prueba con un archivo más pequeño."
 
-#: ../../../lib/web/src/components/coming-soon.tsx:14
-msgid "This page has not been created yet."
-msgstr "Esta página aún no se ha creado."
-
-#: src/features/wiki/wiki-settings.tsx:412
+#: src/features/wiki/wiki-settings.tsx:413
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Este wiki está suscrito a un wiki de origen y recibe actualizaciones de él."
 
-#: src/features/wiki/page-editor.tsx:466
+#: src/features/wiki/page-editor.tsx:467
 msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
 msgstr "Esta será la ruta de la página. Usa letras minúsculas, números y guiones."
 
 #. placeholder {0}: redirect.source
 #. placeholder {1}: redirect.target
-#: src/features/wiki/wiki-settings.tsx:945
+#: src/features/wiki/wiki-settings.tsx:946
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "Esto eliminará la redirección de «{0}» a «{1}»."
 
@@ -3556,7 +3197,7 @@ msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the
 msgstr "Esto eliminará la redirección de «{0}» a «{1}». Los usuarios que visiten la URL de origen ya no serán redirigidos."
 
 #. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
-#: src/features/wiki/wiki-settings.tsx:782
+#: src/features/wiki/wiki-settings.tsx:783
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "Esto dejará de enviar actualizaciones a «{0}». Pueden volver a replicar si lo desean."
 
@@ -3564,27 +3205,18 @@ msgstr "Esto dejará de enviar actualizaciones a «{0}». Pueden volver a replic
 msgid "Thursday"
 msgstr "Jueves"
 
-#: src/features/wiki/page-editor.tsx:427
+#: src/features/wiki/page-editor.tsx:428
 #: src/features/wiki/page-history.tsx:56
 msgid "Title"
 msgstr "Título"
 
-#: src/features/wiki/page-editor.tsx:263
+#: src/features/wiki/page-editor.tsx:264
 msgid "Title is required"
 msgstr "El título es obligatorio"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:220
 msgid "To"
 msgstr "A"
-
-#: ../../../lib/web/src/components/data-table/view-options.tsx:37
-msgid "Toggle columns"
-msgstr "Alternar columnas"
-
-#: ../../../lib/web/src/components/layout/right-panel.tsx:233
-#: ../../../lib/web/src/components/layout/right-panel.tsx:236
-msgid "Toggle right panel"
-msgstr "Alternar panel derecho"
 
 #: ../../../lib/web/src/components/layout/nav-group.tsx:365
 #: ../../../lib/web/src/components/layout/nav-group.tsx:372
@@ -3593,20 +3225,15 @@ msgstr "Alternar panel derecho"
 msgid "Toggle section"
 msgstr "Alternar sección"
 
-#: ../../../lib/web/src/components/ui/sidebar.tsx:317
-#: ../../../lib/web/src/components/ui/sidebar.tsx:320
+#: ../../../lib/web/src/components/ui/sidebar.tsx:337
+#: ../../../lib/web/src/components/ui/sidebar.tsx:340
 msgid "Toggle sidebar"
 msgstr "Alternar barra lateral"
 
-#: ../../../lib/web/src/components/ui/sidebar.tsx:332
-#: ../../../lib/web/src/components/ui/sidebar.tsx:335
+#: ../../../lib/web/src/components/ui/sidebar.tsx:352
+#: ../../../lib/web/src/components/ui/sidebar.tsx:355
 msgid "Toggle Sidebar"
 msgstr "Alternar barra lateral"
-
-#: ../../../lib/web/src/components/theme-switch.tsx:37
-#: ../../../lib/web/src/components/theme-switch.tsx:41
-msgid "Toggle theme"
-msgstr "Alternar tema"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:26
 msgid "Toggle view options"
@@ -3637,14 +3264,12 @@ msgstr "Prueba con otro término de búsqueda o filtro."
 msgid "Try a different tag."
 msgstr "Prueba con una etiqueta diferente."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:194
 #: ../../../lib/web/src/components/search-entity-page.tsx:217
 msgid "Try adjusting your search terms"
 msgstr "Prueba a ajustar los términos de búsqueda"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:140
 #: ../../../lib/web/src/features/errors/general-error.tsx:180
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:19
 msgid "Try again"
 msgstr "Volver a intentarlo"
 
@@ -3677,7 +3302,7 @@ msgstr "Escribe para buscar usuarios"
 msgid "Type to search..."
 msgstr "Escribe para buscar..."
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:301
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:292
 msgid "Unable to connect to remote server"
 msgstr "No se pudo conectar al servidor remoto"
 
@@ -3686,7 +3311,7 @@ msgstr "No se pudo conectar al servidor remoto"
 msgid "Unable to redirect to login. Please try again."
 msgstr "No se ha podido redirigir al inicio de sesión. Inténtalo de nuevo."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:112
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Unassigned"
 msgstr "Sin asignar"
 
@@ -3694,7 +3319,7 @@ msgstr "Sin asignar"
 msgid "Unauthorized Access"
 msgstr "Acceso no permitido"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:267
+#: ../../../lib/web/src/components/attachment-image.tsx:50
 msgid "Unavailable"
 msgstr "No disponible"
 
@@ -3713,59 +3338,55 @@ msgid "Unknown"
 msgstr "Desconocido"
 
 #: ../../../lib/web/src/components/options-menu.tsx:211
-#: src/features/wiki/wiki-page-content.tsx:389
-#: src/features/wiki/wiki-page-content.tsx:410
-#: src/features/wiki/wiki-page-content.tsx:412
+#: src/features/wiki/wiki-page-content.tsx:390
+#: src/features/wiki/wiki-page-content.tsx:411
+#: src/features/wiki/wiki-page-content.tsx:413
 #: src/routes/_authenticated/$page/index.tsx:287
 #: src/routes/_authenticated/$page/index.tsx:309
 #: src/routes/_authenticated/$page/index.tsx:311
-#: src/routes/_authenticated/index.tsx:499
-#: src/routes/_authenticated/index.tsx:527
-#: src/routes/_authenticated/index.tsx:529
-#: src/routes/_authenticated/index.tsx:895
-#: src/routes/_authenticated/index.tsx:927
-#: src/routes/_authenticated/index.tsx:929
+#: src/routes/_authenticated/index.tsx:500
+#: src/routes/_authenticated/index.tsx:528
+#: src/routes/_authenticated/index.tsx:530
+#: src/routes/_authenticated/index.tsx:896
+#: src/routes/_authenticated/index.tsx:928
+#: src/routes/_authenticated/index.tsx:930
 msgid "Unsubscribe"
 msgstr "Cancelar suscripción"
 
 #: src/features/wiki/wiki-page-content.tsx:81
 #: src/routes/_authenticated/$page/index.tsx:83
 #: src/routes/_authenticated/index.tsx:293
-#: src/routes/_authenticated/index.tsx:938
+#: src/routes/_authenticated/index.tsx:939
 msgid "Unsubscribed"
 msgstr "Suscripción cancelada"
 
 #: src/features/wiki/wiki-page-content.tsx:80
-#: src/features/wiki/wiki-page-content.tsx:389
+#: src/features/wiki/wiki-page-content.tsx:390
 #: src/routes/_authenticated/$page/index.tsx:82
 #: src/routes/_authenticated/$page/index.tsx:287
 #: src/routes/_authenticated/index.tsx:292
-#: src/routes/_authenticated/index.tsx:499
-#: src/routes/_authenticated/index.tsx:894
-#: src/routes/_authenticated/index.tsx:937
+#: src/routes/_authenticated/index.tsx:500
+#: src/routes/_authenticated/index.tsx:895
+#: src/routes/_authenticated/index.tsx:938
 msgid "Unsubscribing..."
 msgstr "Cancelando suscripción..."
 
 #: src/features/wiki/attachments-page.tsx:148
-#: src/features/wiki/page-editor.tsx:193
+#: src/features/wiki/page-editor.tsx:194
 msgid "Unsupported file type: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Tipo de archivo no compatible: {names}. Archivos compatibles: imágenes, PDF, DOC, DOCX, TXT y MD."
 
 #: src/features/wiki/attachments-page.tsx:149
-#: src/features/wiki/page-editor.tsx:194
+#: src/features/wiki/page-editor.tsx:195
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Tipos de archivo no compatibles: {names}. Archivos compatibles: imágenes, PDF, DOC, DOCX, TXT y MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:284
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:285
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
-#: src/features/wiki/page-editor.tsx:419
+#: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "Sin título"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:135
-msgid "Unverified"
-msgstr "Sin verificar"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
@@ -3778,35 +3399,35 @@ msgstr "Actualizado"
 #: src/features/wiki/page-view.tsx:264
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:74
-#: src/routes/_authenticated/index.tsx:911
+#: src/routes/_authenticated/index.tsx:912
 msgid "Updated {0}"
 msgstr "Actualizado {0}"
 
-#: src/features/wiki/wiki-settings.tsx:561
+#: src/features/wiki/wiki-settings.tsx:562
 msgid "Updating access..."
 msgstr "Actualizando acceso..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:637
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:639
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:301
 msgid "Upload"
 msgstr "Subir"
 
-#: src/features/wiki/page-editor.tsx:571
+#: src/features/wiki/page-editor.tsx:572
 msgid "Upload a file to get started."
 msgstr "Sube un archivo para empezar."
 
 #: src/features/wiki/attachments-page.tsx:349
-#: src/features/wiki/page-editor.tsx:551
+#: src/features/wiki/page-editor.tsx:552
 msgid "Upload failed"
 msgstr "La subida falló"
 
 #: src/features/wiki/attachments-page.tsx:163
-#: src/features/wiki/page-editor.tsx:208
+#: src/features/wiki/page-editor.tsx:209
 msgid "Upload failed because this account has reached its storage limit."
 msgstr "La subida falló porque esta cuenta alcanzó su límite de almacenamiento."
 
 #: src/features/wiki/attachments-page.tsx:160
-#: src/features/wiki/page-editor.tsx:205
+#: src/features/wiki/page-editor.tsx:206
 msgid "Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again."
 msgstr "La subida falló. El archivo puede ser demasiado grande para el límite de subida actual del servidor o proxy. Si el archivo es pequeño, comprueba tu conexión e inténtalo de nuevo."
 
@@ -3818,7 +3439,7 @@ msgstr "Subir ficheros"
 msgid "Upload guidance"
 msgstr "Orientación para la subida"
 
-#: src/features/wiki/page-editor.tsx:543
+#: src/features/wiki/page-editor.tsx:544
 msgid "Upload new"
 msgstr "Subir nuevo"
 
@@ -3826,11 +3447,11 @@ msgstr "Subir nuevo"
 msgid "Upload progress"
 msgstr "Progreso de la subida"
 
-#: src/features/wiki/wiki-settings.tsx:437
+#: src/features/wiki/wiki-settings.tsx:438
 msgid "Use as home"
 msgstr "Usar como página principal"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:340
+#: ../../../lib/web/src/components/step-up-dialog.tsx:341
 msgid "Use your passkey"
 msgstr "Usa tu clave de acceso"
 
@@ -3844,16 +3465,7 @@ msgstr "Usuario"
 msgid "Verification code"
 msgstr "Código de verificación"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:255
-msgid "Verification code sent"
-msgstr "Código de verificación enviado"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:248
-msgid "Verification failed"
-msgstr "La verificación ha fallado"
-
-#: ../../../lib/web/src/components/step-up-dialog.tsx:390
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:172
+#: ../../../lib/web/src/components/step-up-dialog.tsx:391
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:111
 msgid "Verify"
 msgstr "Verificar"
@@ -3872,7 +3484,7 @@ msgstr "Versión"
 msgid "Version {0}"
 msgstr "Versión {0}"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:94
+#: ../../../lib/web/src/components/attachment-gallery.tsx:95
 msgid "Video thumbnail"
 msgstr "Miniatura del vídeo"
 
@@ -3881,22 +3493,14 @@ msgstr "Miniatura del vídeo"
 msgid "Video viewer: {0}"
 msgstr "Visor de vídeos: {0}"
 
-#: ../../../lib/web/src/components/data-table/view-options.tsx:33
-msgid "View"
-msgstr "Ver"
-
 #: src/features/wiki/page-history.tsx:113
 #: src/features/wiki/page-history.tsx:125
 msgctxt "action"
 msgid "View"
 msgstr "Ver"
 
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:177
-msgid "View all"
-msgstr "Ver todo"
-
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:203
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:211
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:220
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:228
 msgid "View all notifications"
 msgstr "Ver todas las notificaciones"
 
@@ -3904,7 +3508,7 @@ msgstr "Ver todas las notificaciones"
 msgid "View controls"
 msgstr "Ver controles"
 
-#: src/features/wiki/wiki-settings.tsx:499
+#: src/features/wiki/wiki-settings.tsx:500
 msgid "View only"
 msgstr "Solo lectura"
 
@@ -3926,42 +3530,30 @@ msgstr "Solo observados"
 msgid "We sent a verification code to <0>{0}</0>. Enter the code below to verify your email address."
 msgstr "Hemos enviado un código de verificación a <0>{0}</0>. Introduce el código a continuación para verificar tu dirección de correo."
 
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:16
-msgid "We'll be back online shortly."
-msgstr "Volveremos a estar disponibles en breve."
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:197
-msgid "We'll notify you when something important happens."
-msgstr "Te avisaremos cuando ocurra algo importante."
-
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:13
-msgid "Website is under maintenance!"
-msgstr "¡El sitio web está en mantenimiento!"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:56
 msgid "Wednesday"
 msgstr "Miércoles"
 
-#: src/features/wiki/wiki-settings.tsx:724
-#: src/features/wiki/wiki-settings.tsx:808
+#: src/features/wiki/wiki-settings.tsx:725
+#: src/features/wiki/wiki-settings.tsx:809
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "Cuando otros wikis repliquen este wiki, aparecerán aquí."
 
 #: src/components/layout/wiki-layout.tsx:103
 #: src/components/layout/wiki-layout.tsx:153
 #: src/features/wiki/wiki-page-content.tsx:104
-#: src/features/wiki/wiki-page-content.tsx:328
+#: src/features/wiki/wiki-page-content.tsx:329
 #: src/routes/_authenticated/$page/index.tsx:237
 #: src/routes/_authenticated/$wikiId/settings.tsx:38
-#: src/routes/_authenticated/index.tsx:426
-#: src/routes/_authenticated/settings.tsx:43
+#: src/routes/_authenticated/index.tsx:427
+#: src/routes/_authenticated/settings.tsx:44
 msgid "Wiki"
 msgstr "Wiki"
 
-#: src/routes/_authenticated/index.tsx:704
-#: src/routes/_authenticated/index.tsx:711
-#: src/routes/_authenticated/index.tsx:875
-#: src/routes/_authenticated/index.tsx:882
+#: src/routes/_authenticated/index.tsx:705
+#: src/routes/_authenticated/index.tsx:712
+#: src/routes/_authenticated/index.tsx:876
+#: src/routes/_authenticated/index.tsx:883
 msgid "Wiki actions"
 msgstr "Acciones del wiki"
 
@@ -3969,7 +3561,7 @@ msgstr "Acciones del wiki"
 msgid "Wiki created"
 msgstr "Wiki creado"
 
-#: src/features/wiki/wiki-settings.tsx:347
+#: src/features/wiki/wiki-settings.tsx:348
 msgid "Wiki deleted"
 msgstr "Wiki eliminado"
 
@@ -3986,20 +3578,20 @@ msgstr "El ID del wiki es obligatorio"
 msgid "Wiki link"
 msgstr "Enlace del wiki"
 
-#: src/features/wiki/wiki-settings.tsx:268
+#: src/features/wiki/wiki-settings.tsx:269
 msgid "Wiki name is required"
 msgstr "El nombre del wiki es obligatorio"
 
-#: src/routes/_authenticated/$page/route.tsx:65
+#: src/routes/_authenticated/$page/route.tsx:66
 #: src/routes/_authenticated/$wikiId/route.tsx:75
 msgid "Wiki not found"
 msgstr "Wiki no encontrado"
 
-#: src/features/wiki/wiki-settings.tsx:280
+#: src/features/wiki/wiki-settings.tsx:281
 msgid "Wiki renamed"
 msgstr "Wiki renombrado"
 
-#: src/features/wiki/wiki-page-content.tsx:246
+#: src/features/wiki/wiki-page-content.tsx:247
 #: src/routes/_authenticated/$page/index.tsx:164
 msgid "Wiki settings"
 msgstr "Ajustes del wiki"
@@ -4008,12 +3600,12 @@ msgstr "Ajustes del wiki"
 msgid "Wiki settings sections"
 msgstr "Secciones de ajustes del wiki"
 
-#: src/features/wiki/wiki-settings.tsx:326
+#: src/features/wiki/wiki-settings.tsx:327
 msgid "Wiki synced"
 msgstr "Wiki sincronizado"
 
-#: src/routes/_authenticated/index.tsx:572
-#: src/routes/_authenticated/index.tsx:693
+#: src/routes/_authenticated/index.tsx:573
+#: src/routes/_authenticated/index.tsx:694
 msgid "Wikis"
 msgstr "Wikis"
 
@@ -4021,7 +3613,7 @@ msgstr "Wikis"
 msgid "Write a comment..."
 msgstr "Escribe un comentario..."
 
-#: src/features/wiki/page-editor.tsx:482
+#: src/features/wiki/page-editor.tsx:483
 msgid "Write your content here using Markdown..."
 msgstr "Escribe aquí tu contenido usando Markdown..."
 
@@ -4036,14 +3628,6 @@ msgstr "Estás a punto de revertir <0>{slug}</0> a la versión <1>{version}</1>.
 #: ../../../lib/web/src/features/errors/general-error.tsx:61
 msgid "You do not have access to this section."
 msgstr "No tienes acceso a esta sección."
-
-#: ../../../lib/web/src/features/errors/forbidden.tsx:18
-msgid "You don't have necessary permission <0/>to view this resource."
-msgstr "No tienes el permiso necesario <0/>para ver este recurso."
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
-msgid "You're all caught up!"
-msgstr "¡Estás al día!"
 
 #: ../../../lib/web/src/components/restore-banner.tsx:100
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."

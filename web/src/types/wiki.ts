@@ -220,7 +220,6 @@ export interface WikiComment {
   author: string
   name: string
   body: string
-  markdown: string
   created: number
   edited: number
   children: WikiComment[]
@@ -230,6 +229,8 @@ export interface WikiComment {
 export interface CommentsResponse {
   comments: WikiComment[]
   count: number
+  total: number
+  truncated: boolean
 }
 
 export interface CommentCreateResponse {

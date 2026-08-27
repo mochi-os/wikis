@@ -184,13 +184,6 @@ ACCESS_LEVELS = ["view", "edit"]
 # Read a text field from a peer-supplied payload. A non-string returns
 # `fallback` so the caller's `if not x: return` rejects it; calling len() or
 # .lower() on it would abort the whole handler instead.
-def text_content(e, key, fallback=None):
-    value = e.content(key)
-    if type(value) != "string":
-        return fallback
-    return value
-
-
 # Ceiling on replicas per wiki. Generous enough that no real subscriber base
 # reaches it, low enough that the row count cannot be driven to the database's
 # page cap by an attacker minting sender entities.
@@ -452,9 +445,9 @@ def remove_attachment_references(content, attachment_id):
                 new_line += line[i]
                 i += 1
 
-        # Only keep line if it has content after removing references
-        if new_line.strip():
-            result.append(new_line)
+        # A line that held only the reference becomes blank rather than
+        # disappearing - dropping it would merge the paragraphs either side.
+        result.append(new_line if new_line.strip() else "")
 
     return "\n".join(result)
 
@@ -823,6 +816,9 @@ def action_join(a):
     if not source:
         a.error.label(400, "errors.target_wiki_entity_id_is_required")
         return
+    if not mochi.text.valid(source, "entity"):
+        a.error.label(400, "errors.invalid_target")
+        return
 
     # Check if we already have a wiki tracking this source
     existing = mochi.db.row("select * from wikis where source=?", source)
@@ -842,6 +838,12 @@ def action_join(a):
     dump = mochi.remote.request(source, "wikis", "sync", {}, peer)
     # source/peer are user-supplied; guard against a non-dict answer before .get.
     if not dump or type(dump) != "dict" or dump.get("error") or dump.get("status") != "200":
+        # A refusal is the remote's answer, not a failure here: the sync dump is
+        # view-gated, so an ungranted join arrives as 403 and must stay a 403.
+        code = dump.get("code") if type(dump) == "dict" else None
+        if code == 403 or code == "403":
+            a.error.label(403, "errors.access_denied")
+            return
         a.error.label(500, "errors.failed_to_sync_from_remote_wiki")
         return
 
@@ -1136,11 +1138,13 @@ def action_recommendations(a):
 
     r = s.read()
     if not r or r.get("status") != "200":
+        s.close()
         return {"data": {"wikis": []}}
 
     recommendations = []
     items = s.read()
     if type(items) not in ["list", "tuple"]:
+        s.close()
         return {"data": {"wikis": []}}
 
     # Get the server location from the recommendations entity so subscribers can reach the wikis
@@ -1433,11 +1437,6 @@ def action_new(a):
         a.error.label(400, "errors.content_too_long_max_1mb")
         return
 
-    # Check if slug is reserved
-    if slug.startswith("-"):
-        a.error.label(400, "errors.page_names_starting_with_are_reserved")
-        return
-
     author = a.user.identity.id
     name = a.user.identity.name
     source = wiki.get("source")
@@ -1520,7 +1519,7 @@ def action_page_history(a):
         a.error.label(400, "errors.missing_page_parameter")
         return
 
-    page = mochi.db.row("select * from pages where wiki=? and page=?", wiki["id"], slug)
+    page = mochi.db.row("select * from pages where wiki=? and page=? and deleted=0", wiki["id"], slug)
     if not page:
         a.error.label(404, "errors.page_not_found")
         return
@@ -1562,7 +1561,7 @@ def action_page_revision(a):
         a.error.label(400, "errors.missing_version_parameter")
         return
 
-    page = mochi.db.row("select * from pages where wiki=? and page=?", wiki["id"], slug)
+    page = mochi.db.row("select * from pages where wiki=? and page=? and deleted=0", wiki["id"], slug)
     if not page:
         a.error.label(404, "errors.page_not_found")
         return
@@ -1639,7 +1638,7 @@ def action_page_revert(a):
     if not comment:
         comment = system_comment("revisions.reverted", version=version)
 
-    mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=? where id=?",
+    mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=?, deleted=0 where id=?",
         revision["title"], revision["content"], author, now, newversion, page["id"])
     create_revision(page["id"], revision["title"], revision["content"], author, name, newversion, comment)
 
@@ -1797,7 +1796,14 @@ def action_page_rename(a):
         # Create redirect if requested
         if create_redirects:
             mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki["id"], o, n, now)
-            broadcast_event(wiki["id"], "redirect/set", {"source": o, "target": n, "created": now})
+            redirect_data = {"source": o, "target": n, "created": now}
+            if source:
+                mochi.message.send(
+                    {"from": wiki["id"], "to": source, "service": "wikis", "event": "redirect/set"},
+                    redirect_data
+                )
+            else:
+                broadcast_event(wiki["id"], "redirect/set", redirect_data)
 
         # Broadcast page update
         event_data = {
@@ -2632,8 +2638,10 @@ def event_page_create(e):
 
     id = e.content("id")
     page = e.content("page")
-    title = text_content(e, "title")
-    content = text_content(e, "content")
+    title = content_text(e, "title")
+    content = content_text(e, "content")
+    if content == None:
+        content = ""
     author = e.content("author")
     created = content_number(e, "created", 0)
     version = e.content("version")
@@ -2743,8 +2751,10 @@ def event_page_update(e):
 
     id = e.content("id")
     page = e.content("page")
-    title = text_content(e, "title")
-    content = text_content(e, "content")
+    title = content_text(e, "title")
+    content = content_text(e, "content")
+    if content == None:
+        content = ""
     author = e.content("author")
     updated = content_number(e, "updated", 0)
     version = e.content("version")
@@ -2856,7 +2866,7 @@ def event_page_delete(e):
         return
 
     id = e.content("id")
-    deleted = e.content("deleted")
+    deleted = content_number(e, "deleted", 0)
     version = e.content("version")
 
     # Validate required fields
@@ -2869,9 +2879,9 @@ def event_page_delete(e):
     if not valid_version(version):
         return
 
-    # Same timestamp window the sibling handlers apply. Unlike `updated`, this
-    # value drives no comparison - it is only ever read as deleted/not-deleted -
-    # so the window is consistency rather than a gate.
+    # Same timestamp window the sibling handlers apply. The value is compared,
+    # so it is read through content_number above: Starlark refuses to order a
+    # string against an int, and an unguarded read would abort the handler.
     now = mochi.time.now()
     if deleted > now + 86400 or deleted < now - 31536000:
         return
@@ -2929,8 +2939,8 @@ def event_redirect_set(e):
     if not replica_can(wikirow, wiki, sender, "edit"):
         return
 
-    source = text_content(e, "source")
-    target = text_content(e, "target")
+    source = content_text(e, "source")
+    target = content_text(e, "target")
     created = content_number(e, "created", 0)
 
     # Validate required fields
@@ -3014,7 +3024,9 @@ def event_redirect_delete(e):
     if not replica_can(wikirow, wiki, sender, "edit"):
         return
 
-    source = e.content("source")
+    source = content_text(e, "source")
+    if source:
+        source = source.lower().strip()
 
     # Validate required fields
     if not source:
@@ -3030,7 +3042,7 @@ def event_redirect_delete(e):
 # Receive tag/add event
 def event_tag_add(e):
     page = e.content("page")
-    tag = text_content(e, "tag")
+    tag = content_text(e, "tag")
 
     # Validate required fields
     if not page or not tag:
@@ -3044,17 +3056,16 @@ def event_tag_add(e):
     if not tag or tag_problem(tag):
         return
 
-    # Check if page exists and get wiki
+    # Check if page exists and get wiki. When it does not, the wiki still has
+    # to come from the routed entity so the sender can be checked before
+    # anything outbound happens - request_resync below pulls a full dump from
+    # the source, and an unchecked peer must not be able to drive that with a
+    # fabricated page id.
     pagerow = mochi.db.row("select wiki from pages where id=?", page)
-    if not pagerow:
-        # Out-of-order delivery: page hasn't arrived yet. tags.page FK
-        # would FK-fail; resync via the wiki header so we converge.
-        wiki = e.header("to")
-        if wiki:
-            request_resync(wiki)
+    wiki = pagerow["wiki"] if pagerow else e.header("to")
+    if not wiki:
         return
 
-    wiki = pagerow["wiki"]
     wikirow = mochi.db.row("select * from wikis where id=?", wiki)
     if not wikirow:
         return
@@ -3063,6 +3074,12 @@ def event_tag_add(e):
     if not validate_event_sender(wikirow, wiki, sender):
         return
     if not replica_can(wikirow, wiki, sender, "edit"):
+        return
+
+    if not pagerow:
+        # Out-of-order delivery: page hasn't arrived yet. tags.page FK
+        # would FK-fail; resync via the wiki header so we converge.
+        request_resync(wiki)
         return
 
     # Insert tag (ignore if already exists)
@@ -3126,7 +3143,7 @@ def event_setting_set(e):
         return
 
     name = e.content("name")
-    value = text_content(e, "value")
+    value = content_text(e, "value")
 
     # Validate required fields
     if not name or value == None:
@@ -3145,7 +3162,7 @@ def event_setting_set(e):
 # Handle rename event from source wiki
 def event_rename(e):
     wiki_id = e.header("from")
-    name = text_content(e, "name")
+    name = content_text(e, "name")
     if not name:
         return
 
@@ -3366,8 +3383,8 @@ def event_attachment_create(e):
 
     # Get attachment metadata from event content
     attachment_id = e.content("id")
-    name = text_content(e, "name")
-    content_type = text_content(e, "content_type", "")
+    name = content_text(e, "name")
+    content_type = content_text(e, "content_type", "")
     created = content_number(e, "created", 0)
     replica = e.content("replica")
 
@@ -3543,8 +3560,10 @@ def event_attachment_fetch(e):
     # via the first callback, binds the attachment to this wiki (directly or
     # through a comment via `member`) and streams the bytes.
     wiki = e.header("to")
+    wikirow = mochi.db.row("select source from wikis where id=?", wiki)
+    upstream = wikirow["source"] if wikirow else ""
     attachment_respond(e, wiki,
-        lambda sender, container: check_event_access(sender, container, "view"),
+        lambda sender, container: (upstream and sender == upstream) or check_event_access(sender, container, "view"),
         member=lambda object: mochi.db.exists("select 1 from comments where id=? and wiki=?", object, wiki))
 
 # P2P event: attachment/add — store remote attachment metadata (files pulled on demand)
@@ -3749,11 +3768,13 @@ def import_sync_dump(wiki, dump):
     home = dump.get("home")
     if name and (not mochi.text.valid(name, "name") or len(name) > 100):
         name = None
-    if home and (len(home) > 100 or slug_reserved(home)):
+    if home and (len(home) > 100 or slug_problem(home)):
         home = None
-    if name or home:
-        handle.execute("update wikis set name=?, home=? where id=?",
-            name or "", home or "home", wiki)
+    # Written separately: a rejected value must leave the other column alone.
+    if name:
+        handle.execute("update wikis set name=? where id=?", name, wiki)
+    if home:
+        handle.execute("update wikis set home=? where id=?", home, wiki)
 
     handle.commit()
 
@@ -3765,9 +3786,9 @@ def import_sync_dump(wiki, dump):
         attachments = dump.get("attachments") or []
         if attachments:
             attachment_store(attachments, source, wiki)
-        # Only comments that landed under this wiki: attachment_store validates
-        # no object and uses `replace into`, so an unvalidated comment id could
-        # inject or overwrite rows against another wiki's comment.
+        # Only comments that landed under this wiki. attachment_store binds a
+        # row to the object it is given, so an unvalidated comment id would
+        # attach these rows to another wiki's comment.
         for c in imported_comments:
             c_atts = c.get("attachments") or []
             if c_atts:
@@ -3907,7 +3928,6 @@ def page_comments(wiki_id, page_slug, limit, offset):
         # so replica_can can authorise an edit or delete against it. It is
         # another user's entity id, and the reader has no use for it.
         node.pop("origin", None)
-        node["markdown"] = mochi.text.markdown(node["body"])
         node["attachments"] = attachment_list(node["id"], wiki_id) or []
         kids = []
         if depth < 100:
@@ -4254,11 +4274,13 @@ def event_comment_create(e):
     parent = e.content("parent") or ""
     author = e.content("author")
     name = e.content("name") or ""
-    body = text_content(e, "body")
+    body = content_text(e, "body")
     created = e.content("created")
     signature = e.content("signature") or ""
 
     if not id or not page or not author or not body or not created:
+        return
+    if not content_is_number(created):
         return
 
     # Same caps as action_comment_create; the id is attacker-chosen, so each
@@ -4505,15 +4527,11 @@ def action_attachments(a):
         a.error.label(403, "errors.access_denied")
         return
 
-    # For replica wikis, list attachments from both source and local entity
-    source = wiki.get("source")
-    attachments = list(attachment_list(wiki["id"], wiki["id"]) or [])
-    if source and source != wiki["id"]:
-        source_attachments = attachment_list(source, wiki["id"]) or []
-        existing = {a["id"]: True for a in attachments}
-        for sa in source_attachments:
-            if sa["id"] not in existing:
-                attachments.append(sa)
+    # Replica rows are stored under the local wiki id by every write path, so
+    # this one lookup covers a replica as well as a source. Merging rows held
+    # under the source id would only add entries serve_attachment refuses,
+    # since it binds an attachment to wiki["id"].
+    attachments = attachment_list(wiki["id"], wiki["id"]) or []
     return {"data": {"attachments": attachments}}
 
 # Upload an attachment

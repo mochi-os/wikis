@@ -14,11 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: ../../../lib/web/src/lib/error-normalizer.ts:223
+#: ../../../lib/web/src/lib/error-normalizer.ts:215
 msgid "Please check your internet connection and try again."
 msgstr "Lūdzu, pārbaudiet interneta savienojumu un mēģiniet vēlreiz."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:300
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:301
 msgid " or "
 msgstr " vai "
 
@@ -32,7 +32,7 @@ msgstr "(rediģēts)"
 msgid "(expand)"
 msgstr "(izvērst)"
 
-#: ../../../lib/web/src/components/entity/entity-board-container.tsx:752
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:753
 msgid "[not set]"
 msgstr "[nav iestatīts]"
 
@@ -51,10 +51,10 @@ msgstr "{0, plural, zero {# lapu} one {# lapa} other {# lapas}}"
 msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, zero {# rezultātu} one {# rezultāts} other {# rezultāti}}"
 
-#. placeholder {0}: selectedValues.size
-#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:66
-msgid "{0, plural, one {# selected} other {# selected}}"
-msgstr "{0, plural, zero {# atlasīti} one {# atlasīts} other {# atlasīti}}"
+#. placeholder {0}: comments.length
+#: src/features/wiki/page-comments.tsx:180
+msgid "{0, plural, one {Showing the first # comment.} other {Showing the first # comments.}}"
+msgstr "{0, plural, one {Tiek rādīts pirmais # komentārs.} other {Tiek rādīti pirmie # komentāri.}}"
 
 #. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Upload, Trash2, Copy, Captions, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, X, Image, ExternalLink, } from 'lucide-react' import { toast, Alert, AlertDescription, AlertTitle, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, AttachmentCaptionDialog, shellClipboardWrite, naturalCompare, extractStatus, Tooltip, TooltipTrigger, TooltipContent, UploadProgress, } from '@mochi/web' import { useAttachments, useUploadAttachment, useUpdateAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload' // eslint-disable-next-line @typescript-eslint/no-empty-object-type interface AttachmentsPageProps {} type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`) } export function AttachmentsPage(_props: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const [captioning, setCaptioning] = useState<Attachment | null>(null) const [uploadError, setUploadError] = useState<string | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const updateMutation = useUpdateAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter( (a) => a.name.toLowerCase().includes(query) || a.caption?.toLowerCase().includes(query) ) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const getAttachmentValidationError = (files: File[]) => { const unsupported = files.filter((file) => !isSupportedAttachmentFile(file)) if (unsupported.length === 0) { return null } const names = unsupported.slice(0, 3).map((file) => file.name).join(', ') return unsupported.length === 1 ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` } const getUploadErrorMessage = (error: unknown) => { const status = extractStatus(error) if (status === 413) { return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.` } const message = getErrorMessage(error, t`Failed to upload files`) if (message === 'Network Error') { return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.` } if (message.toLowerCase().includes('storage limit exceeded')) { return t`Upload failed because this account has reached its storage limit.` } if (message.toLowerCase().includes('file too large')) { return t`This file is too large to upload. Try a smaller file.` } return message } const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length === 0) { return } const validationError = getAttachmentValidationError(fileArray) if (validationError) { setUploadError(validationError) return } setUploadError(null) const fileCount = fileArray.length uploadMutation.mutate(fileArray, { onSuccess: () => { setUploadError(null) toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { setUploadError(getUploadErrorMessage(error)) }, }) } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${encodeURIComponent(attachment.id)}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const saveCaption = (attachment: Attachment, caption: string) => { setCaptioning(null) if (caption === (attachment.caption ?? '')) return updateMutation.mutate( { id: attachment.id, caption }, { onError: (error) => { toast.error(getErrorMessage(error, t`Failed to save caption`)) }, } ) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, caption: a.caption, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Upload + stats */} <div className="flex items-center justify-between gap-4"> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept={ATTACHMENT_ACCEPT} /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <UploadProgress progress={uploadMutation.progress} /> <Alert> <AlertTitle><Trans>Upload guidance</Trans></AlertTitle> <AlertDescription> <p><Trans>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</Trans></p> <p><Trans>Large uploads may be limited by your server or proxy configuration.</Trans></p> </AlertDescription> </Alert> {uploadError ? ( <Alert variant="destructive"> <AlertTitle><Trans>Upload failed</Trans></AlertTitle> <AlertDescription>{uploadError}</AlertDescription> </Alert> ) : null} <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} > <X className="h-3 w-3" /> </Button> </TooltipTrigger> <TooltipContent>{t`Clear search`}</TooltipContent> </Tooltip> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Grid view`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} > <List className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`List view`}</TooltipContent> </Tooltip> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> {captioning && ( <AttachmentCaptionDialog item={{ name: captioning.name, caption: captioning.caption, previewUrl: `${buildAttachmentUrl(baseURL, captioning.id)}/preview`, previewKind: 'image', }} onSave={(caption) => saveCaption(captioning, caption)} onClose={() => setCaptioning(null)} /> )} <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onCaption: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-hover relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || attachment.name} className="h-full w-full object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground truncate text-xs" title={attachment.caption}> {attachment.caption || formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCaption(attachment) }} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-hover flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || ''} className="h-16 w-16 rounded object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> {attachment.caption && ( <p className="text-muted-foreground truncate text-sm" title={attachment.caption}> {attachment.caption} </p> )} <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} > <ExternalLink className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Open attachment`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCaption(attachment)} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
 #. placeholder {1}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Upload, Trash2, Copy, Captions, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, X, Image, ExternalLink, } from 'lucide-react' import { toast, Alert, AlertDescription, AlertTitle, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, AttachmentCaptionDialog, shellClipboardWrite, naturalCompare, extractStatus, Tooltip, TooltipTrigger, TooltipContent, UploadProgress, } from '@mochi/web' import { useAttachments, useUploadAttachment, useUpdateAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload' // eslint-disable-next-line @typescript-eslint/no-empty-object-type interface AttachmentsPageProps {} type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`) } export function AttachmentsPage(_props: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const [captioning, setCaptioning] = useState<Attachment | null>(null) const [uploadError, setUploadError] = useState<string | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const updateMutation = useUpdateAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter( (a) => a.name.toLowerCase().includes(query) || a.caption?.toLowerCase().includes(query) ) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const getAttachmentValidationError = (files: File[]) => { const unsupported = files.filter((file) => !isSupportedAttachmentFile(file)) if (unsupported.length === 0) { return null } const names = unsupported.slice(0, 3).map((file) => file.name).join(', ') return unsupported.length === 1 ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` } const getUploadErrorMessage = (error: unknown) => { const status = extractStatus(error) if (status === 413) { return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.` } const message = getErrorMessage(error, t`Failed to upload files`) if (message === 'Network Error') { return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.` } if (message.toLowerCase().includes('storage limit exceeded')) { return t`Upload failed because this account has reached its storage limit.` } if (message.toLowerCase().includes('file too large')) { return t`This file is too large to upload. Try a smaller file.` } return message } const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length === 0) { return } const validationError = getAttachmentValidationError(fileArray) if (validationError) { setUploadError(validationError) return } setUploadError(null) const fileCount = fileArray.length uploadMutation.mutate(fileArray, { onSuccess: () => { setUploadError(null) toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { setUploadError(getUploadErrorMessage(error)) }, }) } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${encodeURIComponent(attachment.id)}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const saveCaption = (attachment: Attachment, caption: string) => { setCaptioning(null) if (caption === (attachment.caption ?? '')) return updateMutation.mutate( { id: attachment.id, caption }, { onError: (error) => { toast.error(getErrorMessage(error, t`Failed to save caption`)) }, } ) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, caption: a.caption, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Upload + stats */} <div className="flex items-center justify-between gap-4"> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept={ATTACHMENT_ACCEPT} /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <UploadProgress progress={uploadMutation.progress} /> <Alert> <AlertTitle><Trans>Upload guidance</Trans></AlertTitle> <AlertDescription> <p><Trans>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</Trans></p> <p><Trans>Large uploads may be limited by your server or proxy configuration.</Trans></p> </AlertDescription> </Alert> {uploadError ? ( <Alert variant="destructive"> <AlertTitle><Trans>Upload failed</Trans></AlertTitle> <AlertDescription>{uploadError}</AlertDescription> </Alert> ) : null} <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} > <X className="h-3 w-3" /> </Button> </TooltipTrigger> <TooltipContent>{t`Clear search`}</TooltipContent> </Tooltip> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Grid view`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} > <List className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`List view`}</TooltipContent> </Tooltip> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> {captioning && ( <AttachmentCaptionDialog item={{ name: captioning.name, caption: captioning.caption, previewUrl: `${buildAttachmentUrl(baseURL, captioning.id)}/preview`, previewKind: 'image', }} onSave={(caption) => saveCaption(captioning, caption)} onClose={() => setCaptioning(null)} /> )} <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onCaption: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-hover relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || attachment.name} className="h-full w-full object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground truncate text-xs" title={attachment.caption}> {attachment.caption || formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCaption(attachment) }} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-hover flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || ''} className="h-16 w-16 rounded object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> {attachment.caption && ( <p className="text-muted-foreground truncate text-sm" title={attachment.caption}> {attachment.caption} </p> )} <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} > <ExternalLink className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Open attachment`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCaption(attachment)} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
@@ -63,13 +63,8 @@ msgstr "{0, plural, zero {# atlasīti} one {# atlasīts} other {# atlasīti}}"
 msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
-#. placeholder {0}: item.label
-#: ../../../lib/web/src/components/config-drawer.tsx:160
-msgid "{0} option preview"
-msgstr "Opcijas {0} priekšskatījums"
-
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:905
+#: src/routes/_authenticated/index.tsx:906
 msgid "{0} pages"
 msgstr "{0} lapas"
 
@@ -78,24 +73,24 @@ msgstr "{0} lapas"
 msgid "{0} with this tag."
 msgstr "{0} ar šo tagu."
 
-#: src/features/wiki/wiki-page-content.tsx:316
+#: src/features/wiki/wiki-page-content.tsx:317
 #: src/routes/_authenticated/$page/index.tsx:233
 msgid "{commentCount, plural, one {1 comment} other {# comments}}"
 msgstr "{commentCount, plural, zero {# komentāru} one {1 komentārs} other {# komentāri}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:175
+#: ../../../lib/web/src/lib/locale-format.ts:176
 msgid "{count, plural, one {#d} other {#d}}"
 msgstr "{count, plural, one {#d} other {#d}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:171
+#: ../../../lib/web/src/lib/locale-format.ts:172
 msgid "{count, plural, one {#h} other {#h}}"
 msgstr "{count, plural, one {#st} other {#st}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:167
+#: ../../../lib/web/src/lib/locale-format.ts:168
 msgid "{count, plural, one {#m} other {#m}}"
 msgstr "{count, plural, one {#min} other {#min}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:179
+#: ../../../lib/web/src/lib/locale-format.ts:180
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#ned} other {#ned}}"
 
@@ -112,7 +107,7 @@ msgid "{entityLabel} name is required"
 msgstr "{entityLabel} nosaukums ir obligāts"
 
 #: src/features/wiki/attachments-page.tsx:189
-#: src/features/wiki/page-editor.tsx:234
+#: src/features/wiki/page-editor.tsx:235
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, zero {Augšupielādēti # failu} one {Augšupielādēts # fails} other {Augšupielādēti # faili}}"
 
@@ -139,28 +134,12 @@ msgstr "{pageTitle} - Komentāri"
 msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
 msgstr "{renamedCount, plural, zero {Pārdēvētas # lapas} one {Pārdēvēta 1 lapa} other {Pārdēvētas # lapas}}"
 
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:200
-msgid "{selectedCount, plural, one {{entityName} selected} other {{manyName} selected}}"
-msgstr "{selectedCount, plural, zero {Atlasīti {manyName}} one {Atlasīts {entityName}} other {Atlasīti {manyName}}}"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:42
-msgid "{selectedCount, plural, one {# {entityName} selected. Bulk actions toolbar is available.} other {# {manyName} selected. Bulk actions toolbar is available.}}"
-msgstr "{selectedCount, plural, zero {Atlasīti # {manyName}. Lielapjoma darbību rīkjosla ir pieejama.} one {Atlasīts # {entityName}. Lielapjoma darbību rīkjosla ir pieejama.} other {Atlasīti # {manyName}. Lielapjoma darbību rīkjosla ir pieejama.}}"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:192
-msgid "{selectedCount, plural, one {# selected} other {# selected}}"
-msgstr "{selectedCount, plural, zero {# atlasīti} one {# atlasīti} other {# atlasīti}}"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:139
-msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
-msgstr "{selectedCount, plural, zero {Lielapjoma darbības # atlasītiem {manyName}} one {Lielapjoma darbības # atlasītam {entityName}} other {Lielapjoma darbības # atlasītiem {manyName}}}"
-
-#: ../../../lib/web/src/components/attachment-composer.tsx:241
+#: ../../../lib/web/src/components/attachment-composer.tsx:248
 #: ../../../lib/web/src/components/ui/upload-progress.tsx:52
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{sentLabel} no {totalLabel}"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:528
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:530
 msgid "{totalCount, plural, one {# item} other {# items}}"
 msgstr "{totalCount, plural, zero {# vienumu} one {# vienums} other {# vienumi}}"
 
@@ -174,12 +153,12 @@ msgstr "{unreadCount, plural, zero {Atvērt izvēlni (# neizlasītu paziņojumu)
 
 #: src/routes/_authenticated/$wikiId/settings.tsx:39
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
-#: src/routes/_authenticated/settings.tsx:44
-#: src/routes/_authenticated/settings.tsx:47
+#: src/routes/_authenticated/settings.tsx:45
+#: src/routes/_authenticated/settings.tsx:48
 msgid "{wikiName} settings"
 msgstr "{wikiName} iestatījumi"
 
-#: src/features/wiki/page-editor.tsx:420
+#: src/features/wiki/page-editor.tsx:421
 msgid "*No content*"
 msgstr "*Nav satura*"
 
@@ -220,55 +199,39 @@ msgstr "Piekļuve"
 msgid "Access denied"
 msgstr "Piekļuve liegta"
 
-#: ../../../lib/web/src/features/errors/forbidden.tsx:16
-msgid "Access Forbidden"
-msgstr "Piekļuve aizliegta"
-
 #: ../../../lib/web/src/features/access/access-list.tsx:197
 msgid "Access level"
 msgstr "Piekļuves līmenis"
 
-#: src/features/wiki/wiki-settings.tsx:562
+#: src/features/wiki/wiki-settings.tsx:563
 msgid "Access level updated"
 msgstr "Piekļuves līmenis atjaunināts"
 
-#: src/features/wiki/wiki-settings.tsx:578
+#: src/features/wiki/wiki-settings.tsx:579
 msgid "Access removed"
 msgstr "Piekļuve noņemta"
 
-#: src/features/wiki/wiki-settings.tsx:549
+#: src/features/wiki/wiki-settings.tsx:550
 msgid "Access set for {subjectName}"
 msgstr "Piekļuve iestatīta lietotājam {subjectName}"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:216
-msgid "Account added"
-msgstr "Konts pievienots"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:232
-msgid "Account removed"
-msgstr "Konts noņemts"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:139
 msgid "Account type"
 msgstr "Konta veids"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:242
-msgid "Account verified"
-msgstr "Konts verificēts"
-
 #: src/features/wiki/page-history.tsx:60
 #: src/features/wiki/redirects-page.tsx:96
-#: src/features/wiki/wiki-settings.tsx:745
+#: src/features/wiki/wiki-settings.tsx:746
 msgid "Actions"
 msgstr "Darbības"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:711
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:720
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
 #: src/features/wiki/tag-manager.tsx:134
 #: src/features/wiki/tag-manager.tsx:139
 #: src/features/wiki/tag-manager.tsx:164
-#: src/features/wiki/wiki-settings.tsx:595
+#: src/features/wiki/wiki-settings.tsx:596
 msgid "Add"
 msgstr "Pievienot"
 
@@ -289,15 +252,10 @@ msgid "Add access"
 msgstr "Pievienot piekļuvi"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:132
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:288
 msgid "Add account"
 msgstr "Pievienot kontu"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:297
-msgid "Add an account to receive notifications and use services."
-msgstr "Pievieno kontu, lai saņemtu paziņojumus un izmantotu pakalpojumus."
-
-#: ../../../lib/web/src/components/attachment-composer.tsx:284
+#: ../../../lib/web/src/components/attachment-composer.tsx:291
 #: src/features/wiki/attachments-page.tsx:624
 #: src/features/wiki/attachments-page.tsx:630
 #: src/features/wiki/attachments-page.tsx:750
@@ -305,7 +263,7 @@ msgstr "Pievieno kontu, lai saņemtu paziņojumus un izmantotu pakalpojumus."
 msgid "Add caption"
 msgstr "Pievienot parakstu"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:681
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:690
 msgid "Add checklist item"
 msgstr "Pievienot kontrolsaraksta vienumu"
 
@@ -314,17 +272,13 @@ msgstr "Pievienot kontrolsaraksta vienumu"
 msgid "Add field"
 msgstr "Pievienot lauku"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:699
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:708
 msgid "Add item..."
 msgstr "Pievienot vienumu..."
 
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
 msgid "Add link"
 msgstr "Pievienot saiti"
-
-#: ../../../lib/web/src/features/accounts/account-picker.tsx:102
-msgid "Add new account"
-msgstr "Pievienot jaunu kontu"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
@@ -335,22 +289,17 @@ msgid "Add option"
 msgstr "Pievienot opciju"
 
 #: src/features/wiki/redirects-page.tsx:225
-#: src/features/wiki/wiki-settings.tsx:1026
+#: src/features/wiki/wiki-settings.tsx:1027
 msgid "Add redirect"
 msgstr "Pievienot novirzīšanu"
 
 #: ../../../lib/web/src/components/post-tags.tsx:137
-#: ../../../lib/web/src/components/tag-input.tsx:40
 msgid "Add tag..."
 msgstr "Pievienot tagu..."
 
 #: src/features/wiki/tags-list.tsx:40
 msgid "Add tags from the bottom of any page."
 msgstr "Pievienojiet birkas jebkuras lapas apakšā."
-
-#: ../../../lib/web/src/components/layout/team-switcher.tsx:83
-msgid "Add team/app"
-msgstr "Pievienot komandu/lietotni"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:175
 msgid "Add to existing notifications"
@@ -368,17 +317,9 @@ msgstr "Pievienot skatu"
 msgid "Adding..."
 msgstr "Pievieno..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:72
-msgid "Adjust the appearance and layout to suit your preferences."
-msgstr "Pielāgo izskatu un izkārtojumu pēc savām vēlmēm."
-
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:41
 msgid "AI"
 msgstr "AI"
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:163
-msgid "All"
-msgstr "Visi"
 
 #: src/features/wiki/attachments-page.tsx:391
 msgid "All files"
@@ -418,7 +359,7 @@ msgstr "Atļaut kārtot pēc"
 msgid "An error occurred"
 msgstr "Radās kļūda"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:275
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:266
 msgid "An unexpected error occurred"
 msgstr "Radās negaidīta kļūda"
 
@@ -427,11 +368,11 @@ msgid "Android push"
 msgstr "Android push"
 
 #: ../../../lib/web/src/features/access/access-list.tsx:45
-#: ../../../lib/web/src/features/access/types.ts:42
+#: ../../../lib/web/src/features/access/types.ts:36
 msgid "Anyone"
 msgstr "Jebkurš"
 
-#: ../../../lib/web/src/features/access/types.ts:41
+#: ../../../lib/web/src/features/access/types.ts:35
 msgid "Anyone who is logged in"
 msgstr "Jebkurš, kas ir pieteicies"
 
@@ -439,7 +380,7 @@ msgstr "Jebkurš, kas ir pieteicies"
 msgid "Anything subscribed to this feed will stop receiving it. You can copy a new URL afterwards."
 msgstr "Viss, kas ir abonējis šo plūsmu, pārstās to saņemt. Pēc tam varēsiet kopēt jaunu URL."
 
-#: src/features/wiki/wiki-settings.tsx:480
+#: src/features/wiki/wiki-settings.tsx:481
 msgid "Are you absolutely sure?"
 msgstr "Vai esi pilnīgi pārliecināts?"
 
@@ -448,7 +389,7 @@ msgstr "Vai esi pilnīgi pārliecināts?"
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "Vai tiešām vēlies dzēst \"{0}\"?"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:627
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:629
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "Vai tiešām vēlies dzēst kolonnu \"{name}\"? To nevar atsaukt."
 
@@ -464,16 +405,12 @@ msgstr "Vai tiešām vēlies dzēst šo komentāru? Tas dzēsīs arī visas atbi
 msgid "Are you sure you want to log out? You will need to log in again to access your account."
 msgstr "Vai tiešām vēlies izrakstīties? Lai piekļūtu kontam, būs jāpierakstās vēlreiz."
 
-#: src/features/wiki/wiki-page-content.tsx:411
+#: src/features/wiki/wiki-page-content.tsx:412
 #: src/routes/_authenticated/$page/index.tsx:310
-#: src/routes/_authenticated/index.tsx:528
-#: src/routes/_authenticated/index.tsx:928
+#: src/routes/_authenticated/index.tsx:529
+#: src/routes/_authenticated/index.tsx:929
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "Vai tiešām vēlies atteikties no šī wiki abonēšanas?"
-
-#: ../../../lib/web/src/components/data-table/column-header.tsx:59
-msgid "Asc"
-msgstr "Aug."
 
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx:27
 msgid "Ascending"
@@ -488,13 +425,13 @@ msgid "Attach reply files"
 msgstr "Pievienot atbildes failus"
 
 #: src/features/wiki/attachments-page.tsx:266
-#: src/features/wiki/page-editor.tsx:251
+#: src/features/wiki/page-editor.tsx:252
 msgid "Attachment deleted"
 msgstr "Pielikums dzēsts"
 
-#: src/features/wiki/page-editor.tsx:363
-#: src/features/wiki/page-editor.tsx:368
-#: src/features/wiki/page-editor.tsx:375
+#: src/features/wiki/page-editor.tsx:364
+#: src/features/wiki/page-editor.tsx:369
+#: src/features/wiki/page-editor.tsx:376
 #: src/routes/_authenticated/$page/attachments.tsx:31
 #: src/routes/_authenticated/$page/attachments.tsx:42
 #: src/routes/_authenticated/$wikiId/$page/attachments.tsx:41
@@ -503,11 +440,11 @@ msgid "Attachments"
 msgstr "Pielikumi"
 
 #: ../../../lib/web/src/features/access/access-list.tsx:46
-#: ../../../lib/web/src/features/access/types.ts:41
+#: ../../../lib/web/src/features/access/types.ts:35
 msgid "Authenticated users"
 msgstr "Autentificēti lietotāji"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:317
+#: ../../../lib/web/src/components/step-up-dialog.tsx:318
 msgid "Authenticator code"
 msgstr "Authenticator kods"
 
@@ -542,7 +479,6 @@ msgstr "Atpakaļ"
 msgid "Back to history"
 msgstr "Atpakaļ uz vēsturi"
 
-#: ../../../lib/web/src/features/errors/forbidden.tsx:28
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:28
 #: ../../../lib/web/src/features/errors/unauthorized-error.tsx:28
 msgid "Back to home"
@@ -593,15 +529,15 @@ msgstr "Atpakaļ uz lapu"
 #: src/routes/_authenticated/$page/index.tsx:178
 #: src/routes/_authenticated/$page/index.tsx:300
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
-#: src/routes/_authenticated/changes.tsx:48
-#: src/routes/_authenticated/changes.tsx:59
-#: src/routes/_authenticated/changes.tsx:69
+#: src/routes/_authenticated/changes.tsx:49
+#: src/routes/_authenticated/changes.tsx:60
+#: src/routes/_authenticated/changes.tsx:70
 #: src/routes/_authenticated/index.tsx:252
 #: src/routes/_authenticated/join.tsx:64
 #: src/routes/_authenticated/new.tsx:31
-#: src/routes/_authenticated/redirects.tsx:29
-#: src/routes/_authenticated/search.tsx:42
-#: src/routes/_authenticated/settings.tsx:47
+#: src/routes/_authenticated/redirects.tsx:30
+#: src/routes/_authenticated/search.tsx:43
+#: src/routes/_authenticated/settings.tsx:48
 #: src/routes/_authenticated/tag/$tag.tsx:36
 #: src/routes/_authenticated/tag/$tag.tsx:47
 #: src/routes/_authenticated/tag/$tag.tsx:57
@@ -624,8 +560,8 @@ msgstr "Esi pirmais, kas komentē šo lapu."
 msgid "Blocked by"
 msgstr "Bloķēja"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:225
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:235
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:242
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:252
 msgid "Blocked navigation to untrusted link"
 msgstr "Navigācija uz neuzticamu saiti bloķēta"
 
@@ -647,11 +583,11 @@ msgid "Border colour"
 msgstr "Apmales krāsa"
 
 #: src/features/wiki/redirects-page.tsx:199
-#: src/features/wiki/wiki-settings.tsx:993
+#: src/features/wiki/wiki-settings.tsx:994
 msgid "Both source and target are required"
 msgstr "Nepieciešami gan avots, gan mērķis"
 
-#: src/features/wiki/page-editor.tsx:495
+#: src/features/wiki/page-editor.tsx:496
 msgid "Briefly describe your changes"
 msgstr "Īsi apraksti savas izmaiņas"
 
@@ -663,13 +599,13 @@ msgstr "Pārlūko lapas pēc taga. Klikšķini uz taga, lai redzētu visas lapas
 msgid "Browser notifications"
 msgstr "Pārlūka paziņojumi"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:419
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:612
+#: ../../../lib/web/src/components/attachment-composer.tsx:426
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:166
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:183
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
-#: ../../../lib/web/src/components/step-up-dialog.tsx:365
+#: ../../../lib/web/src/components/step-up-dialog.tsx:366
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
@@ -679,7 +615,7 @@ msgstr "Pārlūka paziņojumi"
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
-#: src/features/wiki/page-editor.tsx:396
+#: src/features/wiki/page-editor.tsx:397
 #: src/features/wiki/redirects-page.tsx:173
 #: src/features/wiki/redirects-page.tsx:271
 #: src/features/wiki/rename-page-dialog.tsx:128
@@ -687,9 +623,9 @@ msgstr "Pārlūka paziņojumi"
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:156
 #: src/features/wiki/wiki-comment-thread.tsx:182
-#: src/features/wiki/wiki-settings.tsx:789
-#: src/features/wiki/wiki-settings.tsx:952
-#: src/features/wiki/wiki-settings.tsx:1065
+#: src/features/wiki/wiki-settings.tsx:790
+#: src/features/wiki/wiki-settings.tsx:953
+#: src/features/wiki/wiki-settings.tsx:1066
 #: src/routes/_authenticated/join.tsx:120
 msgid "Cancel"
 msgstr "Atcelt"
@@ -702,29 +638,29 @@ msgstr "Atcelt komentāru"
 msgid "Cancel reply"
 msgstr "Atcelt atbildi"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:379
-#: ../../../lib/web/src/components/attachment-composer.tsx:414
+#: ../../../lib/web/src/components/attachment-composer.tsx:386
+#: ../../../lib/web/src/components/attachment-composer.tsx:421
 msgid "Caption"
 msgstr "Paraksts"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:97
+#: ../../../lib/web/src/components/notification-category-button.tsx:99
 msgid "Category for these notifications"
 msgstr "Šo paziņojumu kategorija"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:78
-#: ../../../lib/web/src/components/notification-category-button.tsx:89
+#: ../../../lib/web/src/components/notification-category-button.tsx:80
+#: ../../../lib/web/src/components/notification-category-button.tsx:91
 msgid "Change notification category"
 msgstr "Mainīt paziņojuma kategoriju"
 
-#: src/features/wiki/wiki-page-content.tsx:353
-#: src/routes/_authenticated/index.tsx:454
-#: src/routes/_authenticated/index.tsx:723
+#: src/features/wiki/wiki-page-content.tsx:354
+#: src/routes/_authenticated/index.tsx:455
+#: src/routes/_authenticated/index.tsx:724
 msgid "Changes"
 msgstr "Izmaiņas"
 
-#: src/features/wiki/wiki-page-content.tsx:355
-#: src/routes/_authenticated/index.tsx:462
-#: src/routes/_authenticated/index.tsx:733
+#: src/features/wiki/wiki-page-content.tsx:356
+#: src/routes/_authenticated/index.tsx:463
+#: src/routes/_authenticated/index.tsx:734
 msgid "Changes and comments"
 msgstr "Izmaiņas un komentāri"
 
@@ -738,10 +674,6 @@ msgstr "Izmaiņas no versijas {0} → {1}"
 msgid "Changes will appear here when pages are edited."
 msgstr "Izmaiņas parādīsies šeit, kad lapas tiks rediģētas."
 
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:198
-msgid "Check \"All\" to see your past notifications."
-msgstr "Atzīmējiet “Visi”, lai redzētu iepriekšējos paziņojumus."
-
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
 msgid "Checkbox"
 msgstr "Izvēles rūtiņa"
@@ -750,28 +682,12 @@ msgstr "Izvēles rūtiņa"
 msgid "Checklist"
 msgstr "Kontrolsaraksts"
 
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:33
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:35
 msgid "Choose a game from the sidebar or start a new one."
 msgstr "Izvēlies spēli no sānu joslas vai sāc jaunu."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:329
-msgid "Choose between default expanded, compact icon-only, or full layout mode"
-msgstr "Izvēlies starp noklusēto izvērsto, kompakto tikai ikonu vai pilno izkārtojuma režīmu"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:271
-msgid "Choose between inset, floating, or standard sidebar layout"
-msgstr "Izvēlies starp ievietoto, peldošo vai standarta sānu joslas izkārtojumu"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:372
-msgid "Choose between left-to-right or right-to-left site direction"
-msgstr "Izvēlies starp virzienu no kreisās uz labo vai no labās uz kreiso"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:227
-msgid "Choose between system preference, light mode, or dark mode"
-msgstr "Izvēlies starp sistēmas iestatījumu, gaišo vai tumšo režīmu"
-
-#: ../../../lib/web/src/components/language-picker.tsx:263
-#: ../../../lib/web/src/components/language-picker.tsx:270
+#: ../../../lib/web/src/components/language-picker.tsx:264
+#: ../../../lib/web/src/components/language-picker.tsx:271
 msgid "Choose language"
 msgstr "Izvēlies valodu"
 
@@ -788,28 +704,14 @@ msgstr "Notīrīt"
 msgid "Clear all"
 msgstr "Notīrīt visu"
 
-#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:144
-msgid "Clear filters"
-msgstr "Notīrīt filtrus"
-
 #: ../../../lib/web/src/components/search-input.tsx:26
 #: src/features/wiki/attachments-page.tsx:375
 #: src/features/wiki/attachments-page.tsx:380
 msgid "Clear search"
 msgstr "Notīrīt meklēšanu"
 
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:167
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:171
-msgid "Clear selection"
-msgstr "Notīrīt atlasi"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:168
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:175
-msgid "Clear selection (Escape)"
-msgstr "Notīrīt atlasi (Escape)"
-
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:500
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:505
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:501
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:506
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:468
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:471
@@ -829,8 +731,8 @@ msgstr "Aizvērt dialogu"
 msgid "Close navigation"
 msgstr "Aizvērt navigāciju"
 
-#: ../../../lib/web/src/components/layout/right-panel.tsx:265
-#: ../../../lib/web/src/components/layout/right-panel.tsx:268
+#: ../../../lib/web/src/components/layout/right-panel.tsx:234
+#: ../../../lib/web/src/components/layout/right-panel.tsx:237
 msgid "Close panel"
 msgstr "Aizvērt paneli"
 
@@ -857,8 +759,8 @@ msgstr "Sakļaut sānu joslu"
 msgid "Colour"
 msgstr "Krāsa"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:537
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:542
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:539
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
 msgid "Column actions"
 msgstr "Kolonnas darbības"
 
@@ -869,10 +771,6 @@ msgstr "Kolonnas grupē pēc"
 #: ../../../lib/web/src/lib/preference-utils.ts:91
 msgid "Comfortable"
 msgstr "Ērts"
-
-#: ../../../lib/web/src/components/coming-soon.tsx:12
-msgid "Coming Soon!"
-msgstr "Drīzumā!"
 
 #: ../../../lib/web/src/components/ui/command.tsx:34
 msgid "Command Palette"
@@ -890,13 +788,12 @@ msgstr "Komentāra darbības"
 
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:431
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
-#: src/features/wiki/wiki-page-content.tsx:354
-#: src/routes/_authenticated/index.tsx:459
-#: src/routes/_authenticated/index.tsx:728
+#: src/features/wiki/wiki-page-content.tsx:355
+#: src/routes/_authenticated/index.tsx:460
+#: src/routes/_authenticated/index.tsx:729
 msgid "Comments"
 msgstr "Komentāri"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:316
 #: ../../../lib/web/src/lib/preference-utils.ts:90
 msgid "Compact"
 msgstr "Kompakts"
@@ -922,15 +819,11 @@ msgstr "Apstiprināt"
 msgid "Connected"
 msgstr "Savienots"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:191
-msgid "Connected accounts"
-msgstr "Savienotie konti"
-
 #: ../../../lib/web/src/lib/chat-ui.ts:21
 msgid "Connecting..."
 msgstr "Notiek savienošana..."
 
-#: src/features/wiki/page-editor.tsx:476
+#: src/features/wiki/page-editor.tsx:477
 msgid "Content"
 msgstr "Saturs"
 
@@ -950,7 +843,7 @@ msgstr "Konteksta informācija un detaļas."
 msgid "Continue"
 msgstr "Turpināt"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:354
+#: ../../../lib/web/src/components/step-up-dialog.tsx:355
 msgid "Continue with {label}"
 msgstr "Turpināt ar {label}"
 
@@ -981,26 +874,26 @@ msgstr "Neizdevās ielādēt iepriekšējo versiju salīdzināšanai."
 msgid "Could not load this document. Please try again later."
 msgstr "Nevarēja ielādēt šo dokumentu. Lūdzu, mēģini vēlāk vēlreiz."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:111
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:128
 msgid "Couldn't load notifications"
 msgstr "Neizdevās ielādēt paziņojumus"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:181
+#: ../../../lib/web/src/components/step-up-dialog.tsx:182
 msgid "Couldn't send the code. Please try again."
 msgstr "Neizdevās nosūtīt kodu. Lūdzu, mēģiniet vēlreiz."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:135
+#: ../../../lib/web/src/components/step-up-dialog.tsx:136
 msgid "Couldn't start re-authentication. Please try again."
 msgstr "Neizdevās sākt atkārtotu autentifikāciju. Lūdzu, mēģiniet vēlreiz."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:223
+#: ../../../lib/web/src/components/step-up-dialog.tsx:224
 msgid "Couldn't verify with that account. Please try again."
 msgstr "Neizdevās verificēt ar šo kontu. Lūdzu, mēģiniet vēlreiz."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:548
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:687
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:490
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:654
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:550
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:689
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:491
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx:675
 msgid "Create"
 msgstr "Izveidot"
@@ -1010,7 +903,7 @@ msgstr "Izveidot"
 msgid "Create {0}"
 msgstr "Izveidot {0}"
 
-#: src/features/wiki/wiki-settings.tsx:1034
+#: src/features/wiki/wiki-settings.tsx:1035
 msgid "Create a redirect from one URL to another."
 msgstr "Izveido novirzīšanu no viena URL uz citu."
 
@@ -1019,7 +912,7 @@ msgid "Create a redirect from one URL to another. The source URL must not be an 
 msgstr "Izveido novirzīšanu no viena URL uz citu. Avota URL nedrīkst būt esoša lapa."
 
 #: src/features/wiki/redirects-page.tsx:85
-#: src/features/wiki/wiki-settings.tsx:894
+#: src/features/wiki/wiki-settings.tsx:895
 msgid "Create a redirect to forward one URL to another."
 msgstr "Izveido novirzīšanu, lai pārsūtītu vienu URL uz citu."
 
@@ -1027,14 +920,14 @@ msgstr "Izveido novirzīšanu, lai pārsūtītu vienu URL uz citu."
 msgid "Create new item"
 msgstr "Izveidot jaunu vienumu"
 
-#: src/features/wiki/page-editor.tsx:402
+#: src/features/wiki/page-editor.tsx:403
 msgid "Create page"
 msgstr "Izveidot lapu"
 
 #: src/features/wiki/redirects-page.tsx:231
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1032
-#: src/features/wiki/wiki-settings.tsx:1068
+#: src/features/wiki/wiki-settings.tsx:1033
+#: src/features/wiki/wiki-settings.tsx:1069
 msgid "Create redirect"
 msgstr "Izveidot novirzīšanu"
 
@@ -1044,26 +937,26 @@ msgstr "Izveidot novirzīšanu no vecā URL"
 
 #: src/features/wiki/page-view.tsx:301
 #: src/features/wiki/page-view.tsx:306
-#: src/features/wiki/wiki-page-content.tsx:231
+#: src/features/wiki/wiki-page-content.tsx:232
 #: src/routes/_authenticated/$page/index.tsx:146
 msgid "Create this page"
 msgstr "Izveidot šo lapu"
 
 #: src/components/layout/wiki-layout.tsx:132
 #: src/components/layout/wiki-layout.tsx:152
-#: src/routes/_authenticated/index.tsx:775
+#: src/routes/_authenticated/index.tsx:776
 msgid "Create wiki"
 msgstr "Izveidot wiki"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:492
 #: src/features/wiki/redirects-page.tsx:95
-#: src/features/wiki/wiki-settings.tsx:904
+#: src/features/wiki/wiki-settings.tsx:905
 msgid "Created"
 msgstr "Izveidots"
 
 #: src/features/wiki/redirects-page.tsx:207
-#: src/features/wiki/wiki-settings.tsx:1005
+#: src/features/wiki/wiki-settings.tsx:1006
 msgid "Creating redirect..."
 msgstr "Notiek novirzīšanas izveide..."
 
@@ -1071,11 +964,11 @@ msgstr "Notiek novirzīšanas izveide..."
 msgid "Creating wiki..."
 msgstr "Notiek wiki izveide..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:654
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
-#: src/features/wiki/page-editor.tsx:402
+#: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1068
+#: src/features/wiki/wiki-settings.tsx:1069
 msgid "Creating..."
 msgstr "Izveido..."
 
@@ -1091,18 +984,11 @@ msgstr "Pašreizējā atrašanās vieta"
 msgid "Custom"
 msgstr "Pielāgots"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:219
-#: ../../../lib/web/src/components/theme-switch.tsx:52
 #: ../../../lib/web/src/lib/preference-utils.ts:15
 msgid "Dark"
 msgstr "Tumšs"
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:87
-#: ../../../lib/web/src/components/profile-dropdown.tsx:123
-msgid "Dark mode"
-msgstr "Tumšais režīms"
-
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:259
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:250
 msgid "Data conflict"
 msgstr "Datu konflikts"
 
@@ -1117,10 +1003,6 @@ msgstr "Datums"
 msgid "Decline"
 msgstr "Noraidīt"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:311
-msgid "Default"
-msgstr "Noklusētais"
-
 #: ../../../lib/web/src/features/accounts/account-add.tsx:185
 msgid "Default AI account"
 msgstr "Noklusētais AI konts"
@@ -1129,8 +1011,8 @@ msgstr "Noklusētais AI konts"
 msgid "Default sort"
 msgstr "Noklusētā kārtošana"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:567
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:569
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:280
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:323
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:353
@@ -1140,18 +1022,18 @@ msgstr "Noklusētā kārtošana"
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:314
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/page-editor.tsx:647
+#: src/features/wiki/page-editor.tsx:648
 #: src/features/wiki/redirects-page.tsx:178
 #: src/features/wiki/wiki-comment-thread.tsx:255
 #: src/features/wiki/wiki-comment-thread.tsx:282
-#: src/features/wiki/wiki-page-content.tsx:323
-#: src/features/wiki/wiki-settings.tsx:957
+#: src/features/wiki/wiki-page-content.tsx:324
+#: src/features/wiki/wiki-settings.tsx:958
 msgid "Delete"
 msgstr "Dzēst"
 
 #. placeholder {0}: pendingDelete.name
 #: src/features/wiki/attachments-page.tsx:531
-#: src/features/wiki/page-editor.tsx:644
+#: src/features/wiki/page-editor.tsx:645
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "Dzēst \"{0}\"? To nevar atsaukt."
 
@@ -1161,13 +1043,13 @@ msgstr "Dzēst \"{0}\"? To nevar atsaukt."
 #: src/features/wiki/attachments-page.tsx:650
 #: src/features/wiki/attachments-page.tsx:768
 #: src/features/wiki/attachments-page.tsx:777
-#: src/features/wiki/page-editor.tsx:597
-#: src/features/wiki/page-editor.tsx:606
-#: src/features/wiki/page-editor.tsx:641
+#: src/features/wiki/page-editor.tsx:598
+#: src/features/wiki/page-editor.tsx:607
+#: src/features/wiki/page-editor.tsx:642
 msgid "Delete attachment"
 msgstr "Dzēst pielikumu"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:626
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
 msgid "Delete column"
 msgstr "Dzēst kolonnu"
 
@@ -1191,21 +1073,21 @@ msgid "Delete option {0}"
 msgstr "Dzēst opciju {0}"
 
 #: src/features/wiki/delete-page.tsx:56
-#: src/features/wiki/page-editor.tsx:384
-#: src/features/wiki/page-editor.tsx:389
+#: src/features/wiki/page-editor.tsx:385
+#: src/features/wiki/page-editor.tsx:390
 msgid "Delete page"
 msgstr "Dzēst lapu"
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:153
 #: src/features/wiki/redirects-page.tsx:159
-#: src/features/wiki/wiki-settings.tsx:933
-#: src/features/wiki/wiki-settings.tsx:939
+#: src/features/wiki/wiki-settings.tsx:934
+#: src/features/wiki/wiki-settings.tsx:940
 msgid "Delete redirect {0}"
 msgstr "Dzēst novirzīšanu {0}"
 
 #: src/features/wiki/redirects-page.tsx:163
-#: src/features/wiki/wiki-settings.tsx:943
+#: src/features/wiki/wiki-settings.tsx:944
 msgid "Delete redirect?"
 msgstr "Dzēst novirzīšanu?"
 
@@ -1213,9 +1095,9 @@ msgstr "Dzēst novirzīšanu?"
 msgid "Delete view"
 msgstr "Dzēst skatu"
 
-#: src/features/wiki/wiki-settings.tsx:463
-#: src/features/wiki/wiki-settings.tsx:474
-#: src/features/wiki/wiki-settings.tsx:482
+#: src/features/wiki/wiki-settings.tsx:464
+#: src/features/wiki/wiki-settings.tsx:475
+#: src/features/wiki/wiki-settings.tsx:483
 msgid "Delete wiki"
 msgstr "Dzēst wiki"
 
@@ -1237,22 +1119,18 @@ msgid "Delete: {pageTitle}"
 msgstr "Dzēst: {pageTitle}"
 
 #: src/features/wiki/redirects-page.tsx:118
-#: src/features/wiki/wiki-settings.tsx:864
+#: src/features/wiki/wiki-settings.tsx:865
 msgid "Deleting redirect..."
 msgstr "Notiek novirzīšanas dzēšana..."
 
-#: src/features/wiki/wiki-settings.tsx:346
+#: src/features/wiki/wiki-settings.tsx:347
 msgid "Deleting wiki..."
 msgstr "Notiek wiki dzēšana..."
 
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/wiki-settings.tsx:474
+#: src/features/wiki/wiki-settings.tsx:475
 msgid "Deleting..."
 msgstr "Dzēš..."
-
-#: ../../../lib/web/src/components/data-table/column-header.tsx:63
-msgid "Desc"
-msgstr "Dilst."
 
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx:27
 msgid "Descending"
@@ -1266,7 +1144,7 @@ msgstr "Apraksts"
 msgid "Details Panel"
 msgstr "Detaļu panelis"
 
-#: ../../../lib/web/src/components/language-picker.tsx:239
+#: ../../../lib/web/src/components/language-picker.tsx:240
 #: ../../../lib/web/src/components/timezone-select.tsx:46
 #: ../../../lib/web/src/components/timezone-select.tsx:83
 #: ../../../lib/web/src/lib/preference-utils.ts:23
@@ -1276,10 +1154,6 @@ msgstr "Detaļu panelis"
 #: ../../../lib/web/src/lib/preference-utils.ts:79
 msgid "Detect from web browser"
 msgstr "Noteikt no tīmekļa pārlūka"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:341
-msgid "Direction"
-msgstr "Virziens"
 
 #: ../../../lib/web/src/components/person-picker.tsx:214
 msgid "Directory"
@@ -1303,7 +1177,7 @@ msgstr "Atvienots"
 msgid "Dismiss"
 msgstr "Aizvērt"
 
-#: ../../../lib/web/src/components/ui/sidebar.tsx:238
+#: ../../../lib/web/src/components/ui/sidebar.tsx:258
 msgid "Displays the mobile sidebar."
 msgstr "Parāda mobilo sānu joslu."
 
@@ -1322,7 +1196,7 @@ msgstr "Pabeigts"
 msgid "Download"
 msgstr "Lejupielādēt"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:99
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:98
 msgid "Download failed"
 msgstr "Lejupielāde neizdevās"
 
@@ -1334,17 +1208,17 @@ msgstr "Velciet un nometiet failus šeit vai noklikšķiniet uz \"Augšupielād�
 msgid "Duplicates"
 msgstr "Dublikāti"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:141
+#: ../../../lib/web/src/lib/preference-utils.ts:134
 msgid "Dyslexia-friendly"
 msgstr "Disleksijai draudzīgs"
 
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:269
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:314
-#: src/features/wiki/page-editor.tsx:341
+#: src/features/wiki/page-editor.tsx:342
 #: src/features/wiki/wiki-comment-thread.tsx:244
-#: src/features/wiki/wiki-page-content.tsx:297
+#: src/features/wiki/wiki-page-content.tsx:298
 #: src/routes/_authenticated/$page/index.tsx:214
-#: src/routes/_authenticated/index.tsx:409
+#: src/routes/_authenticated/index.tsx:410
 msgid "Edit"
 msgstr "Rediģēt"
 
@@ -1352,11 +1226,11 @@ msgstr "Rediģēt"
 msgid "Edit {label}"
 msgstr "Rediģēt {label}"
 
-#: src/features/wiki/wiki-settings.tsx:498
+#: src/features/wiki/wiki-settings.tsx:499
 msgid "Edit and view"
 msgstr "Rediģēt un skatīt"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:284
+#: ../../../lib/web/src/components/attachment-composer.tsx:291
 #: src/features/wiki/attachments-page.tsx:624
 #: src/features/wiki/attachments-page.tsx:630
 #: src/features/wiki/attachments-page.tsx:750
@@ -1386,7 +1260,7 @@ msgstr "Rediģēt opciju {0}"
 msgid "Edit selected card"
 msgstr "Rediģēt atlasīto karti"
 
-#: src/features/wiki/page-editor.tsx:490
+#: src/features/wiki/page-editor.tsx:491
 msgid "Edit summary (optional)"
 msgstr "Rediģēt kopsavilkumu (nav obligāts)"
 
@@ -1411,7 +1285,7 @@ msgstr "Rediģēt: {pageTitle}"
 msgid "Email"
 msgstr "E-pasts"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:291
+#: ../../../lib/web/src/components/step-up-dialog.tsx:292
 msgid "Email code"
 msgstr "E-pasta kods"
 
@@ -1427,23 +1301,23 @@ msgstr "Ievadiet meklēšanas vaicājumu"
 msgid "Enter tag name"
 msgstr "Ievadiet birkas nosaukumu"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:301
+#: ../../../lib/web/src/components/step-up-dialog.tsx:302
 msgid "Enter the code from your email"
 msgstr "Ievadiet kodu no sava e-pasta"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:326
+#: ../../../lib/web/src/components/step-up-dialog.tsx:327
 msgid "Enter your authenticator code"
 msgstr "Ievadiet autentifikatora kodu"
 
-#: src/features/wiki/wiki-settings.tsx:397
+#: src/features/wiki/wiki-settings.tsx:398
 msgid "Entity ID"
 msgstr "Entītijas ID"
 
-#: src/features/wiki/wiki-page-content.tsx:198
+#: src/features/wiki/wiki-page-content.tsx:199
 msgid "Error: Received invalid response from server."
 msgstr "Kļūda: Saņemta nederīga atbilde no servera."
 
-#: src/features/wiki/wiki-settings.tsx:445
+#: src/features/wiki/wiki-settings.tsx:446
 msgid "Example: \"home\", \"welcome\", \"index\""
 msgstr "Piemērs: \"home\", \"welcome\", \"index\""
 
@@ -1462,15 +1336,10 @@ msgstr "Izvērst sānjoslu"
 msgid "External URL"
 msgstr "Ārējs URL"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:131
+#: ../../../lib/web/src/lib/preference-utils.ts:124
 msgid "Extra large"
 msgstr "Ļoti liels"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:225
-msgid "Failed to add account"
-msgstr "Neizdevās pievienot kontu"
-
-#: ../../../lib/web/src/components/tag-input.tsx:39
 #: src/features/wiki/tag-manager.tsx:60
 msgid "Failed to add tag"
 msgstr "Neizdevās pievienot birku"
@@ -1487,12 +1356,12 @@ msgstr "Neizdevās kopēt"
 msgid "Failed to create link"
 msgstr "Neizdevās izveidot saiti"
 
-#: src/features/wiki/page-editor.tsx:285
+#: src/features/wiki/page-editor.tsx:286
 msgid "Failed to create page"
 msgstr "Neizdevās izveidot lapu"
 
 #: src/features/wiki/redirects-page.tsx:209
-#: src/features/wiki/wiki-settings.tsx:1007
+#: src/features/wiki/wiki-settings.tsx:1008
 msgid "Failed to create redirect"
 msgstr "Neizdevās izveidot pāradresāciju"
 
@@ -1502,7 +1371,7 @@ msgstr "Neizdevās izveidot wiki"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:130
 #: src/features/wiki/attachments-page.tsx:270
-#: src/features/wiki/page-editor.tsx:255
+#: src/features/wiki/page-editor.tsx:256
 msgid "Failed to delete attachment"
 msgstr "Neizdevās dzēst pielikumu"
 
@@ -1519,18 +1388,18 @@ msgid "Failed to delete page"
 msgstr "Neizdevās dzēst lapu"
 
 #: src/features/wiki/redirects-page.tsx:120
-#: src/features/wiki/wiki-settings.tsx:866
+#: src/features/wiki/wiki-settings.tsx:867
 msgid "Failed to delete redirect"
 msgstr "Neizdevās dzēst pāradresāciju"
 
-#: src/features/wiki/wiki-settings.tsx:348
+#: src/features/wiki/wiki-settings.tsx:349
 msgid "Failed to delete wiki"
 msgstr "Neizdevās dzēst wiki"
 
 #: ../../../lib/web/src/components/options-menu.tsx:122
-#: src/features/wiki/wiki-page-content.tsx:161
-#: src/routes/_authenticated/index.tsx:325
-#: src/routes/_authenticated/index.tsx:612
+#: src/features/wiki/wiki-page-content.tsx:162
+#: src/routes/_authenticated/index.tsx:326
+#: src/routes/_authenticated/index.tsx:613
 msgid "Failed to get RSS token"
 msgstr "Neizdevās iegūt RSS pilnvaru"
 
@@ -1538,15 +1407,15 @@ msgstr "Neizdevās iegūt RSS pilnvaru"
 msgid "Failed to join wiki"
 msgstr "Neizdevās pievienoties wiki"
 
-#: ../../../lib/web/src/hooks/use-load-more.ts:77
+#: ../../../lib/web/src/hooks/use-load-more.ts:78
 msgid "Failed to load"
 msgstr "Neizdevās ielādēt"
 
-#: src/features/wiki/wiki-settings.tsx:534
+#: src/features/wiki/wiki-settings.tsx:535
 msgid "Failed to load access rules"
 msgstr "Neizdevās ielādēt piekļuves noteikumus"
 
-#: ../../../lib/web/src/components/audit-timeline.tsx:65
+#: ../../../lib/web/src/components/audit-timeline.tsx:68
 msgid "Failed to load history"
 msgstr "Neizdevās ielādēt vēsturi"
 
@@ -1554,11 +1423,11 @@ msgstr "Neizdevās ielādēt vēsturi"
 msgid "Failed to load image"
 msgstr "Neizdevās ielādēt attēlu"
 
-#: src/features/wiki/wiki-settings.tsx:848
+#: src/features/wiki/wiki-settings.tsx:849
 msgid "Failed to load redirects"
 msgstr "Neizdevās ielādēt pāradresācijas"
 
-#: src/features/wiki/wiki-settings.tsx:657
+#: src/features/wiki/wiki-settings.tsx:658
 msgid "Failed to load replicas"
 msgstr "Neizdevās ielādēt replikas"
 
@@ -1566,7 +1435,7 @@ msgstr "Neizdevās ielādēt replikas"
 msgid "Failed to load video"
 msgstr "Neizdevās ielādēt video"
 
-#: src/routes/_authenticated/$page/route.tsx:57
+#: src/routes/_authenticated/$page/route.tsx:58
 #: src/routes/_authenticated/$wikiId/route.tsx:66
 msgid "Failed to load wiki info"
 msgstr "Neizdevās ielādēt wiki informāciju"
@@ -1579,15 +1448,11 @@ msgstr "Neizdevās ielādēt wiki"
 msgid "Failed to post comment"
 msgstr "Neizdevās publicēt komentāru"
 
-#: src/features/wiki/wiki-settings.tsx:579
+#: src/features/wiki/wiki-settings.tsx:580
 msgid "Failed to remove access"
 msgstr "Neizdevās noņemt piekļuvi"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:234
-msgid "Failed to remove account"
-msgstr "Neizdevās noņemt kontu"
-
-#: src/features/wiki/wiki-settings.tsx:676
+#: src/features/wiki/wiki-settings.tsx:677
 msgid "Failed to remove replica"
 msgstr "Neizdevās noņemt repliku"
 
@@ -1599,7 +1464,7 @@ msgstr "Neizdevās noņemt birku"
 msgid "Failed to rename page"
 msgstr "Neizdevās pārdēvēt lapu"
 
-#: src/features/wiki/wiki-settings.tsx:281
+#: src/features/wiki/wiki-settings.tsx:282
 msgid "Failed to rename wiki"
 msgstr "Neizdevās pārdēvēt wiki"
 
@@ -1608,8 +1473,8 @@ msgid "Failed to revert page"
 msgstr "Neizdevās atjaunot lapu"
 
 #: ../../../lib/web/src/components/options-menu.tsx:133
-#: src/routes/_authenticated/index.tsx:334
-#: src/routes/_authenticated/index.tsx:621
+#: src/routes/_authenticated/index.tsx:335
+#: src/routes/_authenticated/index.tsx:622
 msgid "Failed to revoke RSS access"
 msgstr "Neizdevās atsaukt RSS piekļuvi"
 
@@ -1617,11 +1482,11 @@ msgstr "Neizdevās atsaukt RSS piekļuvi"
 msgid "Failed to save caption"
 msgstr "Neizdevās saglabāt parakstu"
 
-#: src/features/wiki/page-editor.tsx:307
+#: src/features/wiki/page-editor.tsx:308
 msgid "Failed to save page"
 msgstr "Neizdevās saglabāt lapu"
 
-#: src/features/wiki/wiki-settings.tsx:305
+#: src/features/wiki/wiki-settings.tsx:306
 msgid "Failed to save settings"
 msgstr "Neizdevās saglabāt iestatījumus"
 
@@ -1630,32 +1495,28 @@ msgstr "Neizdevās saglabāt iestatījumus"
 msgid "Failed to search wikis"
 msgstr "Neizdevās meklēt wiki"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:257
-msgid "Failed to send verification code"
-msgstr "Neizdevās nosūtīt verifikācijas kodu"
-
-#: src/features/wiki/wiki-settings.tsx:550
+#: src/features/wiki/wiki-settings.tsx:551
 msgid "Failed to set access level"
 msgstr "Neizdevās iestatīt piekļuves līmeni"
 
 #: src/features/wiki/inline-wiki-search.tsx:96
 #: src/routes/_authenticated/find.tsx:65
-#: src/routes/_authenticated/index.tsx:678
+#: src/routes/_authenticated/index.tsx:679
 msgid "Failed to subscribe"
 msgstr "Neizdevās abonēt"
 
-#: src/features/wiki/wiki-settings.tsx:327
+#: src/features/wiki/wiki-settings.tsx:328
 msgid "Failed to sync wiki"
 msgstr "Neizdevās sinhronizēt wiki"
 
 #: src/features/wiki/wiki-page-content.tsx:82
 #: src/routes/_authenticated/$page/index.tsx:84
 #: src/routes/_authenticated/index.tsx:294
-#: src/routes/_authenticated/index.tsx:939
+#: src/routes/_authenticated/index.tsx:940
 msgid "Failed to unsubscribe"
 msgstr "Neizdevās atteikties no abonementa"
 
-#: src/features/wiki/wiki-settings.tsx:563
+#: src/features/wiki/wiki-settings.tsx:564
 msgid "Failed to update access level"
 msgstr "Neizdevās atjaunināt piekļuves līmeni"
 
@@ -1668,11 +1529,11 @@ msgid "Failed to upload attachment"
 msgstr "Neizdevās augšupielādēt pielikumu"
 
 #: src/features/wiki/attachments-page.tsx:158
-#: src/features/wiki/page-editor.tsx:203
+#: src/features/wiki/page-editor.tsx:204
 msgid "Failed to upload files"
 msgstr "Neizdevās augšupielādēt failus"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:588
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:589
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:155
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:175
 msgid "Files"
@@ -1682,16 +1543,12 @@ msgstr "Faili"
 msgid "Filter"
 msgstr "Filtrēt"
 
-#: ../../../lib/web/src/components/data-table/toolbar.tsx:30
-msgid "Filter..."
-msgstr "Filtrēt..."
-
 #: src/components/layout/wiki-layout.tsx:131
 #: src/routes/_authenticated/find.tsx:99
 msgid "Find wikis"
 msgstr "Atrast wiki"
 
-#: src/features/wiki/wiki-settings.tsx:401
+#: src/features/wiki/wiki-settings.tsx:402
 msgid "Fingerprint"
 msgstr "Pirkstu nospiedums"
 
@@ -1706,10 +1563,6 @@ msgstr "Karogi"
 #: ../../../lib/web/src/lib/preference-utils.ts:111
 msgid "Flat"
 msgstr "Plakana"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:258
-msgid "Floating"
-msgstr "Peldošs"
 
 #. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link preload={false} to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
 #: src/features/wiki/search-page.tsx:81
@@ -1731,41 +1584,15 @@ msgstr "No"
 #: ../../../lib/web/src/lib/preference-utils.ts:89
 #: ../../../lib/web/src/lib/preference-utils.ts:99
 #: ../../../lib/web/src/lib/preference-utils.ts:110
-#: ../../../lib/web/src/lib/preference-utils.ts:119
-#: ../../../lib/web/src/lib/preference-utils.ts:127
-#: ../../../lib/web/src/lib/preference-utils.ts:138
+#: ../../../lib/web/src/lib/preference-utils.ts:120
+#: ../../../lib/web/src/lib/preference-utils.ts:131
 msgid "From theme"
 msgstr "No motīva"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:321
-msgid "Full layout"
-msgstr "Pilns izkārtojums"
-
-#: ../../../lib/web/src/features/errors/forbidden.tsx:26
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:26
 #: ../../../lib/web/src/features/errors/unauthorized-error.tsx:26
 msgid "Go back"
 msgstr "Atpakaļ"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:82
-msgid "Go to first page"
-msgstr "Iet uz pirmo lapu"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:128
-msgid "Go to last page"
-msgstr "Iet uz pēdējo lapu"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:119
-msgid "Go to next page"
-msgstr "Iet uz nākamo lapu"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:106
-msgid "Go to page {pageNumber}"
-msgstr "Doties uz lapu {pageNumber}"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:91
-msgid "Go to previous page"
-msgstr "Iet uz iepriekšējo lapu"
 
 #: src/features/wiki/attachments-page.tsx:419
 #: src/features/wiki/attachments-page.tsx:424
@@ -1785,18 +1612,10 @@ msgstr "Grupēt pēc"
 msgid "Group: {0}"
 msgstr "Grupa: {0}"
 
-#: ../../../lib/web/src/components/data-table/column-header.tsx:70
-msgid "Hide"
-msgstr "Slēpt"
-
-#: ../../../lib/web/src/components/password-input.tsx:27
-msgid "Hide password"
-msgstr "Slēpt paroli"
-
-#: ../../../lib/web/src/components/audit-timeline.tsx:58
-#: src/features/wiki/wiki-page-content.tsx:310
+#: ../../../lib/web/src/components/audit-timeline.tsx:61
+#: src/features/wiki/wiki-page-content.tsx:311
 #: src/routes/_authenticated/$page/index.tsx:227
-#: src/routes/_authenticated/index.tsx:422
+#: src/routes/_authenticated/index.tsx:423
 msgid "History"
 msgstr "Vēsture"
 
@@ -1811,7 +1630,7 @@ msgstr "Vēsture"
 msgid "History: {pageTitle}"
 msgstr "Vēsture: {pageTitle}"
 
-#: src/features/wiki/wiki-settings.tsx:442
+#: src/features/wiki/wiki-settings.tsx:443
 msgid "home"
 msgstr "mājas"
 
@@ -1823,7 +1642,7 @@ msgstr "mājas"
 msgid "Home"
 msgstr "Sākums"
 
-#: src/features/wiki/wiki-settings.tsx:430
+#: src/features/wiki/wiki-settings.tsx:431
 msgid "Home page"
 msgstr "Sākumlapa"
 
@@ -1832,15 +1651,15 @@ msgid "Hot"
 msgstr "Aktuāli"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
-#: src/features/wiki/wiki-settings.tsx:742
+#: src/features/wiki/wiki-settings.tsx:743
 msgid "ID"
 msgstr "ID"
 
-#: src/features/wiki/wiki-settings.tsx:388
+#: src/features/wiki/wiki-settings.tsx:389
 msgid "Identity"
 msgstr "Identitāte"
 
-#: src/features/wiki/markdown-content.tsx:127
+#: src/features/wiki/markdown-content.tsx:128
 msgid "Image"
 msgstr "Attēls"
 
@@ -1853,7 +1672,7 @@ msgstr "Attēlu skatītājs: {0}"
 msgid "Images"
 msgstr "Attēli"
 
-#: src/features/wiki/page-editor.tsx:515
+#: src/features/wiki/page-editor.tsx:516
 msgid "images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration."
 msgstr "attēli, PDF, DOC, DOCX, TXT un MD. Lielas augšupielādes var ierobežot arī jūsu servera vai starpniekservera konfigurācija."
 
@@ -1861,7 +1680,7 @@ msgstr "attēli, PDF, DOC, DOCX, TXT un MD. Lielas augšupielādes var ierobežo
 msgid "Imperial"
 msgstr "Imperiāls"
 
-#: ../../../lib/web/src/features/access/types.ts:42
+#: ../../../lib/web/src/features/access/types.ts:36
 msgid "Including anonymous users"
 msgstr "Ieskaitot anonīmos lietotājus"
 
@@ -1873,33 +1692,21 @@ msgstr "Iniciāļu avatars"
 msgid "Initials avatar for {name}"
 msgstr "{name} iniciāļu avatars"
 
-#: src/features/wiki/page-editor.tsx:356
+#: src/features/wiki/page-editor.tsx:357
 msgid "Insert"
 msgstr "Ievietot"
 
-#: src/features/wiki/page-editor.tsx:506
+#: src/features/wiki/page-editor.tsx:507
 msgid "Insert attachment"
 msgstr "Ievietot pielikumu"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:253
-msgid "Inset"
-msgstr "Iebūvēts"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "Intereses"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:544
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:550
 msgid "Invalid date"
 msgstr "Nederīgs datums"
-
-#: ../../../lib/web/src/components/tag-input.tsx:38
-msgid "Invalid tag: letters, numbers, spaces, hyphens, and slashes only (max 50 chars)"
-msgstr "Nederīgs tags: tikai burti, cipari, atstarpes, defises un slīpsvītras (ne vairāk kā 50 rakstzīmes)"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:245
-msgid "Invalid verification code"
-msgstr "Nederīgs verifikācijas kods"
 
 #: src/routes/_authenticated/$page/revert.tsx:45
 #: src/routes/_authenticated/$wikiId/$page/revert.tsx:46
@@ -1914,7 +1721,7 @@ msgstr "Šķiet, ka meklētā lapa <0/>neeksistē vai ir noņemta."
 msgid "Joined wiki"
 msgstr "Pievienojies wiki"
 
-#: ../../../lib/web/src/lib/locale-format.ts:164
+#: ../../../lib/web/src/lib/locale-format.ts:165
 msgid "Just now"
 msgstr "Tikko"
 
@@ -1923,7 +1730,7 @@ msgid "Keyboard shortcuts"
 msgstr "Tastatūras saīsnes"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:103
-#: ../../../lib/web/src/lib/preference-utils.ts:130
+#: ../../../lib/web/src/lib/preference-utils.ts:123
 msgid "Large"
 msgstr "Liels"
 
@@ -1931,43 +1738,31 @@ msgstr "Liels"
 msgid "Large uploads may be limited by your server or proxy configuration."
 msgstr "Lielas augšupielādes var ierobežot jūsu servera vai starpniekservera konfigurācija."
 
-#: src/features/wiki/wiki-settings.tsx:744
+#: src/features/wiki/wiki-settings.tsx:745
 msgid "Last synced"
 msgstr "Pēdējo reizi sinhronizēts"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:287
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:306
 msgid "Layout"
 msgstr "Izkārtojums"
-
-#: ../../../lib/web/src/components/learn-more.tsx:33
-#: ../../../lib/web/src/components/learn-more.tsx:38
-msgid "Learn more"
-msgstr "Uzzināt vairāk"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:355
-msgid "Left to Right"
-msgstr "No kreisās uz labo"
 
 #: ../../../lib/web/src/components/post-tags.tsx:72
 msgid "Letters, numbers, spaces, and hyphens only"
 msgstr "Tikai burti, cipari, atstarpes un defises"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:214
-#: ../../../lib/web/src/components/theme-switch.tsx:45
 #: ../../../lib/web/src/lib/preference-utils.ts:14
 msgid "Light"
 msgstr "Gaišs"
 
 #: ../../../lib/web/src/components/options-menu.tsx:190
-#: src/features/wiki/wiki-page-content.tsx:241
-#: src/features/wiki/wiki-page-content.tsx:370
+#: src/features/wiki/wiki-page-content.tsx:242
+#: src/features/wiki/wiki-page-content.tsx:371
 #: src/routes/_authenticated/$page/index.tsx:268
-#: src/routes/_authenticated/index.tsx:481
+#: src/routes/_authenticated/index.tsx:482
 msgid "Link"
 msgstr "Saite"
 
-#: src/features/wiki/markdown-content.tsx:175
+#: src/features/wiki/markdown-content.tsx:176
 msgid "Link to {headingText}"
 msgstr "Saite uz {headingText}"
 
@@ -1990,7 +1785,7 @@ msgstr "Saraksta skats"
 msgid "Load more"
 msgstr "Ielādēt vairāk"
 
-#: ../../../lib/web/src/components/ui/loading-content.tsx:25
+#: ../../../lib/web/src/components/ui/loading-content.tsx:26
 msgid "Loading content…"
 msgstr "Notiek satura ielāde…"
 
@@ -1999,8 +1794,6 @@ msgstr "Notiek satura ielāde…"
 msgid "Loading..."
 msgstr "Ielādē..."
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:69
-#: ../../../lib/web/src/components/profile-dropdown.tsx:98
 #: ../../../lib/web/src/components/sign-out-dialog.tsx:26
 #: ../../../lib/web/src/components/sign-out-dialog.tsx:28
 msgid "Log out"
@@ -2018,21 +1811,16 @@ msgstr "Izrakstīšanās veiksmīga"
 msgid "Logging out…"
 msgstr "Izrakstās…"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:125
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
 msgid "Manage categories"
 msgstr "Pārvaldīt kategorijas"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:192
-msgid "Manage your connected accounts for notifications and services."
-msgstr "Pārvaldiet savus pievienotos kontus paziņojumiem un pakalpojumiem."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:52
 msgid "Manual"
 msgstr "Manuāls"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:190
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:197
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:224
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:207
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:214
 msgid "Mark all as read"
 msgstr "Atzīmēt visus kā lasītus"
 
@@ -2081,29 +1869,29 @@ msgstr "Pirmdiena"
 msgid "More options"
 msgstr "Vairāk opciju"
 
-#: src/features/wiki/page-editor.tsx:445
+#: src/features/wiki/page-editor.tsx:446
 msgid "my-page-name"
 msgstr "manas-lapas-nosaukums"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:598
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:600
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:125
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:293
 #: src/features/wiki/attachments-page.tsx:405
-#: src/features/wiki/wiki-settings.tsx:391
+#: src/features/wiki/wiki-settings.tsx:392
 msgid "Name"
 msgstr "Nosaukums"
 
-#: src/features/wiki/wiki-settings.tsx:270
-msgid "Name cannot contain < or > characters"
-msgstr "Nosaukums nedrīkst saturēt rakstzīmes < vai >"
+#: src/features/wiki/wiki-settings.tsx:271
+msgid "Name cannot contain < or > characters, or line breaks"
+msgstr "Nosaukumā nedrīkst būt rakstzīmes < vai >, kā arī rindu pārtraukumi"
 
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
 msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
 msgstr "Nosaukumā nedrīkst būt leņķa iekavas, apgrieztā slīpsvītra, semikols, pēdiņas vai atgriezeniskās pēdiņas"
 
-#: src/features/wiki/wiki-settings.tsx:269
+#: src/features/wiki/wiki-settings.tsx:270
 msgid "Name must be 100 characters or less"
 msgstr "Nosaukums nedrīkst pārsniegt 100 rakstzīmes"
 
@@ -2112,38 +1900,38 @@ msgid "Name must be 1000 characters or less"
 msgstr "Nosaukums nedrīkst pārsniegt 1000 rakstzīmes"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:53
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:322
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:313
 msgid "Network error"
 msgstr "Tīkla kļūda"
 
-#: src/features/wiki/wiki-settings.tsx:758
+#: src/features/wiki/wiki-settings.tsx:759
 msgid "Never"
 msgstr "Nekad"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:475
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:476
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "Jauns"
 
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:37
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:49
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:39
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:51
 msgid "New game"
 msgstr "Jauna spēle"
 
-#: src/features/wiki/wiki-page-content.tsx:362
+#: src/features/wiki/wiki-page-content.tsx:363
 #: src/routes/_authenticated/$page/index.tsx:154
 #: src/routes/_authenticated/$page/index.tsx:260
 #: src/routes/_authenticated/$wikiId/new.tsx:25
 #: src/routes/_authenticated/$wikiId/new.tsx:36
-#: src/routes/_authenticated/index.tsx:473
+#: src/routes/_authenticated/index.tsx:474
 #: src/routes/_authenticated/new.tsx:24
 #: src/routes/_authenticated/new.tsx:31
 msgid "New page"
 msgstr "Jauna lapa"
 
-#: src/features/wiki/wiki-page-content.tsx:159
-#: src/routes/_authenticated/index.tsx:323
-#: src/routes/_authenticated/index.tsx:610
+#: src/features/wiki/wiki-page-content.tsx:160
+#: src/routes/_authenticated/index.tsx:324
+#: src/routes/_authenticated/index.tsx:611
 msgid "New RSS URL copied to clipboard"
 msgstr "Jaunais RSS URL nokopēts starpliktuvē"
 
@@ -2160,7 +1948,7 @@ msgid "New URL must be different from current URL"
 msgstr "Jaunajam URL jāatšķiras no pašreizējā"
 
 #: src/features/wiki/redirects-page.tsx:258
-#: src/features/wiki/wiki-settings.tsx:1056
+#: src/features/wiki/wiki-settings.tsx:1057
 msgid "new-page-name"
 msgstr "jaunas-lapas-nosaukums"
 
@@ -2169,11 +1957,11 @@ msgstr "jaunas-lapas-nosaukums"
 msgid "Next image"
 msgstr "Nākamais attēls"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:554
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:555
 msgid "No {parentClassNames} to add to"
 msgstr "Nav {parentClassNames}, kam pievienot"
 
-#: src/features/wiki/wiki-settings.tsx:500
+#: src/features/wiki/wiki-settings.tsx:501
 msgid "No access"
 msgstr "Nav piekļuves"
 
@@ -2190,7 +1978,7 @@ msgid "No attachments match your search"
 msgstr "Meklējumam neatbilst neviens pielikums"
 
 #: src/features/wiki/attachments-page.tsx:464
-#: src/features/wiki/page-editor.tsx:570
+#: src/features/wiki/page-editor.tsx:571
 msgid "No attachments yet"
 msgstr "Vēl nav pielikumu"
 
@@ -2203,11 +1991,7 @@ msgstr "Vēl nav izmaiņu"
 msgid "No comments yet"
 msgstr "Vēl nav komentāru"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:295
-msgid "No connected accounts"
-msgstr "Nav saistītu kontu"
-
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:46
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:48
 msgid "No games yet"
 msgstr "Vēl nav spēļu"
 
@@ -2215,17 +1999,13 @@ msgstr "Vēl nav spēļu"
 msgid "No groups available"
 msgstr "Nav pieejamu grupu"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:521
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "Vēl nevar izveidot vienumu tipus. Vispirms izveidojiet nepieciešamos vecākvienumus."
 
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
 msgid "No matching objects"
 msgstr "Nav atbilstošu objektu"
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
-msgid "No notifications yet"
-msgstr "Vēl nav paziņojumu"
 
 #: src/features/wiki/search-page.tsx:74
 msgid "No pages found for \"{debouncedQuery}\""
@@ -2235,7 +2015,7 @@ msgstr "Lapas vaicājumam \"{debouncedQuery}\" netika atrastas"
 msgid "No pages found with this tag"
 msgstr "Ar šo birku lapas netika atrastas"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:336
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:341
 #: ../../../lib/web/src/components/person-picker.tsx:84
 msgid "No people found"
 msgstr "Cilvēki nav atrasti"
@@ -2244,28 +2024,22 @@ msgstr "Cilvēki nav atrasti"
 msgid "No places found"
 msgstr "Vietas nav atrastas"
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:58
-msgid "No profile"
-msgstr "Nav profila"
-
 #: src/features/wiki/redirects-page.tsx:84
-#: src/features/wiki/wiki-settings.tsx:893
+#: src/features/wiki/wiki-settings.tsx:894
 msgid "No redirects configured"
 msgstr "Pāradresācijas nav konfigurētas"
 
-#: src/features/wiki/wiki-settings.tsx:723
-#: src/features/wiki/wiki-settings.tsx:807
+#: src/features/wiki/wiki-settings.tsx:724
+#: src/features/wiki/wiki-settings.tsx:808
 msgid "No replicas yet"
 msgstr "Vēl nav repliku"
 
 #: ../../../lib/web/src/components/inline-entity-search.tsx:64
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:82
 #: ../../../lib/web/src/components/search-entity-page.tsx:73
 msgid "No results found"
 msgstr "Rezultāti nav atrasti"
 
 #: ../../../lib/web/src/components/command-menu.tsx:55
-#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:94
 msgid "No results found."
 msgstr "Rezultāti nav atrasti."
 
@@ -2273,8 +2047,8 @@ msgstr "Rezultāti nav atrasti."
 msgid "No revisions found"
 msgstr "Revīzijas nav atrastas"
 
-#: ../../../lib/web/src/components/entity/entity-board-container.tsx:823
-#: ../../../lib/web/src/components/entity/entity-board-container.tsx:868
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:824
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:869
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
 msgid "No status"
 msgstr "Nav statusa"
@@ -2291,11 +2065,11 @@ msgstr "Birkas nav atrastas"
 msgid "No time zone found."
 msgstr "Laika josla nav atrasta."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:104
+#: ../../../lib/web/src/components/notification-category-button.tsx:106
 msgid "No topic record yet — try again after the next notification."
 msgstr "Vēl nav tēmas ieraksta — mēģiniet vēlreiz pēc nākamā paziņojuma."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:122
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:139
 msgid "No unread notifications"
 msgstr "Nav nelasītu paziņojumu"
 
@@ -2313,9 +2087,9 @@ msgid "No wikis found"
 msgstr "Wiki nav atrastas"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:537
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:540
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:541
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:545
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:382
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
@@ -2325,15 +2099,14 @@ msgstr "Wiki nav atrastas"
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:100
-#: ../../../lib/web/src/lib/preference-utils.ts:120
 msgid "None"
 msgstr "Nav"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:129
+#: ../../../lib/web/src/lib/preference-utils.ts:122
 msgid "Normal"
 msgstr "Normāls"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:267
+#: ../../../lib/web/src/components/attachment-image.tsx:50
 #: ../../../lib/web/src/features/errors/general-error.tsx:67
 msgid "Not found"
 msgstr "Nav atrasts"
@@ -2346,16 +2119,8 @@ msgstr "Nav iestatīts"
 msgid "Nothing found"
 msgstr "Nekas nav atrasts"
 
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:136
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:150
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:236
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:257
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:261
-msgid "Notifications"
-msgstr "Paziņojumi"
-
 #. placeholder {0}: unread.length
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:183
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:200
 msgid "Notifications: {0}"
 msgstr "Paziņojumi: {0}"
 
@@ -2366,7 +2131,7 @@ msgid "Number"
 msgstr "Numurs"
 
 #: src/features/wiki/redirects-page.tsx:246
-#: src/features/wiki/wiki-settings.tsx:1044
+#: src/features/wiki/wiki-settings.tsx:1045
 msgid "old-page-name"
 msgstr "vecas-lapas-nosaukums"
 
@@ -2384,14 +2149,9 @@ msgid "Oops! Page Not Found!"
 msgstr "Hops! Lapa nav atrasta!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:862
+#: src/routes/_authenticated/index.tsx:863
 msgid "Open {0}"
 msgstr "Atvērt {0}"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:156
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:166
-msgid "Open account actions"
-msgstr "Atvērt konta darbības"
 
 #: ../../../lib/web/src/components/layout/nav-group.tsx:199
 #: ../../../lib/web/src/components/layout/nav-group.tsx:204
@@ -2412,11 +2172,6 @@ msgstr "Atvērt izvēlni"
 msgid "Open navigation"
 msgstr "Atvērt navigāciju"
 
-#: ../../../lib/web/src/components/layout/top-nav.tsx:38
-#: ../../../lib/web/src/components/layout/top-nav.tsx:44
-msgid "Open navigation menu"
-msgstr "Atvērt navigācijas izvēlni"
-
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:105
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:111
 msgid "Open option actions"
@@ -2425,11 +2180,6 @@ msgstr "Atvērt iespēju darbības"
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:30
 msgid "Open selected card"
 msgstr "Atvērt atlasīto karti"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:58
-#: ../../../lib/web/src/components/config-drawer.tsx:66
-msgid "Open theme settings"
-msgstr "Atvērt motīva iestatījumus"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:274
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:279
@@ -2464,9 +2214,9 @@ msgid "Owner"
 msgstr "Īpašnieks"
 
 #: src/features/wiki/changes-list.tsx:45
-#: src/features/wiki/wiki-page-content.tsx:292
+#: src/features/wiki/wiki-page-content.tsx:293
 #: src/routes/_authenticated/$page/index.tsx:209
-#: src/routes/_authenticated/index.tsx:404
+#: src/routes/_authenticated/index.tsx:405
 msgid "Page"
 msgstr "Lapa"
 
@@ -2479,48 +2229,43 @@ msgstr "Lapa \"{slug}\" neeksistē"
 msgid "Page \"{title}\" deleted"
 msgstr "Lapa \"{title}\" izdzēsta"
 
-#: ../../../lib/web/src/components/data-table/pagination.tsx:43
-#: ../../../lib/web/src/components/data-table/pagination.tsx:71
-msgid "Page {currentPage} of {totalPages}"
-msgstr "{currentPage}. lappuse no {totalPages}"
-
-#: src/features/wiki/wiki-page-content.tsx:218
-#: src/features/wiki/wiki-page-content.tsx:224
-#: src/features/wiki/wiki-page-content.tsx:282
-#: src/features/wiki/wiki-page-content.tsx:289
+#: src/features/wiki/wiki-page-content.tsx:219
+#: src/features/wiki/wiki-page-content.tsx:225
+#: src/features/wiki/wiki-page-content.tsx:283
+#: src/features/wiki/wiki-page-content.tsx:290
 #: src/routes/_authenticated/$page/index.tsx:132
 #: src/routes/_authenticated/$page/index.tsx:139
 #: src/routes/_authenticated/$page/index.tsx:199
 #: src/routes/_authenticated/$page/index.tsx:206
-#: src/routes/_authenticated/index.tsx:394
-#: src/routes/_authenticated/index.tsx:401
+#: src/routes/_authenticated/index.tsx:395
+#: src/routes/_authenticated/index.tsx:402
 msgid "Page actions"
 msgstr "Lapas darbības"
 
-#: src/features/wiki/page-editor.tsx:277
+#: src/features/wiki/page-editor.tsx:278
 msgid "Page created"
 msgstr "Lapa izveidota"
 
 #: src/features/wiki/page-view.tsx:293
-#: src/features/wiki/wiki-page-content.tsx:258
+#: src/features/wiki/wiki-page-content.tsx:259
 #: src/routes/_authenticated/$page/index.tsx:176
-#: src/routes/_authenticated/index.tsx:373
+#: src/routes/_authenticated/index.tsx:374
 msgid "Page not found"
 msgstr "Lapa nav atrasta"
 
-#: src/features/wiki/page-editor.tsx:299
+#: src/features/wiki/page-editor.tsx:300
 msgid "Page saved"
 msgstr "Lapa saglabāta"
 
-#: src/features/wiki/page-editor.tsx:432
+#: src/features/wiki/page-editor.tsx:433
 msgid "Page title"
 msgstr "Lapas virsraksts"
 
-#: src/features/wiki/page-editor.tsx:439
+#: src/features/wiki/page-editor.tsx:440
 msgid "Page URL"
 msgstr "Lapas URL"
 
-#: src/features/wiki/page-editor.tsx:269
+#: src/features/wiki/page-editor.tsx:270
 msgid "Page URL is required"
 msgstr "Lapas URL ir obligāts"
 
@@ -2528,15 +2273,15 @@ msgstr "Lapas URL ir obligāts"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "Lapas ar birku <0>{tag}</0>"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:529
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:530
 msgid "Parent"
 msgstr "Vecāks"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:336
+#: ../../../lib/web/src/components/step-up-dialog.tsx:337
 msgid "Passkey"
 msgstr "Piekļuves atslēga"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:206
+#: ../../../lib/web/src/components/step-up-dialog.tsx:207
 msgid "Passkey verification failed. Please try again."
 msgstr "Piekļuves atslēgas pārbaude neizdevās. Lūdzu, mēģiniet vēlreiz."
 
@@ -2548,17 +2293,13 @@ msgstr "Piekļuves atslēgas"
 msgid "Pattern (regex)"
 msgstr "Šablons (regex)"
 
-#: src/features/wiki/wiki-settings.tsx:465
+#: src/features/wiki/wiki-settings.tsx:466
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Neatgriezeniski izdzēst šo wiki un visu tās saturu. To nevar atsaukt."
 
-#: ../../../lib/web/src/components/date-picker.tsx:20
-msgid "Pick a date"
-msgstr "Izvēlieties datumu"
-
 #: ../../../lib/web/src/components/comment-composer.tsx:89
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:323
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:314
 msgid "Please check your internet connection and try again."
 msgstr "Lūdzu, pārbaudiet interneta savienojumu un mēģiniet vēlreiz."
 
@@ -2582,7 +2323,7 @@ msgstr "Ieraksti"
 msgid "Posts and comments"
 msgstr "Ieraksti un komentāri"
 
-#: src/features/wiki/page-editor.tsx:346
+#: src/features/wiki/page-editor.tsx:347
 msgid "Preview"
 msgstr "Priekšskatījums"
 
@@ -2600,10 +2341,6 @@ msgstr "Privātums"
 msgid "Processing…"
 msgstr "Apstrādā…"
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:114
-msgid "Profile"
-msgstr "Profils"
-
 #: ../../../lib/web/src/components/person-picker.tsx:200
 msgid "Project members"
 msgstr "Projekta dalībnieki"
@@ -2616,8 +2353,8 @@ msgstr "Push paziņojums"
 msgid "Raised"
 msgstr "Izcelts"
 
-#: src/features/wiki/page-editor.tsx:455
-#: src/features/wiki/page-editor.tsx:461
+#: src/features/wiki/page-editor.tsx:456
+#: src/features/wiki/page-editor.tsx:462
 msgid "Re-derive from title"
 msgstr "Atvasināt no nosaukuma vēlreiz"
 
@@ -2633,17 +2370,17 @@ msgstr "Atkārtoti reģistrējiet savas piekļuves atslēgas šajā serverī"
 msgid "Reason for reverting"
 msgstr "Atsaukšanas iemesls"
 
-#: src/features/wiki/wiki-page-content.tsx:344
+#: src/features/wiki/wiki-page-content.tsx:345
 #: src/routes/_authenticated/$page/index.tsx:253
 #: src/routes/_authenticated/$wikiId/changes.tsx:27
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
-#: src/routes/_authenticated/changes.tsx:30
-#: src/routes/_authenticated/changes.tsx:48
-#: src/routes/_authenticated/changes.tsx:59
-#: src/routes/_authenticated/changes.tsx:69
-#: src/routes/_authenticated/index.tsx:442
+#: src/routes/_authenticated/changes.tsx:31
+#: src/routes/_authenticated/changes.tsx:49
+#: src/routes/_authenticated/changes.tsx:60
+#: src/routes/_authenticated/changes.tsx:70
+#: src/routes/_authenticated/index.tsx:443
 msgid "Recent changes"
 msgstr "Nesenās izmaiņas"
 
@@ -2651,12 +2388,11 @@ msgstr "Nesenās izmaiņas"
 msgid "Recent edits across all pages in this wiki."
 msgstr "Nesenas izmaiņas visās šīs wiki lapās."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:220
 #: ../../../lib/web/src/components/search-entity-page.tsx:243
 msgid "Recommended"
 msgstr "Ieteikts"
 
-#: src/routes/_authenticated/index.tsx:785
+#: src/routes/_authenticated/index.tsx:786
 msgid "Recommended wikis"
 msgstr "Ieteiktās wiki"
 
@@ -2669,12 +2405,12 @@ msgstr "Notiek atkārtota savienošana ({retries})..."
 msgid "Redirect \"{0}\" deleted"
 msgstr "Pāradresācija \"{0}\" izdzēsta"
 
-#: src/features/wiki/wiki-settings.tsx:865
+#: src/features/wiki/wiki-settings.tsx:866
 msgid "Redirect \"{source}\" deleted"
 msgstr "Pāradresācija \"{source}\" izdzēsta"
 
 #: src/features/wiki/redirects-page.tsx:208
-#: src/features/wiki/wiki-settings.tsx:1006
+#: src/features/wiki/wiki-settings.tsx:1007
 msgid "Redirect created"
 msgstr "Pāradresācija izveidota"
 
@@ -2684,9 +2420,9 @@ msgstr "Pāradresē uz pieteikšanos."
 
 #: src/features/wiki/redirects-page.tsx:73
 #: src/features/wiki/wiki-settings.tsx:106
-#: src/features/wiki/wiki-settings.tsx:881
-#: src/routes/_authenticated/redirects.tsx:26
-#: src/routes/_authenticated/redirects.tsx:29
+#: src/features/wiki/wiki-settings.tsx:882
+#: src/routes/_authenticated/redirects.tsx:27
+#: src/routes/_authenticated/redirects.tsx:30
 msgid "Redirects"
 msgstr "Pāradresācijas"
 
@@ -2707,14 +2443,13 @@ msgstr "Relatīvs (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "Relatīvs 24 stundu laikā, citādi absolūts"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:278
-#: ../../../lib/web/src/components/attachment-composer.tsx:323
+#: ../../../lib/web/src/components/attachment-composer.tsx:285
+#: ../../../lib/web/src/components/attachment-composer.tsx:330
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
 #: ../../../lib/web/src/features/access/access-list.tsx:270
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:180
 #: src/features/wiki/tag-manager.tsx:117
 #: src/features/wiki/tag-manager.tsx:122
-#: src/features/wiki/wiki-settings.tsx:794
+#: src/features/wiki/wiki-settings.tsx:795
 msgid "Remove"
 msgstr "Noņemt"
 
@@ -2743,7 +2478,7 @@ msgstr "Noņemt piekļuvi?"
 msgid "Remove interest"
 msgstr "Noņemt interesi"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:665
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:674
 msgid "Remove item"
 msgstr "Noņemt vienumu"
 
@@ -2753,34 +2488,34 @@ msgid "Remove link"
 msgstr "Noņemt saiti"
 
 #. placeholder {0}: replica.name || replica.id
-#: src/features/wiki/wiki-settings.tsx:770
-#: src/features/wiki/wiki-settings.tsx:776
+#: src/features/wiki/wiki-settings.tsx:771
+#: src/features/wiki/wiki-settings.tsx:777
 msgid "Remove replica {0}"
 msgstr "Noņemt repliku {0}"
 
-#: src/features/wiki/wiki-settings.tsx:780
+#: src/features/wiki/wiki-settings.tsx:781
 msgid "Remove replica?"
 msgstr "Noņemt repliku?"
 
-#: src/features/wiki/wiki-settings.tsx:577
+#: src/features/wiki/wiki-settings.tsx:578
 msgid "Removing access..."
 msgstr "Noņem piekļuvi..."
 
-#: src/features/wiki/wiki-settings.tsx:674
+#: src/features/wiki/wiki-settings.tsx:675
 msgid "Removing replica..."
 msgstr "Notiek kopijas noņemšana..."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:559
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:561
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:618
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
-#: src/features/wiki/wiki-page-content.tsx:304
+#: src/features/wiki/wiki-page-content.tsx:305
 #: src/routes/_authenticated/$page/index.tsx:221
-#: src/routes/_authenticated/index.tsx:416
+#: src/routes/_authenticated/index.tsx:417
 msgid "Rename"
 msgstr "Pārdēvēt"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:594
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:596
 msgid "Rename column"
 msgstr "Pārdēvēt kolonnu"
 
@@ -2788,7 +2523,7 @@ msgstr "Pārdēvēt kolonnu"
 msgid "Rename page"
 msgstr "Pārdēvēt lapu"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:595
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
 msgid "Rename this board column"
 msgstr "Pārdēvēt šo dēļa kolonnu"
 
@@ -2796,21 +2531,21 @@ msgstr "Pārdēvēt šo dēļa kolonnu"
 msgid "Renaming..."
 msgstr "Pārdēvē..."
 
-#: src/features/wiki/wiki-page-content.tsx:151
-#: src/routes/_authenticated/index.tsx:315
-#: src/routes/_authenticated/index.tsx:602
+#: src/features/wiki/wiki-page-content.tsx:152
+#: src/routes/_authenticated/index.tsx:316
+#: src/routes/_authenticated/index.tsx:603
 msgid "Replace"
 msgstr "Aizstāt"
 
-#: src/features/wiki/wiki-settings.tsx:675
+#: src/features/wiki/wiki-settings.tsx:676
 msgid "Replica \"{displayName}\" removed"
 msgstr "Kopija \"{displayName}\" noņemta"
 
 #: src/features/wiki/wiki-settings.tsx:108
-#: src/features/wiki/wiki-settings.tsx:691
-#: src/features/wiki/wiki-settings.tsx:704
-#: src/features/wiki/wiki-settings.tsx:718
-#: src/features/wiki/wiki-settings.tsx:735
+#: src/features/wiki/wiki-settings.tsx:692
+#: src/features/wiki/wiki-settings.tsx:705
+#: src/features/wiki/wiki-settings.tsx:719
+#: src/features/wiki/wiki-settings.tsx:736
 msgid "Replicas"
 msgstr "Replikas"
 
@@ -2838,7 +2573,7 @@ msgstr "Atbildēt"
 msgid "Reply to {0}..."
 msgstr "Atbildēt {0}..."
 
-#: src/features/wiki/wiki-page-content.tsx:200
+#: src/features/wiki/wiki-page-content.tsx:201
 msgid "Request URL: {baseURL}{slug}"
 msgstr "Pieprasījuma URL: {baseURL}{slug}"
 
@@ -2846,25 +2581,11 @@ msgstr "Pieprasījuma URL: {baseURL}{slug}"
 msgid "Required"
 msgstr "Obligāts"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:369
+#: ../../../lib/web/src/components/step-up-dialog.tsx:370
 msgid "Resend email"
 msgstr "Sūtīt e-pastu vēlreiz"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:87
-#: ../../../lib/web/src/components/data-table/toolbar.tsx:82
-msgid "Reset"
-msgstr "Atiestatīt"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:122
-#: ../../../lib/web/src/components/config-drawer.tsx:127
-msgid "Reset {title}"
-msgstr "Atiestatīt {title}"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:85
-msgid "Reset all settings to default values"
-msgstr "Atiestatīt visus iestatījumus uz noklusējuma vērtībām"
-
-#: ../../../lib/web/src/components/attachment-composer.tsx:341
+#: ../../../lib/web/src/components/attachment-composer.tsx:348
 msgid "Retry"
 msgstr "Mēģināt vēlreiz"
 
@@ -2910,18 +2631,14 @@ msgid "Revoke"
 msgstr "Atsaukt"
 
 #: ../../../lib/web/src/components/options-menu.tsx:181
-#: src/routes/_authenticated/index.tsx:465
-#: src/routes/_authenticated/index.tsx:736
+#: src/routes/_authenticated/index.tsx:466
+#: src/routes/_authenticated/index.tsx:737
 msgid "Revoke access"
 msgstr "Atsaukt piekļuvi"
 
 #: ../../../lib/web/src/components/options-menu.tsx:241
 msgid "Revoke RSS access?"
 msgstr "Vai atsaukt RSS piekļuvi?"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:362
-msgid "Right to Left"
-msgstr "No labās uz kreiso"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
@@ -2932,27 +2649,23 @@ msgstr "Rindas"
 msgid "Rows group by"
 msgstr "Rindu grupēšana pēc"
 
-#: ../../../lib/web/src/components/data-table/pagination.tsx:65
-msgid "Rows per page"
-msgstr "Rindu skaits lapā"
-
 #: ../../../lib/web/src/components/options-menu.tsx:131
-#: src/routes/_authenticated/index.tsx:332
-#: src/routes/_authenticated/index.tsx:619
+#: src/routes/_authenticated/index.tsx:333
+#: src/routes/_authenticated/index.tsx:620
 msgid "RSS access revoked"
 msgstr "RSS piekļuve atsaukta"
 
 #: ../../../lib/web/src/components/options-menu.tsx:171
-#: src/features/wiki/wiki-page-content.tsx:350
-#: src/routes/_authenticated/index.tsx:448
-#: src/routes/_authenticated/index.tsx:717
+#: src/features/wiki/wiki-page-content.tsx:351
+#: src/routes/_authenticated/index.tsx:449
+#: src/routes/_authenticated/index.tsx:718
 msgid "RSS feed"
 msgstr "RSS plūsma"
 
 #: ../../../lib/web/src/components/options-menu.tsx:120
-#: src/features/wiki/wiki-page-content.tsx:159
-#: src/routes/_authenticated/index.tsx:323
-#: src/routes/_authenticated/index.tsx:610
+#: src/features/wiki/wiki-page-content.tsx:160
+#: src/routes/_authenticated/index.tsx:324
+#: src/routes/_authenticated/index.tsx:611
 msgid "RSS URL copied to clipboard"
 msgstr "RSS URL nokopēts starpliktuvē"
 
@@ -2960,24 +2673,24 @@ msgstr "RSS URL nokopēts starpliktuvē"
 msgid "Saturday"
 msgstr "Sestdiena"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:423
+#: ../../../lib/web/src/components/attachment-composer.tsx:430
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:170
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:79
-#: src/features/wiki/page-editor.tsx:407
+#: src/features/wiki/page-editor.tsx:408
 #: src/features/wiki/wiki-comment-thread.tsx:202
 msgid "Save"
 msgstr "Saglabāt"
 
-#: src/features/wiki/wiki-settings.tsx:451
+#: src/features/wiki/wiki-settings.tsx:452
 msgid "Save changes"
 msgstr "Saglabāt izmaiņas"
 
-#: src/features/wiki/page-editor.tsx:407
-#: src/features/wiki/wiki-settings.tsx:279
-#: src/features/wiki/wiki-settings.tsx:303
-#: src/features/wiki/wiki-settings.tsx:451
+#: src/features/wiki/page-editor.tsx:408
+#: src/features/wiki/wiki-settings.tsx:280
+#: src/features/wiki/wiki-settings.tsx:304
+#: src/features/wiki/wiki-settings.tsx:452
 msgid "Saving..."
 msgstr "Saglabā..."
 
@@ -2985,13 +2698,13 @@ msgstr "Saglabā..."
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
 #: ../../../lib/web/src/components/search.tsx:18
-#: src/features/wiki/wiki-page-content.tsx:332
+#: src/features/wiki/wiki-page-content.tsx:333
 #: src/routes/_authenticated/$page/index.tsx:241
 #: src/routes/_authenticated/$wikiId/search.tsx:31
 #: src/routes/_authenticated/$wikiId/search.tsx:41
-#: src/routes/_authenticated/index.tsx:430
-#: src/routes/_authenticated/search.tsx:33
-#: src/routes/_authenticated/search.tsx:42
+#: src/routes/_authenticated/index.tsx:431
+#: src/routes/_authenticated/search.tsx:34
+#: src/routes/_authenticated/search.tsx:43
 msgid "Search"
 msgstr "Meklēt"
 
@@ -3015,7 +2728,7 @@ msgstr "Meklēt vietu"
 msgid "Search for a place..."
 msgstr "Meklēt vietu..."
 
-#: src/routes/_authenticated/index.tsx:761
+#: src/routes/_authenticated/index.tsx:762
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "Meklējiet wiki, ko abonēt, vai izveidojiet savu, lai publicētu savu dokumentāciju."
 
@@ -3064,12 +2777,10 @@ msgstr "Meklējiet, skatieties un kārtojiet šo skatu."
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
 #: ../../../lib/web/src/components/inline-entity-search.tsx:63
 #: ../../../lib/web/src/components/person-picker.tsx:324
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:81
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "Meklēt..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:178
 #: ../../../lib/web/src/components/search-entity-page.tsx:201
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
@@ -3079,16 +2790,11 @@ msgstr "Meklē..."
 msgid "Select"
 msgstr "Atlasīt"
 
-#. placeholder {0}: item.label.toLowerCase()
-#: ../../../lib/web/src/components/config-drawer.tsx:149
-msgid "Select {0}"
-msgstr "Atlasīt {0}"
-
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:356
 msgid "Select a field"
 msgstr "Atlasīt lauku"
 
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:32
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:34
 msgid "Select a game"
 msgstr "Atlasīt spēli"
 
@@ -3100,25 +2806,17 @@ msgstr "Atlasiet lietotāju, grupu vai citu noteikumu, lai piešķirtu piekļuvi
 msgid "Select access rule"
 msgstr "Atlasīt piekļuves noteikumu"
 
-#: ../../../lib/web/src/features/accounts/account-picker.tsx:34
-msgid "Select account"
-msgstr "Atlasiet kontu"
-
 #: ../../../lib/web/src/features/accounts/account-add.tsx:142
 msgid "Select account type"
 msgstr "Atlasīt konta tipu"
 
-#: src/features/wiki/page-editor.tsx:508
+#: src/features/wiki/page-editor.tsx:509
 msgid "Select an attachment to insert into your page, or upload a new file."
 msgstr "Atlasiet pielikumu, ko ievietot lapā, vai augšupielādējiet jaunu failu."
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:231
 msgid "Select group"
 msgstr "Izvēlieties grupu"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:305
-msgid "Select layout style"
-msgstr "Izvēlieties izkārtojuma stilu"
 
 #: ../../../lib/web/src/components/place-picker.tsx:49
 msgid "Select location"
@@ -3136,26 +2834,10 @@ msgstr "Atlasiet personu..."
 msgid "Select previous card"
 msgstr "Izvēlieties iepriekšējo karti"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:247
-msgid "Select sidebar style"
-msgstr "Izvēlieties sānu joslas stilu"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:349
-msgid "Select site direction"
-msgstr "Izvēlieties vietnes virzienu"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:203
-msgid "Select theme preference"
-msgstr "Izvēlieties motīva preferenci"
-
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:252
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:335
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:257
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:340
 msgid "Select..."
 msgstr "Izvēlieties..."
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:206
-msgid "selected"
-msgstr "atlasīti"
 
 #. placeholder {0}: getSelectedName()
 #: ../../../lib/web/src/features/access/access-dialog.tsx:309
@@ -3166,7 +2848,7 @@ msgstr "Izvēlēts: <0>{0}</0>"
 msgid "Send again"
 msgstr "Sūtīt vēlreiz"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:309
+#: ../../../lib/web/src/components/step-up-dialog.tsx:310
 msgid "Send email"
 msgstr "Sūtīt e-pastu"
 
@@ -3175,12 +2857,12 @@ msgstr "Sūtīt e-pastu"
 msgid "Send message"
 msgstr "Sūtīt ziņu"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:140
+#: ../../../lib/web/src/lib/preference-utils.ts:133
 msgid "Serif"
 msgstr "Serifs"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:279
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:305
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:270
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:296
 msgid "Server error"
 msgstr "Servera kļūda"
 
@@ -3189,7 +2871,7 @@ msgstr "Servera kļūda"
 msgid "Server rules"
 msgstr "Servera noteikumi"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:229
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:220
 msgid "Session expired. Please log in again."
 msgstr "Sesija ir beigusies. Lūdzu, piesakieties vēlreiz."
 
@@ -3197,21 +2879,21 @@ msgstr "Sesija ir beigusies. Lūdzu, piesakieties vēlreiz."
 msgid "Set origin and destination"
 msgstr "Iestatīt sākuma un galapunktu"
 
-#: src/features/wiki/wiki-settings.tsx:548
+#: src/features/wiki/wiki-settings.tsx:549
 msgid "Setting access..."
 msgstr "Iestata piekļuvi..."
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:119
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:125
 #: ../../../lib/web/src/components/options-menu.tsx:196
-#: src/features/wiki/wiki-page-content.tsx:377
+#: src/features/wiki/wiki-page-content.tsx:378
 #: src/features/wiki/wiki-settings.tsx:105
 #: src/routes/_authenticated/$page/index.tsx:275
-#: src/routes/_authenticated/index.tsx:488
+#: src/routes/_authenticated/index.tsx:489
 msgid "Settings"
 msgstr "Iestatījumi"
 
-#: src/features/wiki/wiki-settings.tsx:304
+#: src/features/wiki/wiki-settings.tsx:305
 msgid "Settings saved"
 msgstr "Iestatījumi saglabāti"
 
@@ -3227,10 +2909,6 @@ msgstr "Rādīt laukus"
 msgid "Show page"
 msgstr "Rādīt lapu"
 
-#: ../../../lib/web/src/components/password-input.tsx:27
-msgid "Show password"
-msgstr "Rādīt paroli"
-
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:33
 msgid "Show this help"
 msgstr "Rādīt šo palīdzību"
@@ -3239,9 +2917,7 @@ msgstr "Rādīt šo palīdzību"
 msgid "Showing {totalShown} of {total}"
 msgstr "Tiek rādīti {totalShown} no {total}"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:239
-#: ../../../lib/web/src/components/config-drawer.tsx:263
-#: ../../../lib/web/src/components/ui/sidebar.tsx:237
+#: ../../../lib/web/src/components/ui/sidebar.tsx:257
 msgid "Sidebar"
 msgstr "Sānu josla"
 
@@ -3263,12 +2939,8 @@ msgstr "Tikai viena teksta rinda"
 msgid "Size"
 msgstr "Izmērs"
 
-#: ../../../lib/web/src/components/skip-to-main.tsx:11
-msgid "Skip to Main"
-msgstr "Pāriet uz galveno"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:101
-#: ../../../lib/web/src/lib/preference-utils.ts:128
+#: ../../../lib/web/src/lib/preference-utils.ts:121
 msgid "Small"
 msgstr "Mazs"
 
@@ -3278,13 +2950,13 @@ msgid "Sort"
 msgstr "Kārtot"
 
 #: src/features/wiki/redirects-page.tsx:92
-#: src/features/wiki/wiki-settings.tsx:421
-#: src/features/wiki/wiki-settings.tsx:901
+#: src/features/wiki/wiki-settings.tsx:422
+#: src/features/wiki/wiki-settings.tsx:902
 msgid "Source"
 msgstr "Avots"
 
 #: src/features/wiki/redirects-page.tsx:241
-#: src/features/wiki/wiki-settings.tsx:1039
+#: src/features/wiki/wiki-settings.tsx:1040
 msgid "Source URL"
 msgstr "Avota URL"
 
@@ -3300,13 +2972,9 @@ msgstr "Plašs"
 msgid "Start the discussion by adding the first comment."
 msgstr "Sāciet diskusiju, pievienojot pirmo komentāru."
 
-#: src/routes/_authenticated/index.tsx:758
+#: src/routes/_authenticated/index.tsx:759
 msgid "Start your first wiki"
 msgstr "Sāciet savu pirmo wiki"
-
-#: ../../../lib/web/src/components/coming-soon.tsx:15
-msgid "Stay tuned though!"
-msgstr "Tomēr palieciet uz viļņa!"
 
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
@@ -3322,31 +2990,30 @@ msgstr "Iesniegt atbildi"
 
 #: ../../../lib/web/src/components/inline-entity-search.tsx:66
 #: ../../../lib/web/src/components/recommended-entities.tsx:58
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:83
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:120
-#: src/routes/_authenticated/index.tsx:824
+#: src/routes/_authenticated/index.tsx:825
 msgid "Subscribe"
 msgstr "Abonēt"
 
 #: src/features/wiki/inline-wiki-search.tsx:95
-#: src/features/wiki/wiki-settings.tsx:743
+#: src/features/wiki/wiki-settings.tsx:744
 #: src/routes/_authenticated/find.tsx:64
 msgid "Subscribed"
 msgstr "Abonēts"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:677
+#: src/routes/_authenticated/index.tsx:678
 msgid "Subscribed to {0}"
 msgstr "Abonēts {0}"
 
 #: src/features/wiki/inline-wiki-search.tsx:94
 #: src/routes/_authenticated/find.tsx:63
-#: src/routes/_authenticated/index.tsx:676
+#: src/routes/_authenticated/index.tsx:677
 msgid "Subscribing..."
 msgstr "Notiek abonēšana..."
 
-#: src/features/wiki/wiki-settings.tsx:411
+#: src/features/wiki/wiki-settings.tsx:412
 msgid "Subscription"
 msgstr "Abonements"
 
@@ -3354,7 +3021,7 @@ msgstr "Abonements"
 msgid "Sunday"
 msgstr "Svētdiena"
 
-#: src/features/wiki/page-editor.tsx:513
+#: src/features/wiki/page-editor.tsx:514
 msgid "Supported files"
 msgstr "Atbalstītie faili"
 
@@ -3366,30 +3033,24 @@ msgstr "Atbalstītie faili: attēli, PDF, DOC, DOCX, TXT un MD."
 msgid "Switch to view 1-9"
 msgstr "Pārslēgt uz skatu 1-9"
 
-#: src/features/wiki/wiki-settings.tsx:416
+#: src/features/wiki/wiki-settings.tsx:417
 msgid "Sync now"
 msgstr "Sinhronizēt tagad"
 
-#: src/features/wiki/wiki-settings.tsx:325
-#: src/features/wiki/wiki-settings.tsx:416
+#: src/features/wiki/wiki-settings.tsx:326
+#: src/features/wiki/wiki-settings.tsx:417
 msgid "Syncing..."
 msgstr "Notiek sinhronizācija..."
 
-#: ../../../lib/web/src/components/audit-timeline.tsx:104
-#: ../../../lib/web/src/components/config-drawer.tsx:209
-#: ../../../lib/web/src/components/theme-switch.tsx:59
+#: ../../../lib/web/src/components/audit-timeline.tsx:107
 #: ../../../lib/web/src/lib/preference-utils.ts:16
-#: ../../../lib/web/src/lib/preference-utils.ts:139
+#: ../../../lib/web/src/lib/preference-utils.ts:132
 msgid "System"
 msgstr "Sistēma"
 
 #: src/features/wiki/page-view.tsx:54
 msgid "Table of contents"
 msgstr "Satura rādītājs"
-
-#: ../../../lib/web/src/components/tag-input.tsx:95
-msgid "Tag"
-msgstr "Tags"
 
 #: src/features/wiki/tag-manager.tsx:55
 msgid "Tag \"{tag}\" added"
@@ -3421,25 +3082,21 @@ msgstr "Tags: {tag}"
 
 #: ../../../lib/web/src/components/post-tags.tsx:101
 #: ../../../lib/web/src/components/post-tags.tsx:115
-#: src/features/wiki/wiki-page-content.tsx:338
+#: src/features/wiki/wiki-page-content.tsx:339
 #: src/routes/_authenticated/$page/index.tsx:247
-#: src/routes/_authenticated/index.tsx:436
+#: src/routes/_authenticated/index.tsx:437
 msgid "Tags"
 msgstr "Tagi"
 
 #: src/features/wiki/redirects-page.tsx:94
-#: src/features/wiki/wiki-settings.tsx:903
+#: src/features/wiki/wiki-settings.tsx:904
 msgid "Target"
 msgstr "Mērķis"
 
 #: src/features/wiki/redirects-page.tsx:253
-#: src/features/wiki/wiki-settings.tsx:1051
+#: src/features/wiki/wiki-settings.tsx:1052
 msgid "Target URL"
 msgstr "Mērķa URL"
-
-#: ../../../lib/web/src/components/layout/team-switcher.tsx:63
-msgid "Teams/Apps"
-msgstr "Komandas/Lietotnes"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx:19
 #: ../../../lib/web/src/features/document/document-page.tsx:42
@@ -3450,7 +3107,7 @@ msgstr "Lietošanas nosacījumi"
 msgid "Text"
 msgstr "Teksts"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:192
+#: ../../../lib/web/src/components/step-up-dialog.tsx:193
 msgid "That code is incorrect or has expired."
 msgstr "Šis kods ir nepareizs vai tā derīguma termiņš ir beidzies."
 
@@ -3467,7 +3124,7 @@ msgstr "Pārāk liels, lai augšupielādētu. Noņemiet vai samaziniet failus un
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "Tās wiki entītijas ID, ko vēlaties replicēt."
 
-#: src/features/wiki/wiki-settings.tsx:1059
+#: src/features/wiki/wiki-settings.tsx:1060
 msgid "The existing page to redirect to"
 msgstr "Esošā lapa, uz kuru pāradresēt"
 
@@ -3479,7 +3136,7 @@ msgstr "Esošā lapa, uz kuru pāradresēt (piem., \"new-page\")"
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "Lapa \"{slug}\" vēl neeksistē."
 
-#: src/features/wiki/wiki-settings.tsx:432
+#: src/features/wiki/wiki-settings.tsx:433
 msgid "The page that users see when they first visit the wiki."
 msgstr "Lapa, ko lietotāji redz, pirmo reizi apmeklējot wiki."
 
@@ -3491,11 +3148,7 @@ msgstr "Pieprasīto saturu neizdevās atrast."
 msgid "The server returned a web page instead of data."
 msgstr "Serveris atgrieza tīmekļa lapu, nevis datus."
 
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:15
-msgid "The site is not available at the moment."
-msgstr "Vietne pašlaik nav pieejama."
-
-#: src/features/wiki/wiki-settings.tsx:1047
+#: src/features/wiki/wiki-settings.tsx:1048
 msgid "The URL that will be redirected"
 msgstr "URL, uz kuru tiks pāradresēts"
 
@@ -3503,49 +3156,37 @@ msgstr "URL, uz kuru tiks pāradresēts"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "URL, uz kuru tiks pāradresēts (piem., \"old-page\")"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:195
-msgid "Theme"
-msgstr "Tēma"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:70
-msgid "Theme Settings"
-msgstr "Tēmas iestatījumi"
-
-#: src/features/wiki/wiki-settings.tsx:481
+#: src/features/wiki/wiki-settings.tsx:482
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "Šo darbību nevar atsaukt. Tas neatgriezeniski izdzēsīs wiki un visu tā saturu."
 
-#: src/features/wiki/wiki-page-content.tsx:149
-#: src/routes/_authenticated/index.tsx:313
-#: src/routes/_authenticated/index.tsx:600
+#: src/features/wiki/wiki-page-content.tsx:150
+#: src/routes/_authenticated/index.tsx:314
+#: src/routes/_authenticated/index.tsx:601
 msgid "This feed URL was already issued and cannot be shown again."
 msgstr "Šis plūsmas URL jau ir izsniegts, un to nevar parādīt vēlreiz."
 
 #: src/features/wiki/attachments-page.tsx:155
-#: src/features/wiki/page-editor.tsx:200
+#: src/features/wiki/page-editor.tsx:201
 msgid "This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit."
 msgstr "Šis fails ir pārāk liels pašreizējam servera augšupielādes ierobežojumam. Mēģiniet mazāku failu vai palieliniet servera vai starpniekservera augšupielādes izmēra ierobežojumu."
 
 #: src/features/wiki/attachments-page.tsx:166
-#: src/features/wiki/page-editor.tsx:211
+#: src/features/wiki/page-editor.tsx:212
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "Šis fails ir pārāk liels, lai to augšupielādētu. Mēģiniet mazāku failu."
 
-#: ../../../lib/web/src/components/coming-soon.tsx:14
-msgid "This page has not been created yet."
-msgstr "Šī lapa vēl nav izveidota."
-
-#: src/features/wiki/wiki-settings.tsx:412
+#: src/features/wiki/wiki-settings.tsx:413
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Šis wiki ir abonējis avota wiki un saņem no tā atjauninājumus."
 
-#: src/features/wiki/page-editor.tsx:466
+#: src/features/wiki/page-editor.tsx:467
 msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
 msgstr "Šis būs lapas ceļš. Izmantojiet mazos burtus, ciparus un defises."
 
 #. placeholder {0}: redirect.source
 #. placeholder {1}: redirect.target
-#: src/features/wiki/wiki-settings.tsx:945
+#: src/features/wiki/wiki-settings.tsx:946
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "Tas noņems pāradresāciju no \"{0}\" uz \"{1}\"."
 
@@ -3556,7 +3197,7 @@ msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the
 msgstr "Tas noņems pāradresāciju no \"{0}\" uz \"{1}\". Lietotāji, kas apmeklē avota URL, vairs netiks pāradresēti."
 
 #. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
-#: src/features/wiki/wiki-settings.tsx:782
+#: src/features/wiki/wiki-settings.tsx:783
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "Tas apturēs atjauninājumu sūtīšanu uz \"{0}\". Viņi var atkārtoti replicēt, ja vēlas."
 
@@ -3564,27 +3205,18 @@ msgstr "Tas apturēs atjauninājumu sūtīšanu uz \"{0}\". Viņi var atkārtoti
 msgid "Thursday"
 msgstr "Ceturtdiena"
 
-#: src/features/wiki/page-editor.tsx:427
+#: src/features/wiki/page-editor.tsx:428
 #: src/features/wiki/page-history.tsx:56
 msgid "Title"
 msgstr "Virsraksts"
 
-#: src/features/wiki/page-editor.tsx:263
+#: src/features/wiki/page-editor.tsx:264
 msgid "Title is required"
 msgstr "Virsraksts ir obligāts"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:220
 msgid "To"
 msgstr "Uz"
-
-#: ../../../lib/web/src/components/data-table/view-options.tsx:37
-msgid "Toggle columns"
-msgstr "Pārslēgt kolonnas"
-
-#: ../../../lib/web/src/components/layout/right-panel.tsx:233
-#: ../../../lib/web/src/components/layout/right-panel.tsx:236
-msgid "Toggle right panel"
-msgstr "Pārslēgt labo paneli"
 
 #: ../../../lib/web/src/components/layout/nav-group.tsx:365
 #: ../../../lib/web/src/components/layout/nav-group.tsx:372
@@ -3593,20 +3225,15 @@ msgstr "Pārslēgt labo paneli"
 msgid "Toggle section"
 msgstr "Pārslēgt sadaļu"
 
-#: ../../../lib/web/src/components/ui/sidebar.tsx:317
-#: ../../../lib/web/src/components/ui/sidebar.tsx:320
+#: ../../../lib/web/src/components/ui/sidebar.tsx:337
+#: ../../../lib/web/src/components/ui/sidebar.tsx:340
 msgid "Toggle sidebar"
 msgstr "Pārslēgt sānjoslu"
 
-#: ../../../lib/web/src/components/ui/sidebar.tsx:332
-#: ../../../lib/web/src/components/ui/sidebar.tsx:335
+#: ../../../lib/web/src/components/ui/sidebar.tsx:352
+#: ../../../lib/web/src/components/ui/sidebar.tsx:355
 msgid "Toggle Sidebar"
 msgstr "Pārslēgt sānu joslu"
-
-#: ../../../lib/web/src/components/theme-switch.tsx:37
-#: ../../../lib/web/src/components/theme-switch.tsx:41
-msgid "Toggle theme"
-msgstr "Pārslēgt tēmu"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:26
 msgid "Toggle view options"
@@ -3637,14 +3264,12 @@ msgstr "Mēģiniet citu meklēšanas vārdu vai filtru."
 msgid "Try a different tag."
 msgstr "Mēģiniet citu tagu."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:194
 #: ../../../lib/web/src/components/search-entity-page.tsx:217
 msgid "Try adjusting your search terms"
 msgstr "Mēģiniet pielāgot meklēšanas vārdus"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:140
 #: ../../../lib/web/src/features/errors/general-error.tsx:180
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:19
 msgid "Try again"
 msgstr "Mēģināt vēlreiz"
 
@@ -3677,7 +3302,7 @@ msgstr "Ierakstiet, lai meklētu lietotājus"
 msgid "Type to search..."
 msgstr "Ierakstiet, lai meklētu..."
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:301
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:292
 msgid "Unable to connect to remote server"
 msgstr "Neizdevās izveidot savienojumu ar attālo serveri"
 
@@ -3686,7 +3311,7 @@ msgstr "Neizdevās izveidot savienojumu ar attālo serveri"
 msgid "Unable to redirect to login. Please try again."
 msgstr "Nevar pāradresēt uz pieteikšanos. Lūdzu, mēģiniet vēlreiz."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:112
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Unassigned"
 msgstr "Nepiešķirts"
 
@@ -3694,7 +3319,7 @@ msgstr "Nepiešķirts"
 msgid "Unauthorized Access"
 msgstr "Nesankcionēta piekļuve"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:267
+#: ../../../lib/web/src/components/attachment-image.tsx:50
 msgid "Unavailable"
 msgstr "Nav pieejams"
 
@@ -3713,59 +3338,55 @@ msgid "Unknown"
 msgstr "Nezināms"
 
 #: ../../../lib/web/src/components/options-menu.tsx:211
-#: src/features/wiki/wiki-page-content.tsx:389
-#: src/features/wiki/wiki-page-content.tsx:410
-#: src/features/wiki/wiki-page-content.tsx:412
+#: src/features/wiki/wiki-page-content.tsx:390
+#: src/features/wiki/wiki-page-content.tsx:411
+#: src/features/wiki/wiki-page-content.tsx:413
 #: src/routes/_authenticated/$page/index.tsx:287
 #: src/routes/_authenticated/$page/index.tsx:309
 #: src/routes/_authenticated/$page/index.tsx:311
-#: src/routes/_authenticated/index.tsx:499
-#: src/routes/_authenticated/index.tsx:527
-#: src/routes/_authenticated/index.tsx:529
-#: src/routes/_authenticated/index.tsx:895
-#: src/routes/_authenticated/index.tsx:927
-#: src/routes/_authenticated/index.tsx:929
+#: src/routes/_authenticated/index.tsx:500
+#: src/routes/_authenticated/index.tsx:528
+#: src/routes/_authenticated/index.tsx:530
+#: src/routes/_authenticated/index.tsx:896
+#: src/routes/_authenticated/index.tsx:928
+#: src/routes/_authenticated/index.tsx:930
 msgid "Unsubscribe"
 msgstr "Atrakstīties"
 
 #: src/features/wiki/wiki-page-content.tsx:81
 #: src/routes/_authenticated/$page/index.tsx:83
 #: src/routes/_authenticated/index.tsx:293
-#: src/routes/_authenticated/index.tsx:938
+#: src/routes/_authenticated/index.tsx:939
 msgid "Unsubscribed"
 msgstr "Atrakstīts"
 
 #: src/features/wiki/wiki-page-content.tsx:80
-#: src/features/wiki/wiki-page-content.tsx:389
+#: src/features/wiki/wiki-page-content.tsx:390
 #: src/routes/_authenticated/$page/index.tsx:82
 #: src/routes/_authenticated/$page/index.tsx:287
 #: src/routes/_authenticated/index.tsx:292
-#: src/routes/_authenticated/index.tsx:499
-#: src/routes/_authenticated/index.tsx:894
-#: src/routes/_authenticated/index.tsx:937
+#: src/routes/_authenticated/index.tsx:500
+#: src/routes/_authenticated/index.tsx:895
+#: src/routes/_authenticated/index.tsx:938
 msgid "Unsubscribing..."
 msgstr "Notiek atrakstīšanās..."
 
 #: src/features/wiki/attachments-page.tsx:148
-#: src/features/wiki/page-editor.tsx:193
+#: src/features/wiki/page-editor.tsx:194
 msgid "Unsupported file type: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Neatbalstīts faila tips: {names}. Atbalstītie faili: attēli, PDF, DOC, DOCX, TXT un MD."
 
 #: src/features/wiki/attachments-page.tsx:149
-#: src/features/wiki/page-editor.tsx:194
+#: src/features/wiki/page-editor.tsx:195
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Neatbalstīti failu tipi: {names}. Atbalstītie faili: attēli, PDF, DOC, DOCX, TXT un MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:284
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:285
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
-#: src/features/wiki/page-editor.tsx:419
+#: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "Bez nosaukuma"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:135
-msgid "Unverified"
-msgstr "Nav pārbaudīts"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
@@ -3778,35 +3399,35 @@ msgstr "Atjaunināts"
 #: src/features/wiki/page-view.tsx:264
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:74
-#: src/routes/_authenticated/index.tsx:911
+#: src/routes/_authenticated/index.tsx:912
 msgid "Updated {0}"
 msgstr "Atjaunināts {0}"
 
-#: src/features/wiki/wiki-settings.tsx:561
+#: src/features/wiki/wiki-settings.tsx:562
 msgid "Updating access..."
 msgstr "Atjaunina piekļuvi..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:637
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:639
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:301
 msgid "Upload"
 msgstr "Augšupielādēt"
 
-#: src/features/wiki/page-editor.tsx:571
+#: src/features/wiki/page-editor.tsx:572
 msgid "Upload a file to get started."
 msgstr "Augšupielādējiet failu, lai sāktu."
 
 #: src/features/wiki/attachments-page.tsx:349
-#: src/features/wiki/page-editor.tsx:551
+#: src/features/wiki/page-editor.tsx:552
 msgid "Upload failed"
 msgstr "Augšupielāde neizdevās"
 
 #: src/features/wiki/attachments-page.tsx:163
-#: src/features/wiki/page-editor.tsx:208
+#: src/features/wiki/page-editor.tsx:209
 msgid "Upload failed because this account has reached its storage limit."
 msgstr "Augšupielāde neizdevās, jo šis konts ir sasniedzis savu krātuves ierobežojumu."
 
 #: src/features/wiki/attachments-page.tsx:160
-#: src/features/wiki/page-editor.tsx:205
+#: src/features/wiki/page-editor.tsx:206
 msgid "Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again."
 msgstr "Augšupielāde neizdevās. Fails var būt pārāk liels pašreizējam servera vai starpniekservera augšupielādes ierobežojumam. Ja fails ir mazs, pārbaudiet savienojumu un mēģiniet vēlreiz."
 
@@ -3818,7 +3439,7 @@ msgstr "Augšupielādēt failus"
 msgid "Upload guidance"
 msgstr "Augšupielādes norādījumi"
 
-#: src/features/wiki/page-editor.tsx:543
+#: src/features/wiki/page-editor.tsx:544
 msgid "Upload new"
 msgstr "Augšupielādēt jaunu"
 
@@ -3826,11 +3447,11 @@ msgstr "Augšupielādēt jaunu"
 msgid "Upload progress"
 msgstr "Augšupielādes norise"
 
-#: src/features/wiki/wiki-settings.tsx:437
+#: src/features/wiki/wiki-settings.tsx:438
 msgid "Use as home"
 msgstr "Izmantot kā mājas"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:340
+#: ../../../lib/web/src/components/step-up-dialog.tsx:341
 msgid "Use your passkey"
 msgstr "Izmantojiet savu piekļuves atslēgu"
 
@@ -3844,16 +3465,7 @@ msgstr "Lietotājs"
 msgid "Verification code"
 msgstr "Verifikācijas kods"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:255
-msgid "Verification code sent"
-msgstr "Verifikācijas kods nosūtīts"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:248
-msgid "Verification failed"
-msgstr "Verifikācija neizdevās"
-
-#: ../../../lib/web/src/components/step-up-dialog.tsx:390
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:172
+#: ../../../lib/web/src/components/step-up-dialog.tsx:391
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:111
 msgid "Verify"
 msgstr "Verificēt"
@@ -3872,7 +3484,7 @@ msgstr "Versija"
 msgid "Version {0}"
 msgstr "Versija {0}"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:94
+#: ../../../lib/web/src/components/attachment-gallery.tsx:95
 msgid "Video thumbnail"
 msgstr "Video sīktēls"
 
@@ -3881,22 +3493,14 @@ msgstr "Video sīktēls"
 msgid "Video viewer: {0}"
 msgstr "Video skatītājs: {0}"
 
-#: ../../../lib/web/src/components/data-table/view-options.tsx:33
-msgid "View"
-msgstr "Skatīt"
-
 #: src/features/wiki/page-history.tsx:113
 #: src/features/wiki/page-history.tsx:125
 msgctxt "action"
 msgid "View"
 msgstr "Skatīt"
 
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:177
-msgid "View all"
-msgstr "Skatīt visu"
-
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:203
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:211
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:220
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:228
 msgid "View all notifications"
 msgstr "Skatīt visus paziņojumus"
 
@@ -3904,7 +3508,7 @@ msgstr "Skatīt visus paziņojumus"
 msgid "View controls"
 msgstr "Skata vadīklas"
 
-#: src/features/wiki/wiki-settings.tsx:499
+#: src/features/wiki/wiki-settings.tsx:500
 msgid "View only"
 msgstr "Tikai skatīt"
 
@@ -3926,42 +3530,30 @@ msgstr "Tikai skatīts"
 msgid "We sent a verification code to <0>{0}</0>. Enter the code below to verify your email address."
 msgstr "Nosūtījām verifikācijas kodu uz <0>{0}</0>. Ievadiet kodu zemāk, lai apstiprinātu savu e-pasta adresi."
 
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:16
-msgid "We'll be back online shortly."
-msgstr "Mēs drīz būsim atpakaļ tiešsaistē."
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:197
-msgid "We'll notify you when something important happens."
-msgstr "Mēs jums paziņosim, kad notiks kaut kas svarīgs."
-
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:13
-msgid "Website is under maintenance!"
-msgstr "Vietne tiek apkopta!"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:56
 msgid "Wednesday"
 msgstr "Trešdiena"
 
-#: src/features/wiki/wiki-settings.tsx:724
-#: src/features/wiki/wiki-settings.tsx:808
+#: src/features/wiki/wiki-settings.tsx:725
+#: src/features/wiki/wiki-settings.tsx:809
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "Kad citi wiki replicē šo wiki, tie parādīsies šeit."
 
 #: src/components/layout/wiki-layout.tsx:103
 #: src/components/layout/wiki-layout.tsx:153
 #: src/features/wiki/wiki-page-content.tsx:104
-#: src/features/wiki/wiki-page-content.tsx:328
+#: src/features/wiki/wiki-page-content.tsx:329
 #: src/routes/_authenticated/$page/index.tsx:237
 #: src/routes/_authenticated/$wikiId/settings.tsx:38
-#: src/routes/_authenticated/index.tsx:426
-#: src/routes/_authenticated/settings.tsx:43
+#: src/routes/_authenticated/index.tsx:427
+#: src/routes/_authenticated/settings.tsx:44
 msgid "Wiki"
 msgstr "Wiki"
 
-#: src/routes/_authenticated/index.tsx:704
-#: src/routes/_authenticated/index.tsx:711
-#: src/routes/_authenticated/index.tsx:875
-#: src/routes/_authenticated/index.tsx:882
+#: src/routes/_authenticated/index.tsx:705
+#: src/routes/_authenticated/index.tsx:712
+#: src/routes/_authenticated/index.tsx:876
+#: src/routes/_authenticated/index.tsx:883
 msgid "Wiki actions"
 msgstr "Wiki darbības"
 
@@ -3969,7 +3561,7 @@ msgstr "Wiki darbības"
 msgid "Wiki created"
 msgstr "Wiki izveidots"
 
-#: src/features/wiki/wiki-settings.tsx:347
+#: src/features/wiki/wiki-settings.tsx:348
 msgid "Wiki deleted"
 msgstr "Wiki izdzēsts"
 
@@ -3986,20 +3578,20 @@ msgstr "Wiki ID ir obligāts"
 msgid "Wiki link"
 msgstr "Wiki saite"
 
-#: src/features/wiki/wiki-settings.tsx:268
+#: src/features/wiki/wiki-settings.tsx:269
 msgid "Wiki name is required"
 msgstr "Wiki nosaukums ir obligāts"
 
-#: src/routes/_authenticated/$page/route.tsx:65
+#: src/routes/_authenticated/$page/route.tsx:66
 #: src/routes/_authenticated/$wikiId/route.tsx:75
 msgid "Wiki not found"
 msgstr "Wiki nav atrasts"
 
-#: src/features/wiki/wiki-settings.tsx:280
+#: src/features/wiki/wiki-settings.tsx:281
 msgid "Wiki renamed"
 msgstr "Wiki pārdēvēts"
 
-#: src/features/wiki/wiki-page-content.tsx:246
+#: src/features/wiki/wiki-page-content.tsx:247
 #: src/routes/_authenticated/$page/index.tsx:164
 msgid "Wiki settings"
 msgstr "Wiki iestatījumi"
@@ -4008,12 +3600,12 @@ msgstr "Wiki iestatījumi"
 msgid "Wiki settings sections"
 msgstr "Wiki iestatījumu sadaļas"
 
-#: src/features/wiki/wiki-settings.tsx:326
+#: src/features/wiki/wiki-settings.tsx:327
 msgid "Wiki synced"
 msgstr "Wiki sinhronizēts"
 
-#: src/routes/_authenticated/index.tsx:572
-#: src/routes/_authenticated/index.tsx:693
+#: src/routes/_authenticated/index.tsx:573
+#: src/routes/_authenticated/index.tsx:694
 msgid "Wikis"
 msgstr "Wiki"
 
@@ -4021,7 +3613,7 @@ msgstr "Wiki"
 msgid "Write a comment..."
 msgstr "Rakstiet komentāru..."
 
-#: src/features/wiki/page-editor.tsx:482
+#: src/features/wiki/page-editor.tsx:483
 msgid "Write your content here using Markdown..."
 msgstr "Rakstiet savu saturu šeit, izmantojot Markdown..."
 
@@ -4036,14 +3628,6 @@ msgstr "Jūs grasāties atgriezt <0>{slug}</0> uz versiju <1>{version}</1>. Tas 
 #: ../../../lib/web/src/features/errors/general-error.tsx:61
 msgid "You do not have access to this section."
 msgstr "Jums nav piekļuves šai sadaļai."
-
-#: ../../../lib/web/src/features/errors/forbidden.tsx:18
-msgid "You don't have necessary permission <0/>to view this resource."
-msgstr "Jums nav nepieciešamās atļaujas, <0/>lai skatītu šo resursu."
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
-msgid "You're all caught up!"
-msgstr "Jūs esat visu izlasījis!"
 
 #: ../../../lib/web/src/components/restore-banner.tsx:100
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."

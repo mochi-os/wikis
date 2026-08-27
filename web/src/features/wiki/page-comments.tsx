@@ -14,7 +14,7 @@ import {
 } from '@/hooks/use-wiki'
 import { CommentForm } from './comment-form'
 import { WikiCommentThread } from './wiki-comment-thread'
-import { t } from '@lingui/core/macro'
+import { t, plural } from '@lingui/core/macro'
 
 interface PageCommentsProps {
   slug: string
@@ -175,12 +175,20 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
           ))}
         </div>
       )}
+      {data?.truncated && (
+        <p className="text-sm text-muted-foreground">
+          {plural(comments.length, {
+            one: 'Showing the first # comment.',
+            other: 'Showing the first # comments.',
+          })}
+        </p>
+      )}
       {replySwitchDialog}
     </div>
   )
 }
 
-export function PageCommentsSkeleton() {
+function PageCommentsSkeleton() {
   return (
     <div className="space-y-4">
       <Skeleton className="h-20 w-full" />

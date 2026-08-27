@@ -14,11 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: ../../../lib/web/src/lib/error-normalizer.ts:223
+#: ../../../lib/web/src/lib/error-normalizer.ts:215
 msgid "Please check your internet connection and try again."
 msgstr "कृपया तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:300
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:301
 msgid " or "
 msgstr " किंवा "
 
@@ -32,7 +32,7 @@ msgstr "(संपादित)"
 msgid "(expand)"
 msgstr "(विस्तार करा)"
 
-#: ../../../lib/web/src/components/entity/entity-board-container.tsx:752
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:753
 msgid "[not set]"
 msgstr "[सेट नाही]"
 
@@ -51,10 +51,10 @@ msgstr "{0, plural, one {# पान} other {# पाने}}"
 msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# निकाल} other {# निकाल}}"
 
-#. placeholder {0}: selectedValues.size
-#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:66
-msgid "{0, plural, one {# selected} other {# selected}}"
-msgstr "{0, plural, one {# निवडले} other {# निवडले}}"
+#. placeholder {0}: comments.length
+#: src/features/wiki/page-comments.tsx:180
+msgid "{0, plural, one {Showing the first # comment.} other {Showing the first # comments.}}"
+msgstr "{0, plural, one {पहिली # टिप्पणी दाखवत आहे.} other {पहिल्या # टिप्पण्या दाखवत आहे.}}"
 
 #. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Upload, Trash2, Copy, Captions, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, X, Image, ExternalLink, } from 'lucide-react' import { toast, Alert, AlertDescription, AlertTitle, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, AttachmentCaptionDialog, shellClipboardWrite, naturalCompare, extractStatus, Tooltip, TooltipTrigger, TooltipContent, UploadProgress, } from '@mochi/web' import { useAttachments, useUploadAttachment, useUpdateAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload' // eslint-disable-next-line @typescript-eslint/no-empty-object-type interface AttachmentsPageProps {} type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`) } export function AttachmentsPage(_props: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const [captioning, setCaptioning] = useState<Attachment | null>(null) const [uploadError, setUploadError] = useState<string | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const updateMutation = useUpdateAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter( (a) => a.name.toLowerCase().includes(query) || a.caption?.toLowerCase().includes(query) ) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const getAttachmentValidationError = (files: File[]) => { const unsupported = files.filter((file) => !isSupportedAttachmentFile(file)) if (unsupported.length === 0) { return null } const names = unsupported.slice(0, 3).map((file) => file.name).join(', ') return unsupported.length === 1 ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` } const getUploadErrorMessage = (error: unknown) => { const status = extractStatus(error) if (status === 413) { return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.` } const message = getErrorMessage(error, t`Failed to upload files`) if (message === 'Network Error') { return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.` } if (message.toLowerCase().includes('storage limit exceeded')) { return t`Upload failed because this account has reached its storage limit.` } if (message.toLowerCase().includes('file too large')) { return t`This file is too large to upload. Try a smaller file.` } return message } const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length === 0) { return } const validationError = getAttachmentValidationError(fileArray) if (validationError) { setUploadError(validationError) return } setUploadError(null) const fileCount = fileArray.length uploadMutation.mutate(fileArray, { onSuccess: () => { setUploadError(null) toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { setUploadError(getUploadErrorMessage(error)) }, }) } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${encodeURIComponent(attachment.id)}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const saveCaption = (attachment: Attachment, caption: string) => { setCaptioning(null) if (caption === (attachment.caption ?? '')) return updateMutation.mutate( { id: attachment.id, caption }, { onError: (error) => { toast.error(getErrorMessage(error, t`Failed to save caption`)) }, } ) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, caption: a.caption, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Upload + stats */} <div className="flex items-center justify-between gap-4"> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept={ATTACHMENT_ACCEPT} /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <UploadProgress progress={uploadMutation.progress} /> <Alert> <AlertTitle><Trans>Upload guidance</Trans></AlertTitle> <AlertDescription> <p><Trans>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</Trans></p> <p><Trans>Large uploads may be limited by your server or proxy configuration.</Trans></p> </AlertDescription> </Alert> {uploadError ? ( <Alert variant="destructive"> <AlertTitle><Trans>Upload failed</Trans></AlertTitle> <AlertDescription>{uploadError}</AlertDescription> </Alert> ) : null} <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} > <X className="h-3 w-3" /> </Button> </TooltipTrigger> <TooltipContent>{t`Clear search`}</TooltipContent> </Tooltip> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Grid view`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} > <List className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`List view`}</TooltipContent> </Tooltip> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> {captioning && ( <AttachmentCaptionDialog item={{ name: captioning.name, caption: captioning.caption, previewUrl: `${buildAttachmentUrl(baseURL, captioning.id)}/preview`, previewKind: 'image', }} onSave={(caption) => saveCaption(captioning, caption)} onClose={() => setCaptioning(null)} /> )} <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onCaption: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-hover relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || attachment.name} className="h-full w-full object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground truncate text-xs" title={attachment.caption}> {attachment.caption || formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCaption(attachment) }} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-hover flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || ''} className="h-16 w-16 rounded object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> {attachment.caption && ( <p className="text-muted-foreground truncate text-sm" title={attachment.caption}> {attachment.caption} </p> )} <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} > <ExternalLink className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Open attachment`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCaption(attachment)} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
 #. placeholder {1}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useRef, useMemo } from 'react' import { plural } from '@lingui/core/macro' import { Trans, useLingui } from '@lingui/react/macro' import { Upload, Trash2, Copy, Captions, Check, Loader2, Search, Grid3X3, List, ArrowUpDown, X, Image, ExternalLink, } from 'lucide-react' import { toast, Alert, AlertDescription, AlertTitle, Button, ConfirmDialog, EmptyState, GeneralError, ImageLightbox, type LightboxMedia, useLightboxHash, Input, Skeleton, Separator, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, useFormat, getFileIcon, isImage, getErrorMessage, authenticatedUrl, AttachmentCaptionDialog, shellClipboardWrite, naturalCompare, extractStatus, Tooltip, TooltipTrigger, TooltipContent, UploadProgress, } from '@mochi/web' import { useAttachments, useUploadAttachment, useUpdateAttachment, useDeleteAttachment, } from '@/hooks/use-wiki' import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context' import type { Attachment } from '@/types/wiki' import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload' // eslint-disable-next-line @typescript-eslint/no-empty-object-type interface AttachmentsPageProps {} type ViewMode = 'grid' | 'list' type FilterType = 'all' | 'images' | 'documents' type SortBy = 'name' | 'date' | 'size' const EMPTY_ATTACHMENTS: Attachment[] = [] function buildAttachmentUrl(baseURL: string, id: string): string { return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`) } export function AttachmentsPage(_props: AttachmentsPageProps) { const { t } = useLingui() const [viewMode, setViewMode] = useState<ViewMode>('grid') const [filterType, setFilterType] = useState<FilterType>('all') const [sortBy, setSortBy] = useState<SortBy>('date') const [searchQuery, setSearchQuery] = useState('') const [copiedId, setCopiedId] = useState<string | null>(null) const [isDragging, setIsDragging] = useState(false) const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null) const [captioning, setCaptioning] = useState<Attachment | null>(null) const [uploadError, setUploadError] = useState<string | null>(null) const fileInputRef = useRef<HTMLInputElement>(null) const { data, isLoading, error, refetch } = useAttachments() const uploadMutation = useUploadAttachment() const updateMutation = useUpdateAttachment() const deleteMutation = useDeleteAttachment() const wikiContext = useWikiBaseURLOptional() const baseURL = wikiContext?.baseURL ?? '' const attachments = data?.attachments ?? EMPTY_ATTACHMENTS // Filter and sort attachments const filteredAttachments = useMemo(() => { let result = [...attachments] // Apply search filter if (searchQuery) { const query = searchQuery.toLowerCase() result = result.filter( (a) => a.name.toLowerCase().includes(query) || a.caption?.toLowerCase().includes(query) ) } // Apply type filter if (filterType === 'images') { result = result.filter((a) => isImage(a.type)) } else if (filterType === 'documents') { result = result.filter((a) => !isImage(a.type)) } // Apply sorting result.sort((a, b) => { switch (sortBy) { case 'name': return naturalCompare(a.name, b.name) case 'date': return b.created - a.created case 'size': return b.size - a.size default: return 0 } }) return result }, [attachments, searchQuery, filterType, sortBy]) const getAttachmentValidationError = (files: File[]) => { const unsupported = files.filter((file) => !isSupportedAttachmentFile(file)) if (unsupported.length === 0) { return null } const names = unsupported.slice(0, 3).map((file) => file.name).join(', ') return unsupported.length === 1 ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.` } const getUploadErrorMessage = (error: unknown) => { const status = extractStatus(error) if (status === 413) { return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.` } const message = getErrorMessage(error, t`Failed to upload files`) if (message === 'Network Error') { return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.` } if (message.toLowerCase().includes('storage limit exceeded')) { return t`Upload failed because this account has reached its storage limit.` } if (message.toLowerCase().includes('file too large')) { return t`This file is too large to upload. Try a smaller file.` } return message } const handleUpload = (files: FileList | File[]) => { const fileArray = Array.from(files) if (fileArray.length === 0) { return } const validationError = getAttachmentValidationError(fileArray) if (validationError) { setUploadError(validationError) return } setUploadError(null) const fileCount = fileArray.length uploadMutation.mutate(fileArray, { onSuccess: () => { setUploadError(null) toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' })) }, onError: (error) => { setUploadError(getUploadErrorMessage(error)) }, }) } const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => { const files = e.target.files if (files) { handleUpload(files) } if (fileInputRef.current) { fileInputRef.current.value = '' } } const handleDragOver = (e: React.DragEvent) => { e.preventDefault() setIsDragging(true) } const handleDragLeave = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) } const handleDrop = (e: React.DragEvent) => { e.preventDefault() setIsDragging(false) const files = e.dataTransfer.files if (files.length > 0) { handleUpload(files) } } const handleCopy = (attachment: Attachment) => { const url = `attachments/${encodeURIComponent(attachment.id)}` const markdown = isImage(attachment.type) ? `![${attachment.name}](${url})` : `[${attachment.name}](${url})` void shellClipboardWrite(markdown).then((ok) => { if (ok) { setCopiedId(attachment.id) toast.success(t`Embed link copied`) setTimeout(() => setCopiedId(null), 2000) } else { toast.error(t`Failed to copy`) } }) setTimeout(() => setCopiedId(null), 2000) } const handleDelete = (attachment: Attachment) => { setPendingDelete(attachment) } const saveCaption = (attachment: Attachment, caption: string) => { setCaptioning(null) if (caption === (attachment.caption ?? '')) return updateMutation.mutate( { id: attachment.id, caption }, { onError: (error) => { toast.error(getErrorMessage(error, t`Failed to save caption`)) }, } ) } const confirmDelete = () => { if (!pendingDelete) return const attachment = pendingDelete deleteMutation.mutate(attachment.id, { onSuccess: () => { toast.success(t`Attachment deleted`) setPendingDelete(null) }, onError: (error) => { toast.error(getErrorMessage(error, t`Failed to delete attachment`)) setPendingDelete(null) }, }) } const imageCount = attachments.filter((a) => isImage(a.type)).length const documentCount = attachments.length - imageCount // Build lightbox media from filtered image attachments const imageAttachments = filteredAttachments.filter((a) => isImage(a.type)) const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({ id: a.id, name: a.name, url: buildAttachmentUrl(baseURL, a.id), type: 'image' as const, caption: a.caption, })) const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } = useLightboxHash(lightboxMedia) // Map image attachment ID to lightbox index for click handling const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i])) const handleOpen = (attachment: Attachment) => { const index = imageLightboxIndex.get(attachment.id) if (index !== undefined) { openLightbox(index) } else { // Non-image: open in new tab window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank') } } return ( <div className="space-y-6"> {/* Upload + stats */} <div className="flex items-center justify-between gap-4"> <p className="text-muted-foreground text-sm"> <Trans> {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })}) </Trans> </p> <div> <input ref={fileInputRef} type="file" multiple onChange={handleFileInput} className="hidden" accept={ATTACHMENT_ACCEPT} /> <Button onClick={() => fileInputRef.current?.click()} disabled={uploadMutation.isPending} > {uploadMutation.isPending ? ( <Loader2 className="me-2 h-4 w-4 animate-spin" /> ) : ( <Upload className="me-2 h-4 w-4" /> )} <Trans>Upload files</Trans> </Button> </div> </div> <UploadProgress progress={uploadMutation.progress} /> <Alert> <AlertTitle><Trans>Upload guidance</Trans></AlertTitle> <AlertDescription> <p><Trans>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</Trans></p> <p><Trans>Large uploads may be limited by your server or proxy configuration.</Trans></p> </AlertDescription> </Alert> {uploadError ? ( <Alert variant="destructive"> <AlertTitle><Trans>Upload failed</Trans></AlertTitle> <AlertDescription>{uploadError}</AlertDescription> </Alert> ) : null} <Separator /> {/* Toolbar */} <div className="flex flex-wrap items-center gap-3"> {/* Search */} <div className="relative flex-1 min-w-[200px]"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input placeholder={t`Search attachments...`} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="ps-9" /> {searchQuery && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2" onClick={() => setSearchQuery('')} aria-label={t`Clear search`} > <X className="h-3 w-3" /> </Button> </TooltipTrigger> <TooltipContent>{t`Clear search`}</TooltipContent> </Tooltip> )} </div> {/* Filter */} <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}> <SelectTrigger className="w-[140px]"> <SelectValue placeholder={t`Filter`} /> </SelectTrigger> <SelectContent> <SelectItem value="all"><Trans>All files</Trans></SelectItem> <SelectItem value="images"><Trans>Images</Trans></SelectItem> <SelectItem value="documents"><Trans>Documents</Trans></SelectItem> </SelectContent> </Select> {/* Sort */} <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}> <SelectTrigger className="w-[130px]"> <ArrowUpDown className="me-2 h-4 w-4" /> <SelectValue placeholder={t`Sort`} /> </SelectTrigger> <SelectContent> <SelectItem value="date"><Trans>Date</Trans></SelectItem> <SelectItem value="name"><Trans>Name</Trans></SelectItem> <SelectItem value="size"><Trans>Size</Trans></SelectItem> </SelectContent> </Select> {/* View toggle */} <div className="flex rounded-md border"> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-e-none" onClick={() => setViewMode('grid')} aria-label={t`Grid view`} > <Grid3X3 className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Grid view`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-s-none" onClick={() => setViewMode('list')} aria-label={t`List view`} > <List className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`List view`}</TooltipContent> </Tooltip> </div> </div> {/* Drop zone / Content */} <div className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging ? 'border-primary bg-primary/5' : 'border-transparent' }`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} > {isLoading ? ( <AttachmentsPageSkeleton viewMode={viewMode} /> ) : error ? ( <div className="px-4 py-8"> <GeneralError error={error} minimal mode="inline" reset={refetch} /> </div> ) : filteredAttachments.length === 0 ? ( <EmptyState icon={attachments.length === 0 ? Image : Search} title={ attachments.length === 0 ? t`No attachments yet` : t`No attachments match your search` } description={ attachments.length === 0 ? t`Drag and drop files here, or click "Upload files" to get started.` : t`Try a different search term or filter.` } className="h-[400px]" /> ) : viewMode === 'grid' ? ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {filteredAttachments.map((attachment) => ( <AttachmentGridItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> ) : ( <div className="space-y-2"> {filteredAttachments.map((attachment) => ( <AttachmentListItem key={attachment.id} attachment={attachment} copiedId={copiedId} isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id} onCopy={handleCopy} onCaption={setCaptioning} onDelete={handleDelete} onOpen={handleOpen} /> ))} </div> )} </div> <ImageLightbox images={lightboxMedia} currentIndex={currentIndex} open={lightboxOpen} onOpenChange={(isOpen) => !isOpen && closeLightbox()} onIndexChange={setCurrentIndex} /> {captioning && ( <AttachmentCaptionDialog item={{ name: captioning.name, caption: captioning.caption, previewUrl: `${buildAttachmentUrl(baseURL, captioning.id)}/preview`, previewKind: 'image', }} onSave={(caption) => saveCaption(captioning, caption)} onClose={() => setCaptioning(null)} /> )} <ConfirmDialog open={!!pendingDelete} onOpenChange={(open) => { if (!open) setPendingDelete(null) }} title={t`Delete attachment`} desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''} confirmText={t`Delete`} destructive isLoading={deleteMutation.isPending} handleConfirm={confirmDelete} /> </div> ) } interface AttachmentItemProps { attachment: Attachment copiedId: string | null isDeleting: boolean onCopy: (attachment: Attachment) => void onCaption: (attachment: Attachment) => void onDelete: (attachment: Attachment) => void onOpen: (attachment: Attachment) => void } function AttachmentGridItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="group bg-card hover:bg-hover relative overflow-hidden rounded-lg border transition-colors"> {/* Preview - clickable to open lightbox (images) or new tab (files) */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || attachment.name} className="h-full w-full object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-12 w-12" /> )} </button> {/* Info */} <div className="p-3"> <p className="truncate text-sm font-medium" title={attachment.name}> {attachment.name} </p> <p className="text-muted-foreground truncate text-xs" title={attachment.caption}> {attachment.caption || formatFileSize(attachment.size)} </p> </div> {/* Actions overlay - clicking background opens attachment, buttons stop propagation */} <div className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100" onClick={() => onOpen(attachment)} > <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCopy(attachment) }} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onCaption(attachment) }} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="outline" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(attachment) }} disabled={isDeleting} aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentListItem({ attachment, copiedId, isDeleting, onCopy, onCaption, onDelete, onOpen, }: AttachmentItemProps) { const { t } = useLingui() const { formatFileSize, formatTimestamp } = useFormat() const FileIcon = getFileIcon(attachment.type) const { baseURL } = useWikiBaseURL() const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id) return ( <div className="hover:bg-hover flex items-center gap-4 rounded-lg border p-3 transition-colors"> {/* Icon/Preview - clickable */} <button type="button" onClick={() => onOpen(attachment)} className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded" > {isImage(attachment.type) ? ( <img src={`${attachmentUrl}/thumbnail`} alt={attachment.caption || ''} className="h-16 w-16 rounded object-cover text-transparent" /> ) : ( <FileIcon className="text-muted-foreground h-8 w-8" /> )} </button> {/* Info */} <div className="min-w-0 flex-1"> <button type="button" onClick={() => onOpen(attachment)} className="truncate font-medium hover:underline" > {attachment.name} </button> {attachment.caption && ( <p className="text-muted-foreground truncate text-sm" title={attachment.caption}> {attachment.caption} </p> )} <p className="text-muted-foreground text-sm"> {formatFileSize(attachment.size)} &middot;{' '} {formatTimestamp(attachment.created)} </p> </div> {/* Actions */} <div className="flex gap-1"> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onOpen(attachment)} aria-label={t`Open attachment`} > <ExternalLink className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent>{t`Open attachment`}</TooltipContent> </Tooltip> <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCopy(attachment)} aria-label={t`Copy embed link`} > {copiedId === attachment.id ? ( <Check className="h-4 w-4" /> ) : ( <Copy className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Copy embed link`}</TooltipContent> </Tooltip> {isImage(attachment.type) && ( <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onCaption(attachment)} aria-label={attachment.caption ? t`Edit caption` : t`Add caption`} > <Captions className="h-4 w-4" /> </Button> </TooltipTrigger> <TooltipContent> {attachment.caption ? t`Edit caption` : t`Add caption`} </TooltipContent> </Tooltip> )} <Tooltip> <TooltipTrigger asChild> <Button variant="ghost" size="icon" onClick={() => onDelete(attachment)} disabled={isDeleting} className="text-muted-foreground" aria-label={t`Delete attachment`} > {isDeleting ? ( <Loader2 className="h-4 w-4 animate-spin" /> ) : ( <Trash2 className="h-4 w-4" /> )} </Button> </TooltipTrigger> <TooltipContent>{t`Delete attachment`}</TooltipContent> </Tooltip> </div> </div> ) } function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) { if (viewMode === 'grid') { return ( <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ( <div key={i} className="overflow-hidden rounded-lg border"> <Skeleton className="aspect-square w-full" /> <div className="p-3 space-y-2"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-3 w-1/2" /> </div> </div> ))} </div> ) } return ( <div className="space-y-2"> {[1, 2, 3, 4, 5].map((i) => ( <div key={i} className="flex items-center gap-4 rounded-lg border p-3"> <Skeleton className="h-16 w-16 shrink-0 rounded" /> <div className="flex-1 space-y-2"> <Skeleton className="h-5 w-48" /> <Skeleton className="h-4 w-32" /> </div> </div> ))} </div> ) } export { AttachmentsPageSkeleton } 
@@ -63,13 +63,8 @@ msgstr "{0, plural, one {# निवडले} other {# निवडले}}"
 msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
-#. placeholder {0}: item.label
-#: ../../../lib/web/src/components/config-drawer.tsx:160
-msgid "{0} option preview"
-msgstr "{0} पर्यायाचे पूर्वावलोकन"
-
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:905
+#: src/routes/_authenticated/index.tsx:906
 msgid "{0} pages"
 msgstr "{0} पृष्ठे"
 
@@ -78,24 +73,24 @@ msgstr "{0} पृष्ठे"
 msgid "{0} with this tag."
 msgstr "या टॅगसह {0}."
 
-#: src/features/wiki/wiki-page-content.tsx:316
+#: src/features/wiki/wiki-page-content.tsx:317
 #: src/routes/_authenticated/$page/index.tsx:233
 msgid "{commentCount, plural, one {1 comment} other {# comments}}"
 msgstr "{commentCount, plural, one {1 टिप्पणी} other {# टिप्पण्या}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:175
+#: ../../../lib/web/src/lib/locale-format.ts:176
 msgid "{count, plural, one {#d} other {#d}}"
 msgstr "{count, plural, one {#दि} other {#दि}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:171
+#: ../../../lib/web/src/lib/locale-format.ts:172
 msgid "{count, plural, one {#h} other {#h}}"
 msgstr "{count, plural, one {#ता} other {#ता}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:167
+#: ../../../lib/web/src/lib/locale-format.ts:168
 msgid "{count, plural, one {#m} other {#m}}"
 msgstr "{count, plural, one {#मि} other {#मि}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:179
+#: ../../../lib/web/src/lib/locale-format.ts:180
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#आठ} other {#आठ}}"
 
@@ -112,7 +107,7 @@ msgid "{entityLabel} name is required"
 msgstr "{entityLabel} नाव आवश्यक आहे"
 
 #: src/features/wiki/attachments-page.tsx:189
-#: src/features/wiki/page-editor.tsx:234
+#: src/features/wiki/page-editor.tsx:235
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# फाईल अपलोड केली} other {# फायली अपलोड केल्या}}"
 
@@ -139,28 +134,12 @@ msgstr "{pageTitle} - टिप्पण्या"
 msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
 msgstr "{renamedCount, plural, one {1 पृष्ठाचे नाव बदलले} other {# पृष्ठांची नावे बदलली}}"
 
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:200
-msgid "{selectedCount, plural, one {{entityName} selected} other {{manyName} selected}}"
-msgstr "{selectedCount, plural, one {{entityName} निवडले} other {{manyName} निवडले}}"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:42
-msgid "{selectedCount, plural, one {# {entityName} selected. Bulk actions toolbar is available.} other {# {manyName} selected. Bulk actions toolbar is available.}}"
-msgstr "{selectedCount, plural, one {# {entityName} निवडले. मोठ्या प्रमाणात क्रिया टूलबार उपलब्ध आहे.} other {# {manyName} निवडले. मोठ्या प्रमाणात क्रिया टूलबार उपलब्ध आहे.}}"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:192
-msgid "{selectedCount, plural, one {# selected} other {# selected}}"
-msgstr "{selectedCount, plural, one {# निवडलेले} other {# निवडलेले}}"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:139
-msgid "{selectedCount, plural, one {Bulk actions for # selected {entityName}} other {Bulk actions for # selected {manyName}}}"
-msgstr "{selectedCount, plural, one {# निवडलेल्या {entityName} साठी मोठ्या प्रमाणात क्रिया} other {# निवडलेल्या {manyName} साठी मोठ्या प्रमाणात क्रिया}}"
-
-#: ../../../lib/web/src/components/attachment-composer.tsx:241
+#: ../../../lib/web/src/components/attachment-composer.tsx:248
 #: ../../../lib/web/src/components/ui/upload-progress.tsx:52
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{totalLabel}पैकी {sentLabel}"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:528
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:530
 msgid "{totalCount, plural, one {# item} other {# items}}"
 msgstr "{totalCount, plural, one {# आयटम} other {# आयटम}}"
 
@@ -174,12 +153,12 @@ msgstr "{unreadCount, plural, one {मेनू उघडा (# न वाचल
 
 #: src/routes/_authenticated/$wikiId/settings.tsx:39
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
-#: src/routes/_authenticated/settings.tsx:44
-#: src/routes/_authenticated/settings.tsx:47
+#: src/routes/_authenticated/settings.tsx:45
+#: src/routes/_authenticated/settings.tsx:48
 msgid "{wikiName} settings"
 msgstr "{wikiName} सेटिंग्ज"
 
-#: src/features/wiki/page-editor.tsx:420
+#: src/features/wiki/page-editor.tsx:421
 msgid "*No content*"
 msgstr "*काही मजकूर नाही*"
 
@@ -220,55 +199,39 @@ msgstr "प्रवेश"
 msgid "Access denied"
 msgstr "प्रवेश नाकारला"
 
-#: ../../../lib/web/src/features/errors/forbidden.tsx:16
-msgid "Access Forbidden"
-msgstr "प्रवेश निषिद्ध"
-
 #: ../../../lib/web/src/features/access/access-list.tsx:197
 msgid "Access level"
 msgstr "प्रवेश स्तर"
 
-#: src/features/wiki/wiki-settings.tsx:562
+#: src/features/wiki/wiki-settings.tsx:563
 msgid "Access level updated"
 msgstr "प्रवेश स्तर अद्ययावत केला"
 
-#: src/features/wiki/wiki-settings.tsx:578
+#: src/features/wiki/wiki-settings.tsx:579
 msgid "Access removed"
 msgstr "प्रवेश काढून टाकला"
 
-#: src/features/wiki/wiki-settings.tsx:549
+#: src/features/wiki/wiki-settings.tsx:550
 msgid "Access set for {subjectName}"
 msgstr "{subjectName} साठी प्रवेश सेट केला"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:216
-msgid "Account added"
-msgstr "खाते जोडले"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:232
-msgid "Account removed"
-msgstr "खाते काढून टाकले"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:139
 msgid "Account type"
 msgstr "खाते प्रकार"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:242
-msgid "Account verified"
-msgstr "खाते सत्यापित केले"
-
 #: src/features/wiki/page-history.tsx:60
 #: src/features/wiki/redirects-page.tsx:96
-#: src/features/wiki/wiki-settings.tsx:745
+#: src/features/wiki/wiki-settings.tsx:746
 msgid "Actions"
 msgstr "क्रिया"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:711
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:720
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
 #: src/features/wiki/tag-manager.tsx:134
 #: src/features/wiki/tag-manager.tsx:139
 #: src/features/wiki/tag-manager.tsx:164
-#: src/features/wiki/wiki-settings.tsx:595
+#: src/features/wiki/wiki-settings.tsx:596
 msgid "Add"
 msgstr "जोडा"
 
@@ -289,15 +252,10 @@ msgid "Add access"
 msgstr "प्रवेश जोडा"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:132
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:288
 msgid "Add account"
 msgstr "खाते जोडा"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:297
-msgid "Add an account to receive notifications and use services."
-msgstr "सूचना प्राप्त करण्यासाठी आणि सेवा वापरण्यासाठी खाते जोडा."
-
-#: ../../../lib/web/src/components/attachment-composer.tsx:284
+#: ../../../lib/web/src/components/attachment-composer.tsx:291
 #: src/features/wiki/attachments-page.tsx:624
 #: src/features/wiki/attachments-page.tsx:630
 #: src/features/wiki/attachments-page.tsx:750
@@ -305,7 +263,7 @@ msgstr "सूचना प्राप्त करण्यासाठी आ
 msgid "Add caption"
 msgstr "कॅप्शन जोडा"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:681
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:690
 msgid "Add checklist item"
 msgstr "चेकलिस्ट आयटम जोडा"
 
@@ -314,17 +272,13 @@ msgstr "चेकलिस्ट आयटम जोडा"
 msgid "Add field"
 msgstr "फील्ड जोडा"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:699
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:708
 msgid "Add item..."
 msgstr "आयटम जोडा..."
 
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
 msgid "Add link"
 msgstr "लिंक जोडा"
-
-#: ../../../lib/web/src/features/accounts/account-picker.tsx:102
-msgid "Add new account"
-msgstr "नवीन खाते जोडा"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
@@ -335,22 +289,17 @@ msgid "Add option"
 msgstr "पर्याय जोडा"
 
 #: src/features/wiki/redirects-page.tsx:225
-#: src/features/wiki/wiki-settings.tsx:1026
+#: src/features/wiki/wiki-settings.tsx:1027
 msgid "Add redirect"
 msgstr "रीडायरेक्ट जोडा"
 
 #: ../../../lib/web/src/components/post-tags.tsx:137
-#: ../../../lib/web/src/components/tag-input.tsx:40
 msgid "Add tag..."
 msgstr "टॅग जोडा..."
 
 #: src/features/wiki/tags-list.tsx:40
 msgid "Add tags from the bottom of any page."
 msgstr "कोणत्याही पृष्ठाच्या तळापासून टॅग जोडा."
-
-#: ../../../lib/web/src/components/layout/team-switcher.tsx:83
-msgid "Add team/app"
-msgstr "टीम/अॅप जोडा"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx:175
 msgid "Add to existing notifications"
@@ -368,17 +317,9 @@ msgstr "दृश्य जोडा"
 msgid "Adding..."
 msgstr "जोडत आहे..."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:72
-msgid "Adjust the appearance and layout to suit your preferences."
-msgstr "तुमच्या प्राधान्यांनुसार दिसणे आणि मांडणी समायोजित करा."
-
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:41
 msgid "AI"
 msgstr "AI"
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:163
-msgid "All"
-msgstr "सर्व"
 
 #: src/features/wiki/attachments-page.tsx:391
 msgid "All files"
@@ -418,7 +359,7 @@ msgstr "द्वारे क्रमवारी लावण्याची 
 msgid "An error occurred"
 msgstr "त्रुटी आली"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:275
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:266
 msgid "An unexpected error occurred"
 msgstr "अनपेक्षित त्रुटी आली"
 
@@ -427,11 +368,11 @@ msgid "Android push"
 msgstr "Android पुश"
 
 #: ../../../lib/web/src/features/access/access-list.tsx:45
-#: ../../../lib/web/src/features/access/types.ts:42
+#: ../../../lib/web/src/features/access/types.ts:36
 msgid "Anyone"
 msgstr "कोणीही"
 
-#: ../../../lib/web/src/features/access/types.ts:41
+#: ../../../lib/web/src/features/access/types.ts:35
 msgid "Anyone who is logged in"
 msgstr "लॉग इन असलेले कोणीही"
 
@@ -439,7 +380,7 @@ msgstr "लॉग इन असलेले कोणीही"
 msgid "Anything subscribed to this feed will stop receiving it. You can copy a new URL afterwards."
 msgstr "या फीडची सदस्यता घेतलेले सर्व काही ते मिळणे थांबवेल. नंतर तुम्ही नवीन URL कॉपी करू शकता."
 
-#: src/features/wiki/wiki-settings.tsx:480
+#: src/features/wiki/wiki-settings.tsx:481
 msgid "Are you absolutely sure?"
 msgstr "तुम्ही पूर्णपणे खात्री आहात का?"
 
@@ -448,7 +389,7 @@ msgstr "तुम्ही पूर्णपणे खात्री आहा
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "तुम्हाला खरोखरच \"{0}\" हटवायचे आहे का?"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:627
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:629
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "तुम्हाला खरोखरच \"{name}\" कॉलम हटवायचा आहे का? हे परत करता येणार नाही."
 
@@ -464,16 +405,12 @@ msgstr "तुम्हाला खरोखरच ही टिप्पणी
 msgid "Are you sure you want to log out? You will need to log in again to access your account."
 msgstr "तुम्हाला खरोखरच लॉग आउट करायचे आहे का? तुमच्या खात्यात प्रवेश करण्यासाठी तुम्हाला पुन्हा लॉग इन करावे लागेल."
 
-#: src/features/wiki/wiki-page-content.tsx:411
+#: src/features/wiki/wiki-page-content.tsx:412
 #: src/routes/_authenticated/$page/index.tsx:310
-#: src/routes/_authenticated/index.tsx:528
-#: src/routes/_authenticated/index.tsx:928
+#: src/routes/_authenticated/index.tsx:529
+#: src/routes/_authenticated/index.tsx:929
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "तुम्हाला खरोखरच या विकीमधून अनसबस्क्राइब करायचे आहे का?"
-
-#: ../../../lib/web/src/components/data-table/column-header.tsx:59
-msgid "Asc"
-msgstr "चढता"
 
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx:27
 msgid "Ascending"
@@ -488,13 +425,13 @@ msgid "Attach reply files"
 msgstr "उत्तर फाइल्स संलग्न करा"
 
 #: src/features/wiki/attachments-page.tsx:266
-#: src/features/wiki/page-editor.tsx:251
+#: src/features/wiki/page-editor.tsx:252
 msgid "Attachment deleted"
 msgstr "संलग्नक हटवले"
 
-#: src/features/wiki/page-editor.tsx:363
-#: src/features/wiki/page-editor.tsx:368
-#: src/features/wiki/page-editor.tsx:375
+#: src/features/wiki/page-editor.tsx:364
+#: src/features/wiki/page-editor.tsx:369
+#: src/features/wiki/page-editor.tsx:376
 #: src/routes/_authenticated/$page/attachments.tsx:31
 #: src/routes/_authenticated/$page/attachments.tsx:42
 #: src/routes/_authenticated/$wikiId/$page/attachments.tsx:41
@@ -503,11 +440,11 @@ msgid "Attachments"
 msgstr "संलग्नके"
 
 #: ../../../lib/web/src/features/access/access-list.tsx:46
-#: ../../../lib/web/src/features/access/types.ts:41
+#: ../../../lib/web/src/features/access/types.ts:35
 msgid "Authenticated users"
 msgstr "प्रमाणित वापरकर्ते"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:317
+#: ../../../lib/web/src/components/step-up-dialog.tsx:318
 msgid "Authenticator code"
 msgstr "प्रमाणीकरण कोड"
 
@@ -542,7 +479,6 @@ msgstr "मागे"
 msgid "Back to history"
 msgstr "इतिहासाकडे परत"
 
-#: ../../../lib/web/src/features/errors/forbidden.tsx:28
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:28
 #: ../../../lib/web/src/features/errors/unauthorized-error.tsx:28
 msgid "Back to home"
@@ -593,15 +529,15 @@ msgstr "पानावर परत"
 #: src/routes/_authenticated/$page/index.tsx:178
 #: src/routes/_authenticated/$page/index.tsx:300
 #: src/routes/_authenticated/$wikiId/settings.tsx:42
-#: src/routes/_authenticated/changes.tsx:48
-#: src/routes/_authenticated/changes.tsx:59
-#: src/routes/_authenticated/changes.tsx:69
+#: src/routes/_authenticated/changes.tsx:49
+#: src/routes/_authenticated/changes.tsx:60
+#: src/routes/_authenticated/changes.tsx:70
 #: src/routes/_authenticated/index.tsx:252
 #: src/routes/_authenticated/join.tsx:64
 #: src/routes/_authenticated/new.tsx:31
-#: src/routes/_authenticated/redirects.tsx:29
-#: src/routes/_authenticated/search.tsx:42
-#: src/routes/_authenticated/settings.tsx:47
+#: src/routes/_authenticated/redirects.tsx:30
+#: src/routes/_authenticated/search.tsx:43
+#: src/routes/_authenticated/settings.tsx:48
 #: src/routes/_authenticated/tag/$tag.tsx:36
 #: src/routes/_authenticated/tag/$tag.tsx:47
 #: src/routes/_authenticated/tag/$tag.tsx:57
@@ -624,8 +560,8 @@ msgstr "या पानावर पहिले टिप्पणी कर�
 msgid "Blocked by"
 msgstr "द्वारे ब्लॉक केले"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:225
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:235
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:242
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:252
 msgid "Blocked navigation to untrusted link"
 msgstr "अविश्वसनीय लिंकवर नेव्हिगेशन रोखले"
 
@@ -647,11 +583,11 @@ msgid "Border colour"
 msgstr "सीमा रंग"
 
 #: src/features/wiki/redirects-page.tsx:199
-#: src/features/wiki/wiki-settings.tsx:993
+#: src/features/wiki/wiki-settings.tsx:994
 msgid "Both source and target are required"
 msgstr "स्रोत आणि लक्ष्य दोन्ही आवश्यक आहेत"
 
-#: src/features/wiki/page-editor.tsx:495
+#: src/features/wiki/page-editor.tsx:496
 msgid "Briefly describe your changes"
 msgstr "तुमच्या बदलांचे थोडक्यात वर्णन करा"
 
@@ -663,13 +599,13 @@ msgstr "टॅगनुसार पाने ब्राउझ करा. त�
 msgid "Browser notifications"
 msgstr "ब्राउझर सूचना"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:419
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:612
+#: ../../../lib/web/src/components/attachment-composer.tsx:426
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:166
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:183
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
-#: ../../../lib/web/src/components/step-up-dialog.tsx:365
+#: ../../../lib/web/src/components/step-up-dialog.tsx:366
 #: ../../../lib/web/src/components/travelling-picker.tsx:308
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
@@ -679,7 +615,7 @@ msgstr "ब्राउझर सूचना"
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:91
 #: src/features/wiki/delete-page.tsx:71
 #: src/features/wiki/delete-page.tsx:76
-#: src/features/wiki/page-editor.tsx:396
+#: src/features/wiki/page-editor.tsx:397
 #: src/features/wiki/redirects-page.tsx:173
 #: src/features/wiki/redirects-page.tsx:271
 #: src/features/wiki/rename-page-dialog.tsx:128
@@ -687,9 +623,9 @@ msgstr "ब्राउझर सूचना"
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:156
 #: src/features/wiki/wiki-comment-thread.tsx:182
-#: src/features/wiki/wiki-settings.tsx:789
-#: src/features/wiki/wiki-settings.tsx:952
-#: src/features/wiki/wiki-settings.tsx:1065
+#: src/features/wiki/wiki-settings.tsx:790
+#: src/features/wiki/wiki-settings.tsx:953
+#: src/features/wiki/wiki-settings.tsx:1066
 #: src/routes/_authenticated/join.tsx:120
 msgid "Cancel"
 msgstr "रद्द करा"
@@ -702,29 +638,29 @@ msgstr "टिप्पणी रद्द करा"
 msgid "Cancel reply"
 msgstr "उत्तर रद्द करा"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:379
-#: ../../../lib/web/src/components/attachment-composer.tsx:414
+#: ../../../lib/web/src/components/attachment-composer.tsx:386
+#: ../../../lib/web/src/components/attachment-composer.tsx:421
 msgid "Caption"
 msgstr "कॅप्शन"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:97
+#: ../../../lib/web/src/components/notification-category-button.tsx:99
 msgid "Category for these notifications"
 msgstr "या सूचनांसाठी श्रेणी"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:78
-#: ../../../lib/web/src/components/notification-category-button.tsx:89
+#: ../../../lib/web/src/components/notification-category-button.tsx:80
+#: ../../../lib/web/src/components/notification-category-button.tsx:91
 msgid "Change notification category"
 msgstr "सूचना श्रेणी बदला"
 
-#: src/features/wiki/wiki-page-content.tsx:353
-#: src/routes/_authenticated/index.tsx:454
-#: src/routes/_authenticated/index.tsx:723
+#: src/features/wiki/wiki-page-content.tsx:354
+#: src/routes/_authenticated/index.tsx:455
+#: src/routes/_authenticated/index.tsx:724
 msgid "Changes"
 msgstr "बदल"
 
-#: src/features/wiki/wiki-page-content.tsx:355
-#: src/routes/_authenticated/index.tsx:462
-#: src/routes/_authenticated/index.tsx:733
+#: src/features/wiki/wiki-page-content.tsx:356
+#: src/routes/_authenticated/index.tsx:463
+#: src/routes/_authenticated/index.tsx:734
 msgid "Changes and comments"
 msgstr "बदल आणि टिप्पण्या"
 
@@ -738,10 +674,6 @@ msgstr "आवृत्ती {0} → {1} पासूनचे बदल"
 msgid "Changes will appear here when pages are edited."
 msgstr "पाने संपादित केल्यावर बदल येथे दिसतील."
 
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:198
-msgid "Check \"All\" to see your past notifications."
-msgstr "मागील सूचना पाहण्यासाठी \"सर्व\" निवडा."
-
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
 msgid "Checkbox"
 msgstr "चेकबॉक्स"
@@ -750,28 +682,12 @@ msgstr "चेकबॉक्स"
 msgid "Checklist"
 msgstr "चेकलिस्ट"
 
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:33
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:35
 msgid "Choose a game from the sidebar or start a new one."
 msgstr "साइडबारमधून खेळ निवडा किंवा नवीन सुरू करा."
 
-#: ../../../lib/web/src/components/config-drawer.tsx:329
-msgid "Choose between default expanded, compact icon-only, or full layout mode"
-msgstr "डीफॉल्ट विस्तारित, कॉम्पॅक्ट केवळ-आयकॉन, किंवा पूर्ण लेआउट मोडमधून निवडा"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:271
-msgid "Choose between inset, floating, or standard sidebar layout"
-msgstr "इनसेट, फ्लोटिंग, किंवा मानक साइडबार लेआउटमधून निवडा"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:372
-msgid "Choose between left-to-right or right-to-left site direction"
-msgstr "डावीकडून-उजवीकडे किंवा उजवीकडून-डावीकडे साइट दिशामधून निवडा"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:227
-msgid "Choose between system preference, light mode, or dark mode"
-msgstr "सिस्टम प्राधान्य, लाइट मोड, किंवा डार्क मोडमधून निवडा"
-
-#: ../../../lib/web/src/components/language-picker.tsx:263
-#: ../../../lib/web/src/components/language-picker.tsx:270
+#: ../../../lib/web/src/components/language-picker.tsx:264
+#: ../../../lib/web/src/components/language-picker.tsx:271
 msgid "Choose language"
 msgstr "भाषा निवडा"
 
@@ -788,28 +704,14 @@ msgstr "साफ करा"
 msgid "Clear all"
 msgstr "सर्व साफ करा"
 
-#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:144
-msgid "Clear filters"
-msgstr "फिल्टर्स साफ करा"
-
 #: ../../../lib/web/src/components/search-input.tsx:26
 #: src/features/wiki/attachments-page.tsx:375
 #: src/features/wiki/attachments-page.tsx:380
 msgid "Clear search"
 msgstr "शोध साफ करा"
 
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:167
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:171
-msgid "Clear selection"
-msgstr "निवड साफ करा"
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:168
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:175
-msgid "Clear selection (Escape)"
-msgstr "निवड साफ करा (Escape)"
-
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:500
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:505
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:501
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:506
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:468
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:471
@@ -829,8 +731,8 @@ msgstr "डायलॉग बंद करा"
 msgid "Close navigation"
 msgstr "नेव्हिगेशन बंद करा"
 
-#: ../../../lib/web/src/components/layout/right-panel.tsx:265
-#: ../../../lib/web/src/components/layout/right-panel.tsx:268
+#: ../../../lib/web/src/components/layout/right-panel.tsx:234
+#: ../../../lib/web/src/components/layout/right-panel.tsx:237
 msgid "Close panel"
 msgstr "पॅनेल बंद करा"
 
@@ -857,8 +759,8 @@ msgstr "साइडबार कोलॅप्स करा"
 msgid "Colour"
 msgstr "रंग"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:537
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:542
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:539
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
 msgid "Column actions"
 msgstr "स्तंभ क्रिया"
 
@@ -869,10 +771,6 @@ msgstr "कॉलम्स गटबद्ध"
 #: ../../../lib/web/src/lib/preference-utils.ts:91
 msgid "Comfortable"
 msgstr "आरामदायक"
-
-#: ../../../lib/web/src/components/coming-soon.tsx:12
-msgid "Coming Soon!"
-msgstr "लवकरच येत आहे!"
 
 #: ../../../lib/web/src/components/ui/command.tsx:34
 msgid "Command Palette"
@@ -890,13 +788,12 @@ msgstr "टिप्पणी क्रिया"
 
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:431
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
-#: src/features/wiki/wiki-page-content.tsx:354
-#: src/routes/_authenticated/index.tsx:459
-#: src/routes/_authenticated/index.tsx:728
+#: src/features/wiki/wiki-page-content.tsx:355
+#: src/routes/_authenticated/index.tsx:460
+#: src/routes/_authenticated/index.tsx:729
 msgid "Comments"
 msgstr "टिप्पण्या"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:316
 #: ../../../lib/web/src/lib/preference-utils.ts:90
 msgid "Compact"
 msgstr "कॉम्पॅक्ट"
@@ -922,15 +819,11 @@ msgstr "पुष्टी करा"
 msgid "Connected"
 msgstr "कनेक्ट केले"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:191
-msgid "Connected accounts"
-msgstr "कनेक्ट केलेली खाती"
-
 #: ../../../lib/web/src/lib/chat-ui.ts:21
 msgid "Connecting..."
 msgstr "कनेक्ट होत आहे..."
 
-#: src/features/wiki/page-editor.tsx:476
+#: src/features/wiki/page-editor.tsx:477
 msgid "Content"
 msgstr "सामग्री"
 
@@ -950,7 +843,7 @@ msgstr "संदर्भात्मक माहिती आणि तपश
 msgid "Continue"
 msgstr "सुरू ठेवा"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:354
+#: ../../../lib/web/src/components/step-up-dialog.tsx:355
 msgid "Continue with {label}"
 msgstr "{label} सह सुरू ठेवा"
 
@@ -981,26 +874,26 @@ msgstr "तुलनेसाठी मागील आवृत्ती लो
 msgid "Could not load this document. Please try again later."
 msgstr "हा दस्तऐवज लोड करता आला नाही. कृपया नंतर पुन्हा प्रयत्न करा."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:111
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:128
 msgid "Couldn't load notifications"
 msgstr "सूचना लोड करता आल्या नाहीत"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:181
+#: ../../../lib/web/src/components/step-up-dialog.tsx:182
 msgid "Couldn't send the code. Please try again."
 msgstr "कोड पाठवता आला नाही. कृपया पुन्हा प्रयत्न करा."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:135
+#: ../../../lib/web/src/components/step-up-dialog.tsx:136
 msgid "Couldn't start re-authentication. Please try again."
 msgstr "पुन्हा पडताळणी सुरू करता आली नाही. कृपया पुन्हा प्रयत्न करा."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:223
+#: ../../../lib/web/src/components/step-up-dialog.tsx:224
 msgid "Couldn't verify with that account. Please try again."
 msgstr "त्या खात्याने पडताळणी करता आली नाही. कृपया पुन्हा प्रयत्न करा."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:548
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:687
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:490
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:654
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:550
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:689
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:491
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx:675
 msgid "Create"
 msgstr "तयार करा"
@@ -1010,7 +903,7 @@ msgstr "तयार करा"
 msgid "Create {0}"
 msgstr "{0} तयार करा"
 
-#: src/features/wiki/wiki-settings.tsx:1034
+#: src/features/wiki/wiki-settings.tsx:1035
 msgid "Create a redirect from one URL to another."
 msgstr "एका URL वरून दुसऱ्या URL वर रीडायरेक्ट तयार करा."
 
@@ -1019,7 +912,7 @@ msgid "Create a redirect from one URL to another. The source URL must not be an 
 msgstr "एका URL वरून दुसऱ्या URL वर पुनर्निर्देशन तयार करा. स्रोत URL विद्यमान पान असू नये."
 
 #: src/features/wiki/redirects-page.tsx:85
-#: src/features/wiki/wiki-settings.tsx:894
+#: src/features/wiki/wiki-settings.tsx:895
 msgid "Create a redirect to forward one URL to another."
 msgstr "एका URL वरून दुसऱ्या URL वर फॉरवर्ड करण्यासाठी रीडायरेक्ट तयार करा."
 
@@ -1027,14 +920,14 @@ msgstr "एका URL वरून दुसऱ्या URL वर फॉरव
 msgid "Create new item"
 msgstr "नवीन आयटम तयार करा"
 
-#: src/features/wiki/page-editor.tsx:402
+#: src/features/wiki/page-editor.tsx:403
 msgid "Create page"
 msgstr "पान तयार करा"
 
 #: src/features/wiki/redirects-page.tsx:231
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1032
-#: src/features/wiki/wiki-settings.tsx:1068
+#: src/features/wiki/wiki-settings.tsx:1033
+#: src/features/wiki/wiki-settings.tsx:1069
 msgid "Create redirect"
 msgstr "रीडायरेक्ट तयार करा"
 
@@ -1044,26 +937,26 @@ msgstr "जुन्या URL वरून रीडायरेक्ट त�
 
 #: src/features/wiki/page-view.tsx:301
 #: src/features/wiki/page-view.tsx:306
-#: src/features/wiki/wiki-page-content.tsx:231
+#: src/features/wiki/wiki-page-content.tsx:232
 #: src/routes/_authenticated/$page/index.tsx:146
 msgid "Create this page"
 msgstr "हे पान तयार करा"
 
 #: src/components/layout/wiki-layout.tsx:132
 #: src/components/layout/wiki-layout.tsx:152
-#: src/routes/_authenticated/index.tsx:775
+#: src/routes/_authenticated/index.tsx:776
 msgid "Create wiki"
 msgstr "विकी तयार करा"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:492
 #: src/features/wiki/redirects-page.tsx:95
-#: src/features/wiki/wiki-settings.tsx:904
+#: src/features/wiki/wiki-settings.tsx:905
 msgid "Created"
 msgstr "तयार केले"
 
 #: src/features/wiki/redirects-page.tsx:207
-#: src/features/wiki/wiki-settings.tsx:1005
+#: src/features/wiki/wiki-settings.tsx:1006
 msgid "Creating redirect..."
 msgstr "पुनर्निर्देशन तयार करत आहे..."
 
@@ -1071,11 +964,11 @@ msgstr "पुनर्निर्देशन तयार करत आहे
 msgid "Creating wiki..."
 msgstr "विकी तयार करत आहे..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:654
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
-#: src/features/wiki/page-editor.tsx:402
+#: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1068
+#: src/features/wiki/wiki-settings.tsx:1069
 msgid "Creating..."
 msgstr "तयार करत आहे..."
 
@@ -1091,18 +984,11 @@ msgstr "सध्याचे स्थान"
 msgid "Custom"
 msgstr "सानुकूल"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:219
-#: ../../../lib/web/src/components/theme-switch.tsx:52
 #: ../../../lib/web/src/lib/preference-utils.ts:15
 msgid "Dark"
 msgstr "गडद"
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:87
-#: ../../../lib/web/src/components/profile-dropdown.tsx:123
-msgid "Dark mode"
-msgstr "डार्क मोड"
-
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:259
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:250
 msgid "Data conflict"
 msgstr "डेटा विरोध"
 
@@ -1117,10 +1003,6 @@ msgstr "तारीख"
 msgid "Decline"
 msgstr "नाकारा"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:311
-msgid "Default"
-msgstr "डीफॉल्ट"
-
 #: ../../../lib/web/src/features/accounts/account-add.tsx:185
 msgid "Default AI account"
 msgstr "डीफॉल्ट AI खाते"
@@ -1129,8 +1011,8 @@ msgstr "डीफॉल्ट AI खाते"
 msgid "Default sort"
 msgstr "डीफॉल्ट क्रमवारी"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:567
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:569
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:280
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:323
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:353
@@ -1140,18 +1022,18 @@ msgstr "डीफॉल्ट क्रमवारी"
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:314
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/page-editor.tsx:647
+#: src/features/wiki/page-editor.tsx:648
 #: src/features/wiki/redirects-page.tsx:178
 #: src/features/wiki/wiki-comment-thread.tsx:255
 #: src/features/wiki/wiki-comment-thread.tsx:282
-#: src/features/wiki/wiki-page-content.tsx:323
-#: src/features/wiki/wiki-settings.tsx:957
+#: src/features/wiki/wiki-page-content.tsx:324
+#: src/features/wiki/wiki-settings.tsx:958
 msgid "Delete"
 msgstr "हटवा"
 
 #. placeholder {0}: pendingDelete.name
 #: src/features/wiki/attachments-page.tsx:531
-#: src/features/wiki/page-editor.tsx:644
+#: src/features/wiki/page-editor.tsx:645
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "«{0}» हटवायचे? हे पूर्ववत करता येणार नाही."
 
@@ -1161,13 +1043,13 @@ msgstr "«{0}» हटवायचे? हे पूर्ववत करता
 #: src/features/wiki/attachments-page.tsx:650
 #: src/features/wiki/attachments-page.tsx:768
 #: src/features/wiki/attachments-page.tsx:777
-#: src/features/wiki/page-editor.tsx:597
-#: src/features/wiki/page-editor.tsx:606
-#: src/features/wiki/page-editor.tsx:641
+#: src/features/wiki/page-editor.tsx:598
+#: src/features/wiki/page-editor.tsx:607
+#: src/features/wiki/page-editor.tsx:642
 msgid "Delete attachment"
 msgstr "संलग्नक हटवा"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:626
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
 msgid "Delete column"
 msgstr "कॉलम हटवा"
 
@@ -1191,21 +1073,21 @@ msgid "Delete option {0}"
 msgstr "पर्याय {0} हटवा"
 
 #: src/features/wiki/delete-page.tsx:56
-#: src/features/wiki/page-editor.tsx:384
-#: src/features/wiki/page-editor.tsx:389
+#: src/features/wiki/page-editor.tsx:385
+#: src/features/wiki/page-editor.tsx:390
 msgid "Delete page"
 msgstr "पान हटवा"
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:153
 #: src/features/wiki/redirects-page.tsx:159
-#: src/features/wiki/wiki-settings.tsx:933
-#: src/features/wiki/wiki-settings.tsx:939
+#: src/features/wiki/wiki-settings.tsx:934
+#: src/features/wiki/wiki-settings.tsx:940
 msgid "Delete redirect {0}"
 msgstr "पुनर्निर्देशन {0} हटवा"
 
 #: src/features/wiki/redirects-page.tsx:163
-#: src/features/wiki/wiki-settings.tsx:943
+#: src/features/wiki/wiki-settings.tsx:944
 msgid "Delete redirect?"
 msgstr "रीडायरेक्ट हटवायचा?"
 
@@ -1213,9 +1095,9 @@ msgstr "रीडायरेक्ट हटवायचा?"
 msgid "Delete view"
 msgstr "दृश्य हटवा"
 
-#: src/features/wiki/wiki-settings.tsx:463
-#: src/features/wiki/wiki-settings.tsx:474
-#: src/features/wiki/wiki-settings.tsx:482
+#: src/features/wiki/wiki-settings.tsx:464
+#: src/features/wiki/wiki-settings.tsx:475
+#: src/features/wiki/wiki-settings.tsx:483
 msgid "Delete wiki"
 msgstr "विकी हटवा"
 
@@ -1237,22 +1119,18 @@ msgid "Delete: {pageTitle}"
 msgstr "हटवा: {pageTitle}"
 
 #: src/features/wiki/redirects-page.tsx:118
-#: src/features/wiki/wiki-settings.tsx:864
+#: src/features/wiki/wiki-settings.tsx:865
 msgid "Deleting redirect..."
 msgstr "पुनर्निर्देशन हटवत आहे..."
 
-#: src/features/wiki/wiki-settings.tsx:346
+#: src/features/wiki/wiki-settings.tsx:347
 msgid "Deleting wiki..."
 msgstr "विकी हटवत आहे..."
 
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/wiki-settings.tsx:474
+#: src/features/wiki/wiki-settings.tsx:475
 msgid "Deleting..."
 msgstr "हटवत आहे..."
-
-#: ../../../lib/web/src/components/data-table/column-header.tsx:63
-msgid "Desc"
-msgstr "उतरता"
 
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx:27
 msgid "Descending"
@@ -1266,7 +1144,7 @@ msgstr "वर्णन"
 msgid "Details Panel"
 msgstr "तपशील पॅनेल"
 
-#: ../../../lib/web/src/components/language-picker.tsx:239
+#: ../../../lib/web/src/components/language-picker.tsx:240
 #: ../../../lib/web/src/components/timezone-select.tsx:46
 #: ../../../lib/web/src/components/timezone-select.tsx:83
 #: ../../../lib/web/src/lib/preference-utils.ts:23
@@ -1276,10 +1154,6 @@ msgstr "तपशील पॅनेल"
 #: ../../../lib/web/src/lib/preference-utils.ts:79
 msgid "Detect from web browser"
 msgstr "वेब ब्राउझरमधून शोधा"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:341
-msgid "Direction"
-msgstr "दिशा"
 
 #: ../../../lib/web/src/components/person-picker.tsx:214
 msgid "Directory"
@@ -1303,7 +1177,7 @@ msgstr "डिस्कनेक्ट केले"
 msgid "Dismiss"
 msgstr "काढून टाका"
 
-#: ../../../lib/web/src/components/ui/sidebar.tsx:238
+#: ../../../lib/web/src/components/ui/sidebar.tsx:258
 msgid "Displays the mobile sidebar."
 msgstr "मोबाइल साइडबार दाखवते."
 
@@ -1322,7 +1196,7 @@ msgstr "पूर्ण"
 msgid "Download"
 msgstr "डाउनलोड"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:99
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:98
 msgid "Download failed"
 msgstr "डाउनलोड अयशस्वी"
 
@@ -1334,17 +1208,17 @@ msgstr "येथे फाइल्स ओढा आणि टाका, कि
 msgid "Duplicates"
 msgstr "डुप्लिकेट करते"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:141
+#: ../../../lib/web/src/lib/preference-utils.ts:134
 msgid "Dyslexia-friendly"
 msgstr "डिस्लेक्सिया-अनुकूल"
 
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:269
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:314
-#: src/features/wiki/page-editor.tsx:341
+#: src/features/wiki/page-editor.tsx:342
 #: src/features/wiki/wiki-comment-thread.tsx:244
-#: src/features/wiki/wiki-page-content.tsx:297
+#: src/features/wiki/wiki-page-content.tsx:298
 #: src/routes/_authenticated/$page/index.tsx:214
-#: src/routes/_authenticated/index.tsx:409
+#: src/routes/_authenticated/index.tsx:410
 msgid "Edit"
 msgstr "संपादित करा"
 
@@ -1352,11 +1226,11 @@ msgstr "संपादित करा"
 msgid "Edit {label}"
 msgstr "{label} संपादित करा"
 
-#: src/features/wiki/wiki-settings.tsx:498
+#: src/features/wiki/wiki-settings.tsx:499
 msgid "Edit and view"
 msgstr "संपादित आणि पाहा"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:284
+#: ../../../lib/web/src/components/attachment-composer.tsx:291
 #: src/features/wiki/attachments-page.tsx:624
 #: src/features/wiki/attachments-page.tsx:630
 #: src/features/wiki/attachments-page.tsx:750
@@ -1386,7 +1260,7 @@ msgstr "पर्याय {0} संपादित करा"
 msgid "Edit selected card"
 msgstr "निवडलेले कार्ड संपादित करा"
 
-#: src/features/wiki/page-editor.tsx:490
+#: src/features/wiki/page-editor.tsx:491
 msgid "Edit summary (optional)"
 msgstr "संपादन सारांश (पर्यायी)"
 
@@ -1411,7 +1285,7 @@ msgstr "संपादित करा: {pageTitle}"
 msgid "Email"
 msgstr "ईमेल"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:291
+#: ../../../lib/web/src/components/step-up-dialog.tsx:292
 msgid "Email code"
 msgstr "ईमेल कोड"
 
@@ -1427,23 +1301,23 @@ msgstr "शोध शब्द टाका"
 msgid "Enter tag name"
 msgstr "टॅगचे नाव टाका"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:301
+#: ../../../lib/web/src/components/step-up-dialog.tsx:302
 msgid "Enter the code from your email"
 msgstr "तुमच्या ईमेलमधील कोड प्रविष्ट करा"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:326
+#: ../../../lib/web/src/components/step-up-dialog.tsx:327
 msgid "Enter your authenticator code"
 msgstr "तुमचा ऑथेंटिकेटर कोड टाका"
 
-#: src/features/wiki/wiki-settings.tsx:397
+#: src/features/wiki/wiki-settings.tsx:398
 msgid "Entity ID"
 msgstr "एंटिटी आयडी"
 
-#: src/features/wiki/wiki-page-content.tsx:198
+#: src/features/wiki/wiki-page-content.tsx:199
 msgid "Error: Received invalid response from server."
 msgstr "त्रुटी: सर्व्हरकडून अवैध प्रतिसाद मिळाला."
 
-#: src/features/wiki/wiki-settings.tsx:445
+#: src/features/wiki/wiki-settings.tsx:446
 msgid "Example: \"home\", \"welcome\", \"index\""
 msgstr "उदाहरण: «home», «welcome», «index»"
 
@@ -1462,15 +1336,10 @@ msgstr "साइडबार विस्तृत करा"
 msgid "External URL"
 msgstr "बाह्य URL"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:131
+#: ../../../lib/web/src/lib/preference-utils.ts:124
 msgid "Extra large"
 msgstr "अतिरिक्त मोठे"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:225
-msgid "Failed to add account"
-msgstr "खाते जोडण्यात अयशस्वी"
-
-#: ../../../lib/web/src/components/tag-input.tsx:39
 #: src/features/wiki/tag-manager.tsx:60
 msgid "Failed to add tag"
 msgstr "टॅग जोडण्यात अयशस्वी"
@@ -1487,12 +1356,12 @@ msgstr "कॉपी करण्यात अयशस्वी"
 msgid "Failed to create link"
 msgstr "लिंक तयार करण्यात अयशस्वी"
 
-#: src/features/wiki/page-editor.tsx:285
+#: src/features/wiki/page-editor.tsx:286
 msgid "Failed to create page"
 msgstr "पान तयार करण्यात अयशस्वी"
 
 #: src/features/wiki/redirects-page.tsx:209
-#: src/features/wiki/wiki-settings.tsx:1007
+#: src/features/wiki/wiki-settings.tsx:1008
 msgid "Failed to create redirect"
 msgstr "रीडायरेक्ट तयार करण्यात अयशस्वी"
 
@@ -1502,7 +1371,7 @@ msgstr "विकी तयार करण्यात अयशस्वी"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:130
 #: src/features/wiki/attachments-page.tsx:270
-#: src/features/wiki/page-editor.tsx:255
+#: src/features/wiki/page-editor.tsx:256
 msgid "Failed to delete attachment"
 msgstr "अटॅचमेंट हटवण्यात अयशस्वी"
 
@@ -1519,18 +1388,18 @@ msgid "Failed to delete page"
 msgstr "पान हटवण्यात अयशस्वी"
 
 #: src/features/wiki/redirects-page.tsx:120
-#: src/features/wiki/wiki-settings.tsx:866
+#: src/features/wiki/wiki-settings.tsx:867
 msgid "Failed to delete redirect"
 msgstr "रीडायरेक्ट हटवण्यात अयशस्वी"
 
-#: src/features/wiki/wiki-settings.tsx:348
+#: src/features/wiki/wiki-settings.tsx:349
 msgid "Failed to delete wiki"
 msgstr "विकी हटवण्यात अयशस्वी"
 
 #: ../../../lib/web/src/components/options-menu.tsx:122
-#: src/features/wiki/wiki-page-content.tsx:161
-#: src/routes/_authenticated/index.tsx:325
-#: src/routes/_authenticated/index.tsx:612
+#: src/features/wiki/wiki-page-content.tsx:162
+#: src/routes/_authenticated/index.tsx:326
+#: src/routes/_authenticated/index.tsx:613
 msgid "Failed to get RSS token"
 msgstr "RSS टोकन मिळवण्यात अयशस्वी"
 
@@ -1538,15 +1407,15 @@ msgstr "RSS टोकन मिळवण्यात अयशस्वी"
 msgid "Failed to join wiki"
 msgstr "विकीमध्ये सामील होण्यात अयशस्वी"
 
-#: ../../../lib/web/src/hooks/use-load-more.ts:77
+#: ../../../lib/web/src/hooks/use-load-more.ts:78
 msgid "Failed to load"
 msgstr "लोड करण्यात अयशस्वी"
 
-#: src/features/wiki/wiki-settings.tsx:534
+#: src/features/wiki/wiki-settings.tsx:535
 msgid "Failed to load access rules"
 msgstr "प्रवेश नियम लोड करण्यात अयशस्वी"
 
-#: ../../../lib/web/src/components/audit-timeline.tsx:65
+#: ../../../lib/web/src/components/audit-timeline.tsx:68
 msgid "Failed to load history"
 msgstr "इतिहास लोड करण्यात अयशस्वी"
 
@@ -1554,11 +1423,11 @@ msgstr "इतिहास लोड करण्यात अयशस्वी
 msgid "Failed to load image"
 msgstr "प्रतिमा लोड करण्यात अयशस्वी"
 
-#: src/features/wiki/wiki-settings.tsx:848
+#: src/features/wiki/wiki-settings.tsx:849
 msgid "Failed to load redirects"
 msgstr "रीडायरेक्ट्स लोड करण्यात अयशस्वी"
 
-#: src/features/wiki/wiki-settings.tsx:657
+#: src/features/wiki/wiki-settings.tsx:658
 msgid "Failed to load replicas"
 msgstr "रेप्लिका लोड करण्यात अयशस्वी"
 
@@ -1566,7 +1435,7 @@ msgstr "रेप्लिका लोड करण्यात अयशस्
 msgid "Failed to load video"
 msgstr "व्हिडिओ लोड करण्यात अयशस्वी"
 
-#: src/routes/_authenticated/$page/route.tsx:57
+#: src/routes/_authenticated/$page/route.tsx:58
 #: src/routes/_authenticated/$wikiId/route.tsx:66
 msgid "Failed to load wiki info"
 msgstr "विकी माहिती लोड करण्यात अयशस्वी"
@@ -1579,15 +1448,11 @@ msgstr "विकीज लोड करण्यात अयशस्वी"
 msgid "Failed to post comment"
 msgstr "टिप्पणी पोस्ट करण्यात अयशस्वी"
 
-#: src/features/wiki/wiki-settings.tsx:579
+#: src/features/wiki/wiki-settings.tsx:580
 msgid "Failed to remove access"
 msgstr "प्रवेश काढण्यात अयशस्वी"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:234
-msgid "Failed to remove account"
-msgstr "खाते काढण्यात अयशस्वी"
-
-#: src/features/wiki/wiki-settings.tsx:676
+#: src/features/wiki/wiki-settings.tsx:677
 msgid "Failed to remove replica"
 msgstr "रेप्लिका काढण्यात अयशस्वी"
 
@@ -1599,7 +1464,7 @@ msgstr "टॅग काढण्यात अयशस्वी"
 msgid "Failed to rename page"
 msgstr "पानाचे नाव बदलण्यात अयशस्वी"
 
-#: src/features/wiki/wiki-settings.tsx:281
+#: src/features/wiki/wiki-settings.tsx:282
 msgid "Failed to rename wiki"
 msgstr "विकीचे नाव बदलण्यात अयशस्वी"
 
@@ -1608,8 +1473,8 @@ msgid "Failed to revert page"
 msgstr "पान रिव्हर्ट करण्यात अयशस्वी"
 
 #: ../../../lib/web/src/components/options-menu.tsx:133
-#: src/routes/_authenticated/index.tsx:334
-#: src/routes/_authenticated/index.tsx:621
+#: src/routes/_authenticated/index.tsx:335
+#: src/routes/_authenticated/index.tsx:622
 msgid "Failed to revoke RSS access"
 msgstr "RSS प्रवेश रद्द करण्यात अयशस्वी"
 
@@ -1617,11 +1482,11 @@ msgstr "RSS प्रवेश रद्द करण्यात अयशस�
 msgid "Failed to save caption"
 msgstr "कॅप्शन जतन करता आले नाही"
 
-#: src/features/wiki/page-editor.tsx:307
+#: src/features/wiki/page-editor.tsx:308
 msgid "Failed to save page"
 msgstr "पान सेव्ह करण्यात अयशस्वी"
 
-#: src/features/wiki/wiki-settings.tsx:305
+#: src/features/wiki/wiki-settings.tsx:306
 msgid "Failed to save settings"
 msgstr "सेटिंग्ज सेव्ह करण्यात अयशस्वी"
 
@@ -1630,32 +1495,28 @@ msgstr "सेटिंग्ज सेव्ह करण्यात अयश
 msgid "Failed to search wikis"
 msgstr "विकीज शोधण्यात अयशस्वी"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:257
-msgid "Failed to send verification code"
-msgstr "पडताळणी कोड पाठवण्यात अयशस्वी"
-
-#: src/features/wiki/wiki-settings.tsx:550
+#: src/features/wiki/wiki-settings.tsx:551
 msgid "Failed to set access level"
 msgstr "प्रवेश पातळी सेट करण्यात अयशस्वी"
 
 #: src/features/wiki/inline-wiki-search.tsx:96
 #: src/routes/_authenticated/find.tsx:65
-#: src/routes/_authenticated/index.tsx:678
+#: src/routes/_authenticated/index.tsx:679
 msgid "Failed to subscribe"
 msgstr "सबस्क्राइब करण्यात अयशस्वी"
 
-#: src/features/wiki/wiki-settings.tsx:327
+#: src/features/wiki/wiki-settings.tsx:328
 msgid "Failed to sync wiki"
 msgstr "विकी सिंक करण्यात अयशस्वी"
 
 #: src/features/wiki/wiki-page-content.tsx:82
 #: src/routes/_authenticated/$page/index.tsx:84
 #: src/routes/_authenticated/index.tsx:294
-#: src/routes/_authenticated/index.tsx:939
+#: src/routes/_authenticated/index.tsx:940
 msgid "Failed to unsubscribe"
 msgstr "अनसबस्क्राइब करण्यात अयशस्वी"
 
-#: src/features/wiki/wiki-settings.tsx:563
+#: src/features/wiki/wiki-settings.tsx:564
 msgid "Failed to update access level"
 msgstr "प्रवेश पातळी अद्यतनित करण्यात अयशस्वी"
 
@@ -1668,11 +1529,11 @@ msgid "Failed to upload attachment"
 msgstr "अटॅचमेंट अपलोड करण्यात अयशस्वी"
 
 #: src/features/wiki/attachments-page.tsx:158
-#: src/features/wiki/page-editor.tsx:203
+#: src/features/wiki/page-editor.tsx:204
 msgid "Failed to upload files"
 msgstr "फायली अपलोड करण्यात अयशस्वी"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:588
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:589
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:155
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:175
 msgid "Files"
@@ -1682,16 +1543,12 @@ msgstr "फायली"
 msgid "Filter"
 msgstr "फिल्टर"
 
-#: ../../../lib/web/src/components/data-table/toolbar.tsx:30
-msgid "Filter..."
-msgstr "फिल्टर..."
-
 #: src/components/layout/wiki-layout.tsx:131
 #: src/routes/_authenticated/find.tsx:99
 msgid "Find wikis"
 msgstr "विकीज शोधा"
 
-#: src/features/wiki/wiki-settings.tsx:401
+#: src/features/wiki/wiki-settings.tsx:402
 msgid "Fingerprint"
 msgstr "बोटाचा ठसा"
 
@@ -1706,10 +1563,6 @@ msgstr "फ्लॅग्ज"
 #: ../../../lib/web/src/lib/preference-utils.ts:111
 msgid "Flat"
 msgstr "सपाट"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:258
-msgid "Floating"
-msgstr "फ्लोटिंग"
 
 #. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { useState, useEffect } from 'react' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Link } from '@tanstack/react-router' import { Search, FileText, ArrowRight } from 'lucide-react' import { EmptyState, useFormat, GeneralError, Input, ListSkeleton, Separator } from '@mochi/web' import { useSearch } from '@/hooks/use-wiki' import type { SearchResult } from '@/types/wiki' interface SearchPageProps { initialQuery?: string wikiId?: string onQueryChange?: (q: string) => void } export function SearchPage({ initialQuery = '', wikiId, onQueryChange }: SearchPageProps) { const [query, setQuery] = useState(initialQuery) const [debouncedQuery, setDebouncedQuery] = useState(initialQuery) // Debounce the query useEffect(() => { const timer = setTimeout(() => { setDebouncedQuery(query) }, 300) return () => clearTimeout(timer) }, [query]) // Sync debounced query back to the URL via the router useEffect(() => { if (debouncedQuery !== initialQuery) { onQueryChange?.(debouncedQuery) } }, [debouncedQuery, initialQuery, onQueryChange]) const { data, isLoading, error, refetch } = useSearch(debouncedQuery) const results = data?.results ?? [] return ( <div className="space-y-6"> {/* Search input */} <div className="relative"> <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" /> <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`Search pages by title or content...`} className="ps-10" autoFocus /> </div> <Separator /> {/* Results */} {!debouncedQuery ? ( <EmptyState icon={Search} title={t`Enter a search term`} description={t`Search pages by title or content.`} className="py-8" /> ) : isLoading ? ( <ListSkeleton variant="card" count={5} /> ) : error ? ( <GeneralError error={error} minimal mode="inline" reset={refetch} /> ) : results.length === 0 ? ( <EmptyState icon={FileText} title={t`No pages found for "${debouncedQuery}"`} description={t`Try different search terms.`} className="py-8" /> ) : ( <div className="space-y-4"> <p className="text-muted-foreground text-sm"> <Trans>Found {plural(results.length, { one: '# result', other: '# results' })} for "{debouncedQuery}"</Trans> </p> <div className="space-y-2"> {results.map((result) => ( <SearchResultItem key={result.page} result={result} wikiId={wikiId} /> ))} </div> </div> )} </div> ) } interface SearchResultItemProps { result: SearchResult wikiId?: string } function SearchResultItem({ result, wikiId }: SearchResultItemProps) { const { formatTimestamp } = useFormat() return ( <Link preload={false} to={wikiId ? '/$wikiId/$page' : '/$page'} params={wikiId ? { wikiId, page: result.page } : { page: result.page }} className="hover:bg-hover group flex items-start gap-4 rounded-lg border p-4 transition-colors" > <FileText className="text-muted-foreground mt-1 h-5 w-5 shrink-0" /> <div className="min-w-0 flex-1"> <div className="flex items-center gap-2"> <h3 className="font-semibold group-hover:underline">{result.title}</h3> <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 rtl:rotate-180" /> </div> <p className="text-muted-foreground mt-1 line-clamp-2 text-sm"> {result.excerpt}... </p> <p className="text-muted-foreground mt-2 text-xs"> <Trans>Updated {formatTimestamp(result.updated)}</Trans> </p> </div> </Link> ) } 
 #: src/features/wiki/search-page.tsx:81
@@ -1731,41 +1584,15 @@ msgstr "पासून"
 #: ../../../lib/web/src/lib/preference-utils.ts:89
 #: ../../../lib/web/src/lib/preference-utils.ts:99
 #: ../../../lib/web/src/lib/preference-utils.ts:110
-#: ../../../lib/web/src/lib/preference-utils.ts:119
-#: ../../../lib/web/src/lib/preference-utils.ts:127
-#: ../../../lib/web/src/lib/preference-utils.ts:138
+#: ../../../lib/web/src/lib/preference-utils.ts:120
+#: ../../../lib/web/src/lib/preference-utils.ts:131
 msgid "From theme"
 msgstr "थीममधून"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:321
-msgid "Full layout"
-msgstr "संपूर्ण लेआउट"
-
-#: ../../../lib/web/src/features/errors/forbidden.tsx:26
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:26
 #: ../../../lib/web/src/features/errors/unauthorized-error.tsx:26
 msgid "Go back"
 msgstr "मागे जा"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:82
-msgid "Go to first page"
-msgstr "पहिल्या पानावर जा"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:128
-msgid "Go to last page"
-msgstr "शेवटच्या पानावर जा"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:119
-msgid "Go to next page"
-msgstr "पुढच्या पानावर जा"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:106
-msgid "Go to page {pageNumber}"
-msgstr "पृष्ठ {pageNumber} वर जा"
-
-#: ../../../lib/web/src/components/data-table/pagination.tsx:91
-msgid "Go to previous page"
-msgstr "मागच्या पानावर जा"
 
 #: src/features/wiki/attachments-page.tsx:419
 #: src/features/wiki/attachments-page.tsx:424
@@ -1785,18 +1612,10 @@ msgstr "यानुसार गट करा"
 msgid "Group: {0}"
 msgstr "गट: {0}"
 
-#: ../../../lib/web/src/components/data-table/column-header.tsx:70
-msgid "Hide"
-msgstr "लपवा"
-
-#: ../../../lib/web/src/components/password-input.tsx:27
-msgid "Hide password"
-msgstr "पासवर्ड लपवा"
-
-#: ../../../lib/web/src/components/audit-timeline.tsx:58
-#: src/features/wiki/wiki-page-content.tsx:310
+#: ../../../lib/web/src/components/audit-timeline.tsx:61
+#: src/features/wiki/wiki-page-content.tsx:311
 #: src/routes/_authenticated/$page/index.tsx:227
-#: src/routes/_authenticated/index.tsx:422
+#: src/routes/_authenticated/index.tsx:423
 msgid "History"
 msgstr "इतिहास"
 
@@ -1811,7 +1630,7 @@ msgstr "इतिहास"
 msgid "History: {pageTitle}"
 msgstr "इतिहास: {pageTitle}"
 
-#: src/features/wiki/wiki-settings.tsx:442
+#: src/features/wiki/wiki-settings.tsx:443
 msgid "home"
 msgstr "home"
 
@@ -1823,7 +1642,7 @@ msgstr "home"
 msgid "Home"
 msgstr "मुख्यपृष्ठ"
 
-#: src/features/wiki/wiki-settings.tsx:430
+#: src/features/wiki/wiki-settings.tsx:431
 msgid "Home page"
 msgstr "मुख्यपृष्ठ"
 
@@ -1832,15 +1651,15 @@ msgid "Hot"
 msgstr "हॉट"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
-#: src/features/wiki/wiki-settings.tsx:742
+#: src/features/wiki/wiki-settings.tsx:743
 msgid "ID"
 msgstr "आयडी"
 
-#: src/features/wiki/wiki-settings.tsx:388
+#: src/features/wiki/wiki-settings.tsx:389
 msgid "Identity"
 msgstr "ओळख"
 
-#: src/features/wiki/markdown-content.tsx:127
+#: src/features/wiki/markdown-content.tsx:128
 msgid "Image"
 msgstr "प्रतिमा"
 
@@ -1853,7 +1672,7 @@ msgstr "प्रतिमा दर्शक: {0}"
 msgid "Images"
 msgstr "प्रतिमा"
 
-#: src/features/wiki/page-editor.tsx:515
+#: src/features/wiki/page-editor.tsx:516
 msgid "images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration."
 msgstr "प्रतिमा, PDF, DOC, DOCX, TXT, आणि MD. मोठ्या अपलोड्स तुमच्या सर्व्हर किंवा प्रॉक्सी कॉन्फिगरेशनद्वारे देखील मर्यादित असू शकतात."
 
@@ -1861,7 +1680,7 @@ msgstr "प्रतिमा, PDF, DOC, DOCX, TXT, आणि MD. मोठ्�
 msgid "Imperial"
 msgstr "इम्पीरियल"
 
-#: ../../../lib/web/src/features/access/types.ts:42
+#: ../../../lib/web/src/features/access/types.ts:36
 msgid "Including anonymous users"
 msgstr "निनावी वापरकर्त्यांसह"
 
@@ -1873,33 +1692,21 @@ msgstr "आद्याक्षर अवतार"
 msgid "Initials avatar for {name}"
 msgstr "{name} साठी आद्याक्षर अवतार"
 
-#: src/features/wiki/page-editor.tsx:356
+#: src/features/wiki/page-editor.tsx:357
 msgid "Insert"
 msgstr "घाला"
 
-#: src/features/wiki/page-editor.tsx:506
+#: src/features/wiki/page-editor.tsx:507
 msgid "Insert attachment"
 msgstr "अटॅचमेंट घाला"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:253
-msgid "Inset"
-msgstr "इनसेट"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "इंटरेस्ट्स"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:544
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:550
 msgid "Invalid date"
 msgstr "अवैध तारीख"
-
-#: ../../../lib/web/src/components/tag-input.tsx:38
-msgid "Invalid tag: letters, numbers, spaces, hyphens, and slashes only (max 50 chars)"
-msgstr "अवैध टॅग: फक्त अक्षरे, अंक, स्पेस, हायफन आणि स्लॅश (जास्तीत जास्त 50 अक्षरे)"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:245
-msgid "Invalid verification code"
-msgstr "अवैध पडताळणी कोड"
 
 #: src/routes/_authenticated/$page/revert.tsx:45
 #: src/routes/_authenticated/$wikiId/$page/revert.tsx:46
@@ -1914,7 +1721,7 @@ msgstr "असे दिसते की तुम्ही शोधत अस�
 msgid "Joined wiki"
 msgstr "विकीमध्ये सामील झाले"
 
-#: ../../../lib/web/src/lib/locale-format.ts:164
+#: ../../../lib/web/src/lib/locale-format.ts:165
 msgid "Just now"
 msgstr "आत्ताच"
 
@@ -1923,7 +1730,7 @@ msgid "Keyboard shortcuts"
 msgstr "कीबोर्ड शॉर्टकट"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:103
-#: ../../../lib/web/src/lib/preference-utils.ts:130
+#: ../../../lib/web/src/lib/preference-utils.ts:123
 msgid "Large"
 msgstr "मोठे"
 
@@ -1931,43 +1738,31 @@ msgstr "मोठे"
 msgid "Large uploads may be limited by your server or proxy configuration."
 msgstr "मोठ्या अपलोड्स तुमच्या सर्व्हर किंवा प्रॉक्सी कॉन्फिगरेशनद्वारे मर्यादित असू शकतात."
 
-#: src/features/wiki/wiki-settings.tsx:744
+#: src/features/wiki/wiki-settings.tsx:745
 msgid "Last synced"
 msgstr "शेवटचे सिंक केले"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:287
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:306
 msgid "Layout"
 msgstr "लेआउट"
-
-#: ../../../lib/web/src/components/learn-more.tsx:33
-#: ../../../lib/web/src/components/learn-more.tsx:38
-msgid "Learn more"
-msgstr "अधिक जाणून घ्या"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:355
-msgid "Left to Right"
-msgstr "डावीकडून उजवीकडे"
 
 #: ../../../lib/web/src/components/post-tags.tsx:72
 msgid "Letters, numbers, spaces, and hyphens only"
 msgstr "फक्त अक्षरे, अंक, स्पेस आणि हायफन"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:214
-#: ../../../lib/web/src/components/theme-switch.tsx:45
 #: ../../../lib/web/src/lib/preference-utils.ts:14
 msgid "Light"
 msgstr "हलके"
 
 #: ../../../lib/web/src/components/options-menu.tsx:190
-#: src/features/wiki/wiki-page-content.tsx:241
-#: src/features/wiki/wiki-page-content.tsx:370
+#: src/features/wiki/wiki-page-content.tsx:242
+#: src/features/wiki/wiki-page-content.tsx:371
 #: src/routes/_authenticated/$page/index.tsx:268
-#: src/routes/_authenticated/index.tsx:481
+#: src/routes/_authenticated/index.tsx:482
 msgid "Link"
 msgstr "दुवा"
 
-#: src/features/wiki/markdown-content.tsx:175
+#: src/features/wiki/markdown-content.tsx:176
 msgid "Link to {headingText}"
 msgstr "{headingText} ची लिंक"
 
@@ -1990,7 +1785,7 @@ msgstr "यादी दृश्य"
 msgid "Load more"
 msgstr "अधिक लोड करा"
 
-#: ../../../lib/web/src/components/ui/loading-content.tsx:25
+#: ../../../lib/web/src/components/ui/loading-content.tsx:26
 msgid "Loading content…"
 msgstr "सामग्री लोड होत आहे…"
 
@@ -1999,8 +1794,6 @@ msgstr "सामग्री लोड होत आहे…"
 msgid "Loading..."
 msgstr "लोड करत आहे..."
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:69
-#: ../../../lib/web/src/components/profile-dropdown.tsx:98
 #: ../../../lib/web/src/components/sign-out-dialog.tsx:26
 #: ../../../lib/web/src/components/sign-out-dialog.tsx:28
 msgid "Log out"
@@ -2018,21 +1811,16 @@ msgstr "यशस्वीरित्या लॉग आउट केले"
 msgid "Logging out…"
 msgstr "लॉग आउट करत आहे…"
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:125
+#: ../../../lib/web/src/components/notification-category-button.tsx:127
 msgid "Manage categories"
 msgstr "श्रेणी व्यवस्थापित करा"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:192
-msgid "Manage your connected accounts for notifications and services."
-msgstr "सूचना आणि सेवांसाठी तुमची जोडलेली खाती व्यवस्थापित करा."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:52
 msgid "Manual"
 msgstr "मॅन्युअल"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:190
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:197
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:224
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:207
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:214
 msgid "Mark all as read"
 msgstr "सर्व वाचलेले म्हणून चिन्हांकित करा"
 
@@ -2081,29 +1869,29 @@ msgstr "सोमवार"
 msgid "More options"
 msgstr "अधिक पर्याय"
 
-#: src/features/wiki/page-editor.tsx:445
+#: src/features/wiki/page-editor.tsx:446
 msgid "my-page-name"
 msgstr "my-page-name"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:598
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:600
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:125
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:293
 #: src/features/wiki/attachments-page.tsx:405
-#: src/features/wiki/wiki-settings.tsx:391
+#: src/features/wiki/wiki-settings.tsx:392
 msgid "Name"
 msgstr "नाव"
 
-#: src/features/wiki/wiki-settings.tsx:270
-msgid "Name cannot contain < or > characters"
-msgstr "नावात < किंवा > अक्षरे असू शकत नाहीत"
+#: src/features/wiki/wiki-settings.tsx:271
+msgid "Name cannot contain < or > characters, or line breaks"
+msgstr "नावात < किंवा > वर्ण, किंवा ओळ खंड असू शकत नाहीत"
 
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
 msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
 msgstr "नावात कोन कंस, बॅकस्लॅश, अर्धविराम, अवतरणचिन्हे किंवा बॅकटिक असू शकत नाहीत"
 
-#: src/features/wiki/wiki-settings.tsx:269
+#: src/features/wiki/wiki-settings.tsx:270
 msgid "Name must be 100 characters or less"
 msgstr "नाव 100 अक्षरे किंवा कमी असावे"
 
@@ -2112,38 +1900,38 @@ msgid "Name must be 1000 characters or less"
 msgstr "नाव 1000 अक्षरे किंवा कमी असावे"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:53
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:322
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:313
 msgid "Network error"
 msgstr "नेटवर्क त्रुटी"
 
-#: src/features/wiki/wiki-settings.tsx:758
+#: src/features/wiki/wiki-settings.tsx:759
 msgid "Never"
 msgstr "कधीही नाही"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:475
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:476
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "नवीन"
 
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:37
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:49
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:39
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:51
 msgid "New game"
 msgstr "नवीन गेम"
 
-#: src/features/wiki/wiki-page-content.tsx:362
+#: src/features/wiki/wiki-page-content.tsx:363
 #: src/routes/_authenticated/$page/index.tsx:154
 #: src/routes/_authenticated/$page/index.tsx:260
 #: src/routes/_authenticated/$wikiId/new.tsx:25
 #: src/routes/_authenticated/$wikiId/new.tsx:36
-#: src/routes/_authenticated/index.tsx:473
+#: src/routes/_authenticated/index.tsx:474
 #: src/routes/_authenticated/new.tsx:24
 #: src/routes/_authenticated/new.tsx:31
 msgid "New page"
 msgstr "नवीन पेज"
 
-#: src/features/wiki/wiki-page-content.tsx:159
-#: src/routes/_authenticated/index.tsx:323
-#: src/routes/_authenticated/index.tsx:610
+#: src/features/wiki/wiki-page-content.tsx:160
+#: src/routes/_authenticated/index.tsx:324
+#: src/routes/_authenticated/index.tsx:611
 msgid "New RSS URL copied to clipboard"
 msgstr "नवीन RSS URL क्लिपबोर्डवर कॉपी केले"
 
@@ -2160,7 +1948,7 @@ msgid "New URL must be different from current URL"
 msgstr "नवीन URL सध्याच्या URL पेक्षा वेगळे असावे"
 
 #: src/features/wiki/redirects-page.tsx:258
-#: src/features/wiki/wiki-settings.tsx:1056
+#: src/features/wiki/wiki-settings.tsx:1057
 msgid "new-page-name"
 msgstr "new-page-name"
 
@@ -2169,11 +1957,11 @@ msgstr "new-page-name"
 msgid "Next image"
 msgstr "पुढील इमेज"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:554
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:555
 msgid "No {parentClassNames} to add to"
 msgstr "जोडण्यासाठी कोणतेही {parentClassNames} नाही"
 
-#: src/features/wiki/wiki-settings.tsx:500
+#: src/features/wiki/wiki-settings.tsx:501
 msgid "No access"
 msgstr "प्रवेश नाही"
 
@@ -2190,7 +1978,7 @@ msgid "No attachments match your search"
 msgstr "तुमच्या शोधाशी जुळणारे कोणतेही जोडलेले फाइल्स नाहीत"
 
 #: src/features/wiki/attachments-page.tsx:464
-#: src/features/wiki/page-editor.tsx:570
+#: src/features/wiki/page-editor.tsx:571
 msgid "No attachments yet"
 msgstr "अद्याप अटॅचमेंट्स नाहीत"
 
@@ -2203,11 +1991,7 @@ msgstr "अद्याप बदल नाहीत"
 msgid "No comments yet"
 msgstr "अद्याप कमेंट्स नाहीत"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:295
-msgid "No connected accounts"
-msgstr "कनेक्ट केलेले अकाउंट्स नाहीत"
-
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:46
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:48
 msgid "No games yet"
 msgstr "अद्याप गेम्स नाहीत"
 
@@ -2215,17 +1999,13 @@ msgstr "अद्याप गेम्स नाहीत"
 msgid "No groups available"
 msgstr "गट उपलब्ध नाहीत"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:521
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "अद्याप कोणतेही आयटम प्रकार तयार करता येणार नाहीत. आधी आवश्यक पॅरेंट आयटम्स तयार करा."
 
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
 msgid "No matching objects"
 msgstr "जुळणारे ऑब्जेक्ट्स नाहीत"
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
-msgid "No notifications yet"
-msgstr "अद्याप कोणत्याही सूचना नाहीत"
 
 #: src/features/wiki/search-page.tsx:74
 msgid "No pages found for \"{debouncedQuery}\""
@@ -2235,7 +2015,7 @@ msgstr "«{debouncedQuery}» साठी कोणतेही पान सा
 msgid "No pages found with this tag"
 msgstr "या टॅगसह पेजेस सापडले नाहीत"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:336
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:341
 #: ../../../lib/web/src/components/person-picker.tsx:84
 msgid "No people found"
 msgstr "लोक सापडले नाहीत"
@@ -2244,28 +2024,22 @@ msgstr "लोक सापडले नाहीत"
 msgid "No places found"
 msgstr "ठिकाणे सापडली नाहीत"
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:58
-msgid "No profile"
-msgstr "प्रोफाइल नाही"
-
 #: src/features/wiki/redirects-page.tsx:84
-#: src/features/wiki/wiki-settings.tsx:893
+#: src/features/wiki/wiki-settings.tsx:894
 msgid "No redirects configured"
 msgstr "रीडायरेक्ट्स कॉन्फिगर केलेले नाहीत"
 
-#: src/features/wiki/wiki-settings.tsx:723
-#: src/features/wiki/wiki-settings.tsx:807
+#: src/features/wiki/wiki-settings.tsx:724
+#: src/features/wiki/wiki-settings.tsx:808
 msgid "No replicas yet"
 msgstr "अद्याप रेप्लिका नाहीत"
 
 #: ../../../lib/web/src/components/inline-entity-search.tsx:64
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:82
 #: ../../../lib/web/src/components/search-entity-page.tsx:73
 msgid "No results found"
 msgstr "कोणतेही परिणाम आढळले नाहीत"
 
 #: ../../../lib/web/src/components/command-menu.tsx:55
-#: ../../../lib/web/src/components/data-table/faceted-filter.tsx:94
 msgid "No results found."
 msgstr "कोणतेही निकाल सापडले नाहीत."
 
@@ -2273,8 +2047,8 @@ msgstr "कोणतेही निकाल सापडले नाहीत
 msgid "No revisions found"
 msgstr "रिव्हिजन्स सापडले नाहीत"
 
-#: ../../../lib/web/src/components/entity/entity-board-container.tsx:823
-#: ../../../lib/web/src/components/entity/entity-board-container.tsx:868
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:824
+#: ../../../lib/web/src/components/entity/entity-board-container.tsx:869
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
 msgid "No status"
 msgstr "स्थिती नाही"
@@ -2291,11 +2065,11 @@ msgstr "टॅग्ज सापडले नाहीत"
 msgid "No time zone found."
 msgstr "टाइम झोन सापडला नाही."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:104
+#: ../../../lib/web/src/components/notification-category-button.tsx:106
 msgid "No topic record yet — try again after the next notification."
 msgstr "अद्याप टॉपिक रेकॉर्ड नाही — पुढील नोटिफिकेशननंतर पुन्हा प्रयत्न करा."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:122
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:139
 msgid "No unread notifications"
 msgstr "न वाचलेले नोटिफिकेशन्स नाहीत"
 
@@ -2313,9 +2087,9 @@ msgid "No wikis found"
 msgstr "विकीज सापडले नाहीत"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:537
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:540
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:541
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:545
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:382
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
@@ -2325,15 +2099,14 @@ msgstr "विकीज सापडले नाहीत"
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
 #: ../../../lib/web/src/components/person-picker.tsx:350
 #: ../../../lib/web/src/lib/preference-utils.ts:100
-#: ../../../lib/web/src/lib/preference-utils.ts:120
 msgid "None"
 msgstr "काहीही नाही"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:129
+#: ../../../lib/web/src/lib/preference-utils.ts:122
 msgid "Normal"
 msgstr "सामान्य"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:267
+#: ../../../lib/web/src/components/attachment-image.tsx:50
 #: ../../../lib/web/src/features/errors/general-error.tsx:67
 msgid "Not found"
 msgstr "आढळले नाही"
@@ -2346,16 +2119,8 @@ msgstr "सेट केलेले नाही"
 msgid "Nothing found"
 msgstr "काहीही सापडले नाही"
 
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:136
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:150
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:236
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:257
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:261
-msgid "Notifications"
-msgstr "नोटिफिकेशन्स"
-
 #. placeholder {0}: unread.length
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:183
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:200
 msgid "Notifications: {0}"
 msgstr "सूचना: {0}"
 
@@ -2366,7 +2131,7 @@ msgid "Number"
 msgstr "क्रमांक"
 
 #: src/features/wiki/redirects-page.tsx:246
-#: src/features/wiki/wiki-settings.tsx:1044
+#: src/features/wiki/wiki-settings.tsx:1045
 msgid "old-page-name"
 msgstr "old-page-name"
 
@@ -2384,14 +2149,9 @@ msgid "Oops! Page Not Found!"
 msgstr "अरेरे! पेज सापडले नाही!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:862
+#: src/routes/_authenticated/index.tsx:863
 msgid "Open {0}"
 msgstr "{0} उघडा"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:156
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:166
-msgid "Open account actions"
-msgstr "अकाउंट क्रिया उघडा"
 
 #: ../../../lib/web/src/components/layout/nav-group.tsx:199
 #: ../../../lib/web/src/components/layout/nav-group.tsx:204
@@ -2412,11 +2172,6 @@ msgstr "मेन्यू उघडा"
 msgid "Open navigation"
 msgstr "नेव्हिगेशन उघडा"
 
-#: ../../../lib/web/src/components/layout/top-nav.tsx:38
-#: ../../../lib/web/src/components/layout/top-nav.tsx:44
-msgid "Open navigation menu"
-msgstr "नेव्हिगेशन मेन्यू उघडा"
-
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:105
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:111
 msgid "Open option actions"
@@ -2425,11 +2180,6 @@ msgstr "पर्याय क्रिया उघडा"
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:30
 msgid "Open selected card"
 msgstr "निवडलेले कार्ड उघडा"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:58
-#: ../../../lib/web/src/components/config-drawer.tsx:66
-msgid "Open theme settings"
-msgstr "थीम सेटिंग्ज उघडा"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:274
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:279
@@ -2464,9 +2214,9 @@ msgid "Owner"
 msgstr "मालक"
 
 #: src/features/wiki/changes-list.tsx:45
-#: src/features/wiki/wiki-page-content.tsx:292
+#: src/features/wiki/wiki-page-content.tsx:293
 #: src/routes/_authenticated/$page/index.tsx:209
-#: src/routes/_authenticated/index.tsx:404
+#: src/routes/_authenticated/index.tsx:405
 msgid "Page"
 msgstr "पेज"
 
@@ -2479,48 +2229,43 @@ msgstr "«{slug}» पान अस्तित्वात नाही"
 msgid "Page \"{title}\" deleted"
 msgstr "«{title}» पान हटवले"
 
-#: ../../../lib/web/src/components/data-table/pagination.tsx:43
-#: ../../../lib/web/src/components/data-table/pagination.tsx:71
-msgid "Page {currentPage} of {totalPages}"
-msgstr "पृष्ठ {currentPage} / {totalPages}"
-
-#: src/features/wiki/wiki-page-content.tsx:218
-#: src/features/wiki/wiki-page-content.tsx:224
-#: src/features/wiki/wiki-page-content.tsx:282
-#: src/features/wiki/wiki-page-content.tsx:289
+#: src/features/wiki/wiki-page-content.tsx:219
+#: src/features/wiki/wiki-page-content.tsx:225
+#: src/features/wiki/wiki-page-content.tsx:283
+#: src/features/wiki/wiki-page-content.tsx:290
 #: src/routes/_authenticated/$page/index.tsx:132
 #: src/routes/_authenticated/$page/index.tsx:139
 #: src/routes/_authenticated/$page/index.tsx:199
 #: src/routes/_authenticated/$page/index.tsx:206
-#: src/routes/_authenticated/index.tsx:394
-#: src/routes/_authenticated/index.tsx:401
+#: src/routes/_authenticated/index.tsx:395
+#: src/routes/_authenticated/index.tsx:402
 msgid "Page actions"
 msgstr "पेज क्रिया"
 
-#: src/features/wiki/page-editor.tsx:277
+#: src/features/wiki/page-editor.tsx:278
 msgid "Page created"
 msgstr "पेज तयार केले"
 
 #: src/features/wiki/page-view.tsx:293
-#: src/features/wiki/wiki-page-content.tsx:258
+#: src/features/wiki/wiki-page-content.tsx:259
 #: src/routes/_authenticated/$page/index.tsx:176
-#: src/routes/_authenticated/index.tsx:373
+#: src/routes/_authenticated/index.tsx:374
 msgid "Page not found"
 msgstr "पेज सापडले नाही"
 
-#: src/features/wiki/page-editor.tsx:299
+#: src/features/wiki/page-editor.tsx:300
 msgid "Page saved"
 msgstr "पेज जतन केले"
 
-#: src/features/wiki/page-editor.tsx:432
+#: src/features/wiki/page-editor.tsx:433
 msgid "Page title"
 msgstr "पेज शीर्षक"
 
-#: src/features/wiki/page-editor.tsx:439
+#: src/features/wiki/page-editor.tsx:440
 msgid "Page URL"
 msgstr "पेज URL"
 
-#: src/features/wiki/page-editor.tsx:269
+#: src/features/wiki/page-editor.tsx:270
 msgid "Page URL is required"
 msgstr "पेज URL आवश्यक आहे"
 
@@ -2528,15 +2273,15 @@ msgstr "पेज URL आवश्यक आहे"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "<0>{tag}</0> टॅग असलेली पाने"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:529
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:530
 msgid "Parent"
 msgstr "पॅरेंट"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:336
+#: ../../../lib/web/src/components/step-up-dialog.tsx:337
 msgid "Passkey"
 msgstr "पासकी"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:206
+#: ../../../lib/web/src/components/step-up-dialog.tsx:207
 msgid "Passkey verification failed. Please try again."
 msgstr "पासकी पडताळणी अयशस्वी झाली. कृपया पुन्हा प्रयत्न करा."
 
@@ -2548,17 +2293,13 @@ msgstr "पासकीज"
 msgid "Pattern (regex)"
 msgstr "नमुना (regex)"
 
-#: src/features/wiki/wiki-settings.tsx:465
+#: src/features/wiki/wiki-settings.tsx:466
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "हा विकी आणि त्यातील सर्व सामग्री कायमस्वरूपी हटवा. हे पूर्ववत करता येणार नाही."
 
-#: ../../../lib/web/src/components/date-picker.tsx:20
-msgid "Pick a date"
-msgstr "तारीख निवडा"
-
 #: ../../../lib/web/src/components/comment-composer.tsx:89
 #: ../../../lib/web/src/features/errors/general-error.tsx:54
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:323
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:314
 msgid "Please check your internet connection and try again."
 msgstr "कृपया तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा."
 
@@ -2582,7 +2323,7 @@ msgstr "पोस्ट्स"
 msgid "Posts and comments"
 msgstr "पोस्ट्स आणि कमेंट्स"
 
-#: src/features/wiki/page-editor.tsx:346
+#: src/features/wiki/page-editor.tsx:347
 msgid "Preview"
 msgstr "पूर्वावलोकन"
 
@@ -2600,10 +2341,6 @@ msgstr "गोपनीयता"
 msgid "Processing…"
 msgstr "प्रक्रिया करत आहे…"
 
-#: ../../../lib/web/src/components/profile-dropdown.tsx:114
-msgid "Profile"
-msgstr "प्रोफाइल"
-
 #: ../../../lib/web/src/components/person-picker.tsx:200
 msgid "Project members"
 msgstr "प्रकल्प सदस्य"
@@ -2616,8 +2353,8 @@ msgstr "पुश सूचना"
 msgid "Raised"
 msgstr "उंचावलेले"
 
-#: src/features/wiki/page-editor.tsx:455
-#: src/features/wiki/page-editor.tsx:461
+#: src/features/wiki/page-editor.tsx:456
+#: src/features/wiki/page-editor.tsx:462
 msgid "Re-derive from title"
 msgstr "शीर्षकावरून पुन्हा तयार करा"
 
@@ -2633,17 +2370,17 @@ msgstr "या सर्व्हरवर तुमच्या पासकी
 msgid "Reason for reverting"
 msgstr "पुनर्संचयित करण्याचे कारण"
 
-#: src/features/wiki/wiki-page-content.tsx:344
+#: src/features/wiki/wiki-page-content.tsx:345
 #: src/routes/_authenticated/$page/index.tsx:253
 #: src/routes/_authenticated/$wikiId/changes.tsx:27
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
-#: src/routes/_authenticated/changes.tsx:30
-#: src/routes/_authenticated/changes.tsx:48
-#: src/routes/_authenticated/changes.tsx:59
-#: src/routes/_authenticated/changes.tsx:69
-#: src/routes/_authenticated/index.tsx:442
+#: src/routes/_authenticated/changes.tsx:31
+#: src/routes/_authenticated/changes.tsx:49
+#: src/routes/_authenticated/changes.tsx:60
+#: src/routes/_authenticated/changes.tsx:70
+#: src/routes/_authenticated/index.tsx:443
 msgid "Recent changes"
 msgstr "अलीकडील बदल"
 
@@ -2651,12 +2388,11 @@ msgstr "अलीकडील बदल"
 msgid "Recent edits across all pages in this wiki."
 msgstr "या विकीतील सर्व पेजेसवरील अलीकडील संपादने."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:220
 #: ../../../lib/web/src/components/search-entity-page.tsx:243
 msgid "Recommended"
 msgstr "शिफारस केलेले"
 
-#: src/routes/_authenticated/index.tsx:785
+#: src/routes/_authenticated/index.tsx:786
 msgid "Recommended wikis"
 msgstr "शिफारस केलेले विकीज"
 
@@ -2669,12 +2405,12 @@ msgstr "पुन्हा कनेक्ट होत आहे ({retries})...
 msgid "Redirect \"{0}\" deleted"
 msgstr "पुनर्निर्देशन «{0}» हटवले"
 
-#: src/features/wiki/wiki-settings.tsx:865
+#: src/features/wiki/wiki-settings.tsx:866
 msgid "Redirect \"{source}\" deleted"
 msgstr "पुनर्निर्देशन «{source}» हटवले"
 
 #: src/features/wiki/redirects-page.tsx:208
-#: src/features/wiki/wiki-settings.tsx:1006
+#: src/features/wiki/wiki-settings.tsx:1007
 msgid "Redirect created"
 msgstr "रीडायरेक्ट तयार केले"
 
@@ -2684,9 +2420,9 @@ msgstr "लॉगिनवर रीडायरेक्ट करत आहे
 
 #: src/features/wiki/redirects-page.tsx:73
 #: src/features/wiki/wiki-settings.tsx:106
-#: src/features/wiki/wiki-settings.tsx:881
-#: src/routes/_authenticated/redirects.tsx:26
-#: src/routes/_authenticated/redirects.tsx:29
+#: src/features/wiki/wiki-settings.tsx:882
+#: src/routes/_authenticated/redirects.tsx:27
+#: src/routes/_authenticated/redirects.tsx:30
 msgid "Redirects"
 msgstr "रीडायरेक्ट्स"
 
@@ -2707,14 +2443,13 @@ msgstr "सापेक्ष (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "24 तासांच्या आत सापेक्ष, अन्यथा निरपेक्ष"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:278
-#: ../../../lib/web/src/components/attachment-composer.tsx:323
+#: ../../../lib/web/src/components/attachment-composer.tsx:285
+#: ../../../lib/web/src/components/attachment-composer.tsx:330
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
 #: ../../../lib/web/src/features/access/access-list.tsx:270
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:180
 #: src/features/wiki/tag-manager.tsx:117
 #: src/features/wiki/tag-manager.tsx:122
-#: src/features/wiki/wiki-settings.tsx:794
+#: src/features/wiki/wiki-settings.tsx:795
 msgid "Remove"
 msgstr "काढा"
 
@@ -2743,7 +2478,7 @@ msgstr "प्रवेश काढायचा?"
 msgid "Remove interest"
 msgstr "स्वारस्य काढा"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:665
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:674
 msgid "Remove item"
 msgstr "आयटम काढा"
 
@@ -2753,34 +2488,34 @@ msgid "Remove link"
 msgstr "दुवा काढा"
 
 #. placeholder {0}: replica.name || replica.id
-#: src/features/wiki/wiki-settings.tsx:770
-#: src/features/wiki/wiki-settings.tsx:776
+#: src/features/wiki/wiki-settings.tsx:771
+#: src/features/wiki/wiki-settings.tsx:777
 msgid "Remove replica {0}"
 msgstr "प्रतिकृती {0} काढा"
 
-#: src/features/wiki/wiki-settings.tsx:780
+#: src/features/wiki/wiki-settings.tsx:781
 msgid "Remove replica?"
 msgstr "रेप्लिका काढायची?"
 
-#: src/features/wiki/wiki-settings.tsx:577
+#: src/features/wiki/wiki-settings.tsx:578
 msgid "Removing access..."
 msgstr "प्रवेश काढत आहे..."
 
-#: src/features/wiki/wiki-settings.tsx:674
+#: src/features/wiki/wiki-settings.tsx:675
 msgid "Removing replica..."
 msgstr "प्रतिकृती काढत आहे..."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:559
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:561
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:618
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
-#: src/features/wiki/wiki-page-content.tsx:304
+#: src/features/wiki/wiki-page-content.tsx:305
 #: src/routes/_authenticated/$page/index.tsx:221
-#: src/routes/_authenticated/index.tsx:416
+#: src/routes/_authenticated/index.tsx:417
 msgid "Rename"
 msgstr "पुन्हा नाव द्या"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:594
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:596
 msgid "Rename column"
 msgstr "कॉलमचे नाव बदला"
 
@@ -2788,7 +2523,7 @@ msgstr "कॉलमचे नाव बदला"
 msgid "Rename page"
 msgstr "पेजचे नाव बदला"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:595
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
 msgid "Rename this board column"
 msgstr "या बोर्ड कॉलमचे नाव बदला"
 
@@ -2796,21 +2531,21 @@ msgstr "या बोर्ड कॉलमचे नाव बदला"
 msgid "Renaming..."
 msgstr "नाव बदलत आहे..."
 
-#: src/features/wiki/wiki-page-content.tsx:151
-#: src/routes/_authenticated/index.tsx:315
-#: src/routes/_authenticated/index.tsx:602
+#: src/features/wiki/wiki-page-content.tsx:152
+#: src/routes/_authenticated/index.tsx:316
+#: src/routes/_authenticated/index.tsx:603
 msgid "Replace"
 msgstr "बदला"
 
-#: src/features/wiki/wiki-settings.tsx:675
+#: src/features/wiki/wiki-settings.tsx:676
 msgid "Replica \"{displayName}\" removed"
 msgstr "प्रतिकृती \"{displayName}\" काढली"
 
 #: src/features/wiki/wiki-settings.tsx:108
-#: src/features/wiki/wiki-settings.tsx:691
-#: src/features/wiki/wiki-settings.tsx:704
-#: src/features/wiki/wiki-settings.tsx:718
-#: src/features/wiki/wiki-settings.tsx:735
+#: src/features/wiki/wiki-settings.tsx:692
+#: src/features/wiki/wiki-settings.tsx:705
+#: src/features/wiki/wiki-settings.tsx:719
+#: src/features/wiki/wiki-settings.tsx:736
 msgid "Replicas"
 msgstr "रेप्लिका"
 
@@ -2838,7 +2573,7 @@ msgstr "प्रत्युत्तर द्या"
 msgid "Reply to {0}..."
 msgstr "{0} ला उत्तर द्या..."
 
-#: src/features/wiki/wiki-page-content.tsx:200
+#: src/features/wiki/wiki-page-content.tsx:201
 msgid "Request URL: {baseURL}{slug}"
 msgstr "विनंती URL: {baseURL}{slug}"
 
@@ -2846,25 +2581,11 @@ msgstr "विनंती URL: {baseURL}{slug}"
 msgid "Required"
 msgstr "आवश्यक"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:369
+#: ../../../lib/web/src/components/step-up-dialog.tsx:370
 msgid "Resend email"
 msgstr "ईमेल पुन्हा पाठवा"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:87
-#: ../../../lib/web/src/components/data-table/toolbar.tsx:82
-msgid "Reset"
-msgstr "रीसेट करा"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:122
-#: ../../../lib/web/src/components/config-drawer.tsx:127
-msgid "Reset {title}"
-msgstr "{title} रीसेट करा"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:85
-msgid "Reset all settings to default values"
-msgstr "सर्व सेटिंग्ज डीफॉल्ट मूल्यांवर रीसेट करा"
-
-#: ../../../lib/web/src/components/attachment-composer.tsx:341
+#: ../../../lib/web/src/components/attachment-composer.tsx:348
 msgid "Retry"
 msgstr "पुन्हा प्रयत्न करा"
 
@@ -2910,18 +2631,14 @@ msgid "Revoke"
 msgstr "रद्द करा"
 
 #: ../../../lib/web/src/components/options-menu.tsx:181
-#: src/routes/_authenticated/index.tsx:465
-#: src/routes/_authenticated/index.tsx:736
+#: src/routes/_authenticated/index.tsx:466
+#: src/routes/_authenticated/index.tsx:737
 msgid "Revoke access"
 msgstr "प्रवेश रद्द करा"
 
 #: ../../../lib/web/src/components/options-menu.tsx:241
 msgid "Revoke RSS access?"
 msgstr "RSS प्रवेश रद्द करायचा?"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:362
-msgid "Right to Left"
-msgstr "उजवीकडून डावीकडे"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
@@ -2932,27 +2649,23 @@ msgstr "पंक्ती"
 msgid "Rows group by"
 msgstr "पंक्ती गटबद्ध करा"
 
-#: ../../../lib/web/src/components/data-table/pagination.tsx:65
-msgid "Rows per page"
-msgstr "प्रति पृष्ठ पंक्ती"
-
 #: ../../../lib/web/src/components/options-menu.tsx:131
-#: src/routes/_authenticated/index.tsx:332
-#: src/routes/_authenticated/index.tsx:619
+#: src/routes/_authenticated/index.tsx:333
+#: src/routes/_authenticated/index.tsx:620
 msgid "RSS access revoked"
 msgstr "RSS प्रवेश रद्द केला"
 
 #: ../../../lib/web/src/components/options-menu.tsx:171
-#: src/features/wiki/wiki-page-content.tsx:350
-#: src/routes/_authenticated/index.tsx:448
-#: src/routes/_authenticated/index.tsx:717
+#: src/features/wiki/wiki-page-content.tsx:351
+#: src/routes/_authenticated/index.tsx:449
+#: src/routes/_authenticated/index.tsx:718
 msgid "RSS feed"
 msgstr "RSS फीड"
 
 #: ../../../lib/web/src/components/options-menu.tsx:120
-#: src/features/wiki/wiki-page-content.tsx:159
-#: src/routes/_authenticated/index.tsx:323
-#: src/routes/_authenticated/index.tsx:610
+#: src/features/wiki/wiki-page-content.tsx:160
+#: src/routes/_authenticated/index.tsx:324
+#: src/routes/_authenticated/index.tsx:611
 msgid "RSS URL copied to clipboard"
 msgstr "RSS URL क्लिपबोर्डवर कॉपी केले"
 
@@ -2960,24 +2673,24 @@ msgstr "RSS URL क्लिपबोर्डवर कॉपी केले"
 msgid "Saturday"
 msgstr "शनिवार"
 
-#: ../../../lib/web/src/components/attachment-composer.tsx:423
+#: ../../../lib/web/src/components/attachment-composer.tsx:430
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:170
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
 #: ../../../lib/web/src/components/ui/secret-field.tsx:79
-#: src/features/wiki/page-editor.tsx:407
+#: src/features/wiki/page-editor.tsx:408
 #: src/features/wiki/wiki-comment-thread.tsx:202
 msgid "Save"
 msgstr "जतन करा"
 
-#: src/features/wiki/wiki-settings.tsx:451
+#: src/features/wiki/wiki-settings.tsx:452
 msgid "Save changes"
 msgstr "बदल जतन करा"
 
-#: src/features/wiki/page-editor.tsx:407
-#: src/features/wiki/wiki-settings.tsx:279
-#: src/features/wiki/wiki-settings.tsx:303
-#: src/features/wiki/wiki-settings.tsx:451
+#: src/features/wiki/page-editor.tsx:408
+#: src/features/wiki/wiki-settings.tsx:280
+#: src/features/wiki/wiki-settings.tsx:304
+#: src/features/wiki/wiki-settings.tsx:452
 msgid "Saving..."
 msgstr "जतन करत आहे..."
 
@@ -2985,13 +2698,13 @@ msgstr "जतन करत आहे..."
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
 #: ../../../lib/web/src/components/search.tsx:18
-#: src/features/wiki/wiki-page-content.tsx:332
+#: src/features/wiki/wiki-page-content.tsx:333
 #: src/routes/_authenticated/$page/index.tsx:241
 #: src/routes/_authenticated/$wikiId/search.tsx:31
 #: src/routes/_authenticated/$wikiId/search.tsx:41
-#: src/routes/_authenticated/index.tsx:430
-#: src/routes/_authenticated/search.tsx:33
-#: src/routes/_authenticated/search.tsx:42
+#: src/routes/_authenticated/index.tsx:431
+#: src/routes/_authenticated/search.tsx:34
+#: src/routes/_authenticated/search.tsx:43
 msgid "Search"
 msgstr "शोधा"
 
@@ -3015,7 +2728,7 @@ msgstr "ठिकाण शोधा"
 msgid "Search for a place..."
 msgstr "ठिकाण शोधा..."
 
-#: src/routes/_authenticated/index.tsx:761
+#: src/routes/_authenticated/index.tsx:762
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "सबस्क्राइब करण्यासाठी विकी शोधा, किंवा तुमचे स्वतःचे दस्तऐवज प्रकाशित करण्यासाठी एक तयार करा."
 
@@ -3064,12 +2777,10 @@ msgstr "हे दृश्य शोधा, पहा, आणि क्रम�
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
 #: ../../../lib/web/src/components/inline-entity-search.tsx:63
 #: ../../../lib/web/src/components/person-picker.tsx:324
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:81
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "शोधा..."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:178
 #: ../../../lib/web/src/components/search-entity-page.tsx:201
 #: ../../../lib/web/src/features/access/access-dialog.tsx:202
 msgid "Searching..."
@@ -3079,16 +2790,11 @@ msgstr "शोधत आहे..."
 msgid "Select"
 msgstr "निवडा"
 
-#. placeholder {0}: item.label.toLowerCase()
-#: ../../../lib/web/src/components/config-drawer.tsx:149
-msgid "Select {0}"
-msgstr "{0} निवडा"
-
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:356
 msgid "Select a field"
 msgstr "फील्ड निवडा"
 
-#: ../../../lib/web/src/components/game/game-empty-state.tsx:32
+#: ../../../lib/web/src/components/game/game-empty-state.tsx:34
 msgid "Select a game"
 msgstr "गेम निवडा"
 
@@ -3100,25 +2806,17 @@ msgstr "अॅक्सेस देण्यासाठी वापरकर�
 msgid "Select access rule"
 msgstr "अॅक्सेस नियम निवडा"
 
-#: ../../../lib/web/src/features/accounts/account-picker.tsx:34
-msgid "Select account"
-msgstr "खाते निवडा"
-
 #: ../../../lib/web/src/features/accounts/account-add.tsx:142
 msgid "Select account type"
 msgstr "खाते प्रकार निवडा"
 
-#: src/features/wiki/page-editor.tsx:508
+#: src/features/wiki/page-editor.tsx:509
 msgid "Select an attachment to insert into your page, or upload a new file."
 msgstr "तुमच्या पृष्ठात समाविष्ट करण्यासाठी संलग्नक निवडा, किंवा नवीन फाइल अपलोड करा."
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx:231
 msgid "Select group"
 msgstr "गट निवडा"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:305
-msgid "Select layout style"
-msgstr "लेआउट शैली निवडा"
 
 #: ../../../lib/web/src/components/place-picker.tsx:49
 msgid "Select location"
@@ -3136,26 +2834,10 @@ msgstr "व्यक्ती निवडा..."
 msgid "Select previous card"
 msgstr "मागील कार्ड निवडा"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:247
-msgid "Select sidebar style"
-msgstr "साइडबार शैली निवडा"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:349
-msgid "Select site direction"
-msgstr "साइट दिशा निवडा"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:203
-msgid "Select theme preference"
-msgstr "थीम प्राधान्य निवडा"
-
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:252
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:335
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:257
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:340
 msgid "Select..."
 msgstr "निवडा..."
-
-#: ../../../lib/web/src/components/data-table/bulk-actions.tsx:206
-msgid "selected"
-msgstr "निवडलेले"
 
 #. placeholder {0}: getSelectedName()
 #: ../../../lib/web/src/features/access/access-dialog.tsx:309
@@ -3166,7 +2848,7 @@ msgstr "निवडलेले: <0>{0}</0>"
 msgid "Send again"
 msgstr "पुन्हा पाठवा"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:309
+#: ../../../lib/web/src/components/step-up-dialog.tsx:310
 msgid "Send email"
 msgstr "ईमेल पाठवा"
 
@@ -3175,12 +2857,12 @@ msgstr "ईमेल पाठवा"
 msgid "Send message"
 msgstr "संदेश पाठवा"
 
-#: ../../../lib/web/src/lib/preference-utils.ts:140
+#: ../../../lib/web/src/lib/preference-utils.ts:133
 msgid "Serif"
 msgstr "सेरिफ"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:279
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:305
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:270
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:296
 msgid "Server error"
 msgstr "सर्व्हर त्रुटी"
 
@@ -3189,7 +2871,7 @@ msgstr "सर्व्हर त्रुटी"
 msgid "Server rules"
 msgstr "सर्व्हर नियम"
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:229
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:220
 msgid "Session expired. Please log in again."
 msgstr "सत्र कालबाह्य झाले. कृपया पुन्हा लॉग इन करा."
 
@@ -3197,21 +2879,21 @@ msgstr "सत्र कालबाह्य झाले. कृपया प�
 msgid "Set origin and destination"
 msgstr "मूळ आणि गंतव्य सेट करा"
 
-#: src/features/wiki/wiki-settings.tsx:548
+#: src/features/wiki/wiki-settings.tsx:549
 msgid "Setting access..."
 msgstr "प्रवेश सेट करत आहे..."
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:119
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:125
 #: ../../../lib/web/src/components/options-menu.tsx:196
-#: src/features/wiki/wiki-page-content.tsx:377
+#: src/features/wiki/wiki-page-content.tsx:378
 #: src/features/wiki/wiki-settings.tsx:105
 #: src/routes/_authenticated/$page/index.tsx:275
-#: src/routes/_authenticated/index.tsx:488
+#: src/routes/_authenticated/index.tsx:489
 msgid "Settings"
 msgstr "सेटिंग्ज"
 
-#: src/features/wiki/wiki-settings.tsx:304
+#: src/features/wiki/wiki-settings.tsx:305
 msgid "Settings saved"
 msgstr "सेटिंग्ज जतन केल्या"
 
@@ -3227,10 +2909,6 @@ msgstr "फील्ड दर्शवा"
 msgid "Show page"
 msgstr "पृष्ठ दाखवा"
 
-#: ../../../lib/web/src/components/password-input.tsx:27
-msgid "Show password"
-msgstr "पासवर्ड दाखवा"
-
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:33
 msgid "Show this help"
 msgstr "ही मदत दाखवा"
@@ -3239,9 +2917,7 @@ msgstr "ही मदत दाखवा"
 msgid "Showing {totalShown} of {total}"
 msgstr "{total} पैकी {totalShown} दर्शवत आहे"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:239
-#: ../../../lib/web/src/components/config-drawer.tsx:263
-#: ../../../lib/web/src/components/ui/sidebar.tsx:237
+#: ../../../lib/web/src/components/ui/sidebar.tsx:257
 msgid "Sidebar"
 msgstr "साइडबार"
 
@@ -3263,12 +2939,8 @@ msgstr "फक्त मजकुराची एकच ओळ"
 msgid "Size"
 msgstr "आकार"
 
-#: ../../../lib/web/src/components/skip-to-main.tsx:11
-msgid "Skip to Main"
-msgstr "मुख्यवर जा"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:101
-#: ../../../lib/web/src/lib/preference-utils.ts:128
+#: ../../../lib/web/src/lib/preference-utils.ts:121
 msgid "Small"
 msgstr "लहान"
 
@@ -3278,13 +2950,13 @@ msgid "Sort"
 msgstr "क्रमवारी"
 
 #: src/features/wiki/redirects-page.tsx:92
-#: src/features/wiki/wiki-settings.tsx:421
-#: src/features/wiki/wiki-settings.tsx:901
+#: src/features/wiki/wiki-settings.tsx:422
+#: src/features/wiki/wiki-settings.tsx:902
 msgid "Source"
 msgstr "स्त्रोत"
 
 #: src/features/wiki/redirects-page.tsx:241
-#: src/features/wiki/wiki-settings.tsx:1039
+#: src/features/wiki/wiki-settings.tsx:1040
 msgid "Source URL"
 msgstr "स्त्रोत URL"
 
@@ -3300,13 +2972,9 @@ msgstr "विस्तृत"
 msgid "Start the discussion by adding the first comment."
 msgstr "पहिली टिप्पणी जोडून चर्चा सुरू करा."
 
-#: src/routes/_authenticated/index.tsx:758
+#: src/routes/_authenticated/index.tsx:759
 msgid "Start your first wiki"
 msgstr "तुमचा पहिला wiki सुरू करा"
-
-#: ../../../lib/web/src/components/coming-soon.tsx:15
-msgid "Stay tuned though!"
-msgstr "मात्र संपर्कात रहा!"
 
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
@@ -3322,31 +2990,30 @@ msgstr "उत्तर सादर करा"
 
 #: ../../../lib/web/src/components/inline-entity-search.tsx:66
 #: ../../../lib/web/src/components/recommended-entities.tsx:58
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:83
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:120
-#: src/routes/_authenticated/index.tsx:824
+#: src/routes/_authenticated/index.tsx:825
 msgid "Subscribe"
 msgstr "सबस्क्राइब करा"
 
 #: src/features/wiki/inline-wiki-search.tsx:95
-#: src/features/wiki/wiki-settings.tsx:743
+#: src/features/wiki/wiki-settings.tsx:744
 #: src/routes/_authenticated/find.tsx:64
 msgid "Subscribed"
 msgstr "सबस्क्राइब केले"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:677
+#: src/routes/_authenticated/index.tsx:678
 msgid "Subscribed to {0}"
 msgstr "{0} ला सबस्क्राइब केले"
 
 #: src/features/wiki/inline-wiki-search.tsx:94
 #: src/routes/_authenticated/find.tsx:63
-#: src/routes/_authenticated/index.tsx:676
+#: src/routes/_authenticated/index.tsx:677
 msgid "Subscribing..."
 msgstr "सबस्क्राइब करत आहे..."
 
-#: src/features/wiki/wiki-settings.tsx:411
+#: src/features/wiki/wiki-settings.tsx:412
 msgid "Subscription"
 msgstr "सबस्क्रिप्शन"
 
@@ -3354,7 +3021,7 @@ msgstr "सबस्क्रिप्शन"
 msgid "Sunday"
 msgstr "रविवार"
 
-#: src/features/wiki/page-editor.tsx:513
+#: src/features/wiki/page-editor.tsx:514
 msgid "Supported files"
 msgstr "समर्थित फायली"
 
@@ -3366,30 +3033,24 @@ msgstr "समर्थित फायली: प्रतिमा, PDF, DOC, 
 msgid "Switch to view 1-9"
 msgstr "दृश्य 1-9 वर स्विच करा"
 
-#: src/features/wiki/wiki-settings.tsx:416
+#: src/features/wiki/wiki-settings.tsx:417
 msgid "Sync now"
 msgstr "आता सिंक करा"
 
-#: src/features/wiki/wiki-settings.tsx:325
-#: src/features/wiki/wiki-settings.tsx:416
+#: src/features/wiki/wiki-settings.tsx:326
+#: src/features/wiki/wiki-settings.tsx:417
 msgid "Syncing..."
 msgstr "सिंक करत आहे..."
 
-#: ../../../lib/web/src/components/audit-timeline.tsx:104
-#: ../../../lib/web/src/components/config-drawer.tsx:209
-#: ../../../lib/web/src/components/theme-switch.tsx:59
+#: ../../../lib/web/src/components/audit-timeline.tsx:107
 #: ../../../lib/web/src/lib/preference-utils.ts:16
-#: ../../../lib/web/src/lib/preference-utils.ts:139
+#: ../../../lib/web/src/lib/preference-utils.ts:132
 msgid "System"
 msgstr "सिस्टम"
 
 #: src/features/wiki/page-view.tsx:54
 msgid "Table of contents"
 msgstr "अनुक्रमणिका"
-
-#: ../../../lib/web/src/components/tag-input.tsx:95
-msgid "Tag"
-msgstr "टॅग"
 
 #: src/features/wiki/tag-manager.tsx:55
 msgid "Tag \"{tag}\" added"
@@ -3421,25 +3082,21 @@ msgstr "टॅग: {tag}"
 
 #: ../../../lib/web/src/components/post-tags.tsx:101
 #: ../../../lib/web/src/components/post-tags.tsx:115
-#: src/features/wiki/wiki-page-content.tsx:338
+#: src/features/wiki/wiki-page-content.tsx:339
 #: src/routes/_authenticated/$page/index.tsx:247
-#: src/routes/_authenticated/index.tsx:436
+#: src/routes/_authenticated/index.tsx:437
 msgid "Tags"
 msgstr "टॅग्स"
 
 #: src/features/wiki/redirects-page.tsx:94
-#: src/features/wiki/wiki-settings.tsx:903
+#: src/features/wiki/wiki-settings.tsx:904
 msgid "Target"
 msgstr "लक्ष्य"
 
 #: src/features/wiki/redirects-page.tsx:253
-#: src/features/wiki/wiki-settings.tsx:1051
+#: src/features/wiki/wiki-settings.tsx:1052
 msgid "Target URL"
 msgstr "लक्ष्य URL"
-
-#: ../../../lib/web/src/components/layout/team-switcher.tsx:63
-msgid "Teams/Apps"
-msgstr "टीम्स/अॅप्स"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx:19
 #: ../../../lib/web/src/features/document/document-page.tsx:42
@@ -3450,7 +3107,7 @@ msgstr "अटी आणि शर्ती"
 msgid "Text"
 msgstr "मजकूर"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:192
+#: ../../../lib/web/src/components/step-up-dialog.tsx:193
 msgid "That code is incorrect or has expired."
 msgstr "तो कोड चुकीचा आहे किंवा त्याची मुदत संपली आहे."
 
@@ -3467,7 +3124,7 @@ msgstr "अपलोड करण्यासाठी खूप मोठे �
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "ज्या wiki ची तुम्हाला प्रतिकृती करायची आहे त्याचा entity ID."
 
-#: src/features/wiki/wiki-settings.tsx:1059
+#: src/features/wiki/wiki-settings.tsx:1060
 msgid "The existing page to redirect to"
 msgstr "रीडायरेक्ट करण्यासाठी अस्तित्वातील पृष्ठ"
 
@@ -3479,7 +3136,7 @@ msgstr "पुनर्निर्देशित करण्यासाठ�
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "«{slug}» पान अद्याप अस्तित्वात नाही."
 
-#: src/features/wiki/wiki-settings.tsx:432
+#: src/features/wiki/wiki-settings.tsx:433
 msgid "The page that users see when they first visit the wiki."
 msgstr "वापरकर्ते जेव्हा प्रथम wiki ला भेट देतात तेव्हा त्यांना दिसणारे पृष्ठ."
 
@@ -3491,11 +3148,7 @@ msgstr "विनंती केलेली सामग्री आढळल
 msgid "The server returned a web page instead of data."
 msgstr "सर्व्हरने डेटाऐवजी वेब पृष्ठ परत केले."
 
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:15
-msgid "The site is not available at the moment."
-msgstr "साइट सध्या उपलब्ध नाही."
-
-#: src/features/wiki/wiki-settings.tsx:1047
+#: src/features/wiki/wiki-settings.tsx:1048
 msgid "The URL that will be redirected"
 msgstr "जी URL रीडायरेक्ट केली जाईल"
 
@@ -3503,49 +3156,37 @@ msgstr "जी URL रीडायरेक्ट केली जाईल"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "पुनर्निर्देशित होणारी URL (उदा. «old-page»)"
 
-#: ../../../lib/web/src/components/config-drawer.tsx:195
-msgid "Theme"
-msgstr "थीम"
-
-#: ../../../lib/web/src/components/config-drawer.tsx:70
-msgid "Theme Settings"
-msgstr "थीम सेटिंग्ज"
-
-#: src/features/wiki/wiki-settings.tsx:481
+#: src/features/wiki/wiki-settings.tsx:482
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "ही क्रिया पूर्ववत करता येणार नाही. यामुळे wiki आणि त्यातील सर्व मजकूर कायमचा हटवला जाईल."
 
-#: src/features/wiki/wiki-page-content.tsx:149
-#: src/routes/_authenticated/index.tsx:313
-#: src/routes/_authenticated/index.tsx:600
+#: src/features/wiki/wiki-page-content.tsx:150
+#: src/routes/_authenticated/index.tsx:314
+#: src/routes/_authenticated/index.tsx:601
 msgid "This feed URL was already issued and cannot be shown again."
 msgstr "हा फीड URL आधीच जारी केला आहे आणि पुन्हा दाखवता येणार नाही."
 
 #: src/features/wiki/attachments-page.tsx:155
-#: src/features/wiki/page-editor.tsx:200
+#: src/features/wiki/page-editor.tsx:201
 msgid "This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit."
 msgstr "ही फाईल सध्याच्या सर्व्हर अपलोड मर्यादेसाठी खूप मोठी आहे. लहान फाईल वापरून पहा किंवा सर्व्हर किंवा प्रॉक्सी अपलोड आकार मर्यादा वाढवा."
 
 #: src/features/wiki/attachments-page.tsx:166
-#: src/features/wiki/page-editor.tsx:211
+#: src/features/wiki/page-editor.tsx:212
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "ही फाईल अपलोड करण्यासाठी खूप मोठी आहे. लहान फाईल वापरून पहा."
 
-#: ../../../lib/web/src/components/coming-soon.tsx:14
-msgid "This page has not been created yet."
-msgstr "हे पृष्ठ अद्याप तयार केलेले नाही."
-
-#: src/features/wiki/wiki-settings.tsx:412
+#: src/features/wiki/wiki-settings.tsx:413
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "हा wiki एका स्त्रोत wiki ला सबस्क्राइब केला आहे आणि त्याकडून अपडेट्स प्राप्त करतो."
 
-#: src/features/wiki/page-editor.tsx:466
+#: src/features/wiki/page-editor.tsx:467
 msgid "This will be the path for the page. Use lower case letters, numbers, and hyphens."
 msgstr "हा पानाचा मार्ग असेल. लोअरकेस अक्षरे, अंक, आणि हायफन वापरा."
 
 #. placeholder {0}: redirect.source
 #. placeholder {1}: redirect.target
-#: src/features/wiki/wiki-settings.tsx:945
+#: src/features/wiki/wiki-settings.tsx:946
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "यामुळे «{0}» पासून «{1}» पर्यंतचे पुनर्निर्देशन काढले जाईल."
 
@@ -3556,7 +3197,7 @@ msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the
 msgstr "यामुळे «{0}» पासून «{1}» पर्यंतचे पुनर्निर्देशन काढले जाईल. स्रोत URL ला भेट देणाऱ्या वापरकर्त्यांना यापुढे पुनर्निर्देशित केले जाणार नाही."
 
 #. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
-#: src/features/wiki/wiki-settings.tsx:782
+#: src/features/wiki/wiki-settings.tsx:783
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "यामुळे «{0}» ला अपडेट्स पाठवणे थांबेल. त्यांना पाहिजे असल्यास ते पुन्हा प्रतिकृत करू शकतात."
 
@@ -3564,27 +3205,18 @@ msgstr "यामुळे «{0}» ला अपडेट्स पाठवण�
 msgid "Thursday"
 msgstr "गुरुवार"
 
-#: src/features/wiki/page-editor.tsx:427
+#: src/features/wiki/page-editor.tsx:428
 #: src/features/wiki/page-history.tsx:56
 msgid "Title"
 msgstr "शीर्षक"
 
-#: src/features/wiki/page-editor.tsx:263
+#: src/features/wiki/page-editor.tsx:264
 msgid "Title is required"
 msgstr "शीर्षक आवश्यक आहे"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx:220
 msgid "To"
 msgstr "कडे"
-
-#: ../../../lib/web/src/components/data-table/view-options.tsx:37
-msgid "Toggle columns"
-msgstr "स्तंभ टॉगल करा"
-
-#: ../../../lib/web/src/components/layout/right-panel.tsx:233
-#: ../../../lib/web/src/components/layout/right-panel.tsx:236
-msgid "Toggle right panel"
-msgstr "उजवे पॅनेल टॉगल करा"
 
 #: ../../../lib/web/src/components/layout/nav-group.tsx:365
 #: ../../../lib/web/src/components/layout/nav-group.tsx:372
@@ -3593,20 +3225,15 @@ msgstr "उजवे पॅनेल टॉगल करा"
 msgid "Toggle section"
 msgstr "विभाग टॉगल करा"
 
-#: ../../../lib/web/src/components/ui/sidebar.tsx:317
-#: ../../../lib/web/src/components/ui/sidebar.tsx:320
+#: ../../../lib/web/src/components/ui/sidebar.tsx:337
+#: ../../../lib/web/src/components/ui/sidebar.tsx:340
 msgid "Toggle sidebar"
 msgstr "साइडबार टॉगल करा"
 
-#: ../../../lib/web/src/components/ui/sidebar.tsx:332
-#: ../../../lib/web/src/components/ui/sidebar.tsx:335
+#: ../../../lib/web/src/components/ui/sidebar.tsx:352
+#: ../../../lib/web/src/components/ui/sidebar.tsx:355
 msgid "Toggle Sidebar"
 msgstr "साइडबार टॉगल करा"
-
-#: ../../../lib/web/src/components/theme-switch.tsx:37
-#: ../../../lib/web/src/components/theme-switch.tsx:41
-msgid "Toggle theme"
-msgstr "थीम टॉगल करा"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:26
 msgid "Toggle view options"
@@ -3637,14 +3264,12 @@ msgstr "वेगळा शोध शब्द किंवा फिल्ट�
 msgid "Try a different tag."
 msgstr "वेगळा टॅग वापरून पहा."
 
-#: ../../../lib/web/src/components/search-entity-dialog.tsx:194
 #: ../../../lib/web/src/components/search-entity-page.tsx:217
 msgid "Try adjusting your search terms"
 msgstr "तुमच्या शोध शब्दांना समायोजित करून पहा"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:140
 #: ../../../lib/web/src/features/errors/general-error.tsx:180
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:19
 msgid "Try again"
 msgstr "पुन्हा प्रयत्न करा"
 
@@ -3677,7 +3302,7 @@ msgstr "वापरकर्ते शोधण्यासाठी टाइ�
 msgid "Type to search..."
 msgstr "शोधण्यासाठी टाइप करा..."
 
-#: ../../../lib/web/src/lib/api-response-interceptors.ts:301
+#: ../../../lib/web/src/lib/api-response-interceptors.ts:292
 msgid "Unable to connect to remote server"
 msgstr "दूरस्थ सर्व्हरशी कनेक्ट होऊ शकले नाही"
 
@@ -3686,7 +3311,7 @@ msgstr "दूरस्थ सर्व्हरशी कनेक्ट हो
 msgid "Unable to redirect to login. Please try again."
 msgstr "लॉगिनवर रीडायरेक्ट करण्यात अक्षम. कृपया पुन्हा प्रयत्न करा."
 
-#: ../../../lib/web/src/components/notification-category-button.tsx:112
+#: ../../../lib/web/src/components/notification-category-button.tsx:114
 msgid "Unassigned"
 msgstr "नियुक्त न केलेले"
 
@@ -3694,7 +3319,7 @@ msgstr "नियुक्त न केलेले"
 msgid "Unauthorized Access"
 msgstr "अनधिकृत अॅक्सेस"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:267
+#: ../../../lib/web/src/components/attachment-image.tsx:50
 msgid "Unavailable"
 msgstr "अनुपलब्ध"
 
@@ -3713,59 +3338,55 @@ msgid "Unknown"
 msgstr "अज्ञात"
 
 #: ../../../lib/web/src/components/options-menu.tsx:211
-#: src/features/wiki/wiki-page-content.tsx:389
-#: src/features/wiki/wiki-page-content.tsx:410
-#: src/features/wiki/wiki-page-content.tsx:412
+#: src/features/wiki/wiki-page-content.tsx:390
+#: src/features/wiki/wiki-page-content.tsx:411
+#: src/features/wiki/wiki-page-content.tsx:413
 #: src/routes/_authenticated/$page/index.tsx:287
 #: src/routes/_authenticated/$page/index.tsx:309
 #: src/routes/_authenticated/$page/index.tsx:311
-#: src/routes/_authenticated/index.tsx:499
-#: src/routes/_authenticated/index.tsx:527
-#: src/routes/_authenticated/index.tsx:529
-#: src/routes/_authenticated/index.tsx:895
-#: src/routes/_authenticated/index.tsx:927
-#: src/routes/_authenticated/index.tsx:929
+#: src/routes/_authenticated/index.tsx:500
+#: src/routes/_authenticated/index.tsx:528
+#: src/routes/_authenticated/index.tsx:530
+#: src/routes/_authenticated/index.tsx:896
+#: src/routes/_authenticated/index.tsx:928
+#: src/routes/_authenticated/index.tsx:930
 msgid "Unsubscribe"
 msgstr "अनसबस्क्राइब करा"
 
 #: src/features/wiki/wiki-page-content.tsx:81
 #: src/routes/_authenticated/$page/index.tsx:83
 #: src/routes/_authenticated/index.tsx:293
-#: src/routes/_authenticated/index.tsx:938
+#: src/routes/_authenticated/index.tsx:939
 msgid "Unsubscribed"
 msgstr "अनसबस्क्राइब केले"
 
 #: src/features/wiki/wiki-page-content.tsx:80
-#: src/features/wiki/wiki-page-content.tsx:389
+#: src/features/wiki/wiki-page-content.tsx:390
 #: src/routes/_authenticated/$page/index.tsx:82
 #: src/routes/_authenticated/$page/index.tsx:287
 #: src/routes/_authenticated/index.tsx:292
-#: src/routes/_authenticated/index.tsx:499
-#: src/routes/_authenticated/index.tsx:894
-#: src/routes/_authenticated/index.tsx:937
+#: src/routes/_authenticated/index.tsx:500
+#: src/routes/_authenticated/index.tsx:895
+#: src/routes/_authenticated/index.tsx:938
 msgid "Unsubscribing..."
 msgstr "अनसबस्क्राइब करत आहे..."
 
 #: src/features/wiki/attachments-page.tsx:148
-#: src/features/wiki/page-editor.tsx:193
+#: src/features/wiki/page-editor.tsx:194
 msgid "Unsupported file type: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "असमर्थित फाईल प्रकार: {names}. समर्थित फायली: प्रतिमा, PDF, DOC, DOCX, TXT, आणि MD."
 
 #: src/features/wiki/attachments-page.tsx:149
-#: src/features/wiki/page-editor.tsx:194
+#: src/features/wiki/page-editor.tsx:195
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "असमर्थित फाईल प्रकार: {names}. समर्थित फायली: प्रतिमा, PDF, DOC, DOCX, TXT, आणि MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:284
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:285
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
-#: src/features/wiki/page-editor.tsx:419
+#: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "शीर्षकविरहित"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:135
-msgid "Unverified"
-msgstr "असत्यापित"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
@@ -3778,35 +3399,35 @@ msgstr "अपडेट केले"
 #: src/features/wiki/page-view.tsx:264
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:74
-#: src/routes/_authenticated/index.tsx:911
+#: src/routes/_authenticated/index.tsx:912
 msgid "Updated {0}"
 msgstr "अपडेट केले {0}"
 
-#: src/features/wiki/wiki-settings.tsx:561
+#: src/features/wiki/wiki-settings.tsx:562
 msgid "Updating access..."
 msgstr "प्रवेश अद्यतनित करत आहे..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:637
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:639
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:301
 msgid "Upload"
 msgstr "अपलोड करा"
 
-#: src/features/wiki/page-editor.tsx:571
+#: src/features/wiki/page-editor.tsx:572
 msgid "Upload a file to get started."
 msgstr "सुरू करण्यासाठी फाइल अपलोड करा."
 
 #: src/features/wiki/attachments-page.tsx:349
-#: src/features/wiki/page-editor.tsx:551
+#: src/features/wiki/page-editor.tsx:552
 msgid "Upload failed"
 msgstr "अपलोड अयशस्वी"
 
 #: src/features/wiki/attachments-page.tsx:163
-#: src/features/wiki/page-editor.tsx:208
+#: src/features/wiki/page-editor.tsx:209
 msgid "Upload failed because this account has reached its storage limit."
 msgstr "हे खाते त्याच्या संचयन मर्यादेपर्यंत पोहोचल्यामुळे अपलोड अयशस्वी झाले."
 
 #: src/features/wiki/attachments-page.tsx:160
-#: src/features/wiki/page-editor.tsx:205
+#: src/features/wiki/page-editor.tsx:206
 msgid "Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again."
 msgstr "अपलोड अयशस्वी. फाईल सध्याच्या सर्व्हर किंवा प्रॉक्सी अपलोड मर्यादेसाठी खूप मोठी असू शकते. फाईल लहान असल्यास, तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा."
 
@@ -3818,7 +3439,7 @@ msgstr "फाइल्स अपलोड करा"
 msgid "Upload guidance"
 msgstr "अपलोड मार्गदर्शन"
 
-#: src/features/wiki/page-editor.tsx:543
+#: src/features/wiki/page-editor.tsx:544
 msgid "Upload new"
 msgstr "नवीन अपलोड करा"
 
@@ -3826,11 +3447,11 @@ msgstr "नवीन अपलोड करा"
 msgid "Upload progress"
 msgstr "अपलोड प्रगती"
 
-#: src/features/wiki/wiki-settings.tsx:437
+#: src/features/wiki/wiki-settings.tsx:438
 msgid "Use as home"
 msgstr "होम म्हणून वापरा"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:340
+#: ../../../lib/web/src/components/step-up-dialog.tsx:341
 msgid "Use your passkey"
 msgstr "तुमची पासकी वापरा"
 
@@ -3844,16 +3465,7 @@ msgstr "वापरकर्ता"
 msgid "Verification code"
 msgstr "पडताळणी कोड"
 
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:255
-msgid "Verification code sent"
-msgstr "पडताळणी कोड पाठवला"
-
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:248
-msgid "Verification failed"
-msgstr "पडताळणी अयशस्वी"
-
-#: ../../../lib/web/src/components/step-up-dialog.tsx:390
-#: ../../../lib/web/src/features/accounts/account-manager.tsx:172
+#: ../../../lib/web/src/components/step-up-dialog.tsx:391
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:111
 msgid "Verify"
 msgstr "पडताळा"
@@ -3872,7 +3484,7 @@ msgstr "आवृत्ती"
 msgid "Version {0}"
 msgstr "आवृत्ती {0}"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:94
+#: ../../../lib/web/src/components/attachment-gallery.tsx:95
 msgid "Video thumbnail"
 msgstr "व्हिडिओ थंबनेल"
 
@@ -3881,22 +3493,14 @@ msgstr "व्हिडिओ थंबनेल"
 msgid "Video viewer: {0}"
 msgstr "व्हिडिओ दर्शक: {0}"
 
-#: ../../../lib/web/src/components/data-table/view-options.tsx:33
-msgid "View"
-msgstr "पहा"
-
 #: src/features/wiki/page-history.tsx:113
 #: src/features/wiki/page-history.tsx:125
 msgctxt "action"
 msgid "View"
 msgstr "पहा"
 
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:177
-msgid "View all"
-msgstr "सर्व पहा"
-
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:203
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:211
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:220
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:228
 msgid "View all notifications"
 msgstr "सर्व सूचना पहा"
 
@@ -3904,7 +3508,7 @@ msgstr "सर्व सूचना पहा"
 msgid "View controls"
 msgstr "नियंत्रणे पहा"
 
-#: src/features/wiki/wiki-settings.tsx:499
+#: src/features/wiki/wiki-settings.tsx:500
 msgid "View only"
 msgstr "फक्त पहा"
 
@@ -3926,42 +3530,30 @@ msgstr "फक्त पाहिलेले"
 msgid "We sent a verification code to <0>{0}</0>. Enter the code below to verify your email address."
 msgstr "आम्ही <0>{0}</0> वर एक पडताळणी कोड पाठवला आहे. तुमचा ईमेल पत्ता पडताळण्यासाठी खाली कोड प्रविष्ट करा."
 
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:16
-msgid "We'll be back online shortly."
-msgstr "आम्ही लवकरच पुन्हा ऑनलाइन येऊ."
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:197
-msgid "We'll notify you when something important happens."
-msgstr "काही महत्त्वाचे घडल्यास आम्ही तुम्हाला कळवू."
-
-#: ../../../lib/web/src/features/errors/maintenance-error.tsx:13
-msgid "Website is under maintenance!"
-msgstr "वेबसाइट देखभालीखाली आहे!"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:56
 msgid "Wednesday"
 msgstr "बुधवार"
 
-#: src/features/wiki/wiki-settings.tsx:724
-#: src/features/wiki/wiki-settings.tsx:808
+#: src/features/wiki/wiki-settings.tsx:725
+#: src/features/wiki/wiki-settings.tsx:809
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "जेव्हा इतर wikis या wiki ची प्रतिकृती करतात, ते इथे दिसतील."
 
 #: src/components/layout/wiki-layout.tsx:103
 #: src/components/layout/wiki-layout.tsx:153
 #: src/features/wiki/wiki-page-content.tsx:104
-#: src/features/wiki/wiki-page-content.tsx:328
+#: src/features/wiki/wiki-page-content.tsx:329
 #: src/routes/_authenticated/$page/index.tsx:237
 #: src/routes/_authenticated/$wikiId/settings.tsx:38
-#: src/routes/_authenticated/index.tsx:426
-#: src/routes/_authenticated/settings.tsx:43
+#: src/routes/_authenticated/index.tsx:427
+#: src/routes/_authenticated/settings.tsx:44
 msgid "Wiki"
 msgstr "Wiki"
 
-#: src/routes/_authenticated/index.tsx:704
-#: src/routes/_authenticated/index.tsx:711
-#: src/routes/_authenticated/index.tsx:875
-#: src/routes/_authenticated/index.tsx:882
+#: src/routes/_authenticated/index.tsx:705
+#: src/routes/_authenticated/index.tsx:712
+#: src/routes/_authenticated/index.tsx:876
+#: src/routes/_authenticated/index.tsx:883
 msgid "Wiki actions"
 msgstr "Wiki क्रिया"
 
@@ -3969,7 +3561,7 @@ msgstr "Wiki क्रिया"
 msgid "Wiki created"
 msgstr "Wiki तयार केला"
 
-#: src/features/wiki/wiki-settings.tsx:347
+#: src/features/wiki/wiki-settings.tsx:348
 msgid "Wiki deleted"
 msgstr "Wiki हटवला"
 
@@ -3986,20 +3578,20 @@ msgstr "Wiki ID आवश्यक आहे"
 msgid "Wiki link"
 msgstr "विकी दुवा"
 
-#: src/features/wiki/wiki-settings.tsx:268
+#: src/features/wiki/wiki-settings.tsx:269
 msgid "Wiki name is required"
 msgstr "विकीचे नाव आवश्यक आहे"
 
-#: src/routes/_authenticated/$page/route.tsx:65
+#: src/routes/_authenticated/$page/route.tsx:66
 #: src/routes/_authenticated/$wikiId/route.tsx:75
 msgid "Wiki not found"
 msgstr "Wiki सापडला नाही"
 
-#: src/features/wiki/wiki-settings.tsx:280
+#: src/features/wiki/wiki-settings.tsx:281
 msgid "Wiki renamed"
 msgstr "Wiki चे नाव बदलले"
 
-#: src/features/wiki/wiki-page-content.tsx:246
+#: src/features/wiki/wiki-page-content.tsx:247
 #: src/routes/_authenticated/$page/index.tsx:164
 msgid "Wiki settings"
 msgstr "Wiki सेटिंग्ज"
@@ -4008,12 +3600,12 @@ msgstr "Wiki सेटिंग्ज"
 msgid "Wiki settings sections"
 msgstr "Wiki सेटिंग्ज विभाग"
 
-#: src/features/wiki/wiki-settings.tsx:326
+#: src/features/wiki/wiki-settings.tsx:327
 msgid "Wiki synced"
 msgstr "Wiki सिंक केले"
 
-#: src/routes/_authenticated/index.tsx:572
-#: src/routes/_authenticated/index.tsx:693
+#: src/routes/_authenticated/index.tsx:573
+#: src/routes/_authenticated/index.tsx:694
 msgid "Wikis"
 msgstr "Wikis"
 
@@ -4021,7 +3613,7 @@ msgstr "Wikis"
 msgid "Write a comment..."
 msgstr "टिप्पणी लिहा..."
 
-#: src/features/wiki/page-editor.tsx:482
+#: src/features/wiki/page-editor.tsx:483
 msgid "Write your content here using Markdown..."
 msgstr "Markdown वापरून तुमचा मजकूर इथे लिहा..."
 
@@ -4036,14 +3628,6 @@ msgstr "तुम्ही <0>{slug}</0> ला आवृत्ती <1>{versio
 #: ../../../lib/web/src/features/errors/general-error.tsx:61
 msgid "You do not have access to this section."
 msgstr "तुम्हाला या विभागात प्रवेश नाही."
-
-#: ../../../lib/web/src/features/errors/forbidden.tsx:18
-msgid "You don't have necessary permission <0/>to view this resource."
-msgstr "हे संसाधन पाहण्यासाठी <0/>तुमच्याकडे आवश्यक परवानगी नाही."
-
-#: ../../../lib/web/src/components/notifications-dropdown.tsx:193
-msgid "You're all caught up!"
-msgstr "तुम्ही सर्व पाहिले!"
 
 #: ../../../lib/web/src/components/restore-banner.tsx:100
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."

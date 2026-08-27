@@ -319,7 +319,7 @@ function WikiHomePage({
         })
         return
       }
-      const url = `${window.location.origin}${getAppPath()}/${wikiId}/-/rss?token=${token}`
+      const url = new URL(`${getAppPath()}/${wikiId}/-/rss?token=${token}`, window.location.href).href
       const ok = await shellClipboardWrite(url)
       if (ok) toast.success(regenerate ? t`New RSS URL copied to clipboard` : t`RSS URL copied to clipboard`)
     } catch (error) {
@@ -606,7 +606,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
         })
         return
       }
-      const url = `${window.location.origin}${getAppPath()}/-/rss?token=${token}`
+      const url = new URL(`${getAppPath()}/-/rss?token=${token}`, window.location.href).href
       const ok = await shellClipboardWrite(url)
       if (ok) toast.success(regenerate ? t`New RSS URL copied to clipboard` : t`RSS URL copied to clipboard`)
     } catch (error) {

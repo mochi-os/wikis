@@ -9,11 +9,11 @@ import { useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   ArrowRight,
+  Check,
   CornerDownRight,
   Minus,
   Plus,
   RefreshCw,
-  Save,
   Settings,
   Shield,
   Trash2,
@@ -265,9 +265,10 @@ function SettingsTab() {
   }, [wikiInfo?.name])
 
   const validateName = (n: string): string | null => {
-    if (!n.trim()) return t`Wiki name is required`
-    if (n.length > 100) return t`Name must be 100 characters or less`
-    if (DISALLOWED_NAME_CHARS.test(n)) return t`Name cannot contain < or > characters`
+    const trimmed = n.trim()
+    if (!trimmed) return t`Wiki name is required`
+    if (trimmed.length > 100) return t`Name must be 100 characters or less`
+    if (DISALLOWED_NAME_CHARS.test(trimmed)) return t`Name cannot contain < or > characters, or line breaks`
     return null
   }
 
@@ -447,7 +448,7 @@ function SettingsTab() {
           </div>
           <div className="flex justify-end">
             <Button onClick={() => void handleSave()} disabled={!hasChanges || savePending}>
-              <Save className="me-2 h-4 w-4" />
+              <Check className="me-2 h-4 w-4" />
               {savePending ? t`Saving...` : t`Save changes`}
             </Button>
           </div>

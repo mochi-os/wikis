@@ -623,13 +623,14 @@ export function useDeleteAttachment() {
       // Snapshot the previous value
       const previous = queryClient.getQueryData<AttachmentsResponse>([
         'wiki',
+        scope,
         'attachments',
       ])
 
       // Optimistically remove the attachment
       if (previous) {
         queryClient.setQueryData<AttachmentsResponse>(
-          ['wiki', 'attachments'],
+          ['wiki', scope, 'attachments'],
           {
             attachments: previous.attachments.filter((a) => a.id !== id),
           }
@@ -641,7 +642,7 @@ export function useDeleteAttachment() {
     onError: (_err, _id, context) => {
       // Roll back on error
       if (context?.previous) {
-        queryClient.setQueryData(['wiki', 'attachments'], context.previous)
+        queryClient.setQueryData(['wiki', scope, 'attachments'], context.previous)
       }
     },
     onSettled: () => {
@@ -769,7 +770,8 @@ export function useJoinWiki() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ target, server, peer }: { target: string; server?: string; peer?: string }) =>
-      requestHelpers.post<JoinWikiResponse>(endpoints.wiki.join, { target, server, peer }),
+      // Use wikisRequest to ensure class-level action is called even when in entity context
+      wikisRequest.post<JoinWikiResponse>(endpoints.wiki.join, { target, server, peer }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },
