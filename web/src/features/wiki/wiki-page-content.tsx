@@ -43,7 +43,6 @@ import { PageHeader } from '@/features/wiki/page-header'
 import endpoints from '@/api/endpoints'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { useWikiLinkDialog } from '@/components/link-dialog'
-import { useSidebarContext } from '@/context/sidebar-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
 import { getRssToken } from '@/api/request'
@@ -107,13 +106,6 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
       : slug
   usePageTitle(pageTitle)
 
-  // Register page with sidebar context for tree expansion
-  const { setPage } = useSidebarContext()
-  useEffect(() => {
-    if (shouldRedirect) return
-    setPage(slug, pageTitle)
-    return () => setPage(null)
-  }, [shouldRedirect, slug, pageTitle, setPage])
 
   // Store last visited location (prefer fingerprint for shorter URLs)
   useEffect(() => {

@@ -260,12 +260,6 @@ function WikiHomePage({
       : t`Home`
   usePageTitle(pageTitle)
 
-  // Register page with sidebar context for tree expansion
-  const { setPage } = useSidebarContext()
-  useEffect(() => {
-    setPage(homeSlug, pageTitle)
-    return () => setPage(null)
-  }, [homeSlug, pageTitle, setPage])
 
   // Store last visited location
   useEffect(() => {
