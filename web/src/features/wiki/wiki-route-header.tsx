@@ -14,7 +14,6 @@ interface WikiRouteHeaderProps {
   back?: HeaderBackConfig
   icon?: ReactNode
   description?: string
-  showSidebarTrigger?: boolean
 }
 
 export function WikiRouteHeader({
@@ -25,7 +24,6 @@ export function WikiRouteHeader({
   back,
   icon,
   description,
-  showSidebarTrigger,
 }: WikiRouteHeaderProps) {
   return (
     <PageHeader
@@ -36,7 +34,6 @@ export function WikiRouteHeader({
       back={back}
       icon={icon}
       description={description}
-      showSidebarTrigger={showSidebarTrigger}
     />
   )
 }

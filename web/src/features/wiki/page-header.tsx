@@ -12,7 +12,6 @@ interface PageHeaderProps {
   menuAction?: React.ReactNode
   primaryAction?: React.ReactNode
   back?: HeaderBackConfig
-  showSidebarTrigger?: boolean
 }
 
 export function PageHeader({
@@ -21,7 +20,6 @@ export function PageHeader({
   menuAction,
   primaryAction,
   back,
-  showSidebarTrigger,
 }: PageHeaderProps) {
   return (
     <CommonPageHeader
@@ -30,7 +28,6 @@ export function PageHeader({
       menuAction={menuAction}
       primaryAction={primaryAction}
       back={back}
-      showSidebarTrigger={showSidebarTrigger}
     />
   )
 }

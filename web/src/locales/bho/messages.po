@@ -14,20 +14,16 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: ../../../lib/web/src/lib/error-normalizer.ts:215
+#: ../../../lib/web/src/lib/error-normalizer.ts:219
 msgid "Please check your internet connection and try again."
 msgstr "कृपया आपन इंटरनेट कनेक्शन जाँचीं आ फेर से कोसिस करीं।"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:301
-msgid " or "
-msgstr " भा "
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:190
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:189
 #: src/features/wiki/wiki-comment-thread.tsx:167
 msgid "(edited)"
 msgstr "(संपादित)"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:174
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:173
 #: src/features/wiki/wiki-comment-thread.tsx:153
 msgid "(expand)"
 msgstr "(फइलाईं)"
@@ -51,6 +47,16 @@ msgstr "{0, plural, one {# पन्ना} other {# पन्ना}}"
 msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# परिणाम} other {# परिणाम}}"
 
+#. placeholder {0}: displayInfo.count
+#: ../../../lib/web/src/components/person-picker.tsx:257
+msgid "{0, plural, one {# selected} other {# selected}}"
+msgstr "{0, plural, one {# चुनल} other {# चुनल}}"
+
+#. placeholder {0}: countDeepChildren(object.id)
+#: ../../../lib/web/src/components/entity/entity-board-card.tsx:421
+msgid "{0, plural, one {+# nested} other {+# nested}}"
+msgstr "{0, plural, one {+# नेस्टेड} other {+# नेस्टेड}}"
+
 #. placeholder {0}: comments.length
 #: src/features/wiki/page-comments.tsx:180
 msgid "{0, plural, one {Showing the first # comment.} other {Showing the first # comments.}}"
@@ -64,7 +70,7 @@ msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:900
+#: src/routes/_authenticated/index.tsx:899
 msgid "{0} pages"
 msgstr "{0} पन्ना"
 
@@ -98,13 +104,9 @@ msgstr "{count, plural, one {#सप्ता} other {#सप्ता}}"
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# दस्तावेज़} other {# दस्तावेज़}}"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:176
 msgid "{entityLabel} name"
 msgstr "{entityLabel} के नाम"
-
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:99
-msgid "{entityLabel} name is required"
-msgstr "{entityLabel} के नाम जरूरी बा"
 
 #: src/features/wiki/attachments-page.tsx:189
 #: src/features/wiki/page-editor.tsx:235
@@ -139,10 +141,11 @@ msgstr "{renamedCount, plural, one {1 पन्ना के नाम बदल
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{totalLabel} में से {sentLabel}"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:530
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:531
 msgid "{totalCount, plural, one {# item} other {# items}}"
 msgstr "{totalCount, plural, one {# आइटम} other {# आइटम}}"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
 #: src/features/wiki/wiki-comment-thread.tsx:151
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# जवाब} other {+# अउरी जवाब}}"
@@ -162,19 +165,6 @@ msgstr "{wikiName} सेटिंग"
 msgid "*No content*"
 msgstr "*कौनो सामग्री नइखे*"
 
-#. placeholder {0}: countDeepChildren(object.id)
-#: ../../../lib/web/src/components/entity/entity-board-card.tsx:418
-msgid "+{0} nested"
-msgstr "+{0} नेस्टेड"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:171
-msgid "+{totalDescendants} more replies"
-msgstr "+{totalDescendants} अउर जवाब"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
-msgid "1 reply"
-msgstr "1 जवाब"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:37
 msgid "12 hours"
 msgstr "12 घंटा"
@@ -191,11 +181,12 @@ msgstr "पूर्ण (तारीख आ समय)"
 msgid "Accept"
 msgstr "स्वीकार करीं"
 
-#: src/features/wiki/wiki-settings.tsx:107
+#: src/features/wiki/wiki-settings.tsx:108
 msgid "Access"
 msgstr "पहुंच"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:60
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:16
+#: ../../../lib/web/src/features/errors/general-error.tsx:58
 msgid "Access denied"
 msgstr "पहुंच मना"
 
@@ -203,15 +194,15 @@ msgstr "पहुंच मना"
 msgid "Access level"
 msgstr "पहुंच स्तर"
 
-#: src/features/wiki/wiki-settings.tsx:563
+#: src/features/wiki/wiki-settings.tsx:561
 msgid "Access level updated"
 msgstr "पहुंच स्तर अद्यतन कइल गइल"
 
-#: src/features/wiki/wiki-settings.tsx:579
+#: src/features/wiki/wiki-settings.tsx:577
 msgid "Access removed"
 msgstr "पहुंच हटा दिहल गइल"
 
-#: src/features/wiki/wiki-settings.tsx:550
+#: src/features/wiki/wiki-settings.tsx:548
 msgid "Access set for {subjectName}"
 msgstr "{subjectName} खातिर पहुंच सेट कइल गइल"
 
@@ -221,21 +212,21 @@ msgstr "खाता प्रकार"
 
 #: src/features/wiki/page-history.tsx:60
 #: src/features/wiki/redirects-page.tsx:96
-#: src/features/wiki/wiki-settings.tsx:746
+#: src/features/wiki/wiki-settings.tsx:744
 msgid "Actions"
 msgstr "क्रिया"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:720
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:758
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
 #: src/features/wiki/tag-manager.tsx:134
 #: src/features/wiki/tag-manager.tsx:139
 #: src/features/wiki/tag-manager.tsx:164
-#: src/features/wiki/wiki-settings.tsx:596
+#: src/features/wiki/wiki-settings.tsx:594
 msgid "Add"
 msgstr "जोड़ीं"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:312
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:314
 msgid "Add a comment..."
 msgstr "टिप्पणी जोड़ीं..."
 
@@ -243,7 +234,7 @@ msgstr "टिप्पणी जोड़ीं..."
 msgid "Add a new account"
 msgstr "एगो नया खाता जोड़ीं"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:106
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:110
 msgid "Add a new field to this class"
 msgstr "एह वर्ग में एगो नया फील्ड जोड़ीं"
 
@@ -263,16 +254,16 @@ msgstr "खाता जोड़ीं"
 msgid "Add caption"
 msgstr "कैप्शन जोड़ीं"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:690
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:728
 msgid "Add checklist item"
 msgstr "चेकलिस्ट आइटम जोड़ीं"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:105
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:233
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:235
 msgid "Add field"
 msgstr "फील्ड जोड़ीं"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:708
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:746
 msgid "Add item..."
 msgstr "आइटम जोड़ीं..."
 
@@ -280,20 +271,20 @@ msgstr "आइटम जोड़ीं..."
 msgid "Add link"
 msgstr "लिंक जोड़ीं"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:291
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:91
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:191
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:217
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:222
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:295
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:92
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:193
 msgid "Add option"
 msgstr "विकल्प जोड़ीं"
 
 #: src/features/wiki/redirects-page.tsx:225
-#: src/features/wiki/wiki-settings.tsx:1027
+#: src/features/wiki/wiki-settings.tsx:1025
 msgid "Add redirect"
 msgstr "रीडायरेक्ट जोड़ीं"
 
-#: ../../../lib/web/src/components/post-tags.tsx:137
+#: ../../../lib/web/src/components/post-tags.tsx:138
 msgid "Add tag..."
 msgstr "टैग जोड़ीं..."
 
@@ -305,8 +296,8 @@ msgstr "कवनो पन्ना के नीचे से टैग जो
 msgid "Add to existing notifications"
 msgstr "मौजूदा सूचना में जोड़ीं"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:258
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:513
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:261
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:518
 #: ../../../lib/web/src/components/view-tabs.tsx:87
 #: ../../../lib/web/src/components/view-tabs.tsx:93
 msgid "Add view"
@@ -342,16 +333,15 @@ msgstr "सब टैग"
 msgid "All wikis"
 msgstr "सब wiki"
 
-#. placeholder {0}: entityLabel.toLowerCase()
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
-msgid "Allow anyone to search for {0}"
-msgstr "केहू के {0} खोजे के अनुमति दीं"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:87
+msgid "Allow anyone to search for {entityLabel}"
+msgstr "केहू के भी {entityLabel} खोजे के अनुमति दीं"
 
-#: src/components/layout/wiki-layout.tsx:155
+#: src/components/layout/wiki-layout.tsx:154
 msgid "Allow anyone to search for wiki"
 msgstr "केहू के wiki खोजे के अनुमति दीं"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:229
 msgid "Allow sort by"
 msgstr "एकर अनुसार छांटे के अनुमति दीं"
 
@@ -360,6 +350,7 @@ msgid "An error occurred"
 msgstr "एगो त्रुटि भइल"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:266
+#: ../../../lib/web/src/lib/error-normalizer.ts:11
 msgid "An unexpected error occurred"
 msgstr "एगो अप्रत्याशित त्रुटि भइल"
 
@@ -380,16 +371,16 @@ msgstr "जे केहू लॉग इन बा"
 msgid "Anything subscribed to this feed will stop receiving it. You can copy a new URL afterwards."
 msgstr "एह फीड के सब्सक्राइब कइल कवनो चीज़ ओकरा के मिलल बंद हो जाई। बाद में रउआ नया URL कॉपी कर सकीलें।"
 
-#: src/features/wiki/wiki-settings.tsx:481
+#: src/features/wiki/wiki-settings.tsx:479
 msgid "Are you absolutely sure?"
 msgstr "का रउआ बिल्कुल पक्का बानी?"
 
 #. placeholder {0}: deleteTarget?.name
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:313
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:316
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "का रउआ \"{0}\" के मेटावे चाहत बानी?"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:629
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:631
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "का रउआ \"{name}\" कॉलम के मेटावे चाहत बानी? ई वापस ना हो सकेला।"
 
@@ -408,7 +399,7 @@ msgstr "का रउआ लॉग आउट करे चाहत बानी
 #: src/features/wiki/wiki-page-content.tsx:404
 #: src/routes/_authenticated/$page/index.tsx:303
 #: src/routes/_authenticated/index.tsx:523
-#: src/routes/_authenticated/index.tsx:923
+#: src/routes/_authenticated/index.tsx:922
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "का रउआ एह wiki से सदस्यता वापस लेवे चाहत बानी?"
 
@@ -416,11 +407,11 @@ msgstr "का रउआ एह wiki से सदस्यता वापस �
 msgid "Ascending"
 msgstr "बढ़त क्रम"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Attach comment files"
 msgstr "टिप्पणी फाइल संलग्न करीं"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Attach reply files"
 msgstr "जवाब फाइल संलग्न करीं"
 
@@ -444,7 +435,7 @@ msgstr "संलग्नक"
 msgid "Authenticated users"
 msgstr "प्रमाणित प्रयोगकर्ता"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:318
+#: ../../../lib/web/src/components/step-up-dialog.tsx:306
 msgid "Authenticator code"
 msgstr "Authenticator कोड"
 
@@ -457,15 +448,15 @@ msgstr "लेखक"
 msgid "Available keyboard shortcuts"
 msgstr "उपलब्ध कीबोर्ड शॉर्टकट"
 
-#: ../../../lib/web/src/components/entity-avatar.tsx:99
+#: ../../../lib/web/src/components/entity-avatar.tsx:98
 msgid "Avatar"
 msgstr "अवतार"
 
-#: ../../../lib/web/src/components/entity-avatar.tsx:99
+#: ../../../lib/web/src/components/entity-avatar.tsx:98
 msgid "Avatar for {name}"
 msgstr "{name} खातिर अवतार"
 
-#: ../../../lib/web/src/components/place-picker.tsx:156
+#: ../../../lib/web/src/components/place-picker.tsx:142
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
@@ -479,8 +470,8 @@ msgstr "वापस"
 msgid "Back to history"
 msgstr "इतिहास पर वापस"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:27
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:28
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:28
 msgid "Back to home"
 msgstr "घर वापस जाईं"
 
@@ -560,8 +551,8 @@ msgstr "एह पन्ना प पहिला टिप्पणी कर�
 msgid "Blocked by"
 msgstr "द्वारा अवरुद्ध"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:242
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:252
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:238
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:248
 msgid "Blocked navigation to untrusted link"
 msgstr "अविश्वसनीय लिंक प नेविगेशन अवरुद्ध"
 
@@ -569,21 +560,21 @@ msgstr "अविश्वसनीय लिंक प नेविगेशन
 msgid "Blocks"
 msgstr "ब्लॉक"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:312
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:315
 msgid "Board"
 msgstr "बोर्ड"
 
-#: ../../../lib/web/src/components/post-tags.tsx:180
-#: ../../../lib/web/src/components/post-tags.tsx:192
+#: ../../../lib/web/src/components/post-tags.tsx:194
+#: ../../../lib/web/src/components/post-tags.tsx:206
 msgid "Boost interest"
 msgstr "रुचि बढ़ाईं"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:399
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:402
 msgid "Border colour"
 msgstr "किनारा रंग"
 
 #: src/features/wiki/redirects-page.tsx:199
-#: src/features/wiki/wiki-settings.tsx:994
+#: src/features/wiki/wiki-settings.tsx:992
 msgid "Both source and target are required"
 msgstr "स्रोत आ लक्ष्य दुनो जरूरी बा"
 
@@ -600,15 +591,15 @@ msgid "Browser notifications"
 msgstr "Browser सूचना"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:426
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:166
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:183
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:185
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
-#: ../../../lib/web/src/components/step-up-dialog.tsx:366
-#: ../../../lib/web/src/components/travelling-picker.tsx:308
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
+#: ../../../lib/web/src/components/step-up-dialog.tsx:354
+#: ../../../lib/web/src/components/travelling-picker.tsx:288
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:251
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:136
 #: ../../../lib/web/src/features/access/access-dialog.tsx:328
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:201
@@ -623,18 +614,18 @@ msgstr "Browser सूचना"
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:156
 #: src/features/wiki/wiki-comment-thread.tsx:182
-#: src/features/wiki/wiki-settings.tsx:790
-#: src/features/wiki/wiki-settings.tsx:953
-#: src/features/wiki/wiki-settings.tsx:1066
+#: src/features/wiki/wiki-settings.tsx:788
+#: src/features/wiki/wiki-settings.tsx:951
+#: src/features/wiki/wiki-settings.tsx:1064
 #: src/routes/_authenticated/join.tsx:120
 msgid "Cancel"
 msgstr "रद्द करीं"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Cancel comment"
 msgstr "टिप्पणी रद्द करीं"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Cancel reply"
 msgstr "जवाब रद्द करीं"
 
@@ -652,15 +643,23 @@ msgstr "एह सूचना सभ खातिर श्रेणी"
 msgid "Change notification category"
 msgstr "सूचना श्रेणी बदलीं"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:62
+msgid "Changed"
+msgstr "बदलल गइल"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:62
+msgid "Changed {field}"
+msgstr "{field} बदलल गइल"
+
 #: src/features/wiki/wiki-page-content.tsx:346
 #: src/routes/_authenticated/index.tsx:449
-#: src/routes/_authenticated/index.tsx:718
+#: src/routes/_authenticated/index.tsx:717
 msgid "Changes"
 msgstr "बदलाव"
 
 #: src/features/wiki/wiki-page-content.tsx:348
 #: src/routes/_authenticated/index.tsx:457
-#: src/routes/_authenticated/index.tsx:728
+#: src/routes/_authenticated/index.tsx:727
 msgid "Changes and comments"
 msgstr "बदलाव आ टिप्पणी"
 
@@ -674,11 +673,11 @@ msgstr "संस्करण {0} → {1} से बदलाव"
 msgid "Changes will appear here when pages are edited."
 msgstr "जब पन्ना संपादित कइल जाई त बदलाव इहां देखाई।"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:12
 msgid "Checkbox"
 msgstr "Checkbox"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:138
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:13
 msgid "Checklist"
 msgstr "Checklist"
 
@@ -693,10 +692,10 @@ msgstr "भाषा चुनीं"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:274
 #: ../../../lib/web/src/components/colour-picker.tsx:355
-#: ../../../lib/web/src/components/travelling-picker.tsx:164
-#: ../../../lib/web/src/components/travelling-picker.tsx:170
-#: ../../../lib/web/src/components/travelling-picker.tsx:231
-#: ../../../lib/web/src/components/travelling-picker.tsx:237
+#: ../../../lib/web/src/components/travelling-picker.tsx:145
+#: ../../../lib/web/src/components/travelling-picker.tsx:151
+#: ../../../lib/web/src/components/travelling-picker.tsx:212
+#: ../../../lib/web/src/components/travelling-picker.tsx:218
 msgid "Clear"
 msgstr "साफ करीं"
 
@@ -710,19 +709,19 @@ msgstr "सब साफ करीं"
 msgid "Clear search"
 msgstr "खोज साफ करीं"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:501
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:506
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:468
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:471
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:479
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "बंद करीं"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:113
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:263
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:267
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:117
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:266
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:270
 msgid "Close dialog"
 msgstr "संवाद बंद करीं"
 
@@ -755,16 +754,16 @@ msgstr "समेटीं"
 msgid "Collapse sidebar"
 msgstr "साइडबार समेटीं"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:146
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:148
 msgid "Colour"
 msgstr "रंग"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:539
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:540
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:545
 msgid "Column actions"
 msgstr "कॉलम के कार्रवाई"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:347
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:350
 msgid "Columns group by"
 msgstr "एकर अनुसार कॉलम समूह"
 
@@ -786,11 +785,11 @@ msgstr "टिप्पणी"
 msgid "Comment actions"
 msgstr "टिप्पणी के कार्रवाई"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:431
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:442
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:454
 #: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/index.tsx:454
-#: src/routes/_authenticated/index.tsx:723
+#: src/routes/_authenticated/index.tsx:722
 msgid "Comments"
 msgstr "टिप्पणी"
 
@@ -802,16 +801,16 @@ msgstr "कॉम्पैक्ट"
 msgid "Compare changes"
 msgstr "बदलाव के तुलना करीं"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:95
 msgid "Configure option settings"
 msgstr "विकल्प सेटिंग कॉन्फ़िगर करीं"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:259
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:262
 msgid "Configure view settings"
 msgstr "दृश्य सेटिंग कॉन्फ़िगर करीं"
 
-#: ../../../lib/web/src/components/place-picker.tsx:160
-#: ../../../lib/web/src/components/travelling-picker.tsx:316
+#: ../../../lib/web/src/components/place-picker.tsx:146
+#: ../../../lib/web/src/components/travelling-picker.tsx:296
 msgid "Confirm"
 msgstr "पुष्टि करीं"
 
@@ -831,7 +830,7 @@ msgstr "सामग्री"
 msgid "Content not found."
 msgstr "सामग्री ना मिलल।"
 
-#: ../../../lib/web/src/lib/query-client.ts:78
+#: ../../../lib/web/src/lib/query-client.ts:73
 msgid "Content not modified"
 msgstr "सामग्री संशोधित नइखे"
 
@@ -843,7 +842,7 @@ msgstr "प्रासंगिक जानकारी आ विवरण।
 msgid "Continue"
 msgstr "जारी रखीं"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:355
+#: ../../../lib/web/src/components/step-up-dialog.tsx:343
 msgid "Continue with {label}"
 msgstr "{label} के साथ आगे बढ़ीं"
 
@@ -874,36 +873,35 @@ msgstr "तुलना खातिर पिछला संस्करण �
 msgid "Could not load this document. Please try again later."
 msgstr "एह दस्तावेज के लोड ना कर सकल। बाद में फिर कोशिश करीं।"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:128
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:124
 msgid "Couldn't load notifications"
 msgstr "सूचना लोड ना हो सकल"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:182
+#: ../../../lib/web/src/components/step-up-dialog.tsx:170
 msgid "Couldn't send the code. Please try again."
 msgstr "कोड भेजल ना जा सकल। कृपया फिर से कोशिश करीं।"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:136
+#: ../../../lib/web/src/components/step-up-dialog.tsx:124
 msgid "Couldn't start re-authentication. Please try again."
 msgstr "फिर से प्रमाणीकरण शुरू ना हो सकल। कृपया फिर से कोशिश करीं।"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:224
+#: ../../../lib/web/src/components/step-up-dialog.tsx:212
 msgid "Couldn't verify with that account. Please try again."
 msgstr "ओह खाता से सत्यापन ना हो सकल। कृपया फेर से कोसिस करीं।"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:550
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:689
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:491
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:675
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:551
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:691
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:513
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
 msgid "Create"
 msgstr "बनाईं"
 
-#. placeholder {0}: entityLabel.toLowerCase()
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
-msgid "Create {0}"
-msgstr "{0} बनाईं"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:146
+msgid "Create {entityLabel}"
+msgstr "{entityLabel} बनाईं"
 
-#: src/features/wiki/wiki-settings.tsx:1035
+#: src/features/wiki/wiki-settings.tsx:1033
 msgid "Create a redirect from one URL to another."
 msgstr "एगो URL से दोसरा प रीडायरेक्ट बनाईं।"
 
@@ -912,7 +910,7 @@ msgid "Create a redirect from one URL to another. The source URL must not be an 
 msgstr "एगो URL से दोसरा प रीडायरेक्ट बनाईं। स्रोत URL मौजूदा पन्ना ना होखे के चाहीं।"
 
 #: src/features/wiki/redirects-page.tsx:85
-#: src/features/wiki/wiki-settings.tsx:895
+#: src/features/wiki/wiki-settings.tsx:893
 msgid "Create a redirect to forward one URL to another."
 msgstr "एगो URL के दोसरा प आगे भेजे खातिर रीडायरेक्ट बनाईं।"
 
@@ -926,8 +924,8 @@ msgstr "पन्ना बनाईं"
 
 #: src/features/wiki/redirects-page.tsx:231
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1033
-#: src/features/wiki/wiki-settings.tsx:1069
+#: src/features/wiki/wiki-settings.tsx:1031
+#: src/features/wiki/wiki-settings.tsx:1067
 msgid "Create redirect"
 msgstr "रीडायरेक्ट बनाईं"
 
@@ -943,20 +941,25 @@ msgid "Create this page"
 msgstr "ई पन्ना बनाईं"
 
 #: src/components/layout/wiki-layout.tsx:132
-#: src/components/layout/wiki-layout.tsx:152
-#: src/routes/_authenticated/index.tsx:770
+#: src/components/layout/wiki-layout.tsx:151
+#: src/routes/_authenticated/index.tsx:769
 msgid "Create wiki"
 msgstr "wiki बनाईं"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:54
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:492
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:495
 #: src/features/wiki/redirects-page.tsx:95
-#: src/features/wiki/wiki-settings.tsx:905
+#: src/features/wiki/wiki-settings.tsx:903
 msgid "Created"
 msgstr "बनावल गइल"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:54
+msgid "Created {field}"
+msgstr "{field} बनावल गइल"
+
 #: src/features/wiki/redirects-page.tsx:207
-#: src/features/wiki/wiki-settings.tsx:1006
+#: src/features/wiki/wiki-settings.tsx:1004
 msgid "Creating redirect..."
 msgstr "रीडायरेक्ट बनावल जा रहल बा..."
 
@@ -964,11 +967,11 @@ msgstr "रीडायरेक्ट बनावल जा रहल बा..
 msgid "Creating wiki..."
 msgstr "विकि बनावल जा रहल बा..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:260
 #: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1069
+#: src/features/wiki/wiki-settings.tsx:1067
 msgid "Creating..."
 msgstr "बनावल जा रहल बा..."
 
@@ -976,7 +979,7 @@ msgstr "बनावल जा रहल बा..."
 msgid "Current"
 msgstr "मौजूदा"
 
-#: ../../../lib/web/src/components/map-view.tsx:217
+#: ../../../lib/web/src/components/map-view.tsx:249
 msgid "Current location"
 msgstr "मौजूदा जगह"
 
@@ -993,7 +996,7 @@ msgstr "गहिरा"
 msgid "Data conflict"
 msgstr "डेटा में टकराव"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:139
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:14
 #: src/features/wiki/attachments-page.tsx:404
 #: src/features/wiki/changes-list.tsx:48
 #: src/features/wiki/page-history.tsx:58
@@ -1012,19 +1015,19 @@ msgstr "डिफ़ॉल्ट"
 msgid "Default AI account"
 msgstr "डिफ़ॉल्ट AI खाता"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:479
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:482
 msgid "Default sort"
 msgstr "डिफ़ॉल्ट छंटाई"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:569
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:570
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:632
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:280
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:323
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:353
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:198
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:203
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:252
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:314
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:208
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:255
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:317
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:648
@@ -1032,7 +1035,7 @@ msgstr "डिफ़ॉल्ट छंटाई"
 #: src/features/wiki/wiki-comment-thread.tsx:255
 #: src/features/wiki/wiki-comment-thread.tsx:282
 #: src/features/wiki/wiki-page-content.tsx:316
-#: src/features/wiki/wiki-settings.tsx:958
+#: src/features/wiki/wiki-settings.tsx:956
 msgid "Delete"
 msgstr "मेटाईं"
 
@@ -1042,7 +1045,7 @@ msgstr "मेटाईं"
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "\"{0}\" मेटाईं? ई वापस ना हो सकेला।"
 
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:312
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:315
 #: src/features/wiki/attachments-page.tsx:530
 #: src/features/wiki/attachments-page.tsx:641
 #: src/features/wiki/attachments-page.tsx:650
@@ -1054,7 +1057,7 @@ msgstr "\"{0}\" मेटाईं? ई वापस ना हो सकेल�
 msgid "Delete attachment"
 msgstr "संलग्नक मेटाईं"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
 msgid "Delete column"
 msgstr "कॉलम मेटाईं"
 
@@ -1063,17 +1066,17 @@ msgstr "कॉलम मेटाईं"
 msgid "Delete comment"
 msgstr "टिप्पणी मेटाईं"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:300
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:304
 msgid "Delete field"
 msgstr "फील्ड मेटाईं"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:116
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:117
 msgid "Delete option"
 msgstr "विकल्प मेटाईं"
 
 #. placeholder {0}: opt.name
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:278
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:283
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:282
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:287
 msgid "Delete option {0}"
 msgstr "विकल्प {0} मेटाईं"
 
@@ -1086,27 +1089,27 @@ msgstr "पन्ना मेटाईं"
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:153
 #: src/features/wiki/redirects-page.tsx:159
-#: src/features/wiki/wiki-settings.tsx:934
-#: src/features/wiki/wiki-settings.tsx:940
+#: src/features/wiki/wiki-settings.tsx:932
+#: src/features/wiki/wiki-settings.tsx:938
 msgid "Delete redirect {0}"
 msgstr "रीडायरेक्ट {0} मेटाईं"
 
 #: src/features/wiki/redirects-page.tsx:163
-#: src/features/wiki/wiki-settings.tsx:944
+#: src/features/wiki/wiki-settings.tsx:942
 msgid "Delete redirect?"
 msgstr "रीडायरेक्ट मेटाईं?"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:284
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:287
 msgid "Delete view"
 msgstr "दृश्य मेटाईं"
 
-#: src/features/wiki/wiki-settings.tsx:464
-#: src/features/wiki/wiki-settings.tsx:475
-#: src/features/wiki/wiki-settings.tsx:483
+#: src/features/wiki/wiki-settings.tsx:462
+#: src/features/wiki/wiki-settings.tsx:473
+#: src/features/wiki/wiki-settings.tsx:481
 msgid "Delete wiki"
 msgstr "wiki मेटाईं"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:109
+#: ../../../lib/web/src/components/restore-banner.tsx:95
 msgid "Delete your account on the old server"
 msgstr "पुरान सर्वर पर आपन खाता मेटाईं"
 
@@ -1123,17 +1126,25 @@ msgstr "पुरान सर्वर पर आपन खाता मेट�
 msgid "Delete: {pageTitle}"
 msgstr "मेटाईं: {pageTitle}"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:58
+msgid "Deleted"
+msgstr "मेटावल गइल"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:58
+msgid "Deleted {field}"
+msgstr "{field} मेटावल गइल"
+
 #: src/features/wiki/redirects-page.tsx:118
-#: src/features/wiki/wiki-settings.tsx:865
+#: src/features/wiki/wiki-settings.tsx:863
 msgid "Deleting redirect..."
 msgstr "रीडायरेक्ट मेटावल जा रहल बा..."
 
-#: src/features/wiki/wiki-settings.tsx:347
+#: src/features/wiki/wiki-settings.tsx:345
 msgid "Deleting wiki..."
 msgstr "विकि मेटावल जा रहल बा..."
 
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/wiki-settings.tsx:475
+#: src/features/wiki/wiki-settings.tsx:473
 msgid "Deleting..."
 msgstr "मेटा रहल बा..."
 
@@ -1141,7 +1152,7 @@ msgstr "मेटा रहल बा..."
 msgid "Descending"
 msgstr "घटत क्रम"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:83
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
 msgid "Description"
 msgstr "विवरण"
 
@@ -1160,7 +1171,7 @@ msgstr "विवरण पैनल"
 msgid "Detect from web browser"
 msgstr "Web browser से पता लगाईं"
 
-#: ../../../lib/web/src/components/person-picker.tsx:214
+#: ../../../lib/web/src/components/person-picker.tsx:190
 msgid "Directory"
 msgstr "निर्देशिका"
 
@@ -1177,8 +1188,8 @@ msgstr "ड्राफ्ट छोड़ दीं?"
 msgid "Disconnected"
 msgstr "जुड़ल नइखे"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:88
-#: ../../../lib/web/src/components/restore-banner.tsx:94
+#: ../../../lib/web/src/components/restore-banner.tsx:74
+#: ../../../lib/web/src/components/restore-banner.tsx:80
 msgid "Dismiss"
 msgstr "खारिज करीं"
 
@@ -1190,18 +1201,23 @@ msgstr "मोबाइल साइडबार देखावेला।"
 msgid "Documents"
 msgstr "दस्तावेज"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:305
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:518
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:111
+msgid "Does not match the required pattern"
+msgstr "जरूरी पैटर्न से मेल ना खात बा"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:309
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:523
 msgid "Done"
 msgstr "हो गइल"
 
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:239
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:452
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:462
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:243
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:473
 msgid "Download"
 msgstr "डाउनलोड"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:98
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:149
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:100
 msgid "Download failed"
 msgstr "डाउनलोड असफल भइल"
 
@@ -1227,11 +1243,11 @@ msgstr "डिस्लेक्सिया-अनुकूल"
 msgid "Edit"
 msgstr "संपादित करीं"
 
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:154
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:158
 msgid "Edit {label}"
 msgstr "{label} संपादित करीं"
 
-#: src/features/wiki/wiki-settings.tsx:499
+#: src/features/wiki/wiki-settings.tsx:497
 msgid "Edit and view"
 msgstr "संपादन आ देखीं"
 
@@ -1243,21 +1259,21 @@ msgstr "संपादन आ देखीं"
 msgid "Edit caption"
 msgstr "कैप्शन संपादित करीं"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:137
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:140
 msgid "Edit field"
 msgstr "फील्ड संपादित करीं"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:138
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:141
 msgid "Edit field settings"
 msgstr "फील्ड सेटिंग संपादित करीं"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:91
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:92
 msgid "Edit option"
 msgstr "विकल्प संपादित करीं"
 
 #. placeholder {0}: opt.name
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:263
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:268
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:267
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:272
 msgid "Edit option {0}"
 msgstr "विकल्प {0} संपादित करीं"
 
@@ -1269,7 +1285,7 @@ msgstr "चुनल कार्ड संपादित करीं"
 msgid "Edit summary (optional)"
 msgstr "सारांश संपादित करीं (वैकल्पिक)"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:258
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:261
 msgid "Edit view"
 msgstr "व्यू संपादित करीं"
 
@@ -1290,7 +1306,7 @@ msgstr "संपादित करीं: {pageTitle}"
 msgid "Email"
 msgstr "ईमेल"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:292
+#: ../../../lib/web/src/components/step-up-dialog.tsx:280
 msgid "Email code"
 msgstr "ईमेल कोड"
 
@@ -1306,15 +1322,15 @@ msgstr "खोज शब्द लिखीं"
 msgid "Enter tag name"
 msgstr "टैग के नाम लिखीं"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:302
+#: ../../../lib/web/src/components/step-up-dialog.tsx:290
 msgid "Enter the code from your email"
 msgstr "आपन ईमेल से आइल कोड डालीं"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:327
+#: ../../../lib/web/src/components/step-up-dialog.tsx:315
 msgid "Enter your authenticator code"
 msgstr "आपन प्रमाणक कोड डालीं"
 
-#: src/features/wiki/wiki-settings.tsx:398
+#: src/features/wiki/wiki-settings.tsx:396
 msgid "Entity ID"
 msgstr "एंटिटी ID"
 
@@ -1322,7 +1338,7 @@ msgstr "एंटिटी ID"
 msgid "Error: Received invalid response from server."
 msgstr "त्रुटि: सर्वर से अमान्य प्रतिक्रिया मिलल।"
 
-#: src/features/wiki/wiki-settings.tsx:446
+#: src/features/wiki/wiki-settings.tsx:444
 msgid "Example: \"home\", \"welcome\", \"index\""
 msgstr "उदाहरण: \"home\", \"welcome\", \"index\""
 
@@ -1345,6 +1361,10 @@ msgstr "बाहरी URL"
 msgid "Extra large"
 msgstr "अतिरिक्त बड़ा"
 
+#: ../../../lib/web/src/hooks/use-accounts.ts:213
+msgid "Failed to add account"
+msgstr "खाता जोड़े में विफल"
+
 #: src/features/wiki/tag-manager.tsx:60
 msgid "Failed to add tag"
 msgstr "टैग जोड़े में विफल"
@@ -1366,7 +1386,7 @@ msgid "Failed to create page"
 msgstr "पन्ना बनावे में विफल"
 
 #: src/features/wiki/redirects-page.tsx:209
-#: src/features/wiki/wiki-settings.tsx:1008
+#: src/features/wiki/wiki-settings.tsx:1006
 msgid "Failed to create redirect"
 msgstr "रीडायरेक्ट बनावे में विफल"
 
@@ -1380,7 +1400,7 @@ msgstr "विकी बनावे में विफल"
 msgid "Failed to delete attachment"
 msgstr "अटैचमेंट मेटावे में विफल"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:191
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:192
 msgid "Failed to delete comment"
 msgstr "टिप्पणी मेटावे में विफल"
 
@@ -1393,11 +1413,11 @@ msgid "Failed to delete page"
 msgstr "पन्ना मेटावे में विफल"
 
 #: src/features/wiki/redirects-page.tsx:120
-#: src/features/wiki/wiki-settings.tsx:867
+#: src/features/wiki/wiki-settings.tsx:865
 msgid "Failed to delete redirect"
 msgstr "रीडायरेक्ट मेटावे में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:349
+#: src/features/wiki/wiki-settings.tsx:347
 msgid "Failed to delete wiki"
 msgstr "विकी मेटावे में विफल"
 
@@ -1416,7 +1436,7 @@ msgstr "विकी में शामिल होखे में विफ�
 msgid "Failed to load"
 msgstr "लोड करे में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:535
+#: src/features/wiki/wiki-settings.tsx:533
 msgid "Failed to load access rules"
 msgstr "पहुँच नियम लोड करे में विफल"
 
@@ -1424,7 +1444,7 @@ msgstr "पहुँच नियम लोड करे में विफल"
 msgid "Failed to load history"
 msgstr "इतिहास लोड करे में विफल"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:338
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
 msgid "Failed to load image"
 msgstr "चित्र लोड ना भइल"
 
@@ -1432,15 +1452,15 @@ msgstr "चित्र लोड ना भइल"
 msgid "Failed to load prompts"
 msgstr "प्रॉम्प्ट लोड करे में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:849
+#: src/features/wiki/wiki-settings.tsx:847
 msgid "Failed to load redirects"
 msgstr "रीडायरेक्ट लोड करे में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:658
+#: src/features/wiki/wiki-settings.tsx:656
 msgid "Failed to load replicas"
 msgstr "प्रतिकृति लोड करे में विफल"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:338
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
 msgid "Failed to load video"
 msgstr "वीडियो लोड ना भइल"
 
@@ -1453,15 +1473,15 @@ msgstr "विकी जानकारी लोड करे में वि�
 msgid "Failed to load wikis"
 msgstr "विकी लोड करे में विफल"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:154
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:155
 msgid "Failed to post comment"
 msgstr "टिप्पणी पोस्ट करे में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:580
+#: src/features/wiki/wiki-settings.tsx:578
 msgid "Failed to remove access"
 msgstr "पहुँच हटावे में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:677
+#: src/features/wiki/wiki-settings.tsx:675
 msgid "Failed to remove replica"
 msgstr "प्रतिकृति हटावे में विफल"
 
@@ -1473,7 +1493,7 @@ msgstr "टैग हटावे में विफल"
 msgid "Failed to rename page"
 msgstr "पन्ना के नाम बदले में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:282
+#: src/features/wiki/wiki-settings.tsx:280
 msgid "Failed to rename wiki"
 msgstr "विकी के नाम बदले में विफल"
 
@@ -1503,7 +1523,7 @@ msgstr "पन्ना सहेजे में विफल"
 msgid "Failed to save prompt"
 msgstr "प्रॉम्प्ट सहेजे में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:306
+#: src/features/wiki/wiki-settings.tsx:304
 msgid "Failed to save settings"
 msgstr "सेटिंग सहेजे में विफल"
 
@@ -1512,7 +1532,7 @@ msgstr "सेटिंग सहेजे में विफल"
 msgid "Failed to search wikis"
 msgstr "विकी खोजे में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:551
+#: src/features/wiki/wiki-settings.tsx:549
 msgid "Failed to set access level"
 msgstr "पहुँच स्तर सेट करे में विफल"
 
@@ -1522,22 +1542,22 @@ msgstr "पहुँच स्तर सेट करे में विफल"
 msgid "Failed to subscribe"
 msgstr "सब्सक्राइब करे में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:328
+#: src/features/wiki/wiki-settings.tsx:326
 msgid "Failed to sync wiki"
 msgstr "विकी सिंक करे में विफल"
 
 #: src/features/wiki/wiki-page-content.tsx:81
 #: src/routes/_authenticated/$page/index.tsx:77
 #: src/routes/_authenticated/index.tsx:288
-#: src/routes/_authenticated/index.tsx:934
+#: src/routes/_authenticated/index.tsx:933
 msgid "Failed to unsubscribe"
 msgstr "अनसब्सक्राइब करे में विफल"
 
-#: src/features/wiki/wiki-settings.tsx:564
+#: src/features/wiki/wiki-settings.tsx:562
 msgid "Failed to update access level"
 msgstr "पहुँच स्तर अपडेट करे में विफल"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:174
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:175
 msgid "Failed to update comment"
 msgstr "टिप्पणी अपडेट करे में विफल"
 
@@ -1550,9 +1570,9 @@ msgstr "अटैचमेंट अपलोड करे में विफ�
 msgid "Failed to upload files"
 msgstr "फाइल अपलोड करे में विफल"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:589
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:155
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:175
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:611
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:160
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:180
 msgid "Files"
 msgstr "फाइल"
 
@@ -1565,15 +1585,15 @@ msgstr "फिल्टर"
 msgid "Find wikis"
 msgstr "विकी खोजीं"
 
-#: src/features/wiki/wiki-settings.tsx:402
+#: src/features/wiki/wiki-settings.tsx:400
 msgid "Fingerprint"
 msgstr "फिंगरप्रिंट"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:97
+#: ../../../lib/web/src/components/restore-banner.tsx:83
 msgid "Finish moving your account"
 msgstr "आपन खाता हिलावल पूरा करीं"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:221
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
 msgid "Flags"
 msgstr "झंडा"
 
@@ -1590,11 +1610,11 @@ msgstr "\"{debouncedQuery}\" खातिर {0} मिलल"
 msgid "Friday"
 msgstr "शुक्रवार"
 
-#: ../../../lib/web/src/components/person-picker.tsx:207
+#: ../../../lib/web/src/components/person-picker.tsx:183
 msgid "Friends"
 msgstr "दोस्त"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:153
+#: ../../../lib/web/src/components/travelling-picker.tsx:134
 msgid "From"
 msgstr "से"
 
@@ -1606,8 +1626,8 @@ msgstr "से"
 msgid "From theme"
 msgstr "थीम से"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:25
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:26
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:26
 msgid "Go back"
 msgstr "वापस जाईं"
 
@@ -1620,7 +1640,7 @@ msgstr "ग्रिड व्यू"
 msgid "Group"
 msgstr "समूह"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:347
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:350
 msgid "Group by"
 msgstr "के अनुसार समूह"
 
@@ -1647,19 +1667,19 @@ msgstr "इतिहास"
 msgid "History: {pageTitle}"
 msgstr "इतिहास: {pageTitle}"
 
-#: src/features/wiki/wiki-settings.tsx:443
+#: src/features/wiki/wiki-settings.tsx:441
 msgid "home"
 msgstr "होम"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:90
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:185
-#: ../../../lib/web/src/components/layout/top-bar.tsx:71
-#: ../../../lib/web/src/components/layout/top-bar.tsx:100
+#: ../../../lib/web/src/components/layout/top-bar.tsx:86
+#: ../../../lib/web/src/components/layout/top-bar.tsx:115
 #: src/routes/_authenticated/index.tsx:260
 msgid "Home"
 msgstr "होम"
 
-#: src/features/wiki/wiki-settings.tsx:431
+#: src/features/wiki/wiki-settings.tsx:429
 msgid "Home page"
 msgstr "होम पन्ना"
 
@@ -1667,12 +1687,12 @@ msgstr "होम पन्ना"
 msgid "Hot"
 msgstr "हॉट"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
-#: src/features/wiki/wiki-settings.tsx:743
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:156
+#: src/features/wiki/wiki-settings.tsx:741
 msgid "ID"
 msgstr "ID"
 
-#: src/features/wiki/wiki-settings.tsx:389
+#: src/features/wiki/wiki-settings.tsx:387
 msgid "Identity"
 msgstr "पहचान"
 
@@ -1681,7 +1701,7 @@ msgid "Image"
 msgstr "चित्र"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:316
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
 msgid "Image viewer: {0}"
 msgstr "चित्र दर्शक: {0}"
 
@@ -1717,11 +1737,15 @@ msgstr "डालीं"
 msgid "Insert attachment"
 msgstr "अटैचमेंट डालीं"
 
+#: ../../../lib/web/src/components/post-tags.tsx:168
+msgid "Interest {weight}"
+msgstr "रुचि {weight}"
+
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "रुचि"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:550
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:591
 msgid "Invalid date"
 msgstr "अमान्य तिथि"
 
@@ -1755,17 +1779,17 @@ msgstr "बड़ा"
 msgid "Large uploads may be limited by your server or proxy configuration."
 msgstr "बड़हन अपलोड राउर सर्वर भा प्रॉक्सी कॉन्फ़िगरेशन से सीमित हो सकेला।"
 
-#: src/features/wiki/wiki-settings.tsx:745
+#: src/features/wiki/wiki-settings.tsx:743
 msgid "Last synced"
 msgstr "आखिरी बेर सिंक"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:306
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:309
 msgid "Layout"
 msgstr "लेआउट"
 
-#: ../../../lib/web/src/components/post-tags.tsx:72
-msgid "Letters, numbers, spaces, and hyphens only"
-msgstr "खाली अक्षर, अंक, स्पेस आ हाइफन"
+#: ../../../lib/web/src/components/post-tags.tsx:73
+msgid "Letters, numbers, spaces, hyphens, and slashes only"
+msgstr "खाली अक्षर, अंक, खाली जगह, हाइफन आ स्लैश"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:14
 msgid "Light"
@@ -1787,7 +1811,7 @@ msgstr "{headingText} पर लिंक"
 msgid "Links"
 msgstr "लिंक"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:318
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:321
 msgid "List"
 msgstr "सूची"
 
@@ -1796,7 +1820,7 @@ msgstr "सूची"
 msgid "List view"
 msgstr "सूची व्यू"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:35
+#: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: src/features/wiki/changes-list.tsx:105
 #: src/features/wiki/page-history.tsx:161
 msgid "Load more"
@@ -1806,7 +1830,7 @@ msgstr "अउरी लोड करीं"
 msgid "Loading content…"
 msgstr "सामग्री लोड हो रहल बा…"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:35
+#: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: ../../../lib/web/src/features/document/document-page.tsx:88
 msgid "Loading..."
 msgstr "लोड हो रहल बा..."
@@ -1836,12 +1860,12 @@ msgstr "श्रेणी सभ के प्रबंधन करीं"
 msgid "Manual"
 msgstr "मैनुअल"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:207
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:214
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:203
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:210
 msgid "Mark all as read"
 msgstr "सब के पढ़ल चिह्नित करीं"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:198
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:202
 msgid "Maximum length"
 msgstr "अधिकतम लंबाई"
 
@@ -1852,6 +1876,10 @@ msgstr "MCP सर्वर"
 #: ../../../lib/web/src/lib/preference-utils.ts:102
 msgid "Medium"
 msgstr "मध्यम"
+
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:377
+msgid "Members"
+msgstr "सदस्य"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:200
 msgid "Menu"
@@ -1865,7 +1893,7 @@ msgstr "संदेश"
 msgid "Metric"
 msgstr "मीट्रिक"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:187
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:191
 msgid "Minimum length"
 msgstr "न्यूनतम लंबाई"
 
@@ -1886,46 +1914,58 @@ msgstr "सोमवार"
 msgid "More options"
 msgstr "अउरी विकल्प"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:60
+msgid "Moved"
+msgstr "खिसकावल गइल"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:60
+msgid "Moved {field}"
+msgstr "{field} खिसकावल गइल"
+
 #: src/features/wiki/page-editor.tsx:446
 msgid "my-page-name"
 msgstr "my-page-name"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:600
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:125
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:293
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:122
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:601
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:145
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:126
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:296
 #: src/features/wiki/attachments-page.tsx:405
-#: src/features/wiki/wiki-settings.tsx:392
+#: src/features/wiki/wiki-settings.tsx:390
 msgid "Name"
 msgstr "नाम"
 
-#: src/features/wiki/wiki-settings.tsx:271
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:104
+msgid "Name cannot contain < or > characters"
+msgstr "नाम में < भा > अक्षर ना रह सके"
+
+#: src/features/wiki/wiki-settings.tsx:269
 msgid "Name cannot contain < or > characters, or line breaks"
 msgstr "नाम में < भा > अक्षर, चाहे लाइन ब्रेक ना हो सकेला"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
-msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
-msgstr "नाम में कोण कोष्ठक, बैकस्लैश, अर्धविराम, उद्धरण चिह्न भा बैकटिक ना हो सकेला"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:101
+msgid "Name is required"
+msgstr "नाम जरूरी बा"
 
-#: src/features/wiki/wiki-settings.tsx:270
+#: src/features/wiki/wiki-settings.tsx:268
 msgid "Name must be 100 characters or less"
 msgstr "नाम 100 अक्षर भा ओकरा से कम होखे के चाहीं"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:100
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
 msgid "Name must be 1000 characters or less"
 msgstr "नाम 1000 अक्षर भा ओकरा से कम होखे के चाहीं"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:53
+#: ../../../lib/web/src/features/errors/general-error.tsx:51
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:313
 msgid "Network error"
 msgstr "नेटवर्क त्रुटि"
 
-#: src/features/wiki/wiki-settings.tsx:759
+#: src/features/wiki/wiki-settings.tsx:757
 msgid "Never"
 msgstr "कबो ना"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:476
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:498
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "नया"
@@ -1965,20 +2005,20 @@ msgid "New URL must be different from current URL"
 msgstr "नया URL मौजूदा URL से अलग होखे के चाहीं"
 
 #: src/features/wiki/redirects-page.tsx:258
-#: src/features/wiki/wiki-settings.tsx:1057
+#: src/features/wiki/wiki-settings.tsx:1055
 msgid "new-page-name"
 msgstr "new-page-name"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:530
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:536
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:541
 msgid "Next image"
 msgstr "अगिला तस्वीर"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:555
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:577
 msgid "No {parentClassNames} to add to"
 msgstr "जोड़े खातिर कौनो {parentClassNames} नइखे"
 
-#: src/features/wiki/wiki-settings.tsx:501
+#: src/features/wiki/wiki-settings.tsx:499
 msgid "No access"
 msgstr "पहुँच नइखे"
 
@@ -1986,7 +2026,7 @@ msgstr "पहुँच नइखे"
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "कौनो पहुँच नियम सेट नइखे। ए संसाधन पर के पहुँच कर सकेला, ओकरा खातिर नियम जोड़ीं।"
 
-#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:65
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:74
 msgid "No activity yet"
 msgstr "अबहीं तक कौनो गतिविधि नइखे"
 
@@ -2003,7 +2043,7 @@ msgstr "अबहीं तक कौनो अटैचमेंट नइख�
 msgid "No changes yet"
 msgstr "अबहीं तक कौनो बदलाव नइखे"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:322
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:324
 #: src/features/wiki/page-comments.tsx:152
 msgid "No comments yet"
 msgstr "अबहीं तक कौनो टिप्पणी नइखे"
@@ -2016,7 +2056,7 @@ msgstr "अबहीं तक कौनो खेल नइखे"
 msgid "No groups available"
 msgstr "कौनो ग्रुप उपलब्ध नइखे"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "अबहीं कौनो आइटम प्रकार ना बन सके। पहिले जरूरी मूल आइटम बनाईं।"
 
@@ -2032,31 +2072,31 @@ msgstr "\"{debouncedQuery}\" खातिर कौनो पन्ना ना
 msgid "No pages found with this tag"
 msgstr "ए टैग से कौनो पन्ना ना मिलल"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:341
-#: ../../../lib/web/src/components/person-picker.tsx:84
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:382
+#: ../../../lib/web/src/components/person-picker.tsx:71
 msgid "No people found"
 msgstr "कौनो लोग ना मिलल"
 
-#: ../../../lib/web/src/components/place-picker.tsx:133
+#: ../../../lib/web/src/components/place-picker.tsx:120
 msgid "No places found"
 msgstr "कौनो जगह ना मिलल"
 
 #: src/features/wiki/redirects-page.tsx:84
-#: src/features/wiki/wiki-settings.tsx:894
+#: src/features/wiki/wiki-settings.tsx:892
 msgid "No redirects configured"
 msgstr "कौनो रीडायरेक्ट सेट नइखे"
 
-#: src/features/wiki/wiki-settings.tsx:724
-#: src/features/wiki/wiki-settings.tsx:808
+#: src/features/wiki/wiki-settings.tsx:722
+#: src/features/wiki/wiki-settings.tsx:806
 msgid "No replicas yet"
 msgstr "अबहीं तक कौनो प्रतिकृति नइखे"
 
-#: ../../../lib/web/src/components/inline-entity-search.tsx:64
+#: ../../../lib/web/src/components/inline-entity-search.tsx:65
 #: ../../../lib/web/src/components/search-entity-page.tsx:73
 msgid "No results found"
 msgstr "कवनो नतीजा ना मिलल"
 
-#: ../../../lib/web/src/components/command-menu.tsx:55
+#: ../../../lib/web/src/components/command-menu.tsx:57
 msgid "No results found."
 msgstr "कौनो परिणाम ना मिलल।"
 
@@ -2066,7 +2106,7 @@ msgstr "कौनो संशोधन ना मिलल"
 
 #: ../../../lib/web/src/components/entity/entity-board-container.tsx:824
 #: ../../../lib/web/src/components/entity/entity-board-container.tsx:869
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:336
 msgid "No status"
 msgstr "कौनो स्थिति नइखे"
 
@@ -2086,7 +2126,7 @@ msgstr "कौनो टाइम जोन ना मिलल।"
 msgid "No topic record yet — try again after the next notification."
 msgstr "अबहीं तक कौनो विषय रिकॉर्ड नइखे — अगिला सूचना के बाद फेर कोशिश करीं।"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:139
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:135
 msgid "No unread notifications"
 msgstr "कौनो ना पढ़ल सूचना नइखे"
 
@@ -2104,17 +2144,17 @@ msgid "No wikis found"
 msgstr "कौनो विकी ना मिलल"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:541
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:545
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:382
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:560
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:563
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:412
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:415
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:488
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
-#: ../../../lib/web/src/components/person-picker.tsx:350
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/person-picker.tsx:326
 #: ../../../lib/web/src/lib/preference-utils.ts:100
 msgid "None"
 msgstr "कुछुओ ना"
@@ -2124,31 +2164,31 @@ msgid "Normal"
 msgstr "सामान्य"
 
 #: ../../../lib/web/src/components/attachment-image.tsx:50
-#: ../../../lib/web/src/features/errors/general-error.tsx:67
+#: ../../../lib/web/src/features/errors/general-error.tsx:65
 msgid "Not found"
 msgstr "ना मिलल"
 
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:146
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:150
 msgid "Not set"
 msgstr "सेट नइखे"
 
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:671
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:668
 msgid "Nothing found"
 msgstr "कुछुओ ना मिलल"
 
 #. placeholder {0}: unread.length
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:200
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:196
 msgid "Notifications: {0}"
 msgstr "सूचना: {0}"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:140
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:54
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:493
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:497
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:15
 msgid "Number"
 msgstr "संख्या"
 
 #: src/features/wiki/redirects-page.tsx:246
-#: src/features/wiki/wiki-settings.tsx:1045
+#: src/features/wiki/wiki-settings.tsx:1043
 msgid "old-page-name"
 msgstr "old-page-name"
 
@@ -2166,12 +2206,12 @@ msgid "Oops! Page Not Found!"
 msgstr "ओह! पन्ना ना मिलल!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:857
+#: src/routes/_authenticated/index.tsx:856
 msgid "Open {0}"
 msgstr "{0} खोलीं"
 
-#: ../../../lib/web/src/components/layout/nav-group.tsx:199
-#: ../../../lib/web/src/components/layout/nav-group.tsx:204
+#: ../../../lib/web/src/components/layout/nav-group.tsx:227
+#: ../../../lib/web/src/components/layout/nav-group.tsx:232
 msgid "Open actions"
 msgstr "एक्शन खोलीं"
 
@@ -2184,13 +2224,13 @@ msgstr "अटैचमेंट खोलीं"
 msgid "Open menu"
 msgstr "मेनू खोलीं"
 
-#: ../../../lib/web/src/components/layout/top-bar.tsx:63
-#: ../../../lib/web/src/components/layout/top-bar.tsx:68
+#: ../../../lib/web/src/components/layout/top-bar.tsx:78
+#: ../../../lib/web/src/components/layout/top-bar.tsx:83
 msgid "Open navigation"
 msgstr "नेविगेशन खोलीं"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:105
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:111
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:106
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:112
 msgid "Open option actions"
 msgstr "विकल्प क्रिया खोलीं"
 
@@ -2198,8 +2238,8 @@ msgstr "विकल्प क्रिया खोलीं"
 msgid "Open selected card"
 msgstr "चुनल कार्ड खोलीं"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:274
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:279
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:277
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:282
 msgid "Open view actions"
 msgstr "दृश्य क्रिया खोलीं"
 
@@ -2208,13 +2248,13 @@ msgstr "दृश्य क्रिया खोलीं"
 msgid "Open view controls"
 msgstr "दृश्य नियंत्रण खोलीं"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:200
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:155
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:202
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:157
 msgid "Option name"
 msgstr "विकल्प नाम"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:168
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:240
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:170
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:244
 msgid "Options"
 msgstr "विकल्प"
 
@@ -2290,45 +2330,45 @@ msgstr "पन्ना URL जरूरी बा"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "<0>{tag}</0> टैग कइल पन्ना"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:530
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:552
 msgid "Parent"
 msgstr "मूल"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:337
+#: ../../../lib/web/src/components/step-up-dialog.tsx:325
 msgid "Passkey"
 msgstr "Passkey"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:207
+#: ../../../lib/web/src/components/step-up-dialog.tsx:195
 msgid "Passkey verification failed. Please try again."
 msgstr "पासकी सत्यापन विफल हो गइल। कृपया फिर से कोशिश करीं।"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:146
+#: ../../../lib/web/src/components/restore-banner.tsx:132
 msgid "Passkeys"
 msgstr "Passkey"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:209
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:213
 msgid "Pattern (regex)"
 msgstr "पैटर्न (रेगेक्स)"
 
-#: src/features/wiki/wiki-settings.tsx:466
+#: ../../../lib/web/src/components/person-picker.tsx:176
+msgid "People"
+msgstr "लोग"
+
+#: src/features/wiki/wiki-settings.tsx:464
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "ए विकी आ ओकर सब सामग्री के स्थायी रूप से मिटाईं। ई वापस ना हो सके।"
 
 #: ../../../lib/web/src/components/comment-composer.tsx:89
-#: ../../../lib/web/src/features/errors/general-error.tsx:54
+#: ../../../lib/web/src/features/errors/general-error.tsx:52
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:314
 msgid "Please check your internet connection and try again."
 msgstr "कृपया आपन इंटरनेट कनेक्शन जाँचीं आ फेर से कोसिस करीं।"
 
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:18
-msgid "Please log in with the appropriate credentials <0/> to access this resource."
-msgstr "ई संसाधन तक पहुँचे खातिर <0/> कृपया सही जानकारी से लॉग इन करीं।"
-
-#: ../../../lib/web/src/features/errors/general-error.tsx:83
+#: ../../../lib/web/src/features/errors/general-error.tsx:81
 msgid "Please try again."
 msgstr "कृपया फेर से कोशिश करीं।"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:75
+#: ../../../lib/web/src/features/errors/general-error.tsx:73
 msgid "Please wait a moment and try again."
 msgstr "कृपया तनी देर रुकीं आ फेर से कोशिश करीं।"
 
@@ -2344,8 +2384,8 @@ msgstr "पोस्ट आ टिप्पणी"
 msgid "Preview"
 msgstr "पूर्वावलोकन"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:509
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:514
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:520
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
 msgid "Previous image"
 msgstr "पिछिला तस्वीर"
 
@@ -2357,10 +2397,6 @@ msgstr "गोपनीयता"
 #: ../../../lib/web/src/components/ui/upload-progress.tsx:50
 msgid "Processing…"
 msgstr "प्रोसेस हो रहल बा…"
-
-#: ../../../lib/web/src/components/person-picker.tsx:200
-msgid "Project members"
-msgstr "परियोजना के सदस्य"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:108
 msgid "Prompt saved"
@@ -2379,11 +2415,11 @@ msgstr "उठल"
 msgid "Re-derive from title"
 msgstr "शीर्षक से फेर से निकालीं"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:118
+#: ../../../lib/web/src/components/restore-banner.tsx:104
 msgid "Re-link your accounts on this server"
 msgstr "एह सर्वर पर आपन खाता फिर से जोड़ीं"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:140
+#: ../../../lib/web/src/components/restore-banner.tsx:126
 msgid "Re-register your passkeys on this server"
 msgstr "एह सर्वर पर आपन पासकी फिर से रजिस्टर करीं"
 
@@ -2413,7 +2449,7 @@ msgstr "ए विकी के सब पन्ना पर हाल के �
 msgid "Recommended"
 msgstr "सिफारिश कइल"
 
-#: src/routes/_authenticated/index.tsx:780
+#: src/routes/_authenticated/index.tsx:779
 msgid "Recommended wikis"
 msgstr "सिफारिश कइल विकी"
 
@@ -2426,29 +2462,29 @@ msgstr "फेर से जुड़ रहल बा ({retries})..."
 msgid "Redirect \"{0}\" deleted"
 msgstr "रीडायरेक्ट \"{0}\" मिटावल गइल"
 
-#: src/features/wiki/wiki-settings.tsx:866
+#: src/features/wiki/wiki-settings.tsx:864
 msgid "Redirect \"{source}\" deleted"
 msgstr "रीडायरेक्ट \"{source}\" मिटावल गइल"
 
 #: src/features/wiki/redirects-page.tsx:208
-#: src/features/wiki/wiki-settings.tsx:1007
+#: src/features/wiki/wiki-settings.tsx:1005
 msgid "Redirect created"
 msgstr "रीडायरेक्ट बनल"
 
-#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:136
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:135
 msgid "Redirecting to login."
 msgstr "लॉगिन पर रीडायरेक्ट कर रहल बा।"
 
 #: src/features/wiki/redirects-page.tsx:73
-#: src/features/wiki/wiki-settings.tsx:106
-#: src/features/wiki/wiki-settings.tsx:882
+#: src/features/wiki/wiki-settings.tsx:107
+#: src/features/wiki/wiki-settings.tsx:880
 #: src/routes/_authenticated/redirects.tsx:27
 #: src/routes/_authenticated/redirects.tsx:30
 msgid "Redirects"
 msgstr "रीडायरेक्ट"
 
-#: ../../../lib/web/src/components/post-tags.tsx:200
-#: ../../../lib/web/src/components/post-tags.tsx:212
+#: ../../../lib/web/src/components/post-tags.tsx:214
+#: ../../../lib/web/src/components/post-tags.tsx:226
 msgid "Reduce interest"
 msgstr "रुचि कम करीं"
 
@@ -2464,13 +2500,21 @@ msgstr "सापेक्ष (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "24 घंटा के भीतर सापेक्ष, ना त निरपेक्ष"
 
+#: ../../../lib/web/src/components/post-tags.tsx:166
+msgid "Relevance {relevance}"
+msgstr "प्रासंगिकता {relevance}"
+
+#: ../../../lib/web/src/components/post-tags.tsx:164
+msgid "Relevance {relevance}, interest {weight}"
+msgstr "प्रासंगिकता {relevance}, रुचि {weight}"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:285
 #: ../../../lib/web/src/components/attachment-composer.tsx:330
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:192
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: src/features/wiki/tag-manager.tsx:117
 #: src/features/wiki/tag-manager.tsx:122
-#: src/features/wiki/wiki-settings.tsx:795
+#: src/features/wiki/wiki-settings.tsx:793
 msgid "Remove"
 msgstr "हटाईं"
 
@@ -2494,12 +2538,12 @@ msgstr "\"{0}\" खातिर पहुँच नियम हटावल ज
 msgid "Remove access?"
 msgstr "पहुँच हटाईं?"
 
-#: ../../../lib/web/src/components/post-tags.tsx:220
-#: ../../../lib/web/src/components/post-tags.tsx:232
+#: ../../../lib/web/src/components/post-tags.tsx:234
+#: ../../../lib/web/src/components/post-tags.tsx:246
 msgid "Remove interest"
 msgstr "रुचि हटाईं"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:674
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:712
 msgid "Remove item"
 msgstr "आइटम हटाईं"
 
@@ -2509,25 +2553,25 @@ msgid "Remove link"
 msgstr "लिंक हटाईं"
 
 #. placeholder {0}: replica.name || replica.id
-#: src/features/wiki/wiki-settings.tsx:771
-#: src/features/wiki/wiki-settings.tsx:777
+#: src/features/wiki/wiki-settings.tsx:769
+#: src/features/wiki/wiki-settings.tsx:775
 msgid "Remove replica {0}"
 msgstr "प्रतिकृति {0} हटाईं"
 
-#: src/features/wiki/wiki-settings.tsx:781
+#: src/features/wiki/wiki-settings.tsx:779
 msgid "Remove replica?"
 msgstr "प्रतिकृति हटाईं?"
 
-#: src/features/wiki/wiki-settings.tsx:578
+#: src/features/wiki/wiki-settings.tsx:576
 msgid "Removing access..."
 msgstr "पहुँच हटावल जा रहल बा..."
 
-#: src/features/wiki/wiki-settings.tsx:675
+#: src/features/wiki/wiki-settings.tsx:673
 msgid "Removing replica..."
 msgstr "रेप्लिका हटावल जा रहल बा..."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:561
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:618
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:562
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:620
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:297
@@ -2536,7 +2580,7 @@ msgstr "रेप्लिका हटावल जा रहल बा..."
 msgid "Rename"
 msgstr "नाम बदलीं"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:596
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
 msgid "Rename column"
 msgstr "कॉलम के नाम बदलीं"
 
@@ -2544,7 +2588,7 @@ msgstr "कॉलम के नाम बदलीं"
 msgid "Rename page"
 msgstr "पन्ना के नाम बदलीं"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:598
 msgid "Rename this board column"
 msgstr "ए बोर्ड कॉलम के नाम बदलीं"
 
@@ -2558,15 +2602,15 @@ msgstr "नाम बदल रहल बा..."
 msgid "Replace"
 msgstr "बदलीं"
 
-#: src/features/wiki/wiki-settings.tsx:676
+#: src/features/wiki/wiki-settings.tsx:674
 msgid "Replica \"{displayName}\" removed"
 msgstr "रेप्लिका \"{displayName}\" हटा दिहल गइल"
 
-#: src/features/wiki/wiki-settings.tsx:108
-#: src/features/wiki/wiki-settings.tsx:692
-#: src/features/wiki/wiki-settings.tsx:705
-#: src/features/wiki/wiki-settings.tsx:719
-#: src/features/wiki/wiki-settings.tsx:736
+#: src/features/wiki/wiki-settings.tsx:109
+#: src/features/wiki/wiki-settings.tsx:690
+#: src/features/wiki/wiki-settings.tsx:703
+#: src/features/wiki/wiki-settings.tsx:717
+#: src/features/wiki/wiki-settings.tsx:734
 msgid "Replicas"
 msgstr "प्रतिकृति"
 
@@ -2598,11 +2642,11 @@ msgstr "{0} के जवाब..."
 msgid "Request URL: {baseURL}{slug}"
 msgstr "अनुरोध URL: {baseURL}{slug}"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:224
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:228
 msgid "Required"
 msgstr "जरूरी"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:370
+#: ../../../lib/web/src/components/step-up-dialog.tsx:358
 msgid "Resend email"
 msgstr "ईमेल फिर से भेजीं"
 
@@ -2653,7 +2697,7 @@ msgstr "वापस लीं"
 
 #: ../../../lib/web/src/components/options-menu.tsx:181
 #: src/routes/_authenticated/index.tsx:460
-#: src/routes/_authenticated/index.tsx:731
+#: src/routes/_authenticated/index.tsx:730
 msgid "Revoke access"
 msgstr "पहुँच रद्द करीं"
 
@@ -2661,12 +2705,12 @@ msgstr "पहुँच रद्द करीं"
 msgid "Revoke RSS access?"
 msgstr "RSS पहुँच रद्द करीं?"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:152
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:172
 msgid "Rows"
 msgstr "पंक्ति"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:373
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:376
 msgid "Rows group by"
 msgstr "पंक्ति समूह आधार"
 
@@ -2679,7 +2723,7 @@ msgstr "RSS पहुँच रद्द भइल"
 #: ../../../lib/web/src/components/options-menu.tsx:171
 #: src/features/wiki/wiki-page-content.tsx:343
 #: src/routes/_authenticated/index.tsx:443
-#: src/routes/_authenticated/index.tsx:712
+#: src/routes/_authenticated/index.tsx:711
 msgid "RSS feed"
 msgstr "RSS feed"
 
@@ -2697,30 +2741,30 @@ msgstr "शनिवार"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: ../../../lib/web/src/components/attachment-composer.tsx:430
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:170
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:172
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:126
 #: ../../../lib/web/src/components/ui/secret-field.tsx:79
 #: src/features/wiki/page-editor.tsx:408
 #: src/features/wiki/wiki-comment-thread.tsx:202
 msgid "Save"
 msgstr "सहेजीं"
 
-#: src/features/wiki/wiki-settings.tsx:452
+#: src/features/wiki/wiki-settings.tsx:450
 msgid "Save changes"
 msgstr "बदलाव सहेजीं"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: src/features/wiki/page-editor.tsx:408
-#: src/features/wiki/wiki-settings.tsx:280
-#: src/features/wiki/wiki-settings.tsx:304
-#: src/features/wiki/wiki-settings.tsx:452
+#: src/features/wiki/wiki-settings.tsx:278
+#: src/features/wiki/wiki-settings.tsx:302
+#: src/features/wiki/wiki-settings.tsx:450
 msgid "Saving..."
 msgstr "सहेज रहल बा..."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:175
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
-#: ../../../lib/web/src/components/search.tsx:18
+#: ../../../lib/web/src/components/search.tsx:17
 #: src/features/wiki/wiki-page-content.tsx:325
 #: src/routes/_authenticated/$page/index.tsx:234
 #: src/routes/_authenticated/$wikiId/search.tsx:31
@@ -2743,23 +2787,23 @@ msgstr "नाम, ID, फिंगरप्रिंट, भा URL से ख�
 msgid "Search for a command to run..."
 msgstr "चलावे खातिर कमांड खोजीं..."
 
-#: ../../../lib/web/src/components/place-picker.tsx:86
+#: ../../../lib/web/src/components/place-picker.tsx:73
 msgid "Search for a place"
 msgstr "जगह खोजीं"
 
-#: ../../../lib/web/src/components/place-picker.tsx:50
+#: ../../../lib/web/src/components/place-picker.tsx:37
 msgid "Search for a place..."
 msgstr "जगह खोजीं..."
 
-#: src/routes/_authenticated/index.tsx:756
+#: src/routes/_authenticated/index.tsx:755
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "सब्सक्राइब करे खातिर विकी खोजीं, भा अपन दस्तावेज प्रकाशित करे खातिर एक बनाईं।"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:250
+#: ../../../lib/web/src/components/travelling-picker.tsx:231
 msgid "Search for destination..."
 msgstr "गंतव्य खोजीं..."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:183
+#: ../../../lib/web/src/components/travelling-picker.tsx:164
 msgid "Search for origin..."
 msgstr "मूल खोजीं..."
 
@@ -2798,8 +2842,8 @@ msgstr "ए दृश्य के खोजीं, देखीं, आ छा�
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:179
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
-#: ../../../lib/web/src/components/inline-entity-search.tsx:63
-#: ../../../lib/web/src/components/person-picker.tsx:324
+#: ../../../lib/web/src/components/inline-entity-search.tsx:64
+#: ../../../lib/web/src/components/person-picker.tsx:300
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "खोजीं..."
@@ -2809,11 +2853,11 @@ msgstr "खोजीं..."
 msgid "Searching..."
 msgstr "खोज रहल बा..."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:141
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:16
 msgid "Select"
 msgstr "चुनीं"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:356
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
 msgid "Select a field"
 msgstr "फील्ड चुनीं"
 
@@ -2841,7 +2885,7 @@ msgstr "रउआ पन्ना में डाले खातिर अट�
 msgid "Select group"
 msgstr "समूह चुनीं"
 
-#: ../../../lib/web/src/components/place-picker.tsx:49
+#: ../../../lib/web/src/components/place-picker.tsx:36
 msgid "Select location"
 msgstr "स्थान चुनीं"
 
@@ -2849,7 +2893,7 @@ msgstr "स्थान चुनीं"
 msgid "Select next card"
 msgstr "अगिला कार्ड चुनीं"
 
-#: ../../../lib/web/src/components/person-picker.tsx:83
+#: ../../../lib/web/src/components/person-picker.tsx:70
 msgid "Select person..."
 msgstr "व्यक्ति चुनीं..."
 
@@ -2857,8 +2901,8 @@ msgstr "व्यक्ति चुनीं..."
 msgid "Select previous card"
 msgstr "पिछला कार्ड चुनीं"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:257
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:340
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:289
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:381
 msgid "Select..."
 msgstr "चुनीं..."
 
@@ -2871,7 +2915,7 @@ msgstr "चुनल गइल: <0>{0}</0>"
 msgid "Send again"
 msgstr "फेरु भेजीं"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:310
+#: ../../../lib/web/src/components/step-up-dialog.tsx:298
 msgid "Send email"
 msgstr "ईमेल भेजीं"
 
@@ -2898,11 +2942,11 @@ msgstr "सर्वर नियम"
 msgid "Session expired. Please log in again."
 msgstr "सेशन खतम हो गइल। कृपया फेर से लॉग इन करीं।"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:147
+#: ../../../lib/web/src/components/travelling-picker.tsx:128
 msgid "Set origin and destination"
 msgstr "मूल आ गंतव्य सेट करीं"
 
-#: src/features/wiki/wiki-settings.tsx:549
+#: src/features/wiki/wiki-settings.tsx:547
 msgid "Setting access..."
 msgstr "पहुँच सेट कइल जा रहल बा..."
 
@@ -2910,21 +2954,21 @@ msgstr "पहुँच सेट कइल जा रहल बा..."
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:125
 #: ../../../lib/web/src/components/options-menu.tsx:196
 #: src/features/wiki/wiki-page-content.tsx:370
-#: src/features/wiki/wiki-settings.tsx:105
+#: src/features/wiki/wiki-settings.tsx:106
 #: src/routes/_authenticated/$page/index.tsx:268
 #: src/routes/_authenticated/index.tsx:483
 msgid "Settings"
 msgstr "सेटिंग सब"
 
-#: src/features/wiki/wiki-settings.tsx:305
+#: src/features/wiki/wiki-settings.tsx:303
 msgid "Settings saved"
 msgstr "सेटिंग सहेजल गइल"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:327
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:330
 msgid "Show classes"
 msgstr "क्लास सब देखाईं"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:428
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:431
 msgid "Show fields"
 msgstr "फ़ील्ड सब देखाईं"
 
@@ -2936,7 +2980,7 @@ msgstr "पन्ना देखाईं"
 msgid "Show this help"
 msgstr "ई मदद देखाईं"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:39
+#: ../../../lib/web/src/components/ui/load-more.tsx:43
 msgid "Showing {totalShown} of {total}"
 msgstr "{total} में से {totalShown} देखावल जा रहल बा"
 
@@ -2944,17 +2988,21 @@ msgstr "{total} में से {totalShown} देखावल जा रह�
 msgid "Sidebar"
 msgstr "साइडबार"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:18
+msgid "Sign in with an account that has access <0/> to this resource."
+msgstr "एह संसाधन तक पहुँच वाला खाता से <0/> साइन इन करीं।"
+
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:131
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:137
 msgid "Sign out"
 msgstr "साइन आउट करीं"
 
-#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:134
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:133
 msgid "Signing out..."
 msgstr "साइन आउट हो रहल बा..."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:161
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:179
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:163
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:183
 msgid "Single line of text only"
 msgstr "बस एगो लाइन के टेक्स्ट"
 
@@ -2973,13 +3021,13 @@ msgid "Sort"
 msgstr "क्रमबद्ध करीं"
 
 #: src/features/wiki/redirects-page.tsx:92
-#: src/features/wiki/wiki-settings.tsx:422
-#: src/features/wiki/wiki-settings.tsx:902
+#: src/features/wiki/wiki-settings.tsx:420
+#: src/features/wiki/wiki-settings.tsx:900
 msgid "Source"
 msgstr "स्रोत"
 
 #: src/features/wiki/redirects-page.tsx:241
-#: src/features/wiki/wiki-settings.tsx:1040
+#: src/features/wiki/wiki-settings.tsx:1038
 msgid "Source URL"
 msgstr "स्रोत URL"
 
@@ -2991,11 +3039,11 @@ msgstr "स्रोत सब"
 msgid "Spacious"
 msgstr "विशाल"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:323
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:325
 msgid "Start the discussion by adding the first comment."
 msgstr "पहिल टिप्पणी जोड़ के चर्चा शुरू करीं।"
 
-#: src/routes/_authenticated/index.tsx:753
+#: src/routes/_authenticated/index.tsx:752
 msgid "Start your first wiki"
 msgstr "अपना पहिला विकी शुरू करीं"
 
@@ -3003,24 +3051,24 @@ msgstr "अपना पहिला विकी शुरू करीं"
 msgid "Subject"
 msgstr "विषय"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Submit comment"
 msgstr "टिप्पणी जमा करीं"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Submit reply"
 msgstr "जवाब जमा करीं"
 
-#: ../../../lib/web/src/components/inline-entity-search.tsx:66
-#: ../../../lib/web/src/components/recommended-entities.tsx:58
+#: ../../../lib/web/src/components/inline-entity-search.tsx:67
+#: ../../../lib/web/src/components/recommended-entities.tsx:59
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:120
-#: src/routes/_authenticated/index.tsx:819
+#: src/routes/_authenticated/index.tsx:818
 msgid "Subscribe"
 msgstr "सदस्यता लीं"
 
 #: src/features/wiki/inline-wiki-search.tsx:95
-#: src/features/wiki/wiki-settings.tsx:744
+#: src/features/wiki/wiki-settings.tsx:742
 #: src/routes/_authenticated/find.tsx:64
 msgid "Subscribed"
 msgstr "सदस्यता ले लिहल गइल"
@@ -3036,7 +3084,7 @@ msgstr "{0} के सदस्यता ले लिहल गइल"
 msgid "Subscribing..."
 msgstr "सदस्यता ले रहल बा..."
 
-#: src/features/wiki/wiki-settings.tsx:412
+#: src/features/wiki/wiki-settings.tsx:410
 msgid "Subscription"
 msgstr "सदस्यता"
 
@@ -3056,12 +3104,12 @@ msgstr "समर्थित फ़ाइल: छवि, PDF, DOC, DOCX, TXT, �
 msgid "Switch to view 1-9"
 msgstr "1-9 दृश्य पर स्विच करीं"
 
-#: src/features/wiki/wiki-settings.tsx:417
+#: src/features/wiki/wiki-settings.tsx:415
 msgid "Sync now"
 msgstr "अब सिंक करीं"
 
-#: src/features/wiki/wiki-settings.tsx:326
-#: src/features/wiki/wiki-settings.tsx:417
+#: src/features/wiki/wiki-settings.tsx:324
+#: src/features/wiki/wiki-settings.tsx:415
 msgid "Syncing..."
 msgstr "सिंक हो रहल बा..."
 
@@ -3083,12 +3131,12 @@ msgstr "टैग \"{tag}\" जोड़ल गइल"
 msgid "Tag \"{tag}\" removed"
 msgstr "टैग \"{tag}\" हटावल गइल"
 
-#: ../../../lib/web/src/components/post-tags.tsx:76
+#: ../../../lib/web/src/components/post-tags.tsx:77
 #: src/features/wiki/tag-manager.tsx:47
 msgid "Tag already exists"
 msgstr "टैग पहिले से बा"
 
-#: ../../../lib/web/src/components/post-tags.tsx:68
+#: ../../../lib/web/src/components/post-tags.tsx:69
 msgid "Tag must be 50 characters or less"
 msgstr "टैग 50 अक्षर भा ओसे कम होखे के चाहीं"
 
@@ -3103,8 +3151,8 @@ msgstr "टैग 50 अक्षर भा ओसे कम होखे के
 msgid "Tag: {tag}"
 msgstr "टैग: {tag}"
 
-#: ../../../lib/web/src/components/post-tags.tsx:101
-#: ../../../lib/web/src/components/post-tags.tsx:115
+#: ../../../lib/web/src/components/post-tags.tsx:102
+#: ../../../lib/web/src/components/post-tags.tsx:116
 #: src/features/wiki/wiki-page-content.tsx:331
 #: src/routes/_authenticated/$page/index.tsx:240
 #: src/routes/_authenticated/index.tsx:431
@@ -3112,12 +3160,12 @@ msgid "Tags"
 msgstr "टैग सब"
 
 #: src/features/wiki/redirects-page.tsx:94
-#: src/features/wiki/wiki-settings.tsx:904
+#: src/features/wiki/wiki-settings.tsx:902
 msgid "Target"
 msgstr "लक्ष्य"
 
 #: src/features/wiki/redirects-page.tsx:253
-#: src/features/wiki/wiki-settings.tsx:1052
+#: src/features/wiki/wiki-settings.tsx:1050
 msgid "Target URL"
 msgstr "लक्ष्य URL"
 
@@ -3126,11 +3174,11 @@ msgstr "लक्ष्य URL"
 msgid "Terms and conditions"
 msgstr "नियम आ शर्त"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:142
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:17
 msgid "Text"
 msgstr "टेक्स्ट"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:193
+#: ../../../lib/web/src/components/step-up-dialog.tsx:181
 msgid "That code is incorrect or has expired."
 msgstr "ऊ कोड गलत बा भा ओकर मियाद खतम हो गइल बा।"
 
@@ -3147,7 +3195,7 @@ msgstr "अपलोड खातिर बहुत बड़ रहे। फ�
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "विकी के इकाई आईडी जेकर आप प्रतिकृति बनावे के चाहत बानीं।"
 
-#: src/features/wiki/wiki-settings.tsx:1060
+#: src/features/wiki/wiki-settings.tsx:1058
 msgid "The existing page to redirect to"
 msgstr "रीडायरेक्ट करे खातिर मौजूदा पन्ना"
 
@@ -3159,11 +3207,11 @@ msgstr "रीडायरेक्ट करे खातिर मौजूद
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "पन्ना \"{slug}\" अबही ले मौजूद नइखे।"
 
-#: src/features/wiki/wiki-settings.tsx:433
+#: src/features/wiki/wiki-settings.tsx:431
 msgid "The page that users see when they first visit the wiki."
 msgstr "ऊ पन्ना जे उपयोगकर्ता पहिले बेर विकी पर आवे पर देखेले।"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:68
+#: ../../../lib/web/src/features/errors/general-error.tsx:66
 msgid "The requested content could not be found."
 msgstr "मांगल गइल सामग्री ना मिलल।"
 
@@ -3171,7 +3219,7 @@ msgstr "मांगल गइल सामग्री ना मिलल।"
 msgid "The server returned a web page instead of data."
 msgstr "सर्वर डेटा के बजाय एगो वेब पेज लौटवलस।"
 
-#: src/features/wiki/wiki-settings.tsx:1048
+#: src/features/wiki/wiki-settings.tsx:1046
 msgid "The URL that will be redirected"
 msgstr "URL जे रीडायरेक्ट कइल जाई"
 
@@ -3179,7 +3227,7 @@ msgstr "URL जे रीडायरेक्ट कइल जाई"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "URL जे रीडायरेक्ट कइल जाई (जइसे, \"old-page\")"
 
-#: src/features/wiki/wiki-settings.tsx:482
+#: src/features/wiki/wiki-settings.tsx:480
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "ई कार्य पूर्ववत ना कइल जा सकेला। ई विकी आ ओकर सब सामग्री के स्थायी रूप से हटा दी।"
 
@@ -3199,7 +3247,7 @@ msgstr "ई फ़ाइल मौजूदा सर्वर अपलोड �
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "ई फ़ाइल अपलोड करे खातिर बहुते बड़ बा। एगो छोट फ़ाइल आज़माईं।"
 
-#: src/features/wiki/wiki-settings.tsx:413
+#: src/features/wiki/wiki-settings.tsx:411
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "ई विकी एगो स्रोत विकी से सदस्यता लिहले बा आ ओकरा से अपडेट प्राप्त करेला।"
 
@@ -3209,7 +3257,7 @@ msgstr "ई पन्ना खातिर पथ होई। छोट अक
 
 #. placeholder {0}: redirect.source
 #. placeholder {1}: redirect.target
-#: src/features/wiki/wiki-settings.tsx:946
+#: src/features/wiki/wiki-settings.tsx:944
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "ई \"{0}\" से \"{1}\" पर रीडायरेक्ट हटा दी।"
 
@@ -3220,7 +3268,7 @@ msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the
 msgstr "ई \"{0}\" से \"{1}\" पर रीडायरेक्ट हटा दी। स्रोत URL पर जाए वाला उपयोगकर्ता अब रीडायरेक्ट ना होइहें।"
 
 #. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
-#: src/features/wiki/wiki-settings.tsx:783
+#: src/features/wiki/wiki-settings.tsx:781
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "ई \"{0}\" पर अपडेट भेजल बंद कर दी। अगर ऊ चाहीं त ऊ फेर से प्रतिकृति बना सकेलें।"
 
@@ -3237,25 +3285,22 @@ msgstr "शीर्षक"
 msgid "Title is required"
 msgstr "शीर्षक चाहीं"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:220
+#: ../../../lib/web/src/components/travelling-picker.tsx:201
 msgid "To"
 msgstr "ले"
 
-#: ../../../lib/web/src/components/layout/nav-group.tsx:365
-#: ../../../lib/web/src/components/layout/nav-group.tsx:372
-#: ../../../lib/web/src/components/layout/nav-group.tsx:490
-#: ../../../lib/web/src/components/layout/nav-group.tsx:497
+#: ../../../lib/web/src/components/layout/nav-group.tsx:393
+#: ../../../lib/web/src/components/layout/nav-group.tsx:400
+#: ../../../lib/web/src/components/layout/nav-group.tsx:522
+#: ../../../lib/web/src/components/layout/nav-group.tsx:529
 msgid "Toggle section"
 msgstr "सेक्शन टॉगल करीं"
 
 #: ../../../lib/web/src/components/ui/sidebar.tsx:337
 #: ../../../lib/web/src/components/ui/sidebar.tsx:340
-msgid "Toggle sidebar"
-msgstr "साइडबार टॉगल करीं"
-
 #: ../../../lib/web/src/components/ui/sidebar.tsx:352
 #: ../../../lib/web/src/components/ui/sidebar.tsx:355
-msgid "Toggle Sidebar"
+msgid "Toggle sidebar"
 msgstr "साइडबार टॉगल करीं"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:26
@@ -3267,7 +3312,7 @@ msgstr "दृश्य विकल्प टॉगल करीं"
 msgid "Toggle watched filter"
 msgstr "देखल फ़िल्टर टॉगल करीं"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:74
+#: ../../../lib/web/src/features/errors/general-error.tsx:72
 msgid "Too many requests"
 msgstr "बहुते जादा अनुरोध"
 
@@ -3275,7 +3320,7 @@ msgstr "बहुते जादा अनुरोध"
 msgid "Top"
 msgstr "ऊपर"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:145
+#: ../../../lib/web/src/components/travelling-picker.tsx:126
 msgid "Travelling"
 msgstr "यात्रा कर रहल बा"
 
@@ -3291,8 +3336,8 @@ msgstr "अलग टैग आजमाईं।"
 msgid "Try adjusting your search terms"
 msgstr "अपना खोज शब्द समायोजित करे के कोशिश करीं"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:140
-#: ../../../lib/web/src/features/errors/general-error.tsx:180
+#: ../../../lib/web/src/features/errors/general-error.tsx:138
+#: ../../../lib/web/src/features/errors/general-error.tsx:178
 msgid "Try again"
 msgstr "फेर से कोशिश करीं"
 
@@ -3304,12 +3349,12 @@ msgstr "अलग खोज शब्द आजमाईं।"
 msgid "Tuesday"
 msgstr "मंगल"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:130
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:162
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:134
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:166
 msgid "Type"
 msgstr "प्रकार"
 
-#: ../../../lib/web/src/components/command-menu.tsx:52
+#: ../../../lib/web/src/components/command-menu.tsx:54
 msgid "Type a command or search..."
 msgstr "एगो आदेश टाइप करीं या खोजीं..."
 
@@ -3329,8 +3374,8 @@ msgstr "खोजे खातिर टाइप करीं..."
 msgid "Unable to connect to remote server"
 msgstr "रिमोट सर्वर से जुड़े में असमर्थ"
 
-#: ../../../lib/web/src/lib/auth-manager.ts:92
-#: ../../../lib/web/src/lib/auth-manager.ts:104
+#: ../../../lib/web/src/lib/auth-manager.ts:89
+#: ../../../lib/web/src/lib/auth-manager.ts:101
 msgid "Unable to redirect to login. Please try again."
 msgstr "लॉगिन पर रीडायरेक्ट ना हो सकल। कृपया फेर से कोशिश करीं।"
 
@@ -3338,16 +3383,12 @@ msgstr "लॉगिन पर रीडायरेक्ट ना हो स�
 msgid "Unassigned"
 msgstr "अनसौंपल"
 
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:16
-msgid "Unauthorized Access"
-msgstr "अनधिकृत पहुँच"
-
 #: ../../../lib/web/src/components/attachment-image.tsx:50
 msgid "Unavailable"
 msgstr "अनुपलब्ध"
 
 #: ../../../lib/web/src/lib/request.ts:133
-#: ../../../lib/web/src/lib/request.ts:206
+#: ../../../lib/web/src/lib/request.ts:209
 msgid "Unexpected API error"
 msgstr "अप्रत्याशित API त्रुटि"
 
@@ -3355,6 +3396,11 @@ msgstr "अप्रत्याशित API त्रुटि"
 msgid "United States"
 msgstr "संयुक्त राज्य अमेरिका"
 
+#: ../../../lib/web/src/components/audit-timeline.tsx:103
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:167
+#: ../../../lib/web/src/components/tree-row.tsx:219
+#: ../../../lib/web/src/components/tree-row.tsx:373
+#: ../../../lib/web/src/components/tree-table-header.tsx:70
 #: ../../../lib/web/src/features/accounts/types.ts:29
 #: src/features/wiki/wiki-comment-thread.tsx:126
 msgid "Unknown"
@@ -3370,16 +3416,16 @@ msgstr "अनजान"
 #: src/routes/_authenticated/index.tsx:494
 #: src/routes/_authenticated/index.tsx:522
 #: src/routes/_authenticated/index.tsx:524
-#: src/routes/_authenticated/index.tsx:890
-#: src/routes/_authenticated/index.tsx:922
-#: src/routes/_authenticated/index.tsx:924
+#: src/routes/_authenticated/index.tsx:889
+#: src/routes/_authenticated/index.tsx:921
+#: src/routes/_authenticated/index.tsx:923
 msgid "Unsubscribe"
 msgstr "सदस्यता रद्द करीं"
 
 #: src/features/wiki/wiki-page-content.tsx:80
 #: src/routes/_authenticated/$page/index.tsx:76
 #: src/routes/_authenticated/index.tsx:287
-#: src/routes/_authenticated/index.tsx:933
+#: src/routes/_authenticated/index.tsx:932
 msgid "Unsubscribed"
 msgstr "सदस्यता रद्द भइल"
 
@@ -3389,8 +3435,8 @@ msgstr "सदस्यता रद्द भइल"
 #: src/routes/_authenticated/$page/index.tsx:280
 #: src/routes/_authenticated/index.tsx:286
 #: src/routes/_authenticated/index.tsx:494
-#: src/routes/_authenticated/index.tsx:889
-#: src/routes/_authenticated/index.tsx:932
+#: src/routes/_authenticated/index.tsx:888
+#: src/routes/_authenticated/index.tsx:931
 msgid "Unsubscribing..."
 msgstr "सदस्यता रद्द हो रहल बा..."
 
@@ -3404,15 +3450,16 @@ msgstr "असमर्थित फ़ाइल प्रकार: {names}। 
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "असमर्थित फ़ाइल प्रकार: {names}। समर्थित फ़ाइल: छवि, PDF, DOC, DOCX, TXT, आ MD।"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:285
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:299
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
 #: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "बेशीर्षक"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:56
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:499
 msgid "Updated"
 msgstr "अपडेट भइल"
 
@@ -3422,16 +3469,20 @@ msgstr "अपडेट भइल"
 #: src/features/wiki/page-view.tsx:264
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:74
-#: src/routes/_authenticated/index.tsx:906
+#: src/routes/_authenticated/index.tsx:905
 msgid "Updated {0}"
 msgstr "अपडेट भइल {0}"
 
-#: src/features/wiki/wiki-settings.tsx:562
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:56
+msgid "Updated {field}"
+msgstr "{field} अपडेट भइल"
+
+#: src/features/wiki/wiki-settings.tsx:560
 msgid "Updating access..."
 msgstr "पहुँच अपडेट कइल जा रहल बा..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:639
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:301
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:661
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:304
 msgid "Upload"
 msgstr "अपलोड करीं"
 
@@ -3470,17 +3521,17 @@ msgstr "नया अपलोड करीं"
 msgid "Upload progress"
 msgstr "अपलोड के प्रगति"
 
-#: src/features/wiki/wiki-settings.tsx:438
+#: src/features/wiki/wiki-settings.tsx:436
 msgid "Use as home"
 msgstr "होम के रूप में उपयोग करीं"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:341
+#: ../../../lib/web/src/components/step-up-dialog.tsx:329
 msgid "Use your passkey"
 msgstr "आपन पासकी इस्तेमाल करीं"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:143
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:112
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:18
 msgid "User"
 msgstr "उपयोगकर्ता"
 
@@ -3492,7 +3543,7 @@ msgstr "चर: {variables}"
 msgid "Verification code"
 msgstr "सत्यापन कोड"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:391
+#: ../../../lib/web/src/components/step-up-dialog.tsx:379
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:111
 msgid "Verify"
 msgstr "सत्यापित करीं"
@@ -3511,12 +3562,12 @@ msgstr "संस्करण"
 msgid "Version {0}"
 msgstr "संस्करण {0}"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:95
+#: ../../../lib/web/src/components/attachment-gallery.tsx:96
 msgid "Video thumbnail"
 msgstr "वीडियो थंबनेल"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:315
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:326
 msgid "Video viewer: {0}"
 msgstr "वीडियो दर्शक: {0}"
 
@@ -3526,8 +3577,8 @@ msgctxt "action"
 msgid "View"
 msgstr "देखीं"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:220
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:228
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:216
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:224
 msgid "View all notifications"
 msgstr "सब सूचना देखीं"
 
@@ -3535,7 +3586,7 @@ msgstr "सब सूचना देखीं"
 msgid "View controls"
 msgstr "नियंत्रण देखीं"
 
-#: src/features/wiki/wiki-settings.tsx:500
+#: src/features/wiki/wiki-settings.tsx:498
 msgid "View only"
 msgstr "खाली देखीं"
 
@@ -3561,13 +3612,16 @@ msgstr "हमनी <0>{0}</0> पर सत्यापन कोड भेज
 msgid "Wednesday"
 msgstr "बुधवार"
 
-#: src/features/wiki/wiki-settings.tsx:725
-#: src/features/wiki/wiki-settings.tsx:809
+#: src/features/wiki/wiki-settings.tsx:723
+#: src/features/wiki/wiki-settings.tsx:807
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "जब अउरी विकी एह विकी के प्रतिकृति बनइहें, ऊ इहाँ देखाई।"
 
+#: src/components/layout/wiki-layout.tsx:152
+msgid "wiki"
+msgstr ""
+
 #: src/components/layout/wiki-layout.tsx:103
-#: src/components/layout/wiki-layout.tsx:153
 #: src/features/wiki/wiki-page-content.tsx:103
 #: src/features/wiki/wiki-page-content.tsx:321
 #: src/routes/_authenticated/$page/index.tsx:230
@@ -3577,10 +3631,10 @@ msgstr "जब अउरी विकी एह विकी के प्रत
 msgid "Wiki"
 msgstr "विकी"
 
-#: src/routes/_authenticated/index.tsx:699
-#: src/routes/_authenticated/index.tsx:706
-#: src/routes/_authenticated/index.tsx:870
-#: src/routes/_authenticated/index.tsx:877
+#: src/routes/_authenticated/index.tsx:698
+#: src/routes/_authenticated/index.tsx:705
+#: src/routes/_authenticated/index.tsx:869
+#: src/routes/_authenticated/index.tsx:876
 msgid "Wiki actions"
 msgstr "विकी क्रिया सब"
 
@@ -3588,7 +3642,7 @@ msgstr "विकी क्रिया सब"
 msgid "Wiki created"
 msgstr "विकी बनल"
 
-#: src/features/wiki/wiki-settings.tsx:348
+#: src/features/wiki/wiki-settings.tsx:346
 msgid "Wiki deleted"
 msgstr "विकी हटावल गइल"
 
@@ -3605,7 +3659,7 @@ msgstr "विकी आईडी चाहीं"
 msgid "Wiki link"
 msgstr "विकी लिंक"
 
-#: src/features/wiki/wiki-settings.tsx:269
+#: src/features/wiki/wiki-settings.tsx:267
 msgid "Wiki name is required"
 msgstr "विकी के नाम चाहीं"
 
@@ -3614,7 +3668,7 @@ msgstr "विकी के नाम चाहीं"
 msgid "Wiki not found"
 msgstr "विकी ना मिलल"
 
-#: src/features/wiki/wiki-settings.tsx:281
+#: src/features/wiki/wiki-settings.tsx:279
 msgid "Wiki renamed"
 msgstr "विकी के नाम बदलल गइल"
 
@@ -3623,11 +3677,11 @@ msgstr "विकी के नाम बदलल गइल"
 msgid "Wiki settings"
 msgstr "विकी सेटिंग"
 
-#: src/features/wiki/wiki-settings.tsx:158
+#: src/features/wiki/wiki-settings.tsx:159
 msgid "Wiki settings sections"
 msgstr "विकी सेटिंग खंड सब"
 
-#: src/features/wiki/wiki-settings.tsx:327
+#: src/features/wiki/wiki-settings.tsx:325
 msgid "Wiki synced"
 msgstr "विकी सिंक भइल"
 
@@ -3652,11 +3706,11 @@ msgstr "आप पन्ना <0>\"{title}\"</0> ({slug}) के हटाव�
 msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
 msgstr "आप <0>{slug}</0> के संस्करण <1>{version}</1> पर वापस लावे जा रहल बानीं। एसे संस्करण {version} के सामग्री से एगो नया संशोधन बनी।"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:61
+#: ../../../lib/web/src/features/errors/general-error.tsx:59
 msgid "You do not have access to this section."
 msgstr "रउआ के ए खंड तक पहुँच नइखे।"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:100
+#: ../../../lib/web/src/components/restore-banner.tsx:86
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "आपन खाता {source} से इहाँ हिलावल गइल। जब तक उहाँ से ना मेटाईं, संदेश आ सूचना दुनो सर्वर पर पहुँच सकेला, कुछ सामग्री पुरान सर्वर से आवत रही, आ फॉलोअर्स के इहाँ ढूंढे में कुछ मिनट लाग सकेला।"
 

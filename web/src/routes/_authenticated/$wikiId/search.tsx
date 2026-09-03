@@ -40,7 +40,6 @@ function WikiSearchRoute() {
       <WikiRouteHeader
         title={t`Search`}
         back={{ label: wiki.name ?? t`Back`, onFallback: goBack }}
-        showSidebarTrigger
       />
       <Main>
         <SearchPage initialQuery={q} wikiId={wikiId} onQueryChange={handleQueryChange} />

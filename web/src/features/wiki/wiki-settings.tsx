@@ -77,6 +77,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  DISALLOWED_NAME_CHARS,
 } from '@mochi/web'
 import endpoints from '@/api/endpoints'
 import { ValueLinkChip } from '@/components/value-link-chip'
@@ -182,9 +183,6 @@ export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permission
     </WikiSettingsContext.Provider>
   )
 }
-
-// Characters disallowed in wiki names (matches backend validation)
-const DISALLOWED_NAME_CHARS = /[<>\r\n]/
 
 function SettingsTab() {
   const { t } = useLingui()

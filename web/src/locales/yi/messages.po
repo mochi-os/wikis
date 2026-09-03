@@ -14,20 +14,16 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: ../../../lib/web/src/lib/error-normalizer.ts:215
+#: ../../../lib/web/src/lib/error-normalizer.ts:219
 msgid "Please check your internet connection and try again."
 msgstr "זײַט אַזוי גוט קאָנטראָלירט אײַער אינטערנעץ פֿאַרבינדונג און פּרוּווט נאָך אַ מאָל."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:301
-msgid " or "
-msgstr " אָדער "
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:190
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:189
 #: src/features/wiki/wiki-comment-thread.tsx:167
 msgid "(edited)"
 msgstr "(רעדאַגירט)"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:174
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:173
 #: src/features/wiki/wiki-comment-thread.tsx:153
 msgid "(expand)"
 msgstr "(פאַרברייטערן)"
@@ -51,6 +47,16 @@ msgstr "{0, plural, one {# זײַטל} other {# זײַטלעך}}"
 msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# רעזולטאַט} other {# רעזולטאַטן}}"
 
+#. placeholder {0}: displayInfo.count
+#: ../../../lib/web/src/components/person-picker.tsx:257
+msgid "{0, plural, one {# selected} other {# selected}}"
+msgstr "{0, plural, one {# אויסגעקליבן} other {# אויסגעקליבן}}"
+
+#. placeholder {0}: countDeepChildren(object.id)
+#: ../../../lib/web/src/components/entity/entity-board-card.tsx:421
+msgid "{0, plural, one {+# nested} other {+# nested}}"
+msgstr "{0, plural, one {+# אײַנגענעסטיקט} other {+# אײַנגענעסטיקטע}}"
+
 #. placeholder {0}: comments.length
 #: src/features/wiki/page-comments.tsx:180
 msgid "{0, plural, one {Showing the first # comment.} other {Showing the first # comments.}}"
@@ -64,7 +70,7 @@ msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:900
+#: src/routes/_authenticated/index.tsx:899
 msgid "{0} pages"
 msgstr "{0} בלעטער"
 
@@ -98,13 +104,9 @@ msgstr "{count, plural, one {#וואָך} other {#וואָך}}"
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# דאָקומענט} other {# דאָקומענטן}}"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:176
 msgid "{entityLabel} name"
 msgstr "{entityLabel} נאָמען"
-
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:99
-msgid "{entityLabel} name is required"
-msgstr "{entityLabel}־נאָמען איז נײטיק"
 
 #: src/features/wiki/attachments-page.tsx:189
 #: src/features/wiki/page-editor.tsx:235
@@ -139,10 +141,11 @@ msgstr "{renamedCount, plural, one {איבערגענומען 1 זײַטל} other
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{sentLabel} פֿון {totalLabel}"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:530
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:531
 msgid "{totalCount, plural, one {# item} other {# items}}"
 msgstr "{totalCount, plural, one {# איינס} other {# זאַכן}}"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
 #: src/features/wiki/wiki-comment-thread.tsx:151
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# ענטפֿער} other {+# מער ענטפֿערס}}"
@@ -162,19 +165,6 @@ msgstr "{wikiName} אײַנשטעלונגען"
 msgid "*No content*"
 msgstr "*קיין אינהאַלט*"
 
-#. placeholder {0}: countDeepChildren(object.id)
-#: ../../../lib/web/src/components/entity/entity-board-card.tsx:418
-msgid "+{0} nested"
-msgstr "+{0} אײַנגענעסטלט"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:171
-msgid "+{totalDescendants} more replies"
-msgstr "+{totalDescendants} מער ענטפֿערס"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
-msgid "1 reply"
-msgstr "1 ענטפֿער"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:37
 msgid "12 hours"
 msgstr "12 שעה"
@@ -191,11 +181,12 @@ msgstr "אַבסאָלוט (דאַטע און צײַט)"
 msgid "Accept"
 msgstr "אָננעמען"
 
-#: src/features/wiki/wiki-settings.tsx:107
+#: src/features/wiki/wiki-settings.tsx:108
 msgid "Access"
 msgstr "צוטריט"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:60
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:16
+#: ../../../lib/web/src/features/errors/general-error.tsx:58
 msgid "Access denied"
 msgstr "צוטריט אָפּגעזאָגט"
 
@@ -203,15 +194,15 @@ msgstr "צוטריט אָפּגעזאָגט"
 msgid "Access level"
 msgstr "צוטריט שטאַפּל"
 
-#: src/features/wiki/wiki-settings.tsx:563
+#: src/features/wiki/wiki-settings.tsx:561
 msgid "Access level updated"
 msgstr "צוטריט שטאַפּל באַנײַט"
 
-#: src/features/wiki/wiki-settings.tsx:579
+#: src/features/wiki/wiki-settings.tsx:577
 msgid "Access removed"
 msgstr "צוטריט אַראָפּגענומען"
 
-#: src/features/wiki/wiki-settings.tsx:550
+#: src/features/wiki/wiki-settings.tsx:548
 msgid "Access set for {subjectName}"
 msgstr "צוטריט באַשטימט פֿאַר {subjectName}"
 
@@ -221,21 +212,21 @@ msgstr "קאָנטע סאָרט"
 
 #: src/features/wiki/page-history.tsx:60
 #: src/features/wiki/redirects-page.tsx:96
-#: src/features/wiki/wiki-settings.tsx:746
+#: src/features/wiki/wiki-settings.tsx:744
 msgid "Actions"
 msgstr "אַקציעס"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:720
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:758
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
 #: src/features/wiki/tag-manager.tsx:134
 #: src/features/wiki/tag-manager.tsx:139
 #: src/features/wiki/tag-manager.tsx:164
-#: src/features/wiki/wiki-settings.tsx:596
+#: src/features/wiki/wiki-settings.tsx:594
 msgid "Add"
 msgstr "צולייגן"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:312
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:314
 msgid "Add a comment..."
 msgstr "צולייגן אַ קאָמענטאַר..."
 
@@ -243,7 +234,7 @@ msgstr "צולייגן אַ קאָמענטאַר..."
 msgid "Add a new account"
 msgstr "צולייגן אַ נײַע קאָנטע"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:106
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:110
 msgid "Add a new field to this class"
 msgstr "צולייגן אַ נײַע פֿעלד צו דעם קלאַס"
 
@@ -263,16 +254,16 @@ msgstr "צולייגן קאָנטע"
 msgid "Add caption"
 msgstr "צוגעבן אן אונטערשריפֿט"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:690
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:728
 msgid "Add checklist item"
 msgstr "צולייגן טשעקליסטע פּונקט"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:105
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:233
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:235
 msgid "Add field"
 msgstr "צולייגן פֿעלד"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:708
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:746
 msgid "Add item..."
 msgstr "צולייגן פּונקט..."
 
@@ -280,20 +271,20 @@ msgstr "צולייגן פּונקט..."
 msgid "Add link"
 msgstr "צולייגן לינק"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:291
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:91
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:191
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:217
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:222
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:295
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:92
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:193
 msgid "Add option"
 msgstr "צולייגן אָפּציע"
 
 #: src/features/wiki/redirects-page.tsx:225
-#: src/features/wiki/wiki-settings.tsx:1027
+#: src/features/wiki/wiki-settings.tsx:1025
 msgid "Add redirect"
 msgstr "צולייגן רידירעקט"
 
-#: ../../../lib/web/src/components/post-tags.tsx:137
+#: ../../../lib/web/src/components/post-tags.tsx:138
 msgid "Add tag..."
 msgstr "צולייגן טאַג..."
 
@@ -305,8 +296,8 @@ msgstr "לייגט צו טאַגס פֿון אונטן פֿון יעדער זײ�
 msgid "Add to existing notifications"
 msgstr "צולייגן צו עקזיסטירנדיקע נאָטיפֿיקאַציעס"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:258
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:513
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:261
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:518
 #: ../../../lib/web/src/components/view-tabs.tsx:87
 #: ../../../lib/web/src/components/view-tabs.tsx:93
 msgid "Add view"
@@ -342,16 +333,15 @@ msgstr "אַלע טאַגן"
 msgid "All wikis"
 msgstr "אַלע וויקיס"
 
-#. placeholder {0}: entityLabel.toLowerCase()
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
-msgid "Allow anyone to search for {0}"
-msgstr "דערלױבט װעמען עס איז צו זוכן {0}"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:87
+msgid "Allow anyone to search for {entityLabel}"
+msgstr "דערלויב יעדן צו זוכן {entityLabel}"
 
-#: src/components/layout/wiki-layout.tsx:155
+#: src/components/layout/wiki-layout.tsx:154
 msgid "Allow anyone to search for wiki"
 msgstr "דערלויבן עמעצן צו זוכן פֿאַר וויקי"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:229
 msgid "Allow sort by"
 msgstr "דערלויבן סאָרטירן לויט"
 
@@ -360,6 +350,7 @@ msgid "An error occurred"
 msgstr "אַ פֿעלער איז פֿאָרגעקומען"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:266
+#: ../../../lib/web/src/lib/error-normalizer.ts:11
 msgid "An unexpected error occurred"
 msgstr "אַן אומדערוואַרטעטער פֿעלער איז פֿאָרגעקומען"
 
@@ -380,16 +371,16 @@ msgstr "װער עס איז אײַנגעלאָגט"
 msgid "Anything subscribed to this feed will stop receiving it. You can copy a new URL afterwards."
 msgstr "אַלץ וואָס איז אַבאָנירט אויף דעם פֿיד וועט אויפֿהערן עס צו באַקומען. איר קענט קאָפּירן אַ נייַעם URL דערנאָך."
 
-#: src/features/wiki/wiki-settings.tsx:481
+#: src/features/wiki/wiki-settings.tsx:479
 msgid "Are you absolutely sure?"
 msgstr "זענט איר זיכער?"
 
 #. placeholder {0}: deleteTarget?.name
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:313
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:316
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "זענט איר זיכער איר ווילט אויסמעקן \"{0}\"?"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:629
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:631
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "זענט איר זיכער איר ווילט אויסמעקן די \"{name}\" זײַל? דאָס קען נישט ווערן אומגעקערט."
 
@@ -408,7 +399,7 @@ msgstr "זענט איר זיכער איר ווילט אַרויסלאָגן? א�
 #: src/features/wiki/wiki-page-content.tsx:404
 #: src/routes/_authenticated/$page/index.tsx:303
 #: src/routes/_authenticated/index.tsx:523
-#: src/routes/_authenticated/index.tsx:923
+#: src/routes/_authenticated/index.tsx:922
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "זענט איר זיכער איר ווילט אַראָפּשרײַבן פֿון דעם וויקי?"
 
@@ -416,11 +407,11 @@ msgstr "זענט איר זיכער איר ווילט אַראָפּשרײַבן 
 msgid "Ascending"
 msgstr "אַרויפֿגייענדיק"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Attach comment files"
 msgstr "צוהענקען קאָמענטאַר פֿײַלן"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Attach reply files"
 msgstr "צוהענקען ענטפֿער פֿײַלן"
 
@@ -444,7 +435,7 @@ msgstr "בײַלאַגעס"
 msgid "Authenticated users"
 msgstr "אױטענטיפֿיצירטע באַניצער"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:318
+#: ../../../lib/web/src/components/step-up-dialog.tsx:306
 msgid "Authenticator code"
 msgstr "Authenticator קאָד"
 
@@ -457,15 +448,15 @@ msgstr "מחבר"
 msgid "Available keyboard shortcuts"
 msgstr "פֿאַראַנענע קלאַוויאַטור קורצוועגן"
 
-#: ../../../lib/web/src/components/entity-avatar.tsx:99
+#: ../../../lib/web/src/components/entity-avatar.tsx:98
 msgid "Avatar"
 msgstr "אַװאַטאַר"
 
-#: ../../../lib/web/src/components/entity-avatar.tsx:99
+#: ../../../lib/web/src/components/entity-avatar.tsx:98
 msgid "Avatar for {name}"
 msgstr "אַװאַטאַר פֿאַר {name}"
 
-#: ../../../lib/web/src/components/place-picker.tsx:156
+#: ../../../lib/web/src/components/place-picker.tsx:142
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
@@ -479,8 +470,8 @@ msgstr "צוריק"
 msgid "Back to history"
 msgstr "צוריק צו געשיכטע"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:27
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:28
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:28
 msgid "Back to home"
 msgstr "צוריק צום הויז"
 
@@ -560,8 +551,8 @@ msgstr "זײַט דער ערשטער צו קאָמענטירן אויף דעם �
 msgid "Blocked by"
 msgstr "געבלאָקירט פֿון"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:242
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:252
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:238
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:248
 msgid "Blocked navigation to untrusted link"
 msgstr "געבלאָקירט נאַוויגאַציע צו אומגעטרויטן לינק"
 
@@ -569,21 +560,21 @@ msgstr "געבלאָקירט נאַוויגאַציע צו אומגעטרויט�
 msgid "Blocks"
 msgstr "Blocks"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:312
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:315
 msgid "Board"
 msgstr "ברעט"
 
-#: ../../../lib/web/src/components/post-tags.tsx:180
-#: ../../../lib/web/src/components/post-tags.tsx:192
+#: ../../../lib/web/src/components/post-tags.tsx:194
+#: ../../../lib/web/src/components/post-tags.tsx:206
 msgid "Boost interest"
 msgstr "פֿאַרשטאַרקן אינטערעס"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:399
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:402
 msgid "Border colour"
 msgstr "ראַנד פֿאַרב"
 
 #: src/features/wiki/redirects-page.tsx:199
-#: src/features/wiki/wiki-settings.tsx:994
+#: src/features/wiki/wiki-settings.tsx:992
 msgid "Both source and target are required"
 msgstr "אי מקור און אי ציל זענען נייטיק"
 
@@ -600,15 +591,15 @@ msgid "Browser notifications"
 msgstr "בראָוזער נאָטיפֿיקאַציעס"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:426
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:166
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:183
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:185
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
-#: ../../../lib/web/src/components/step-up-dialog.tsx:366
-#: ../../../lib/web/src/components/travelling-picker.tsx:308
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
+#: ../../../lib/web/src/components/step-up-dialog.tsx:354
+#: ../../../lib/web/src/components/travelling-picker.tsx:288
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:251
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:136
 #: ../../../lib/web/src/features/access/access-dialog.tsx:328
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:201
@@ -623,18 +614,18 @@ msgstr "בראָוזער נאָטיפֿיקאַציעס"
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:156
 #: src/features/wiki/wiki-comment-thread.tsx:182
-#: src/features/wiki/wiki-settings.tsx:790
-#: src/features/wiki/wiki-settings.tsx:953
-#: src/features/wiki/wiki-settings.tsx:1066
+#: src/features/wiki/wiki-settings.tsx:788
+#: src/features/wiki/wiki-settings.tsx:951
+#: src/features/wiki/wiki-settings.tsx:1064
 #: src/routes/_authenticated/join.tsx:120
 msgid "Cancel"
 msgstr "אָפּזאָגן"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Cancel comment"
 msgstr "אָפּזאָגן קאָמענטאַר"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Cancel reply"
 msgstr "אָפּזאָגן ענטפֿער"
 
@@ -652,15 +643,23 @@ msgstr "קאַטעגאָריע פֿאַר די דאָזיקע נאָטיפֿיק
 msgid "Change notification category"
 msgstr "ענדערן נאָטיפֿיקאַציע קאַטעגאָריע"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:62
+msgid "Changed"
+msgstr "געענדערט"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:62
+msgid "Changed {field}"
+msgstr "געענדערט {field}"
+
 #: src/features/wiki/wiki-page-content.tsx:346
 #: src/routes/_authenticated/index.tsx:449
-#: src/routes/_authenticated/index.tsx:718
+#: src/routes/_authenticated/index.tsx:717
 msgid "Changes"
 msgstr "ענדערונגען"
 
 #: src/features/wiki/wiki-page-content.tsx:348
 #: src/routes/_authenticated/index.tsx:457
-#: src/routes/_authenticated/index.tsx:728
+#: src/routes/_authenticated/index.tsx:727
 msgid "Changes and comments"
 msgstr "ענדערונגען און קאָמענטאַרן"
 
@@ -674,11 +673,11 @@ msgstr "ענדערונגען פֿון ווערסיע {0} → {1}"
 msgid "Changes will appear here when pages are edited."
 msgstr "ענדערונגען וועלן זיך באַווײַזן דאָ ווען זײַטן ווערן רעדאַגירט."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:12
 msgid "Checkbox"
 msgstr "טשעקבאָקס"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:138
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:13
 msgid "Checklist"
 msgstr "טשעקליסטע"
 
@@ -693,10 +692,10 @@ msgstr "קלײַבט שפּראַך"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:274
 #: ../../../lib/web/src/components/colour-picker.tsx:355
-#: ../../../lib/web/src/components/travelling-picker.tsx:164
-#: ../../../lib/web/src/components/travelling-picker.tsx:170
-#: ../../../lib/web/src/components/travelling-picker.tsx:231
-#: ../../../lib/web/src/components/travelling-picker.tsx:237
+#: ../../../lib/web/src/components/travelling-picker.tsx:145
+#: ../../../lib/web/src/components/travelling-picker.tsx:151
+#: ../../../lib/web/src/components/travelling-picker.tsx:212
+#: ../../../lib/web/src/components/travelling-picker.tsx:218
 msgid "Clear"
 msgstr "רייניקן"
 
@@ -710,19 +709,19 @@ msgstr "רייניקן אַלץ"
 msgid "Clear search"
 msgstr "רייניקן זוכן"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:501
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:506
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:468
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:471
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:479
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "פֿאַרמאַכן"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:113
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:263
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:267
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:117
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:266
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:270
 msgid "Close dialog"
 msgstr "פֿאַרמאַכן דיאַלאָג"
 
@@ -755,16 +754,16 @@ msgstr "צונויפֿקלאַפּן"
 msgid "Collapse sidebar"
 msgstr "צונויפֿקלאַפּן סײַדבאַר"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:146
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:148
 msgid "Colour"
 msgstr "פֿאַרב"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:539
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:540
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:545
 msgid "Column actions"
 msgstr "זייַל אַקציעס"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:347
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:350
 msgid "Columns group by"
 msgstr "זײַלן גרופּירן לויט"
 
@@ -786,11 +785,11 @@ msgstr "קאָמענטאַר"
 msgid "Comment actions"
 msgstr "קאָמענטאַר אַקציעס"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:431
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:442
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:454
 #: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/index.tsx:454
-#: src/routes/_authenticated/index.tsx:723
+#: src/routes/_authenticated/index.tsx:722
 msgid "Comments"
 msgstr "קאָמענטאַרן"
 
@@ -802,16 +801,16 @@ msgstr "קאָמפּאַקט"
 msgid "Compare changes"
 msgstr "פֿאַרגלײַך ענדערונגען"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:95
 msgid "Configure option settings"
 msgstr "קאָנפֿיגורירן אָפּציע אײַנשטעלונגען"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:259
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:262
 msgid "Configure view settings"
 msgstr "קאָנפֿיגורירן זעהן אײַנשטעלונגען"
 
-#: ../../../lib/web/src/components/place-picker.tsx:160
-#: ../../../lib/web/src/components/travelling-picker.tsx:316
+#: ../../../lib/web/src/components/place-picker.tsx:146
+#: ../../../lib/web/src/components/travelling-picker.tsx:296
 msgid "Confirm"
 msgstr "באַשטעטיקן"
 
@@ -831,7 +830,7 @@ msgstr "אינהאַלט"
 msgid "Content not found."
 msgstr "אינהאַלט נישט געפֿונען."
 
-#: ../../../lib/web/src/lib/query-client.ts:78
+#: ../../../lib/web/src/lib/query-client.ts:73
 msgid "Content not modified"
 msgstr "אינהאַלט נישט מאָדיפֿיצירט"
 
@@ -843,7 +842,7 @@ msgstr "קאָנטעקסטועלע אינפֿאָרמאַציע און פּרט�
 msgid "Continue"
 msgstr "ממשיך"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:355
+#: ../../../lib/web/src/components/step-up-dialog.tsx:343
 msgid "Continue with {label}"
 msgstr "המשך מיט {label}"
 
@@ -874,36 +873,35 @@ msgstr "מע האָט נישט געקענט לאָדן די פֿריִערדיק
 msgid "Could not load this document. Please try again later."
 msgstr "האָט נישט געקאָנט לאָדן דעם דאָקומענט. פּרובירט שפּעטער ווידער."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:128
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:124
 msgid "Couldn't load notifications"
 msgstr "מען האָט נישט געקענט לאָדן מעלדונגען"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:182
+#: ../../../lib/web/src/components/step-up-dialog.tsx:170
 msgid "Couldn't send the code. Please try again."
 msgstr "מע האָט נישט געקענט שיקן דעם קאָד. ביטע פּרוביר ווידער."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:136
+#: ../../../lib/web/src/components/step-up-dialog.tsx:124
 msgid "Couldn't start re-authentication. Please try again."
 msgstr "מע האָט נישט געקענט אָנהייבן ווידער־פֿאַריפֿיצירונג. ביטע פּרוביר ווידער."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:224
+#: ../../../lib/web/src/components/step-up-dialog.tsx:212
 msgid "Couldn't verify with that account. Please try again."
 msgstr "מע האָט נישט געקענט באַשטעטיקן מיט יענעם קאָנטע. ביטע פּרובירט נאָך אַ מאָל."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:550
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:689
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:491
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:675
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:551
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:691
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:513
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
 msgid "Create"
 msgstr "באַשאַפֿן"
 
-#. placeholder {0}: entityLabel.toLowerCase()
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
-msgid "Create {0}"
-msgstr "שאַף {0}"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:146
+msgid "Create {entityLabel}"
+msgstr "שאַף {entityLabel}"
 
-#: src/features/wiki/wiki-settings.tsx:1035
+#: src/features/wiki/wiki-settings.tsx:1033
 msgid "Create a redirect from one URL to another."
 msgstr "באַשאַפֿן אַ רידירעקט פֿון איין URL צו אַן אַנדערן."
 
@@ -912,7 +910,7 @@ msgid "Create a redirect from one URL to another. The source URL must not be an 
 msgstr "באַשאַפֿן אַ רידירעקט פֿון איין URL צו אַן אַנדערן. דער מקור URL מוז נישט זײַן אַ עקזיסטירנדיקער זײַטל."
 
 #: src/features/wiki/redirects-page.tsx:85
-#: src/features/wiki/wiki-settings.tsx:895
+#: src/features/wiki/wiki-settings.tsx:893
 msgid "Create a redirect to forward one URL to another."
 msgstr "באַשאַפֿן אַ רידירעקט צו פֿאָרווערטן איין URL צו אַן אַנדערן."
 
@@ -926,8 +924,8 @@ msgstr "באַשאַפֿן זײַטל"
 
 #: src/features/wiki/redirects-page.tsx:231
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1033
-#: src/features/wiki/wiki-settings.tsx:1069
+#: src/features/wiki/wiki-settings.tsx:1031
+#: src/features/wiki/wiki-settings.tsx:1067
 msgid "Create redirect"
 msgstr "באַשאַפֿן רידירעקט"
 
@@ -943,20 +941,25 @@ msgid "Create this page"
 msgstr "באַשאַפֿן דעם זײַטל"
 
 #: src/components/layout/wiki-layout.tsx:132
-#: src/components/layout/wiki-layout.tsx:152
-#: src/routes/_authenticated/index.tsx:770
+#: src/components/layout/wiki-layout.tsx:151
+#: src/routes/_authenticated/index.tsx:769
 msgid "Create wiki"
 msgstr "באַשאַפֿן וויקי"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:54
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:492
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:495
 #: src/features/wiki/redirects-page.tsx:95
-#: src/features/wiki/wiki-settings.tsx:905
+#: src/features/wiki/wiki-settings.tsx:903
 msgid "Created"
 msgstr "באַשאַפֿן"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:54
+msgid "Created {field}"
+msgstr "באַשאַפֿן {field}"
+
 #: src/features/wiki/redirects-page.tsx:207
-#: src/features/wiki/wiki-settings.tsx:1006
+#: src/features/wiki/wiki-settings.tsx:1004
 msgid "Creating redirect..."
 msgstr "שאַפֿן ווײַטערפֿירונג..."
 
@@ -964,11 +967,11 @@ msgstr "שאַפֿן ווײַטערפֿירונג..."
 msgid "Creating wiki..."
 msgstr "שאַפֿן וויקי..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:260
 #: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1069
+#: src/features/wiki/wiki-settings.tsx:1067
 msgid "Creating..."
 msgstr "באַשאַפֿן..."
 
@@ -976,7 +979,7 @@ msgstr "באַשאַפֿן..."
 msgid "Current"
 msgstr "איצטיק"
 
-#: ../../../lib/web/src/components/map-view.tsx:217
+#: ../../../lib/web/src/components/map-view.tsx:249
 msgid "Current location"
 msgstr "איצטיקער אָרט"
 
@@ -993,7 +996,7 @@ msgstr "טונקל"
 msgid "Data conflict"
 msgstr "דאַטן־קאָנפֿליקט"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:139
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:14
 #: src/features/wiki/attachments-page.tsx:404
 #: src/features/wiki/changes-list.tsx:48
 #: src/features/wiki/page-history.tsx:58
@@ -1012,19 +1015,19 @@ msgstr "פֿאַרשטאַנדלעך"
 msgid "Default AI account"
 msgstr "פֿאַרשטאַנדלעך AI קאָנטע"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:479
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:482
 msgid "Default sort"
 msgstr "פֿאַרשטאַנדלעך סאָרט"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:569
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:570
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:632
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:280
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:323
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:353
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:198
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:203
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:252
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:314
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:208
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:255
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:317
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:648
@@ -1032,7 +1035,7 @@ msgstr "פֿאַרשטאַנדלעך סאָרט"
 #: src/features/wiki/wiki-comment-thread.tsx:255
 #: src/features/wiki/wiki-comment-thread.tsx:282
 #: src/features/wiki/wiki-page-content.tsx:316
-#: src/features/wiki/wiki-settings.tsx:958
+#: src/features/wiki/wiki-settings.tsx:956
 msgid "Delete"
 msgstr "אויסמעקן"
 
@@ -1042,7 +1045,7 @@ msgstr "אויסמעקן"
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "אויסמעקן \"{0}\"? דאָס קען נישט ווערן אומגעקערט."
 
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:312
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:315
 #: src/features/wiki/attachments-page.tsx:530
 #: src/features/wiki/attachments-page.tsx:641
 #: src/features/wiki/attachments-page.tsx:650
@@ -1054,7 +1057,7 @@ msgstr "אויסמעקן \"{0}\"? דאָס קען נישט ווערן אומגע
 msgid "Delete attachment"
 msgstr "אויסמעקן בײַלאַגע"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
 msgid "Delete column"
 msgstr "אויסמעקן זײַל"
 
@@ -1063,17 +1066,17 @@ msgstr "אויסמעקן זײַל"
 msgid "Delete comment"
 msgstr "אויסמעקן קאָמענטאַר"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:300
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:304
 msgid "Delete field"
 msgstr "אויסמעקן פֿעלד"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:116
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:117
 msgid "Delete option"
 msgstr "אויסמעקן אָפּציע"
 
 #. placeholder {0}: opt.name
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:278
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:283
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:282
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:287
 msgid "Delete option {0}"
 msgstr "אויסמעקן אָפּציע {0}"
 
@@ -1086,27 +1089,27 @@ msgstr "אויסמעקן זײַטל"
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:153
 #: src/features/wiki/redirects-page.tsx:159
-#: src/features/wiki/wiki-settings.tsx:934
-#: src/features/wiki/wiki-settings.tsx:940
+#: src/features/wiki/wiki-settings.tsx:932
+#: src/features/wiki/wiki-settings.tsx:938
 msgid "Delete redirect {0}"
 msgstr "אויסמעקן רידירעקט {0}"
 
 #: src/features/wiki/redirects-page.tsx:163
-#: src/features/wiki/wiki-settings.tsx:944
+#: src/features/wiki/wiki-settings.tsx:942
 msgid "Delete redirect?"
 msgstr "אויסמעקן רידירעקט?"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:284
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:287
 msgid "Delete view"
 msgstr "אויסמעקן זעהן"
 
-#: src/features/wiki/wiki-settings.tsx:464
-#: src/features/wiki/wiki-settings.tsx:475
-#: src/features/wiki/wiki-settings.tsx:483
+#: src/features/wiki/wiki-settings.tsx:462
+#: src/features/wiki/wiki-settings.tsx:473
+#: src/features/wiki/wiki-settings.tsx:481
 msgid "Delete wiki"
 msgstr "אויסמעקן וויקי"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:109
+#: ../../../lib/web/src/components/restore-banner.tsx:95
 msgid "Delete your account on the old server"
 msgstr "לעש אויס דיין קאנטע אויפן אלטן סערווער"
 
@@ -1123,17 +1126,25 @@ msgstr "לעש אויס דיין קאנטע אויפן אלטן סערווער"
 msgid "Delete: {pageTitle}"
 msgstr "אויסמעקן: {pageTitle}"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:58
+msgid "Deleted"
+msgstr "אויסגעמעקט"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:58
+msgid "Deleted {field}"
+msgstr "אויסגעמעקט {field}"
+
 #: src/features/wiki/redirects-page.tsx:118
-#: src/features/wiki/wiki-settings.tsx:865
+#: src/features/wiki/wiki-settings.tsx:863
 msgid "Deleting redirect..."
 msgstr "אויסמעקן ווײַטערפֿירונג..."
 
-#: src/features/wiki/wiki-settings.tsx:347
+#: src/features/wiki/wiki-settings.tsx:345
 msgid "Deleting wiki..."
 msgstr "אויסמעקן וויקי..."
 
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/wiki-settings.tsx:475
+#: src/features/wiki/wiki-settings.tsx:473
 msgid "Deleting..."
 msgstr "אויסמעקן..."
 
@@ -1141,7 +1152,7 @@ msgstr "אויסמעקן..."
 msgid "Descending"
 msgstr "אַראָפּגייענדיק"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:83
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
 msgid "Description"
 msgstr "באַשרײַבונג"
 
@@ -1160,7 +1171,7 @@ msgstr "פּרטים פּאַנעל"
 msgid "Detect from web browser"
 msgstr "אויסקלײַבן פֿון וועב בראָוזער"
 
-#: ../../../lib/web/src/components/person-picker.tsx:214
+#: ../../../lib/web/src/components/person-picker.tsx:190
 msgid "Directory"
 msgstr "פֿאַרצײכעניש"
 
@@ -1177,8 +1188,8 @@ msgstr "אַװעקװאַרפֿן דעם פּראָיעקט?"
 msgid "Disconnected"
 msgstr "אפגעשניטן"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:88
-#: ../../../lib/web/src/components/restore-banner.tsx:94
+#: ../../../lib/web/src/components/restore-banner.tsx:74
+#: ../../../lib/web/src/components/restore-banner.tsx:80
 msgid "Dismiss"
 msgstr "אַראָפּזאָגן"
 
@@ -1190,18 +1201,23 @@ msgstr "ווײַזט די מאָבילע סײַדבאַר."
 msgid "Documents"
 msgstr "דאָקומענטן"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:305
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:518
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:111
+msgid "Does not match the required pattern"
+msgstr "פּאַסט נישט צום פֿאָדערטן מוסטער"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:309
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:523
 msgid "Done"
 msgstr "געטאָן"
 
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:239
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:452
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:462
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:243
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:473
 msgid "Download"
 msgstr "אַראָפּלאָדן"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:98
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:149
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:100
 msgid "Download failed"
 msgstr "אַראָפּלאָדן דורכגעפֿאַלן"
 
@@ -1227,11 +1243,11 @@ msgstr "דיסלעקסיע פֿרײַנדלעך"
 msgid "Edit"
 msgstr "רעדאַקטירן"
 
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:154
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:158
 msgid "Edit {label}"
 msgstr "רעדאַקטירן {label}"
 
-#: src/features/wiki/wiki-settings.tsx:499
+#: src/features/wiki/wiki-settings.tsx:497
 msgid "Edit and view"
 msgstr "רעדאַקטירן און זען"
 
@@ -1243,21 +1259,21 @@ msgstr "רעדאַקטירן און זען"
 msgid "Edit caption"
 msgstr "רעדאַקטירן די אונטערשריפֿט"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:137
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:140
 msgid "Edit field"
 msgstr "רעדאַקטירן פֿעלד"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:138
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:141
 msgid "Edit field settings"
 msgstr "רעדאַקטירן פֿעלד־הגדרות"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:91
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:92
 msgid "Edit option"
 msgstr "רעדאַקטירן אָפּציע"
 
 #. placeholder {0}: opt.name
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:263
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:268
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:267
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:272
 msgid "Edit option {0}"
 msgstr "רעדאַקטירן אָפּציע {0}"
 
@@ -1269,7 +1285,7 @@ msgstr "רעדאַקטירן אויסגעקליבענע קאַרטל"
 msgid "Edit summary (optional)"
 msgstr "רעדאַקטירן רעזומע (אַלץ פֿרײַוויליק)"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:258
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:261
 msgid "Edit view"
 msgstr "רעדאַקטירן בליק"
 
@@ -1290,7 +1306,7 @@ msgstr "רעדאַקטירן: {pageTitle}"
 msgid "Email"
 msgstr "בליצפּאָסט"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:292
+#: ../../../lib/web/src/components/step-up-dialog.tsx:280
 msgid "Email code"
 msgstr "בליצפּאָסט־קאָד"
 
@@ -1306,15 +1322,15 @@ msgstr "גיט אַרײַן אַ זוכבאַגריף"
 msgid "Enter tag name"
 msgstr "גיט אַרײַן טאַג־נאָמען"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:302
+#: ../../../lib/web/src/components/step-up-dialog.tsx:290
 msgid "Enter the code from your email"
 msgstr "גיט אַרײַן דעם קאָד פֿון אײַער בליצפּאָסט"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:327
+#: ../../../lib/web/src/components/step-up-dialog.tsx:315
 msgid "Enter your authenticator code"
 msgstr "גיט אַרײַן אײַער אויטענטיפֿיקאַטאָר־קאָד"
 
-#: src/features/wiki/wiki-settings.tsx:398
+#: src/features/wiki/wiki-settings.tsx:396
 msgid "Entity ID"
 msgstr "ענטיטעט־ID"
 
@@ -1322,7 +1338,7 @@ msgstr "ענטיטעט־ID"
 msgid "Error: Received invalid response from server."
 msgstr "טעות: באַקומען אַ ניט גילטיקן ענטפֿער פֿונעם סערווער."
 
-#: src/features/wiki/wiki-settings.tsx:446
+#: src/features/wiki/wiki-settings.tsx:444
 msgid "Example: \"home\", \"welcome\", \"index\""
 msgstr "בײַשפּיל: „home“, „welcome“, „index“"
 
@@ -1345,6 +1361,10 @@ msgstr "אינדרויסנדיקער URL"
 msgid "Extra large"
 msgstr "עקסטרא גרויס"
 
+#: ../../../lib/web/src/hooks/use-accounts.ts:213
+msgid "Failed to add account"
+msgstr "ניט געלונגען צוצוגעבן קאָנטע"
+
 #: src/features/wiki/tag-manager.tsx:60
 msgid "Failed to add tag"
 msgstr "ניט געלונגען צוצוגעבן טאַג"
@@ -1366,7 +1386,7 @@ msgid "Failed to create page"
 msgstr "ניט געלונגען צו שאַפֿן בלאַט"
 
 #: src/features/wiki/redirects-page.tsx:209
-#: src/features/wiki/wiki-settings.tsx:1008
+#: src/features/wiki/wiki-settings.tsx:1006
 msgid "Failed to create redirect"
 msgstr "ניט געלונגען צו שאַפֿן ווײַטערלייטונג"
 
@@ -1380,7 +1400,7 @@ msgstr "ניט געלונגען צו שאַפֿן וויקי"
 msgid "Failed to delete attachment"
 msgstr "ניט געלונגען צו מעקן בײַלאַגע"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:191
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:192
 msgid "Failed to delete comment"
 msgstr "ניט געלונגען צו מעקן קאָמענטאַר"
 
@@ -1393,11 +1413,11 @@ msgid "Failed to delete page"
 msgstr "ניט געלונגען צו מעקן בלאַט"
 
 #: src/features/wiki/redirects-page.tsx:120
-#: src/features/wiki/wiki-settings.tsx:867
+#: src/features/wiki/wiki-settings.tsx:865
 msgid "Failed to delete redirect"
 msgstr "ניט געלונגען צו מעקן ווײַטערלייטונג"
 
-#: src/features/wiki/wiki-settings.tsx:349
+#: src/features/wiki/wiki-settings.tsx:347
 msgid "Failed to delete wiki"
 msgstr "ניט געלונגען צו מעקן וויקי"
 
@@ -1416,7 +1436,7 @@ msgstr "ניט געלונגען צו זיך אָנשליסן צום וויקי"
 msgid "Failed to load"
 msgstr "ניט געלונגען צו לאָדן"
 
-#: src/features/wiki/wiki-settings.tsx:535
+#: src/features/wiki/wiki-settings.tsx:533
 msgid "Failed to load access rules"
 msgstr "ניט געלונגען צו לאָדן צוטריט־כּללים"
 
@@ -1424,7 +1444,7 @@ msgstr "ניט געלונגען צו לאָדן צוטריט־כּללים"
 msgid "Failed to load history"
 msgstr "ניט געלונגען צו לאָדן היסטאָריע"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:338
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
 msgid "Failed to load image"
 msgstr "נישט געקאָנט לאָדן דאָס בילד"
 
@@ -1432,15 +1452,15 @@ msgstr "נישט געקאָנט לאָדן דאָס בילד"
 msgid "Failed to load prompts"
 msgstr "ניט געלונגען צו לאָדן פּראָמפּטן"
 
-#: src/features/wiki/wiki-settings.tsx:849
+#: src/features/wiki/wiki-settings.tsx:847
 msgid "Failed to load redirects"
 msgstr "ניט געלונגען צו לאָדן ווײַטערלייטונגען"
 
-#: src/features/wiki/wiki-settings.tsx:658
+#: src/features/wiki/wiki-settings.tsx:656
 msgid "Failed to load replicas"
 msgstr "ניט געלונגען צו לאָדן רעפּליקעס"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:338
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
 msgid "Failed to load video"
 msgstr "נישט געקאָנט לאָדן דעם ווידעאָ"
 
@@ -1453,15 +1473,15 @@ msgstr "ניט געלונגען צו לאָדן וויקי־אינפֿאָרמא
 msgid "Failed to load wikis"
 msgstr "ניט געלונגען צו לאָדן וויקיס"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:154
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:155
 msgid "Failed to post comment"
 msgstr "ניט געלונגען צו פּאָסטן קאָמענטאַר"
 
-#: src/features/wiki/wiki-settings.tsx:580
+#: src/features/wiki/wiki-settings.tsx:578
 msgid "Failed to remove access"
 msgstr "ניט געלונגען צו אַראָפּנעמען צוטריט"
 
-#: src/features/wiki/wiki-settings.tsx:677
+#: src/features/wiki/wiki-settings.tsx:675
 msgid "Failed to remove replica"
 msgstr "ניט געלונגען צו אַראָפּנעמען רעפּליקע"
 
@@ -1473,7 +1493,7 @@ msgstr "ניט געלונגען צו אַראָפּנעמען טאַג"
 msgid "Failed to rename page"
 msgstr "ניט געלונגען צו איבערנעמען בלאַט"
 
-#: src/features/wiki/wiki-settings.tsx:282
+#: src/features/wiki/wiki-settings.tsx:280
 msgid "Failed to rename wiki"
 msgstr "ניט געלונגען צו איבערנעמען וויקי"
 
@@ -1503,7 +1523,7 @@ msgstr "ניט געלונגען אויפֿצוהיטן בלאַט"
 msgid "Failed to save prompt"
 msgstr "ניט געלונגען אויפֿצוהיטן פּראָמפּט"
 
-#: src/features/wiki/wiki-settings.tsx:306
+#: src/features/wiki/wiki-settings.tsx:304
 msgid "Failed to save settings"
 msgstr "ניט געלונגען אויפֿצוהיטן הגדרות"
 
@@ -1512,7 +1532,7 @@ msgstr "ניט געלונגען אויפֿצוהיטן הגדרות"
 msgid "Failed to search wikis"
 msgstr "ניט געלונגען צו זוכן וויקיס"
 
-#: src/features/wiki/wiki-settings.tsx:551
+#: src/features/wiki/wiki-settings.tsx:549
 msgid "Failed to set access level"
 msgstr "ניט געלונגען צו שטעלן צוטריט־ניוואָ"
 
@@ -1522,22 +1542,22 @@ msgstr "ניט געלונגען צו שטעלן צוטריט־ניוואָ"
 msgid "Failed to subscribe"
 msgstr "ניט געלונגען צו אַבאָנירן"
 
-#: src/features/wiki/wiki-settings.tsx:328
+#: src/features/wiki/wiki-settings.tsx:326
 msgid "Failed to sync wiki"
 msgstr "ניט געלונגען צו סינכראָניזירן וויקי"
 
 #: src/features/wiki/wiki-page-content.tsx:81
 #: src/routes/_authenticated/$page/index.tsx:77
 #: src/routes/_authenticated/index.tsx:288
-#: src/routes/_authenticated/index.tsx:934
+#: src/routes/_authenticated/index.tsx:933
 msgid "Failed to unsubscribe"
 msgstr "ניט געלונגען צו דעאַבאָנירן"
 
-#: src/features/wiki/wiki-settings.tsx:564
+#: src/features/wiki/wiki-settings.tsx:562
 msgid "Failed to update access level"
 msgstr "ניט געלונגען צו דערהײַנטיקן צוטריט־ניוואָ"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:174
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:175
 msgid "Failed to update comment"
 msgstr "ניט געלונגען צו דערהײַנטיקן קאָמענטאַר"
 
@@ -1550,9 +1570,9 @@ msgstr "ניט געלונגען אַרויפֿצולאָדן בײַלאַגע"
 msgid "Failed to upload files"
 msgstr "ניט געלונגען אַרויפֿצולאָדן פֿײַלן"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:589
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:155
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:175
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:611
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:160
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:180
 msgid "Files"
 msgstr "פֿײַלן"
 
@@ -1565,15 +1585,15 @@ msgstr "פֿילטער"
 msgid "Find wikis"
 msgstr "געפֿינען וויקיס"
 
-#: src/features/wiki/wiki-settings.tsx:402
+#: src/features/wiki/wiki-settings.tsx:400
 msgid "Fingerprint"
 msgstr "פֿינגער־אָפּדרוק"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:97
+#: ../../../lib/web/src/components/restore-banner.tsx:83
 msgid "Finish moving your account"
 msgstr "פארטיק מאכן דעם אריבערטראג פון דיין קאנטע"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:221
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
 msgid "Flags"
 msgstr "פֿאָנען"
 
@@ -1590,11 +1610,11 @@ msgstr "געפֿונען {0} פֿאַר „{debouncedQuery}“"
 msgid "Friday"
 msgstr "פֿרײַטיק"
 
-#: ../../../lib/web/src/components/person-picker.tsx:207
+#: ../../../lib/web/src/components/person-picker.tsx:183
 msgid "Friends"
 msgstr "חברים"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:153
+#: ../../../lib/web/src/components/travelling-picker.tsx:134
 msgid "From"
 msgstr "פֿון"
 
@@ -1606,8 +1626,8 @@ msgstr "פֿון"
 msgid "From theme"
 msgstr "פֿון טעמע"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:25
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:26
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:26
 msgid "Go back"
 msgstr "צוריק"
 
@@ -1620,7 +1640,7 @@ msgstr "נעץ־בליק"
 msgid "Group"
 msgstr "גרופּע"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:347
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:350
 msgid "Group by"
 msgstr "גרופּירן לויט"
 
@@ -1647,19 +1667,19 @@ msgstr "היסטאָריע"
 msgid "History: {pageTitle}"
 msgstr "היסטאָריע: {pageTitle}"
 
-#: src/features/wiki/wiki-settings.tsx:443
+#: src/features/wiki/wiki-settings.tsx:441
 msgid "home"
 msgstr "היים"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:90
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:185
-#: ../../../lib/web/src/components/layout/top-bar.tsx:71
-#: ../../../lib/web/src/components/layout/top-bar.tsx:100
+#: ../../../lib/web/src/components/layout/top-bar.tsx:86
+#: ../../../lib/web/src/components/layout/top-bar.tsx:115
 #: src/routes/_authenticated/index.tsx:260
 msgid "Home"
 msgstr "היים"
 
-#: src/features/wiki/wiki-settings.tsx:431
+#: src/features/wiki/wiki-settings.tsx:429
 msgid "Home page"
 msgstr "היים־בלאַט"
 
@@ -1667,12 +1687,12 @@ msgstr "היים־בלאַט"
 msgid "Hot"
 msgstr "הייס"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
-#: src/features/wiki/wiki-settings.tsx:743
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:156
+#: src/features/wiki/wiki-settings.tsx:741
 msgid "ID"
 msgstr "ID"
 
-#: src/features/wiki/wiki-settings.tsx:389
+#: src/features/wiki/wiki-settings.tsx:387
 msgid "Identity"
 msgstr "אידענטיטעט"
 
@@ -1681,7 +1701,7 @@ msgid "Image"
 msgstr "בילד"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:316
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
 msgid "Image viewer: {0}"
 msgstr "בילד־ווײַזער: {0}"
 
@@ -1717,11 +1737,15 @@ msgstr "אַרײַנשטעלן"
 msgid "Insert attachment"
 msgstr "אַרײַנשטעלן בײַלאַגע"
 
+#: ../../../lib/web/src/components/post-tags.tsx:168
+msgid "Interest {weight}"
+msgstr "אינטערעס {weight}"
+
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "אינטערעסן"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:550
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:591
 msgid "Invalid date"
 msgstr "ניט גילטיקע דאַטע"
 
@@ -1755,17 +1779,17 @@ msgstr "גרויס"
 msgid "Large uploads may be limited by your server or proxy configuration."
 msgstr "גרויסע אַרויפֿלאָדונגען קענען זײַן באַגרענעצט דורך אײַער סערווער- אָדער פּראָקסי־קאָנפֿיגוראַציע."
 
-#: src/features/wiki/wiki-settings.tsx:745
+#: src/features/wiki/wiki-settings.tsx:743
 msgid "Last synced"
 msgstr "לעצט סינכראָניזירט"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:306
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:309
 msgid "Layout"
 msgstr "אויסשטעל"
 
-#: ../../../lib/web/src/components/post-tags.tsx:72
-msgid "Letters, numbers, spaces, and hyphens only"
-msgstr "נאָר אותיות, ציפֿערן, ליידיקע ערטער און שטרעכן"
+#: ../../../lib/web/src/components/post-tags.tsx:73
+msgid "Letters, numbers, spaces, hyphens, and slashes only"
+msgstr "בלויז אותיות, ציפֿערן, ליידיקע ערטער, בינדשטריכן און שראָגשטריכן"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:14
 msgid "Light"
@@ -1787,7 +1811,7 @@ msgstr "לינק צו {headingText}"
 msgid "Links"
 msgstr "לינקס"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:318
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:321
 msgid "List"
 msgstr "רשימה"
 
@@ -1796,7 +1820,7 @@ msgstr "רשימה"
 msgid "List view"
 msgstr "רשימה־בליק"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:35
+#: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: src/features/wiki/changes-list.tsx:105
 #: src/features/wiki/page-history.tsx:161
 msgid "Load more"
@@ -1806,7 +1830,7 @@ msgstr "לאָדן מער"
 msgid "Loading content…"
 msgstr "לאָדט אינהאַלט…"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:35
+#: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: ../../../lib/web/src/features/document/document-page.tsx:88
 msgid "Loading..."
 msgstr "לאָדט..."
@@ -1836,12 +1860,12 @@ msgstr "פֿאַרוואַלטן קאַטעגאָריעס"
 msgid "Manual"
 msgstr "מאַנואַל"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:207
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:214
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:203
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:210
 msgid "Mark all as read"
 msgstr "צייכענען אַלץ ווי געלייענט"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:198
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:202
 msgid "Maximum length"
 msgstr "מאַקסימאַלע לענג"
 
@@ -1852,6 +1876,10 @@ msgstr "MCP סערװער"
 #: ../../../lib/web/src/lib/preference-utils.ts:102
 msgid "Medium"
 msgstr "מיטל"
+
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:377
+msgid "Members"
+msgstr "מיטגלידער"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:200
 msgid "Menu"
@@ -1865,7 +1893,7 @@ msgstr "בריוו"
 msgid "Metric"
 msgstr "מעטריש"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:187
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:191
 msgid "Minimum length"
 msgstr "מינימאַלע לענג"
 
@@ -1886,46 +1914,58 @@ msgstr "מאָנטיק"
 msgid "More options"
 msgstr "מער אָפּציעס"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:60
+msgid "Moved"
+msgstr "אַריבערגעפֿירט"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:60
+msgid "Moved {field}"
+msgstr "אַריבערגעפֿירט {field}"
+
 #: src/features/wiki/page-editor.tsx:446
 msgid "my-page-name"
 msgstr "מײַן־זײַטל־נאָמען"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:600
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:125
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:293
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:122
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:601
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:145
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:126
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:296
 #: src/features/wiki/attachments-page.tsx:405
-#: src/features/wiki/wiki-settings.tsx:392
+#: src/features/wiki/wiki-settings.tsx:390
 msgid "Name"
 msgstr "נאָמען"
 
-#: src/features/wiki/wiki-settings.tsx:271
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:104
+msgid "Name cannot contain < or > characters"
+msgstr "נאָמען קען ניט אַנטהאַלטן < אָדער > כאַראַקטערן"
+
+#: src/features/wiki/wiki-settings.tsx:269
 msgid "Name cannot contain < or > characters, or line breaks"
 msgstr "דער נאָמען קען נישט אַנטהאַלטן די צייכנס < אָדער >, אָדער ליניע-ברעכן"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
-msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
-msgstr "דער נאָמען טאָר ניט אַנטהאַלטן װינקל־קלאַמערן, צוריק־שטריך, האַלב־קאָלאָן, גדולים אָדער בעקטיקן"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:101
+msgid "Name is required"
+msgstr "נאָמען איז נייטיק"
 
-#: src/features/wiki/wiki-settings.tsx:270
+#: src/features/wiki/wiki-settings.tsx:268
 msgid "Name must be 100 characters or less"
 msgstr "נאָמען מוז זײַן 100 כאַראַקטערן אָדער ווייניקער"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:100
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
 msgid "Name must be 1000 characters or less"
 msgstr "נאָמען מוז זײַן 1000 כאַראַקטערן אָדער ווייניקער"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:53
+#: ../../../lib/web/src/features/errors/general-error.tsx:51
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:313
 msgid "Network error"
 msgstr "נעץ פֿעלער"
 
-#: src/features/wiki/wiki-settings.tsx:759
+#: src/features/wiki/wiki-settings.tsx:757
 msgid "Never"
 msgstr "קיינמאָל"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:476
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:498
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "נײַ"
@@ -1965,20 +2005,20 @@ msgid "New URL must be different from current URL"
 msgstr "נײַער URL מוז זײַן אַנדערש פֿון איצטיקן URL"
 
 #: src/features/wiki/redirects-page.tsx:258
-#: src/features/wiki/wiki-settings.tsx:1057
+#: src/features/wiki/wiki-settings.tsx:1055
 msgid "new-page-name"
 msgstr "נײַער־זײַטל־נאָמען"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:530
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:536
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:541
 msgid "Next image"
 msgstr "ווײַטערדיק בילד"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:555
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:577
 msgid "No {parentClassNames} to add to"
 msgstr "קיין {parentClassNames} צוצולייגן"
 
-#: src/features/wiki/wiki-settings.tsx:501
+#: src/features/wiki/wiki-settings.tsx:499
 msgid "No access"
 msgstr "קיין צוטריט"
 
@@ -1986,7 +2026,7 @@ msgstr "קיין צוטריט"
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "קיין צוטריט כּללים קאָנפֿיגורירט. צולייג כּללים צו קאָנטראָלירן ווער קען האָבן צוטריט צו דעם רעסורס."
 
-#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:65
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:74
 msgid "No activity yet"
 msgstr "נאָך קיין אַקטיוויטעט"
 
@@ -2003,7 +2043,7 @@ msgstr "נאָך קיין צוגעהעפֿטן"
 msgid "No changes yet"
 msgstr "נאָך קיין ענדערונגען"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:322
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:324
 #: src/features/wiki/page-comments.tsx:152
 msgid "No comments yet"
 msgstr "נאָך קיין באַמערקונגען"
@@ -2016,7 +2056,7 @@ msgstr "נאָך קיין שפּילן"
 msgid "No groups available"
 msgstr "קיין גרופּעס פֿאַראַן"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "קיין עלעמענט טיפּן קענען נאָך ניט זײַן באַשאַפֿן. באַשאַף די נייטיקע עלטערן עלעמענטן ערשט."
 
@@ -2032,31 +2072,31 @@ msgstr "קיין זײַטלעך געפֿונען פֿאַר \"{debouncedQuery}\"
 msgid "No pages found with this tag"
 msgstr "קיין זײַטלעך געפֿונען מיט דעם טאַג"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:341
-#: ../../../lib/web/src/components/person-picker.tsx:84
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:382
+#: ../../../lib/web/src/components/person-picker.tsx:71
 msgid "No people found"
 msgstr "קיין מענטשן ניט געפֿונען"
 
-#: ../../../lib/web/src/components/place-picker.tsx:133
+#: ../../../lib/web/src/components/place-picker.tsx:120
 msgid "No places found"
 msgstr "קיין ערטער ניט געפֿונען"
 
 #: src/features/wiki/redirects-page.tsx:84
-#: src/features/wiki/wiki-settings.tsx:894
+#: src/features/wiki/wiki-settings.tsx:892
 msgid "No redirects configured"
 msgstr "קיין רעדירעקטס קאָנפֿיגורירט"
 
-#: src/features/wiki/wiki-settings.tsx:724
-#: src/features/wiki/wiki-settings.tsx:808
+#: src/features/wiki/wiki-settings.tsx:722
+#: src/features/wiki/wiki-settings.tsx:806
 msgid "No replicas yet"
 msgstr "נאָך קיין רעפּליקעס"
 
-#: ../../../lib/web/src/components/inline-entity-search.tsx:64
+#: ../../../lib/web/src/components/inline-entity-search.tsx:65
 #: ../../../lib/web/src/components/search-entity-page.tsx:73
 msgid "No results found"
 msgstr "קײן רעזולטאַטן נישט געפֿונען"
 
-#: ../../../lib/web/src/components/command-menu.tsx:55
+#: ../../../lib/web/src/components/command-menu.tsx:57
 msgid "No results found."
 msgstr "קיין רעזולטאַטן ניט געפֿונען."
 
@@ -2066,7 +2106,7 @@ msgstr "קיין רעוויזיעס ניט געפֿונען"
 
 #: ../../../lib/web/src/components/entity/entity-board-container.tsx:824
 #: ../../../lib/web/src/components/entity/entity-board-container.tsx:869
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:336
 msgid "No status"
 msgstr "קיין סטאַטוס"
 
@@ -2086,7 +2126,7 @@ msgstr "קיין צײַט זאָנע ניט געפֿונען."
 msgid "No topic record yet — try again after the next notification."
 msgstr "נאָך קיין טעמע רעקאָרד — פּרוּוו ווידער נאָך דער ווײַטערדיקער מעלדונג."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:139
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:135
 msgid "No unread notifications"
 msgstr "קיין אומגעלייענטע מעלדונגען"
 
@@ -2104,17 +2144,17 @@ msgid "No wikis found"
 msgstr "קיין וויקיס ניט געפֿונען"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:541
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:545
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:382
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:560
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:563
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:412
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:415
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:488
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
-#: ../../../lib/web/src/components/person-picker.tsx:350
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/person-picker.tsx:326
 #: ../../../lib/web/src/lib/preference-utils.ts:100
 msgid "None"
 msgstr "קיינס"
@@ -2124,31 +2164,31 @@ msgid "Normal"
 msgstr "נארמאל"
 
 #: ../../../lib/web/src/components/attachment-image.tsx:50
-#: ../../../lib/web/src/features/errors/general-error.tsx:67
+#: ../../../lib/web/src/features/errors/general-error.tsx:65
 msgid "Not found"
 msgstr "נישט געפֿונען"
 
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:146
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:150
 msgid "Not set"
 msgstr "ניט געשטעלט"
 
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:671
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:668
 msgid "Nothing found"
 msgstr "גאָרניט ניט געפֿונען"
 
 #. placeholder {0}: unread.length
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:200
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:196
 msgid "Notifications: {0}"
 msgstr "מעלדונגען: {0}"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:140
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:54
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:493
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:497
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:15
 msgid "Number"
 msgstr "נומער"
 
 #: src/features/wiki/redirects-page.tsx:246
-#: src/features/wiki/wiki-settings.tsx:1045
+#: src/features/wiki/wiki-settings.tsx:1043
 msgid "old-page-name"
 msgstr "אַלטער־זײַטל־נאָמען"
 
@@ -2166,12 +2206,12 @@ msgid "Oops! Page Not Found!"
 msgstr "אױ! זײַטל ניט געפֿונען!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:857
+#: src/routes/_authenticated/index.tsx:856
 msgid "Open {0}"
 msgstr "עפֿן {0}"
 
-#: ../../../lib/web/src/components/layout/nav-group.tsx:199
-#: ../../../lib/web/src/components/layout/nav-group.tsx:204
+#: ../../../lib/web/src/components/layout/nav-group.tsx:227
+#: ../../../lib/web/src/components/layout/nav-group.tsx:232
 msgid "Open actions"
 msgstr "עפֿענען אַקציעס"
 
@@ -2184,13 +2224,13 @@ msgstr "עפֿן צוגעהעפֿט"
 msgid "Open menu"
 msgstr "עפֿן מעניו"
 
-#: ../../../lib/web/src/components/layout/top-bar.tsx:63
-#: ../../../lib/web/src/components/layout/top-bar.tsx:68
+#: ../../../lib/web/src/components/layout/top-bar.tsx:78
+#: ../../../lib/web/src/components/layout/top-bar.tsx:83
 msgid "Open navigation"
 msgstr "עפֿן נאַוויגאַציע"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:105
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:111
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:106
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:112
 msgid "Open option actions"
 msgstr "עפֿן אָפּציע אַקציעס"
 
@@ -2198,8 +2238,8 @@ msgstr "עפֿן אָפּציע אַקציעס"
 msgid "Open selected card"
 msgstr "עפֿן אויסגעקליבן קאַרטל"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:274
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:279
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:277
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:282
 msgid "Open view actions"
 msgstr "עפֿן קוק אַקציעס"
 
@@ -2208,13 +2248,13 @@ msgstr "עפֿן קוק אַקציעס"
 msgid "Open view controls"
 msgstr "עפֿן קוק קאָנטראָלן"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:200
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:155
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:202
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:157
 msgid "Option name"
 msgstr "אָפּציע נאָמען"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:168
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:240
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:170
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:244
 msgid "Options"
 msgstr "אָפּציעס"
 
@@ -2290,45 +2330,45 @@ msgstr "זײַטל URL איז נייטיק"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "זײַטלעך געטאַגט <0>{tag}</0>"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:530
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:552
 msgid "Parent"
 msgstr "עלטער"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:337
+#: ../../../lib/web/src/components/step-up-dialog.tsx:325
 msgid "Passkey"
 msgstr "פּאַסקיי"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:207
+#: ../../../lib/web/src/components/step-up-dialog.tsx:195
 msgid "Passkey verification failed. Please try again."
 msgstr "די passkey פֿאַריפֿיצירונג איז דורכגעפֿאַלן. ביטע פּרוביר ווידער."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:146
+#: ../../../lib/web/src/components/restore-banner.tsx:132
 msgid "Passkeys"
 msgstr "פּאַסקייס"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:209
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:213
 msgid "Pattern (regex)"
 msgstr "מוסטער (regex)"
 
-#: src/features/wiki/wiki-settings.tsx:466
+#: ../../../lib/web/src/components/person-picker.tsx:176
+msgid "People"
+msgstr "מענטשן"
+
+#: src/features/wiki/wiki-settings.tsx:464
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "אויסמעקן שטענדיק דעם וויקי און אַלע זײַן אינהאַלט. דאָס קען ניט זײַן אומגעמאַכט."
 
 #: ../../../lib/web/src/components/comment-composer.tsx:89
-#: ../../../lib/web/src/features/errors/general-error.tsx:54
+#: ../../../lib/web/src/features/errors/general-error.tsx:52
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:314
 msgid "Please check your internet connection and try again."
 msgstr "זײַט אַזוי גוט קאָנטראָלירט אײַער אינטערנעץ פֿאַרבינדונג און פּרוּווט נאָך אַ מאָל."
 
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:18
-msgid "Please log in with the appropriate credentials <0/> to access this resource."
-msgstr "ביטע לאָגירט אײַך אַרײַן מיט די פּאַסיקע אַקרעדיטיוון <0/> כּדי צוצוקומען צו דעם רעסורס."
-
-#: ../../../lib/web/src/features/errors/general-error.tsx:83
+#: ../../../lib/web/src/features/errors/general-error.tsx:81
 msgid "Please try again."
 msgstr "ביטע פּרוביר ווידער."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:75
+#: ../../../lib/web/src/features/errors/general-error.tsx:73
 msgid "Please wait a moment and try again."
 msgstr "ביטע וואַרט אַ מאָמענט און פּרוּווט ווידער."
 
@@ -2344,8 +2384,8 @@ msgstr "פּאָסטן און באַמערקונגען"
 msgid "Preview"
 msgstr "פֿאָרזע"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:509
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:514
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:520
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
 msgid "Previous image"
 msgstr "פֿריִערדיק בילד"
 
@@ -2357,10 +2397,6 @@ msgstr "פּריוואַטקײַט"
 #: ../../../lib/web/src/components/ui/upload-progress.tsx:50
 msgid "Processing…"
 msgstr "פּראָצעסירונג…"
-
-#: ../../../lib/web/src/components/person-picker.tsx:200
-msgid "Project members"
-msgstr "פּראָיעקט־מיטגלידער"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:108
 msgid "Prompt saved"
@@ -2379,11 +2415,11 @@ msgstr "אויפֿגעהויבן"
 msgid "Re-derive from title"
 msgstr "דעריווירן נאָך אַ מאָל פֿונעם טיטל"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:118
+#: ../../../lib/web/src/components/restore-banner.tsx:104
 msgid "Re-link your accounts on this server"
 msgstr "פארבינד ווידער דיינע קאנטעס אויף דעם סערווער"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:140
+#: ../../../lib/web/src/components/restore-banner.tsx:126
 msgid "Re-register your passkeys on this server"
 msgstr "רעגיסטרירט איבער אייערע צוטריט שליסלען אויף דעם סערווער"
 
@@ -2413,7 +2449,7 @@ msgstr "לעצטיקע רעדאַקציעס איבער אַלע זײַטלעך �
 msgid "Recommended"
 msgstr "רעקאָמענדירט"
 
-#: src/routes/_authenticated/index.tsx:780
+#: src/routes/_authenticated/index.tsx:779
 msgid "Recommended wikis"
 msgstr "רעקאָמענדירטע וויקיס"
 
@@ -2426,29 +2462,29 @@ msgstr "פֿאַרבינדט װידער ({retries})..."
 msgid "Redirect \"{0}\" deleted"
 msgstr "רעדירעקט \"{0}\" אויסגעמעקט"
 
-#: src/features/wiki/wiki-settings.tsx:866
+#: src/features/wiki/wiki-settings.tsx:864
 msgid "Redirect \"{source}\" deleted"
 msgstr "רעדירעקט \"{source}\" אויסגעמעקט"
 
 #: src/features/wiki/redirects-page.tsx:208
-#: src/features/wiki/wiki-settings.tsx:1007
+#: src/features/wiki/wiki-settings.tsx:1005
 msgid "Redirect created"
 msgstr "רעדירעקט באַשאַפֿן"
 
-#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:136
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:135
 msgid "Redirecting to login."
 msgstr "רעדירעקטירן צו לאָגן."
 
 #: src/features/wiki/redirects-page.tsx:73
-#: src/features/wiki/wiki-settings.tsx:106
-#: src/features/wiki/wiki-settings.tsx:882
+#: src/features/wiki/wiki-settings.tsx:107
+#: src/features/wiki/wiki-settings.tsx:880
 #: src/routes/_authenticated/redirects.tsx:27
 #: src/routes/_authenticated/redirects.tsx:30
 msgid "Redirects"
 msgstr "רעדירעקטס"
 
-#: ../../../lib/web/src/components/post-tags.tsx:200
-#: ../../../lib/web/src/components/post-tags.tsx:212
+#: ../../../lib/web/src/components/post-tags.tsx:214
+#: ../../../lib/web/src/components/post-tags.tsx:226
 msgid "Reduce interest"
 msgstr "פֿאַרמינער אינטערעס"
 
@@ -2464,13 +2500,21 @@ msgstr "רעלאַטיוו (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "רעלאַטיוו אין 24 שעה, אַנדערש אַבסאָלוט"
 
+#: ../../../lib/web/src/components/post-tags.tsx:166
+msgid "Relevance {relevance}"
+msgstr "רעלעוואַנץ {relevance}"
+
+#: ../../../lib/web/src/components/post-tags.tsx:164
+msgid "Relevance {relevance}, interest {weight}"
+msgstr "רעלעוואַנץ {relevance}, אינטערעס {weight}"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:285
 #: ../../../lib/web/src/components/attachment-composer.tsx:330
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:192
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: src/features/wiki/tag-manager.tsx:117
 #: src/features/wiki/tag-manager.tsx:122
-#: src/features/wiki/wiki-settings.tsx:795
+#: src/features/wiki/wiki-settings.tsx:793
 msgid "Remove"
 msgstr "אַראָפּנעמען"
 
@@ -2494,12 +2538,12 @@ msgstr "אַראָפּנעמען די צוטריט־כּלל פֿאַר \"{0}\"?
 msgid "Remove access?"
 msgstr "אַראָפּנעמען צוטריט?"
 
-#: ../../../lib/web/src/components/post-tags.tsx:220
-#: ../../../lib/web/src/components/post-tags.tsx:232
+#: ../../../lib/web/src/components/post-tags.tsx:234
+#: ../../../lib/web/src/components/post-tags.tsx:246
 msgid "Remove interest"
 msgstr "אַראָפּנעמען אינטערעס"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:674
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:712
 msgid "Remove item"
 msgstr "אַראָפּנעמען עלעמענט"
 
@@ -2509,25 +2553,25 @@ msgid "Remove link"
 msgstr "אַראָפּנעמען לינק"
 
 #. placeholder {0}: replica.name || replica.id
-#: src/features/wiki/wiki-settings.tsx:771
-#: src/features/wiki/wiki-settings.tsx:777
+#: src/features/wiki/wiki-settings.tsx:769
+#: src/features/wiki/wiki-settings.tsx:775
 msgid "Remove replica {0}"
 msgstr "אַראָפּנעמען רעפּליקע {0}"
 
-#: src/features/wiki/wiki-settings.tsx:781
+#: src/features/wiki/wiki-settings.tsx:779
 msgid "Remove replica?"
 msgstr "אַראָפּנעמען רעפּליקע?"
 
-#: src/features/wiki/wiki-settings.tsx:578
+#: src/features/wiki/wiki-settings.tsx:576
 msgid "Removing access..."
 msgstr "אַראָפּנעמען צוטריט..."
 
-#: src/features/wiki/wiki-settings.tsx:675
+#: src/features/wiki/wiki-settings.tsx:673
 msgid "Removing replica..."
 msgstr "אַראָפּנעמען רעפּליקע..."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:561
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:618
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:562
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:620
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:297
@@ -2536,7 +2580,7 @@ msgstr "אַראָפּנעמען רעפּליקע..."
 msgid "Rename"
 msgstr "איבערטויפֿן"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:596
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
 msgid "Rename column"
 msgstr "איבערטויפֿן זײַל"
 
@@ -2544,7 +2588,7 @@ msgstr "איבערטויפֿן זײַל"
 msgid "Rename page"
 msgstr "איבערטויפֿן זײַטל"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:598
 msgid "Rename this board column"
 msgstr "איבערטויפֿן די ברעט זײַל"
 
@@ -2558,15 +2602,15 @@ msgstr "איבערטויפֿן..."
 msgid "Replace"
 msgstr "פארטוישן"
 
-#: src/features/wiki/wiki-settings.tsx:676
+#: src/features/wiki/wiki-settings.tsx:674
 msgid "Replica \"{displayName}\" removed"
 msgstr "רעפּליקע \"{displayName}\" אַראָפּגענומען"
 
-#: src/features/wiki/wiki-settings.tsx:108
-#: src/features/wiki/wiki-settings.tsx:692
-#: src/features/wiki/wiki-settings.tsx:705
-#: src/features/wiki/wiki-settings.tsx:719
-#: src/features/wiki/wiki-settings.tsx:736
+#: src/features/wiki/wiki-settings.tsx:109
+#: src/features/wiki/wiki-settings.tsx:690
+#: src/features/wiki/wiki-settings.tsx:703
+#: src/features/wiki/wiki-settings.tsx:717
+#: src/features/wiki/wiki-settings.tsx:734
 msgid "Replicas"
 msgstr "רעפּליקעס"
 
@@ -2598,11 +2642,11 @@ msgstr "ענטפֿער צו {0}..."
 msgid "Request URL: {baseURL}{slug}"
 msgstr "פֿאָדערונג URL: {baseURL}{slug}"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:224
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:228
 msgid "Required"
 msgstr "נייטיק"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:370
+#: ../../../lib/web/src/components/step-up-dialog.tsx:358
 msgid "Resend email"
 msgstr "שיק די בליצפּאָסט נאָך אַ מאָל"
 
@@ -2653,7 +2697,7 @@ msgstr "אָפּזאָגן"
 
 #: ../../../lib/web/src/components/options-menu.tsx:181
 #: src/routes/_authenticated/index.tsx:460
-#: src/routes/_authenticated/index.tsx:731
+#: src/routes/_authenticated/index.tsx:730
 msgid "Revoke access"
 msgstr "רופֿט צוריק צוטריט"
 
@@ -2661,12 +2705,12 @@ msgstr "רופֿט צוריק צוטריט"
 msgid "Revoke RSS access?"
 msgstr "אַנולירן RSS צוטריט?"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:152
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:172
 msgid "Rows"
 msgstr "רייען"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:373
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:376
 msgid "Rows group by"
 msgstr "רייען גרופּירן לויט"
 
@@ -2679,7 +2723,7 @@ msgstr "RSS צוטריט צוריקגערופֿן"
 #: ../../../lib/web/src/components/options-menu.tsx:171
 #: src/features/wiki/wiki-page-content.tsx:343
 #: src/routes/_authenticated/index.tsx:443
-#: src/routes/_authenticated/index.tsx:712
+#: src/routes/_authenticated/index.tsx:711
 msgid "RSS feed"
 msgstr "RSS פֿיד"
 
@@ -2697,30 +2741,30 @@ msgstr "שבת"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: ../../../lib/web/src/components/attachment-composer.tsx:430
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:170
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:172
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:126
 #: ../../../lib/web/src/components/ui/secret-field.tsx:79
 #: src/features/wiki/page-editor.tsx:408
 #: src/features/wiki/wiki-comment-thread.tsx:202
 msgid "Save"
 msgstr "היט אויף"
 
-#: src/features/wiki/wiki-settings.tsx:452
+#: src/features/wiki/wiki-settings.tsx:450
 msgid "Save changes"
 msgstr "היט ענדערונגען"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: src/features/wiki/page-editor.tsx:408
-#: src/features/wiki/wiki-settings.tsx:280
-#: src/features/wiki/wiki-settings.tsx:304
-#: src/features/wiki/wiki-settings.tsx:452
+#: src/features/wiki/wiki-settings.tsx:278
+#: src/features/wiki/wiki-settings.tsx:302
+#: src/features/wiki/wiki-settings.tsx:450
 msgid "Saving..."
 msgstr "היטן..."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:175
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
-#: ../../../lib/web/src/components/search.tsx:18
+#: ../../../lib/web/src/components/search.tsx:17
 #: src/features/wiki/wiki-page-content.tsx:325
 #: src/routes/_authenticated/$page/index.tsx:234
 #: src/routes/_authenticated/$wikiId/search.tsx:31
@@ -2743,23 +2787,23 @@ msgstr "זוך לויט נאָמען, ID, פֿינגערפּרינט, אָדער
 msgid "Search for a command to run..."
 msgstr "זוכט אַ באַפֿעל צו לױפֿן..."
 
-#: ../../../lib/web/src/components/place-picker.tsx:86
+#: ../../../lib/web/src/components/place-picker.tsx:73
 msgid "Search for a place"
 msgstr "זוך נאָך אַ אָרט"
 
-#: ../../../lib/web/src/components/place-picker.tsx:50
+#: ../../../lib/web/src/components/place-picker.tsx:37
 msgid "Search for a place..."
 msgstr "זוכט אַן אָרט..."
 
-#: src/routes/_authenticated/index.tsx:756
+#: src/routes/_authenticated/index.tsx:755
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "זוך נאָך אַ וויקי צו אַבאָנירן, אָדער באַשאַף איינעם צו פֿאַרעפֿנטלעכן אײַער אייגענע דאָקומענטאַציע."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:250
+#: ../../../lib/web/src/components/travelling-picker.tsx:231
 msgid "Search for destination..."
 msgstr "זוך נאָך דעסטינאַציע..."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:183
+#: ../../../lib/web/src/components/travelling-picker.tsx:164
 msgid "Search for origin..."
 msgstr "זוך נאָך אָריגין..."
 
@@ -2798,8 +2842,8 @@ msgstr "זוך, קוק, און סאָרטיר דעם קוק."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:179
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
-#: ../../../lib/web/src/components/inline-entity-search.tsx:63
-#: ../../../lib/web/src/components/person-picker.tsx:324
+#: ../../../lib/web/src/components/inline-entity-search.tsx:64
+#: ../../../lib/web/src/components/person-picker.tsx:300
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "זוך..."
@@ -2809,11 +2853,11 @@ msgstr "זוך..."
 msgid "Searching..."
 msgstr "זוכן..."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:141
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:16
 msgid "Select"
 msgstr "קלײַב"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:356
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
 msgid "Select a field"
 msgstr "קלײַב אַ פֿעלד"
 
@@ -2841,7 +2885,7 @@ msgstr "קלײַב אַ צוגעהעפֿט אַרײַנצופֿירן אין א�
 msgid "Select group"
 msgstr "קלײַב גרופּע"
 
-#: ../../../lib/web/src/components/place-picker.tsx:49
+#: ../../../lib/web/src/components/place-picker.tsx:36
 msgid "Select location"
 msgstr "קלײַב אָרט"
 
@@ -2849,7 +2893,7 @@ msgstr "קלײַב אָרט"
 msgid "Select next card"
 msgstr "קלײַב נעקסטע קאַרטל"
 
-#: ../../../lib/web/src/components/person-picker.tsx:83
+#: ../../../lib/web/src/components/person-picker.tsx:70
 msgid "Select person..."
 msgstr "קלײַבט אױס אַ מענטש..."
 
@@ -2857,8 +2901,8 @@ msgstr "קלײַבט אױס אַ מענטש..."
 msgid "Select previous card"
 msgstr "קלײַב פֿריִערדיקע קאַרטל"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:257
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:340
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:289
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:381
 msgid "Select..."
 msgstr "קלײַב..."
 
@@ -2871,7 +2915,7 @@ msgstr "אויסגעקליבן: <0>{0}</0>"
 msgid "Send again"
 msgstr "שיקן ווידער"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:310
+#: ../../../lib/web/src/components/step-up-dialog.tsx:298
 msgid "Send email"
 msgstr "שיק בליצפּאָסט"
 
@@ -2898,11 +2942,11 @@ msgstr "סערווער־כּללים"
 msgid "Session expired. Please log in again."
 msgstr "די סעסיע איז אויסגעגאַנגען. ביטע לאָגט זיך ווידער אַרײַן."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:147
+#: ../../../lib/web/src/components/travelling-picker.tsx:128
 msgid "Set origin and destination"
 msgstr "שטעל אָנהייב און ציל"
 
-#: src/features/wiki/wiki-settings.tsx:549
+#: src/features/wiki/wiki-settings.tsx:547
 msgid "Setting access..."
 msgstr "באַשטעטיקן צוטריט..."
 
@@ -2910,21 +2954,21 @@ msgstr "באַשטעטיקן צוטריט..."
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:125
 #: ../../../lib/web/src/components/options-menu.tsx:196
 #: src/features/wiki/wiki-page-content.tsx:370
-#: src/features/wiki/wiki-settings.tsx:105
+#: src/features/wiki/wiki-settings.tsx:106
 #: src/routes/_authenticated/$page/index.tsx:268
 #: src/routes/_authenticated/index.tsx:483
 msgid "Settings"
 msgstr "אײַנשטעלונגען"
 
-#: src/features/wiki/wiki-settings.tsx:305
+#: src/features/wiki/wiki-settings.tsx:303
 msgid "Settings saved"
 msgstr "אײַנשטעלונגען אויפֿגעהיט"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:327
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:330
 msgid "Show classes"
 msgstr "ווײַז קלאַסן"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:428
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:431
 msgid "Show fields"
 msgstr "ווײַז פֿעלדער"
 
@@ -2936,7 +2980,7 @@ msgstr "ווײַז בלאַט"
 msgid "Show this help"
 msgstr "ווײַז דעם הילף"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:39
+#: ../../../lib/web/src/components/ui/load-more.tsx:43
 msgid "Showing {totalShown} of {total}"
 msgstr "ווײַזן {totalShown} פֿון {total}"
 
@@ -2944,17 +2988,21 @@ msgstr "ווײַזן {totalShown} פֿון {total}"
 msgid "Sidebar"
 msgstr "זײַטנשטאַנג"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:18
+msgid "Sign in with an account that has access <0/> to this resource."
+msgstr "לאָג זיך אַרײַן מיט אַ קאָנטע וואָס האָט צוטריט <0/> צו דעם רעסורס."
+
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:131
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:137
 msgid "Sign out"
 msgstr "לאָג אַרויס"
 
-#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:134
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:133
 msgid "Signing out..."
 msgstr "ארויסמעלדן זיך..."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:161
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:179
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:163
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:183
 msgid "Single line of text only"
 msgstr "בלויז איין שורה טעקסט"
 
@@ -2973,13 +3021,13 @@ msgid "Sort"
 msgstr "סאָרטיר"
 
 #: src/features/wiki/redirects-page.tsx:92
-#: src/features/wiki/wiki-settings.tsx:422
-#: src/features/wiki/wiki-settings.tsx:902
+#: src/features/wiki/wiki-settings.tsx:420
+#: src/features/wiki/wiki-settings.tsx:900
 msgid "Source"
 msgstr "מקור"
 
 #: src/features/wiki/redirects-page.tsx:241
-#: src/features/wiki/wiki-settings.tsx:1040
+#: src/features/wiki/wiki-settings.tsx:1038
 msgid "Source URL"
 msgstr "מקור־URL"
 
@@ -2991,11 +3039,11 @@ msgstr "מקורים"
 msgid "Spacious"
 msgstr "ברייט"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:323
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:325
 msgid "Start the discussion by adding the first comment."
 msgstr "הייב אָן די דיסקוסיע מיטן צולייגן דעם ערשטן קאָמענטאַר."
 
-#: src/routes/_authenticated/index.tsx:753
+#: src/routes/_authenticated/index.tsx:752
 msgid "Start your first wiki"
 msgstr "הייב אָן אײַער ערשטן Wiki"
 
@@ -3003,24 +3051,24 @@ msgstr "הייב אָן אײַער ערשטן Wiki"
 msgid "Subject"
 msgstr "טעמע"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Submit comment"
 msgstr "געב אונטער קאָמענטאַר"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Submit reply"
 msgstr "געב אונטער ענטפֿער"
 
-#: ../../../lib/web/src/components/inline-entity-search.tsx:66
-#: ../../../lib/web/src/components/recommended-entities.tsx:58
+#: ../../../lib/web/src/components/inline-entity-search.tsx:67
+#: ../../../lib/web/src/components/recommended-entities.tsx:59
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:120
-#: src/routes/_authenticated/index.tsx:819
+#: src/routes/_authenticated/index.tsx:818
 msgid "Subscribe"
 msgstr "אַבאָנירן"
 
 #: src/features/wiki/inline-wiki-search.tsx:95
-#: src/features/wiki/wiki-settings.tsx:744
+#: src/features/wiki/wiki-settings.tsx:742
 #: src/routes/_authenticated/find.tsx:64
 msgid "Subscribed"
 msgstr "אַבאָנירט"
@@ -3036,7 +3084,7 @@ msgstr "אַבאָנירט צו {0}"
 msgid "Subscribing..."
 msgstr "אַבאָנירן..."
 
-#: src/features/wiki/wiki-settings.tsx:412
+#: src/features/wiki/wiki-settings.tsx:410
 msgid "Subscription"
 msgstr "אַבאָנעמענט"
 
@@ -3056,12 +3104,12 @@ msgstr "געשטיצטע טעקעס: בילדער, PDF, DOC, DOCX, TXT, און M
 msgid "Switch to view 1-9"
 msgstr "ביט איבער צו ראַם 1-9"
 
-#: src/features/wiki/wiki-settings.tsx:417
+#: src/features/wiki/wiki-settings.tsx:415
 msgid "Sync now"
 msgstr "סינכראָניזיר איצט"
 
-#: src/features/wiki/wiki-settings.tsx:326
-#: src/features/wiki/wiki-settings.tsx:417
+#: src/features/wiki/wiki-settings.tsx:324
+#: src/features/wiki/wiki-settings.tsx:415
 msgid "Syncing..."
 msgstr "סינכראָניזירן..."
 
@@ -3083,12 +3131,12 @@ msgstr "טאַג „{tag}\" צוגעלייגט"
 msgid "Tag \"{tag}\" removed"
 msgstr "טאַג „{tag}\" אַראָפּגענומען"
 
-#: ../../../lib/web/src/components/post-tags.tsx:76
+#: ../../../lib/web/src/components/post-tags.tsx:77
 #: src/features/wiki/tag-manager.tsx:47
 msgid "Tag already exists"
 msgstr "טאַג עקזיסטירט שוין"
 
-#: ../../../lib/web/src/components/post-tags.tsx:68
+#: ../../../lib/web/src/components/post-tags.tsx:69
 msgid "Tag must be 50 characters or less"
 msgstr "דער טאַג מוז זײַן 50 שריפֿטצײכנס אָדער װײניקער"
 
@@ -3103,8 +3151,8 @@ msgstr "דער טאַג מוז זײַן 50 שריפֿטצײכנס אָדער װ�
 msgid "Tag: {tag}"
 msgstr "טאַג: {tag}"
 
-#: ../../../lib/web/src/components/post-tags.tsx:101
-#: ../../../lib/web/src/components/post-tags.tsx:115
+#: ../../../lib/web/src/components/post-tags.tsx:102
+#: ../../../lib/web/src/components/post-tags.tsx:116
 #: src/features/wiki/wiki-page-content.tsx:331
 #: src/routes/_authenticated/$page/index.tsx:240
 #: src/routes/_authenticated/index.tsx:431
@@ -3112,12 +3160,12 @@ msgid "Tags"
 msgstr "טאַגן"
 
 #: src/features/wiki/redirects-page.tsx:94
-#: src/features/wiki/wiki-settings.tsx:904
+#: src/features/wiki/wiki-settings.tsx:902
 msgid "Target"
 msgstr "ציל"
 
 #: src/features/wiki/redirects-page.tsx:253
-#: src/features/wiki/wiki-settings.tsx:1052
+#: src/features/wiki/wiki-settings.tsx:1050
 msgid "Target URL"
 msgstr "ציל־URL"
 
@@ -3126,11 +3174,11 @@ msgstr "ציל־URL"
 msgid "Terms and conditions"
 msgstr "תּנאָים"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:142
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:17
 msgid "Text"
 msgstr "טעקסט"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:193
+#: ../../../lib/web/src/components/step-up-dialog.tsx:181
 msgid "That code is incorrect or has expired."
 msgstr "יענער קאָד איז אומריכטיק אָדער איז אויסגעגאַנגען."
 
@@ -3147,7 +3195,7 @@ msgstr "עס איז געווען צו גרויס אַרויפֿצולאָדן. �
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "די אישות־ID פֿון דעם Wiki וואָס איר ווילט רעפּליצירן."
 
-#: src/features/wiki/wiki-settings.tsx:1060
+#: src/features/wiki/wiki-settings.tsx:1058
 msgid "The existing page to redirect to"
 msgstr "דער עקזיסטירנדיקער זײַטל צו רעדירעקטירן צו"
 
@@ -3159,11 +3207,11 @@ msgstr "דער עקזיסטירנדיקער זײַטל צו רעדירעקטיר
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "דער זײַטל „{slug}\" עקזיסטירט נאָך נישט."
 
-#: src/features/wiki/wiki-settings.tsx:433
+#: src/features/wiki/wiki-settings.tsx:431
 msgid "The page that users see when they first visit the wiki."
 msgstr "דער זײַטל וואָס באַניצערס זעען ווען זיי קומען דאָס ערשטע מאָל אינעם Wiki."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:68
+#: ../../../lib/web/src/features/errors/general-error.tsx:66
 msgid "The requested content could not be found."
 msgstr "דער פֿאַרלאַנגטער אינהאַלט איז נישט געפֿונען געוואָרן."
 
@@ -3171,7 +3219,7 @@ msgstr "דער פֿאַרלאַנגטער אינהאַלט איז נישט גע�
 msgid "The server returned a web page instead of data."
 msgstr "דער סערװער האָט צוריקגעגעבן אַ וועב-בלאַט אַנשטאָט דאַטן."
 
-#: src/features/wiki/wiki-settings.tsx:1048
+#: src/features/wiki/wiki-settings.tsx:1046
 msgid "The URL that will be redirected"
 msgstr "די URL וואָס וועט ווערן רעדירעקטירט"
 
@@ -3179,7 +3227,7 @@ msgstr "די URL וואָס וועט ווערן רעדירעקטירט"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "די URL וואָס וועט ווערן רעדירעקטירט (למשל, „old-page\")"
 
-#: src/features/wiki/wiki-settings.tsx:482
+#: src/features/wiki/wiki-settings.tsx:480
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "די אַקציע קאָן נישט ווערן צוריקגעקערט. דאָס וועט אויף שטענדיק אויסמעקן דעם Wiki און אַלע זײַנע אינהאַלטן."
 
@@ -3199,7 +3247,7 @@ msgstr "די טעקע איז צו גרויס פֿאַר דער איצטיקער 
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "די טעקע איז צו גרויס אַרויפֿצולאָדן. פּרוּוו אַ קלענערע טעקע."
 
-#: src/features/wiki/wiki-settings.tsx:413
+#: src/features/wiki/wiki-settings.tsx:411
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "דער Wiki איז אַבאָנירט צו אַ מקור־Wiki און באַקומט באַנײַונגען פֿון אים."
 
@@ -3209,7 +3257,7 @@ msgstr "דאָס וועט זײַן דער שטעג פֿאַרן זײַטל. ני
 
 #. placeholder {0}: redirect.source
 #. placeholder {1}: redirect.target
-#: src/features/wiki/wiki-settings.tsx:946
+#: src/features/wiki/wiki-settings.tsx:944
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "דאָס וועט אַראָפּנעמען די רעדירעקציע פֿון „{0}\" צו „{1}\"."
 
@@ -3220,7 +3268,7 @@ msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the
 msgstr "דאָס וועט אַראָפּנעמען די רעדירעקציע פֿון „{0}\" צו „{1}\". באַניצערס וואָס באַזוכן די מקור־URL וועלן מער נישט ווערן רעדירעקטירט."
 
 #. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
-#: src/features/wiki/wiki-settings.tsx:783
+#: src/features/wiki/wiki-settings.tsx:781
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "דאָס וועט אויפֿהערן שיקן באַנײַונגען צו „{0}\". זיי קאָנען ווידער רעפּליצירן אויב זיי ווילן."
 
@@ -3237,26 +3285,23 @@ msgstr "קעפּל"
 msgid "Title is required"
 msgstr "קעפּל איז פֿאָדערלעך"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:220
+#: ../../../lib/web/src/components/travelling-picker.tsx:201
 msgid "To"
 msgstr "צו"
 
-#: ../../../lib/web/src/components/layout/nav-group.tsx:365
-#: ../../../lib/web/src/components/layout/nav-group.tsx:372
-#: ../../../lib/web/src/components/layout/nav-group.tsx:490
-#: ../../../lib/web/src/components/layout/nav-group.tsx:497
+#: ../../../lib/web/src/components/layout/nav-group.tsx:393
+#: ../../../lib/web/src/components/layout/nav-group.tsx:400
+#: ../../../lib/web/src/components/layout/nav-group.tsx:522
+#: ../../../lib/web/src/components/layout/nav-group.tsx:529
 msgid "Toggle section"
 msgstr "עפֿן/פֿאַרמאַך אָפּטייל"
 
 #: ../../../lib/web/src/components/ui/sidebar.tsx:337
 #: ../../../lib/web/src/components/ui/sidebar.tsx:340
-msgid "Toggle sidebar"
-msgstr "טאָגלען זייט באַר"
-
 #: ../../../lib/web/src/components/ui/sidebar.tsx:352
 #: ../../../lib/web/src/components/ui/sidebar.tsx:355
-msgid "Toggle Sidebar"
-msgstr "ביט זײַטנשטאַנג"
+msgid "Toggle sidebar"
+msgstr "טאָגלען זייט באַר"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:26
 msgid "Toggle view options"
@@ -3267,7 +3312,7 @@ msgstr "ביט בליק־אָפּציעס"
 msgid "Toggle watched filter"
 msgstr "ביט נאָכקוק־פֿילטער"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:74
+#: ../../../lib/web/src/features/errors/general-error.tsx:72
 msgid "Too many requests"
 msgstr "צו פֿיל בקשות"
 
@@ -3275,7 +3320,7 @@ msgstr "צו פֿיל בקשות"
 msgid "Top"
 msgstr "אויבן"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:145
+#: ../../../lib/web/src/components/travelling-picker.tsx:126
 msgid "Travelling"
 msgstr "רײַזנדיק"
 
@@ -3291,8 +3336,8 @@ msgstr "פּרוּווט אַן אַנדער טאַג."
 msgid "Try adjusting your search terms"
 msgstr "פּרוּווט באַאַרבעטן אײַערע זוך־אויסדרוקן"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:140
-#: ../../../lib/web/src/features/errors/general-error.tsx:180
+#: ../../../lib/web/src/features/errors/general-error.tsx:138
+#: ../../../lib/web/src/features/errors/general-error.tsx:178
 msgid "Try again"
 msgstr "פּרוּווט נאָך אַ מאָל"
 
@@ -3304,12 +3349,12 @@ msgstr "פּרוּווט אַנדערע זוך־אויסדרוקן."
 msgid "Tuesday"
 msgstr "דינסטיק"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:130
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:162
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:134
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:166
 msgid "Type"
 msgstr "טיפּ"
 
-#: ../../../lib/web/src/components/command-menu.tsx:52
+#: ../../../lib/web/src/components/command-menu.tsx:54
 msgid "Type a command or search..."
 msgstr "טיפּט אַ באַפֿעל אָדער זוכט..."
 
@@ -3329,8 +3374,8 @@ msgstr "טיפּט צו זוכן..."
 msgid "Unable to connect to remote server"
 msgstr "ניט געקענט פֿאַרבינדן צום ווײַטן סערווער"
 
-#: ../../../lib/web/src/lib/auth-manager.ts:92
-#: ../../../lib/web/src/lib/auth-manager.ts:104
+#: ../../../lib/web/src/lib/auth-manager.ts:89
+#: ../../../lib/web/src/lib/auth-manager.ts:101
 msgid "Unable to redirect to login. Please try again."
 msgstr "קאָן נישט רעדירעקטירן צו אַרײַנמעלדונג. פּרוּווט נאָך אַ מאָל."
 
@@ -3338,16 +3383,12 @@ msgstr "קאָן נישט רעדירעקטירן צו אַרײַנמעלדונג
 msgid "Unassigned"
 msgstr "אומצוגעטיילט"
 
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:16
-msgid "Unauthorized Access"
-msgstr "נישט אויטאָריזירטער צוטריט"
-
 #: ../../../lib/web/src/components/attachment-image.tsx:50
 msgid "Unavailable"
 msgstr "נישט פֿאַראַן"
 
 #: ../../../lib/web/src/lib/request.ts:133
-#: ../../../lib/web/src/lib/request.ts:206
+#: ../../../lib/web/src/lib/request.ts:209
 msgid "Unexpected API error"
 msgstr "אומדערװאַרטע API־טעות"
 
@@ -3355,6 +3396,11 @@ msgstr "אומדערװאַרטע API־טעות"
 msgid "United States"
 msgstr "פֿאַראייניקטע שטאַטן"
 
+#: ../../../lib/web/src/components/audit-timeline.tsx:103
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:167
+#: ../../../lib/web/src/components/tree-row.tsx:219
+#: ../../../lib/web/src/components/tree-row.tsx:373
+#: ../../../lib/web/src/components/tree-table-header.tsx:70
 #: ../../../lib/web/src/features/accounts/types.ts:29
 #: src/features/wiki/wiki-comment-thread.tsx:126
 msgid "Unknown"
@@ -3370,16 +3416,16 @@ msgstr "אומבאַקאַנט"
 #: src/routes/_authenticated/index.tsx:494
 #: src/routes/_authenticated/index.tsx:522
 #: src/routes/_authenticated/index.tsx:524
-#: src/routes/_authenticated/index.tsx:890
-#: src/routes/_authenticated/index.tsx:922
-#: src/routes/_authenticated/index.tsx:924
+#: src/routes/_authenticated/index.tsx:889
+#: src/routes/_authenticated/index.tsx:921
+#: src/routes/_authenticated/index.tsx:923
 msgid "Unsubscribe"
 msgstr "אַבאַבאָנירן"
 
 #: src/features/wiki/wiki-page-content.tsx:80
 #: src/routes/_authenticated/$page/index.tsx:76
 #: src/routes/_authenticated/index.tsx:287
-#: src/routes/_authenticated/index.tsx:933
+#: src/routes/_authenticated/index.tsx:932
 msgid "Unsubscribed"
 msgstr "אַבאַבאָנירט"
 
@@ -3389,8 +3435,8 @@ msgstr "אַבאַבאָנירט"
 #: src/routes/_authenticated/$page/index.tsx:280
 #: src/routes/_authenticated/index.tsx:286
 #: src/routes/_authenticated/index.tsx:494
-#: src/routes/_authenticated/index.tsx:889
-#: src/routes/_authenticated/index.tsx:932
+#: src/routes/_authenticated/index.tsx:888
+#: src/routes/_authenticated/index.tsx:931
 msgid "Unsubscribing..."
 msgstr "אַבאַבאָנירן..."
 
@@ -3404,15 +3450,16 @@ msgstr "נישט־געשטיצטער טעקע־טיפּ: {names}. געשטיצט
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "נישט־געשטיצטע טעקע־טיפּן: {names}. געשטיצטע טעקעס: בילדער, PDF, DOC, DOCX, TXT, און MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:285
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:299
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
 #: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "אָן קעפּל"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:56
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:499
 msgid "Updated"
 msgstr "באַנײַט"
 
@@ -3422,16 +3469,20 @@ msgstr "באַנײַט"
 #: src/features/wiki/page-view.tsx:264
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:74
-#: src/routes/_authenticated/index.tsx:906
+#: src/routes/_authenticated/index.tsx:905
 msgid "Updated {0}"
 msgstr "באַנײַט {0}"
 
-#: src/features/wiki/wiki-settings.tsx:562
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:56
+msgid "Updated {field}"
+msgstr "דערהײַנטיקט {field}"
+
+#: src/features/wiki/wiki-settings.tsx:560
 msgid "Updating access..."
 msgstr "דערהײַנטיקן צוטריט..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:639
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:301
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:661
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:304
 msgid "Upload"
 msgstr "אַרויפֿלאָדן"
 
@@ -3470,17 +3521,17 @@ msgstr "אַרויפֿלאָדן נײַ"
 msgid "Upload progress"
 msgstr "אַרויפֿלאָד פּראָגרעס"
 
-#: src/features/wiki/wiki-settings.tsx:438
+#: src/features/wiki/wiki-settings.tsx:436
 msgid "Use as home"
 msgstr "ניצט ווי היים"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:341
+#: ../../../lib/web/src/components/step-up-dialog.tsx:329
 msgid "Use your passkey"
 msgstr "ניצט אײַער passkey"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:143
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:112
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:18
 msgid "User"
 msgstr "באַניצער"
 
@@ -3492,7 +3543,7 @@ msgstr "וואַריאַבלען: {variables}"
 msgid "Verification code"
 msgstr "פֿאַריפֿיקאַציע־קאָד"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:391
+#: ../../../lib/web/src/components/step-up-dialog.tsx:379
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:111
 msgid "Verify"
 msgstr "פֿאַריפֿיצירן"
@@ -3511,12 +3562,12 @@ msgstr "ווערסיע"
 msgid "Version {0}"
 msgstr "ווערסיע {0}"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:95
+#: ../../../lib/web/src/components/attachment-gallery.tsx:96
 msgid "Video thumbnail"
 msgstr "ווידעאָ־טאַמבניל"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:315
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:326
 msgid "Video viewer: {0}"
 msgstr "ווידעאָ־ווײַזער: {0}"
 
@@ -3526,8 +3577,8 @@ msgctxt "action"
 msgid "View"
 msgstr "באַקוקן"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:220
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:228
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:216
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:224
 msgid "View all notifications"
 msgstr "זע אַלע נאָטיפֿיקאַציעס"
 
@@ -3535,7 +3586,7 @@ msgstr "זע אַלע נאָטיפֿיקאַציעס"
 msgid "View controls"
 msgstr "בליק־קאָנטראָלן"
 
-#: src/features/wiki/wiki-settings.tsx:500
+#: src/features/wiki/wiki-settings.tsx:498
 msgid "View only"
 msgstr "בלויז זען"
 
@@ -3561,13 +3612,16 @@ msgstr "מיר האָבן געשיקט אַ באַשטעטיקונג־קאָד �
 msgid "Wednesday"
 msgstr "מיטוואָך"
 
-#: src/features/wiki/wiki-settings.tsx:725
-#: src/features/wiki/wiki-settings.tsx:809
+#: src/features/wiki/wiki-settings.tsx:723
+#: src/features/wiki/wiki-settings.tsx:807
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "ווען אַנדערע Wikis רעפּליצירן דעם Wiki, וועלן זיי דאָ אַרויסקומען."
 
+#: src/components/layout/wiki-layout.tsx:152
+msgid "wiki"
+msgstr ""
+
 #: src/components/layout/wiki-layout.tsx:103
-#: src/components/layout/wiki-layout.tsx:153
 #: src/features/wiki/wiki-page-content.tsx:103
 #: src/features/wiki/wiki-page-content.tsx:321
 #: src/routes/_authenticated/$page/index.tsx:230
@@ -3577,10 +3631,10 @@ msgstr "ווען אַנדערע Wikis רעפּליצירן דעם Wiki, וועל
 msgid "Wiki"
 msgstr "Wiki"
 
-#: src/routes/_authenticated/index.tsx:699
-#: src/routes/_authenticated/index.tsx:706
-#: src/routes/_authenticated/index.tsx:870
-#: src/routes/_authenticated/index.tsx:877
+#: src/routes/_authenticated/index.tsx:698
+#: src/routes/_authenticated/index.tsx:705
+#: src/routes/_authenticated/index.tsx:869
+#: src/routes/_authenticated/index.tsx:876
 msgid "Wiki actions"
 msgstr "Wiki־אַקציעס"
 
@@ -3588,7 +3642,7 @@ msgstr "Wiki־אַקציעס"
 msgid "Wiki created"
 msgstr "Wiki באַשאַפֿן"
 
-#: src/features/wiki/wiki-settings.tsx:348
+#: src/features/wiki/wiki-settings.tsx:346
 msgid "Wiki deleted"
 msgstr "Wiki אויסגעמעקט"
 
@@ -3605,7 +3659,7 @@ msgstr "Wiki ID איז פֿאָדערלעך"
 msgid "Wiki link"
 msgstr "וויקי לינק"
 
-#: src/features/wiki/wiki-settings.tsx:269
+#: src/features/wiki/wiki-settings.tsx:267
 msgid "Wiki name is required"
 msgstr "Wiki־נאָמען איז פֿאָדערלעך"
 
@@ -3614,7 +3668,7 @@ msgstr "Wiki־נאָמען איז פֿאָדערלעך"
 msgid "Wiki not found"
 msgstr "Wiki נישט געפֿונען"
 
-#: src/features/wiki/wiki-settings.tsx:281
+#: src/features/wiki/wiki-settings.tsx:279
 msgid "Wiki renamed"
 msgstr "Wiki איבערגענומען"
 
@@ -3623,11 +3677,11 @@ msgstr "Wiki איבערגענומען"
 msgid "Wiki settings"
 msgstr "Wiki־אײַנשטעלונגען"
 
-#: src/features/wiki/wiki-settings.tsx:158
+#: src/features/wiki/wiki-settings.tsx:159
 msgid "Wiki settings sections"
 msgstr "Wiki־אײַנשטעלונגען סעקציעס"
 
-#: src/features/wiki/wiki-settings.tsx:327
+#: src/features/wiki/wiki-settings.tsx:325
 msgid "Wiki synced"
 msgstr "Wiki סינכראָניזירט"
 
@@ -3652,11 +3706,11 @@ msgstr "איר זײַט גרייט אויסצומעקן דעם זײַטל <0>„
 msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
 msgstr "איר זײַט גרייט צוריקצוקערן <0>{slug}</0> צו ווערסיע <1>{version}</1>. דאָס וועט באַשאַפֿן אַ נײַע רעוויזיע מיטן אינהאַלט פֿון ווערסיע {version}."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:61
+#: ../../../lib/web/src/features/errors/general-error.tsx:59
 msgid "You do not have access to this section."
 msgstr "איר האָט נישט קיין צוטריט צו דעם אָפּטייל."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:100
+#: ../../../lib/web/src/components/restore-banner.tsx:86
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "דיין קאנטע איז אהערגעברענגט ווארן פון {source}. ביז דו לעשסט עס דארט, קענען מעסאזשן און הודעות דערגרייכן ביידע סערווערס, עטלעכע פון דיין אינהאלט ווערט ווייטאר פארזאמלט פונם אלטן סערווער, און פאלגערס קענען נעמען עטלעכע מינוטן צו דיך דא געפינען."
 

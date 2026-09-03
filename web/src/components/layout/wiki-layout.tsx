@@ -141,7 +141,6 @@ function WikiLayoutInner() {
     <>
       <AuthenticatedLayout
         sidebarData={sidebarData}
-        usePageHeaderForMobileNav
       />
 
       {/* Create wiki dialog */}
@@ -150,7 +149,7 @@ function WikiLayoutInner() {
         onOpenChange={(open) => { if (!open) closeCreateDialog() }}
         icon={BookOpen}
         title={t`Create wiki`}
-        entityLabel={t`Wiki`}
+        entityLabel={t`wiki`}
         showPrivacyToggle
         privacyLabel={t`Allow anyone to search for wiki`}
         onSubmit={handleCreateWiki}

@@ -14,20 +14,16 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: ../../../lib/web/src/lib/error-normalizer.ts:215
+#: ../../../lib/web/src/lib/error-normalizer.ts:219
 msgid "Please check your internet connection and try again."
 msgstr "Sicela uhlole uxhumano lwakho lwe-inthanethi bese uzama futhi."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:301
-msgid " or "
-msgstr " noma "
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:190
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:189
 #: src/features/wiki/wiki-comment-thread.tsx:167
 msgid "(edited)"
 msgstr "(kuhleliwe)"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:174
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:173
 #: src/features/wiki/wiki-comment-thread.tsx:153
 msgid "(expand)"
 msgstr "(nweba)"
@@ -51,6 +47,16 @@ msgstr "{0, plural, one {Ikhasi #} other {Amakhasi #}}"
 msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {Umphumela #} other {Imiphumela #}}"
 
+#. placeholder {0}: displayInfo.count
+#: ../../../lib/web/src/components/person-picker.tsx:257
+msgid "{0, plural, one {# selected} other {# selected}}"
+msgstr "{0, plural, one {# kukhethiwe} other {# kukhethiwe}}"
+
+#. placeholder {0}: countDeepChildren(object.id)
+#: ../../../lib/web/src/components/entity/entity-board-card.tsx:421
+msgid "{0, plural, one {+# nested} other {+# nested}}"
+msgstr "{0, plural, one {+# elifakiwe} other {+# afakiwe}}"
+
 #. placeholder {0}: comments.length
 #: src/features/wiki/page-comments.tsx:180
 msgid "{0, plural, one {Showing the first # comment.} other {Showing the first # comments.}}"
@@ -64,7 +70,7 @@ msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:900
+#: src/routes/_authenticated/index.tsx:899
 msgid "{0} pages"
 msgstr "Amakhasi angu-{0}"
 
@@ -98,13 +104,9 @@ msgstr "{count, plural, one {#vk} other {#vk}}"
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {Idokhumenti #} other {Amadokhumenti #}}"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:176
 msgid "{entityLabel} name"
 msgstr "Igama le-{entityLabel}"
-
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:99
-msgid "{entityLabel} name is required"
-msgstr "Igama le-{entityLabel} liyadingeka"
 
 #: src/features/wiki/attachments-page.tsx:189
 #: src/features/wiki/page-editor.tsx:235
@@ -139,10 +141,11 @@ msgstr "{renamedCount, plural, one {Kuqanjwe kabusha ikhasi elingu-1} other {Kuq
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{sentLabel} kokungu-{totalLabel}"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:530
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:531
 msgid "{totalCount, plural, one {# item} other {# items}}"
 msgstr "{totalCount, plural, one {into engu-#} other {izinto ezingu-#}}"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
 #: src/features/wiki/wiki-comment-thread.tsx:151
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {Impendulo #} other {+# ezinye izimpendulo}}"
@@ -162,19 +165,6 @@ msgstr "Izilungiselelo zika-{wikiName}"
 msgid "*No content*"
 msgstr "*Akukho okuqukethwe*"
 
-#. placeholder {0}: countDeepChildren(object.id)
-#: ../../../lib/web/src/components/entity/entity-board-card.tsx:418
-msgid "+{0} nested"
-msgstr "+{0} okufakelwe"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:171
-msgid "+{totalDescendants} more replies"
-msgstr "+{totalDescendants} ezinye izimpendulo"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
-msgid "1 reply"
-msgstr "1 impendulo"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:37
 msgid "12 hours"
 msgstr "Amahora angu-12"
@@ -191,11 +181,12 @@ msgstr "Okuphelele (usuku nesikhathi)"
 msgid "Accept"
 msgstr "Yamukela"
 
-#: src/features/wiki/wiki-settings.tsx:107
+#: src/features/wiki/wiki-settings.tsx:108
 msgid "Access"
 msgstr "Ukufinyelela"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:60
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:16
+#: ../../../lib/web/src/features/errors/general-error.tsx:58
 msgid "Access denied"
 msgstr "Ukufinyelela kuvinjelwe"
 
@@ -203,15 +194,15 @@ msgstr "Ukufinyelela kuvinjelwe"
 msgid "Access level"
 msgstr "Izinga lokufinyelela"
 
-#: src/features/wiki/wiki-settings.tsx:563
+#: src/features/wiki/wiki-settings.tsx:561
 msgid "Access level updated"
 msgstr "Izinga lokufinyelela libuyekeziwe"
 
-#: src/features/wiki/wiki-settings.tsx:579
+#: src/features/wiki/wiki-settings.tsx:577
 msgid "Access removed"
 msgstr "Ukufinyelela kususiwe"
 
-#: src/features/wiki/wiki-settings.tsx:550
+#: src/features/wiki/wiki-settings.tsx:548
 msgid "Access set for {subjectName}"
 msgstr "Ukufinyelela kusethelwe u-{subjectName}"
 
@@ -221,21 +212,21 @@ msgstr "Uhlobo lwe-akhawunti"
 
 #: src/features/wiki/page-history.tsx:60
 #: src/features/wiki/redirects-page.tsx:96
-#: src/features/wiki/wiki-settings.tsx:746
+#: src/features/wiki/wiki-settings.tsx:744
 msgid "Actions"
 msgstr "Izenzo"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:720
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:758
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
 #: src/features/wiki/tag-manager.tsx:134
 #: src/features/wiki/tag-manager.tsx:139
 #: src/features/wiki/tag-manager.tsx:164
-#: src/features/wiki/wiki-settings.tsx:596
+#: src/features/wiki/wiki-settings.tsx:594
 msgid "Add"
 msgstr "Engeza"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:312
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:314
 msgid "Add a comment..."
 msgstr "Engeza umbono..."
 
@@ -243,7 +234,7 @@ msgstr "Engeza umbono..."
 msgid "Add a new account"
 msgstr "Engeza i-akhawunti entsha"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:106
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:110
 msgid "Add a new field to this class"
 msgstr "Engeza inkambu entsha kuleli klasi"
 
@@ -263,16 +254,16 @@ msgstr "Engeza i-akhawunti"
 msgid "Add caption"
 msgstr "Engeza umbhalo ochazayo"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:690
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:728
 msgid "Add checklist item"
 msgstr "Engeza into ohlwini lokuhlola"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:105
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:233
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:235
 msgid "Add field"
 msgstr "Engeza inkambu"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:708
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:746
 msgid "Add item..."
 msgstr "Engeza into..."
 
@@ -280,20 +271,20 @@ msgstr "Engeza into..."
 msgid "Add link"
 msgstr "Engeza isixhumanisi"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:291
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:91
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:191
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:217
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:222
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:295
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:92
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:193
 msgid "Add option"
 msgstr "Engeza inketho"
 
 #: src/features/wiki/redirects-page.tsx:225
-#: src/features/wiki/wiki-settings.tsx:1027
+#: src/features/wiki/wiki-settings.tsx:1025
 msgid "Add redirect"
 msgstr "Engeza ukuqondisa kabusha"
 
-#: ../../../lib/web/src/components/post-tags.tsx:137
+#: ../../../lib/web/src/components/post-tags.tsx:138
 msgid "Add tag..."
 msgstr "Engeza ithegi..."
 
@@ -305,8 +296,8 @@ msgstr "Engeza omaka kusuka phansi kwanoma iliphi ikhasi."
 msgid "Add to existing notifications"
 msgstr "Engeza ezazisweni ezikhona"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:258
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:513
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:261
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:518
 #: ../../../lib/web/src/components/view-tabs.tsx:87
 #: ../../../lib/web/src/components/view-tabs.tsx:93
 msgid "Add view"
@@ -342,16 +333,15 @@ msgstr "Onke amathegi"
 msgid "All wikis"
 msgstr "Wonke ama-wiki"
 
-#. placeholder {0}: entityLabel.toLowerCase()
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
-msgid "Allow anyone to search for {0}"
-msgstr "Vumela noma ubani asesha i-{0}"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:87
+msgid "Allow anyone to search for {entityLabel}"
+msgstr "Vumela noma ubani ukusesha {entityLabel}"
 
-#: src/components/layout/wiki-layout.tsx:155
+#: src/components/layout/wiki-layout.tsx:154
 msgid "Allow anyone to search for wiki"
 msgstr "Vumela noma ngubani ukuthi asesheshe i-wiki"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:229
 msgid "Allow sort by"
 msgstr "Vumela ukuhlunga nge"
 
@@ -360,6 +350,7 @@ msgid "An error occurred"
 msgstr "Kwenzeke iphutha"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:266
+#: ../../../lib/web/src/lib/error-normalizer.ts:11
 msgid "An unexpected error occurred"
 msgstr "Kwenzeke iphutha elingalindelekile"
 
@@ -380,16 +371,16 @@ msgstr "Noma ubani ongenile"
 msgid "Anything subscribed to this feed will stop receiving it. You can copy a new URL afterwards."
 msgstr "Konke okubhalisele lo mfudlana kuzoyeka ukukuthola. Ungakopisha i-URL entsha ngemva kwalokho."
 
-#: src/features/wiki/wiki-settings.tsx:481
+#: src/features/wiki/wiki-settings.tsx:479
 msgid "Are you absolutely sure?"
 msgstr "Uqinisekile ngokuphelele?"
 
 #. placeholder {0}: deleteTarget?.name
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:313
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:316
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "Uqinisekile ufuna ukususa okuthi \"{0}\"?"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:629
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:631
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "Uqinisekile ufuna ukususa ikholomu \"{name}\"? Lokhu akukwazi ukuhlehliswa."
 
@@ -408,7 +399,7 @@ msgstr "Uqinisekile ufuna ukuphuma? Kuzodingeka ungene futhi ukuze ufinyelele i-
 #: src/features/wiki/wiki-page-content.tsx:404
 #: src/routes/_authenticated/$page/index.tsx:303
 #: src/routes/_authenticated/index.tsx:523
-#: src/routes/_authenticated/index.tsx:923
+#: src/routes/_authenticated/index.tsx:922
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "Uqinisekile ufuna ukukhansela ukubhalisa kule wiki?"
 
@@ -416,11 +407,11 @@ msgstr "Uqinisekile ufuna ukukhansela ukubhalisa kule wiki?"
 msgid "Ascending"
 msgstr "Ukukhuphuka"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Attach comment files"
 msgstr "Namathisela amafayela ombono"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Attach reply files"
 msgstr "Namathisela amafayela empendulo"
 
@@ -444,7 +435,7 @@ msgstr "Okunamathiselwe"
 msgid "Authenticated users"
 msgstr "Abasebenzisi abaqinisekisiwe"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:318
+#: ../../../lib/web/src/components/step-up-dialog.tsx:306
 msgid "Authenticator code"
 msgstr "Ikhodi yesiqinisekisi"
 
@@ -457,15 +448,15 @@ msgstr "Umlobi"
 msgid "Available keyboard shortcuts"
 msgstr "Izindlela ezimfishane zekhibhodi ezitholakalayo"
 
-#: ../../../lib/web/src/components/entity-avatar.tsx:99
+#: ../../../lib/web/src/components/entity-avatar.tsx:98
 msgid "Avatar"
 msgstr "I-avatar"
 
-#: ../../../lib/web/src/components/entity-avatar.tsx:99
+#: ../../../lib/web/src/components/entity-avatar.tsx:98
 msgid "Avatar for {name}"
 msgstr "I-avatar ka-{name}"
 
-#: ../../../lib/web/src/components/place-picker.tsx:156
+#: ../../../lib/web/src/components/place-picker.tsx:142
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
@@ -479,8 +470,8 @@ msgstr "Emuva"
 msgid "Back to history"
 msgstr "Buyela emlandweni"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:27
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:28
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:28
 msgid "Back to home"
 msgstr "Buyela ekhaya"
 
@@ -560,8 +551,8 @@ msgstr "Yiba ngowokuqala ukuphawula kuleli khasi."
 msgid "Blocked by"
 msgstr "Ivinjelwe ngu"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:242
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:252
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:238
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:248
 msgid "Blocked navigation to untrusted link"
 msgstr "Kuvinjelwe ukuya esixhumanisini esingathembekile"
 
@@ -569,21 +560,21 @@ msgstr "Kuvinjelwe ukuya esixhumanisini esingathembekile"
 msgid "Blocks"
 msgstr "Iyavimba"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:312
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:315
 msgid "Board"
 msgstr "Ibhodi"
 
-#: ../../../lib/web/src/components/post-tags.tsx:180
-#: ../../../lib/web/src/components/post-tags.tsx:192
+#: ../../../lib/web/src/components/post-tags.tsx:194
+#: ../../../lib/web/src/components/post-tags.tsx:206
 msgid "Boost interest"
 msgstr "Khulisa intshisekelo"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:399
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:402
 msgid "Border colour"
 msgstr "Umbala womngcele"
 
 #: src/features/wiki/redirects-page.tsx:199
-#: src/features/wiki/wiki-settings.tsx:994
+#: src/features/wiki/wiki-settings.tsx:992
 msgid "Both source and target are required"
 msgstr "Kudingeka kokubili umthombo nokuqondisiwe"
 
@@ -600,15 +591,15 @@ msgid "Browser notifications"
 msgstr "Izaziso zebhrawuza"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:426
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:166
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:183
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:185
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
-#: ../../../lib/web/src/components/step-up-dialog.tsx:366
-#: ../../../lib/web/src/components/travelling-picker.tsx:308
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
+#: ../../../lib/web/src/components/step-up-dialog.tsx:354
+#: ../../../lib/web/src/components/travelling-picker.tsx:288
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:251
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:136
 #: ../../../lib/web/src/features/access/access-dialog.tsx:328
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:201
@@ -623,18 +614,18 @@ msgstr "Izaziso zebhrawuza"
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:156
 #: src/features/wiki/wiki-comment-thread.tsx:182
-#: src/features/wiki/wiki-settings.tsx:790
-#: src/features/wiki/wiki-settings.tsx:953
-#: src/features/wiki/wiki-settings.tsx:1066
+#: src/features/wiki/wiki-settings.tsx:788
+#: src/features/wiki/wiki-settings.tsx:951
+#: src/features/wiki/wiki-settings.tsx:1064
 #: src/routes/_authenticated/join.tsx:120
 msgid "Cancel"
 msgstr "Khansela"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Cancel comment"
 msgstr "Khansela umbono"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Cancel reply"
 msgstr "Khansela impendulo"
 
@@ -652,15 +643,23 @@ msgstr "Isigaba salezi zaziso"
 msgid "Change notification category"
 msgstr "Shintsha isigaba sesaziso"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:62
+msgid "Changed"
+msgstr "Kushintshiwe"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:62
+msgid "Changed {field}"
+msgstr "Kushintshiwe {field}"
+
 #: src/features/wiki/wiki-page-content.tsx:346
 #: src/routes/_authenticated/index.tsx:449
-#: src/routes/_authenticated/index.tsx:718
+#: src/routes/_authenticated/index.tsx:717
 msgid "Changes"
 msgstr "Izinguquko"
 
 #: src/features/wiki/wiki-page-content.tsx:348
 #: src/routes/_authenticated/index.tsx:457
-#: src/routes/_authenticated/index.tsx:728
+#: src/routes/_authenticated/index.tsx:727
 msgid "Changes and comments"
 msgstr "Izinguquko nemibono"
 
@@ -674,11 +673,11 @@ msgstr "Izinguquko ezisuka kunguqulo {0} → {1}"
 msgid "Changes will appear here when pages are edited."
 msgstr "Izinguquko zizovela lapha lapho amakhasi ehlelwa."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:12
 msgid "Checkbox"
 msgstr "Ibhokisi lokumaka"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:138
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:13
 msgid "Checklist"
 msgstr "Uhlu lokuhlola"
 
@@ -693,10 +692,10 @@ msgstr "Khetha ulimi"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:274
 #: ../../../lib/web/src/components/colour-picker.tsx:355
-#: ../../../lib/web/src/components/travelling-picker.tsx:164
-#: ../../../lib/web/src/components/travelling-picker.tsx:170
-#: ../../../lib/web/src/components/travelling-picker.tsx:231
-#: ../../../lib/web/src/components/travelling-picker.tsx:237
+#: ../../../lib/web/src/components/travelling-picker.tsx:145
+#: ../../../lib/web/src/components/travelling-picker.tsx:151
+#: ../../../lib/web/src/components/travelling-picker.tsx:212
+#: ../../../lib/web/src/components/travelling-picker.tsx:218
 msgid "Clear"
 msgstr "Sula"
 
@@ -710,19 +709,19 @@ msgstr "Sula konke"
 msgid "Clear search"
 msgstr "Sula usesho"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:501
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:506
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:468
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:471
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:479
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "Vala"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:113
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:263
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:267
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:117
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:266
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:270
 msgid "Close dialog"
 msgstr "Vala ingxoxiswano"
 
@@ -755,16 +754,16 @@ msgstr "Goqa"
 msgid "Collapse sidebar"
 msgstr "Goqa ibha eseceleni"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:146
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:148
 msgid "Colour"
 msgstr "Umbala"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:539
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:540
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:545
 msgid "Column actions"
 msgstr "Izenzo zekholomu"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:347
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:350
 msgid "Columns group by"
 msgstr "Amakholomu ahlanganiswa nge"
 
@@ -786,11 +785,11 @@ msgstr "Umbono"
 msgid "Comment actions"
 msgstr "Izenzo zokuphawula"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:431
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:442
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:454
 #: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/index.tsx:454
-#: src/routes/_authenticated/index.tsx:723
+#: src/routes/_authenticated/index.tsx:722
 msgid "Comments"
 msgstr "Imibono"
 
@@ -802,16 +801,16 @@ msgstr "Okufishane"
 msgid "Compare changes"
 msgstr "Qhathanisa izinguquko"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:95
 msgid "Configure option settings"
 msgstr "Cushwa izilungiselelo zenketho"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:259
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:262
 msgid "Configure view settings"
 msgstr "Cushwa izilungiselelo zombukiso"
 
-#: ../../../lib/web/src/components/place-picker.tsx:160
-#: ../../../lib/web/src/components/travelling-picker.tsx:316
+#: ../../../lib/web/src/components/place-picker.tsx:146
+#: ../../../lib/web/src/components/travelling-picker.tsx:296
 msgid "Confirm"
 msgstr "Qinisekisa"
 
@@ -831,7 +830,7 @@ msgstr "Okuqukethwe"
 msgid "Content not found."
 msgstr "Okuqukethwe akutholakalanga."
 
-#: ../../../lib/web/src/lib/query-client.ts:78
+#: ../../../lib/web/src/lib/query-client.ts:73
 msgid "Content not modified"
 msgstr "Okuqukethwe akushintshiwe"
 
@@ -843,7 +842,7 @@ msgstr "Ulwazi nemininingwane yomongo."
 msgid "Continue"
 msgstr "Qhubeka"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:355
+#: ../../../lib/web/src/components/step-up-dialog.tsx:343
 msgid "Continue with {label}"
 msgstr "Qhubeka nge-{label}"
 
@@ -874,36 +873,35 @@ msgstr "Ayikwazanga ukulayisha inguqulo edlule ukuze kuqhathaniswe."
 msgid "Could not load this document. Please try again later."
 msgstr "Akukwazanga ukulayisha le dokhumenti. Sicela uzame futhi kamuva."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:128
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:124
 msgid "Couldn't load notifications"
 msgstr "Yehlulekile ukulayisha izaziso"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:182
+#: ../../../lib/web/src/components/step-up-dialog.tsx:170
 msgid "Couldn't send the code. Please try again."
 msgstr "Ayikwazanga ukuthumela ikhodi. Sicela uzame futhi."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:136
+#: ../../../lib/web/src/components/step-up-dialog.tsx:124
 msgid "Couldn't start re-authentication. Please try again."
 msgstr "Ayikwazanga ukuqala ukuqinisekiswa kabusha. Sicela uzame futhi."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:224
+#: ../../../lib/web/src/components/step-up-dialog.tsx:212
 msgid "Couldn't verify with that account. Please try again."
 msgstr "Ayikwazanga ukuqinisekisa ngaleyo akhawunti. Sicela uzame futhi."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:550
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:689
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:491
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:675
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:551
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:691
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:513
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
 msgid "Create"
 msgstr "Dala"
 
-#. placeholder {0}: entityLabel.toLowerCase()
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
-msgid "Create {0}"
-msgstr "Dala {0}"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:146
+msgid "Create {entityLabel}"
+msgstr "Dala {entityLabel}"
 
-#: src/features/wiki/wiki-settings.tsx:1035
+#: src/features/wiki/wiki-settings.tsx:1033
 msgid "Create a redirect from one URL to another."
 msgstr "Dala ukuqondisa kabusha kusuka ku-URL eyodwa kuya kwenye."
 
@@ -912,7 +910,7 @@ msgid "Create a redirect from one URL to another. The source URL must not be an 
 msgstr "Dala ukuqondiswa kabusha kusukela ku-URL eyodwa kuya kwenye. I-URL yomthombo akumele ibe ikhasi elikhona."
 
 #: src/features/wiki/redirects-page.tsx:85
-#: src/features/wiki/wiki-settings.tsx:895
+#: src/features/wiki/wiki-settings.tsx:893
 msgid "Create a redirect to forward one URL to another."
 msgstr "Dala ukuqondisa kabusha ukudlulisa i-URL eyodwa kwenye."
 
@@ -926,8 +924,8 @@ msgstr "Dala ikhasi"
 
 #: src/features/wiki/redirects-page.tsx:231
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1033
-#: src/features/wiki/wiki-settings.tsx:1069
+#: src/features/wiki/wiki-settings.tsx:1031
+#: src/features/wiki/wiki-settings.tsx:1067
 msgid "Create redirect"
 msgstr "Dala ukuqondisa kabusha"
 
@@ -943,20 +941,25 @@ msgid "Create this page"
 msgstr "Dala leli khasi"
 
 #: src/components/layout/wiki-layout.tsx:132
-#: src/components/layout/wiki-layout.tsx:152
-#: src/routes/_authenticated/index.tsx:770
+#: src/components/layout/wiki-layout.tsx:151
+#: src/routes/_authenticated/index.tsx:769
 msgid "Create wiki"
 msgstr "Dala i-wiki"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:54
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:492
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:495
 #: src/features/wiki/redirects-page.tsx:95
-#: src/features/wiki/wiki-settings.tsx:905
+#: src/features/wiki/wiki-settings.tsx:903
 msgid "Created"
 msgstr "Kudaliwe"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:54
+msgid "Created {field}"
+msgstr "Kudalwe {field}"
+
 #: src/features/wiki/redirects-page.tsx:207
-#: src/features/wiki/wiki-settings.tsx:1006
+#: src/features/wiki/wiki-settings.tsx:1004
 msgid "Creating redirect..."
 msgstr "Kudalwa ukuqondisa kabusha..."
 
@@ -964,11 +967,11 @@ msgstr "Kudalwa ukuqondisa kabusha..."
 msgid "Creating wiki..."
 msgstr "Kudalwa i-wiki..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:260
 #: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1069
+#: src/features/wiki/wiki-settings.tsx:1067
 msgid "Creating..."
 msgstr "Kuyadalwa..."
 
@@ -976,7 +979,7 @@ msgstr "Kuyadalwa..."
 msgid "Current"
 msgstr "Yamanje"
 
-#: ../../../lib/web/src/components/map-view.tsx:217
+#: ../../../lib/web/src/components/map-view.tsx:249
 msgid "Current location"
 msgstr "Indawo yamanje"
 
@@ -993,7 +996,7 @@ msgstr "Kumnyama"
 msgid "Data conflict"
 msgstr "Ukungqubuzana kwedatha"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:139
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:14
 #: src/features/wiki/attachments-page.tsx:404
 #: src/features/wiki/changes-list.tsx:48
 #: src/features/wiki/page-history.tsx:58
@@ -1012,19 +1015,19 @@ msgstr "Okuzenzakalelayo"
 msgid "Default AI account"
 msgstr "I-akhawunti ye-AI ezenzakalelayo"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:479
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:482
 msgid "Default sort"
 msgstr "Ukuhlunga okuzenzakalelayo"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:569
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:570
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:632
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:280
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:323
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:353
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:198
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:203
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:252
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:314
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:208
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:255
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:317
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:648
@@ -1032,7 +1035,7 @@ msgstr "Ukuhlunga okuzenzakalelayo"
 #: src/features/wiki/wiki-comment-thread.tsx:255
 #: src/features/wiki/wiki-comment-thread.tsx:282
 #: src/features/wiki/wiki-page-content.tsx:316
-#: src/features/wiki/wiki-settings.tsx:958
+#: src/features/wiki/wiki-settings.tsx:956
 msgid "Delete"
 msgstr "Susa"
 
@@ -1042,7 +1045,7 @@ msgstr "Susa"
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "Susa «{0}»? Lokhu akukwazi ukuhlehliswa."
 
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:312
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:315
 #: src/features/wiki/attachments-page.tsx:530
 #: src/features/wiki/attachments-page.tsx:641
 #: src/features/wiki/attachments-page.tsx:650
@@ -1054,7 +1057,7 @@ msgstr "Susa «{0}»? Lokhu akukwazi ukuhlehliswa."
 msgid "Delete attachment"
 msgstr "Susa okunamathiselwe"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
 msgid "Delete column"
 msgstr "Susa ikholomu"
 
@@ -1063,17 +1066,17 @@ msgstr "Susa ikholomu"
 msgid "Delete comment"
 msgstr "Susa umbono"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:300
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:304
 msgid "Delete field"
 msgstr "Susa inkambu"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:116
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:117
 msgid "Delete option"
 msgstr "Susa inketho"
 
 #. placeholder {0}: opt.name
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:278
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:283
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:282
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:287
 msgid "Delete option {0}"
 msgstr "Susa inketho {0}"
 
@@ -1086,27 +1089,27 @@ msgstr "Susa ikhasi"
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:153
 #: src/features/wiki/redirects-page.tsx:159
-#: src/features/wiki/wiki-settings.tsx:934
-#: src/features/wiki/wiki-settings.tsx:940
+#: src/features/wiki/wiki-settings.tsx:932
+#: src/features/wiki/wiki-settings.tsx:938
 msgid "Delete redirect {0}"
 msgstr "Susa ukuqondiswa kabusha {0}"
 
 #: src/features/wiki/redirects-page.tsx:163
-#: src/features/wiki/wiki-settings.tsx:944
+#: src/features/wiki/wiki-settings.tsx:942
 msgid "Delete redirect?"
 msgstr "Susa ukuqondisa kabusha?"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:284
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:287
 msgid "Delete view"
 msgstr "Susa umbukiso"
 
-#: src/features/wiki/wiki-settings.tsx:464
-#: src/features/wiki/wiki-settings.tsx:475
-#: src/features/wiki/wiki-settings.tsx:483
+#: src/features/wiki/wiki-settings.tsx:462
+#: src/features/wiki/wiki-settings.tsx:473
+#: src/features/wiki/wiki-settings.tsx:481
 msgid "Delete wiki"
 msgstr "Susa i-wiki"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:109
+#: ../../../lib/web/src/components/restore-banner.tsx:95
 msgid "Delete your account on the old server"
 msgstr "Susa i-akhawunti yakho eservereni endala"
 
@@ -1123,17 +1126,25 @@ msgstr "Susa i-akhawunti yakho eservereni endala"
 msgid "Delete: {pageTitle}"
 msgstr "Susa: {pageTitle}"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:58
+msgid "Deleted"
+msgstr "Kususiwe"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:58
+msgid "Deleted {field}"
+msgstr "Kususiwe {field}"
+
 #: src/features/wiki/redirects-page.tsx:118
-#: src/features/wiki/wiki-settings.tsx:865
+#: src/features/wiki/wiki-settings.tsx:863
 msgid "Deleting redirect..."
 msgstr "Kususwa ukuqondisa kabusha..."
 
-#: src/features/wiki/wiki-settings.tsx:347
+#: src/features/wiki/wiki-settings.tsx:345
 msgid "Deleting wiki..."
 msgstr "Kususwa i-wiki..."
 
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/wiki-settings.tsx:475
+#: src/features/wiki/wiki-settings.tsx:473
 msgid "Deleting..."
 msgstr "Kususwa..."
 
@@ -1141,7 +1152,7 @@ msgstr "Kususwa..."
 msgid "Descending"
 msgstr "Ukwehla"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:83
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
 msgid "Description"
 msgstr "Incazelo"
 
@@ -1160,7 +1171,7 @@ msgstr "Iphaneli Yemininingwane"
 msgid "Detect from web browser"
 msgstr "Bona kusuka kubhrawuza ye-web"
 
-#: ../../../lib/web/src/components/person-picker.tsx:214
+#: ../../../lib/web/src/components/person-picker.tsx:190
 msgid "Directory"
 msgstr "Uhlu"
 
@@ -1177,8 +1188,8 @@ msgstr "Lahla uhlaka?"
 msgid "Disconnected"
 msgstr "Kunqanyuliwe"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:88
-#: ../../../lib/web/src/components/restore-banner.tsx:94
+#: ../../../lib/web/src/components/restore-banner.tsx:74
+#: ../../../lib/web/src/components/restore-banner.tsx:80
 msgid "Dismiss"
 msgstr "Cashisa"
 
@@ -1190,18 +1201,23 @@ msgstr "Ibonisa ibha eseceleni yefoni."
 msgid "Documents"
 msgstr "Imibhalo"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:305
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:518
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:111
+msgid "Does not match the required pattern"
+msgstr "Ayihambisani nephethini edingekayo"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:309
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:523
 msgid "Done"
 msgstr "Kwenziwe"
 
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:239
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:452
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:462
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:243
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:473
 msgid "Download"
 msgstr "Landa"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:98
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:149
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:100
 msgid "Download failed"
 msgstr "Ukulanda kuhlulekile"
 
@@ -1227,11 +1243,11 @@ msgstr "Sokulungele i-dyslexia"
 msgid "Edit"
 msgstr "Hlela"
 
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:154
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:158
 msgid "Edit {label}"
 msgstr "Hlela {label}"
 
-#: src/features/wiki/wiki-settings.tsx:499
+#: src/features/wiki/wiki-settings.tsx:497
 msgid "Edit and view"
 msgstr "Hlela ubuye ubuke"
 
@@ -1243,21 +1259,21 @@ msgstr "Hlela ubuye ubuke"
 msgid "Edit caption"
 msgstr "Hlela umbhalo ochazayo"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:137
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:140
 msgid "Edit field"
 msgstr "Hlela inkambu"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:138
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:141
 msgid "Edit field settings"
 msgstr "Hlela izilungiselelo zenkambu"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:91
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:92
 msgid "Edit option"
 msgstr "Hlela inketho"
 
 #. placeholder {0}: opt.name
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:263
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:268
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:267
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:272
 msgid "Edit option {0}"
 msgstr "Hlela inketho engu-{0}"
 
@@ -1269,7 +1285,7 @@ msgstr "Hlela ikhadi elikhethiwe"
 msgid "Edit summary (optional)"
 msgstr "Isifinyezo sokuhlela (okuzikhethelayo)"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:258
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:261
 msgid "Edit view"
 msgstr "Hlela umbukiso"
 
@@ -1290,7 +1306,7 @@ msgstr "Hlela: {pageTitle}"
 msgid "Email"
 msgstr "I-imeyili"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:292
+#: ../../../lib/web/src/components/step-up-dialog.tsx:280
 msgid "Email code"
 msgstr "Ikhodi ye-imeyili"
 
@@ -1306,15 +1322,15 @@ msgstr "Faka itemu lokusesha"
 msgid "Enter tag name"
 msgstr "Faka igama lethegi"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:302
+#: ../../../lib/web/src/components/step-up-dialog.tsx:290
 msgid "Enter the code from your email"
 msgstr "Faka ikhodi evela ku-imeyili yakho"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:327
+#: ../../../lib/web/src/components/step-up-dialog.tsx:315
 msgid "Enter your authenticator code"
 msgstr "Faka ikhodi yakho yesiqinisekisi"
 
-#: src/features/wiki/wiki-settings.tsx:398
+#: src/features/wiki/wiki-settings.tsx:396
 msgid "Entity ID"
 msgstr "I-ID yohlaka"
 
@@ -1322,7 +1338,7 @@ msgstr "I-ID yohlaka"
 msgid "Error: Received invalid response from server."
 msgstr "Iphutha: Kutholwe impendulo engalungile esuka kuseva."
 
-#: src/features/wiki/wiki-settings.tsx:446
+#: src/features/wiki/wiki-settings.tsx:444
 msgid "Example: \"home\", \"welcome\", \"index\""
 msgstr "Isibonelo: «home», «welcome», «index»"
 
@@ -1345,6 +1361,10 @@ msgstr "I-URL yangaphandle"
 msgid "Extra large"
 msgstr "Okukhulu kakhulu"
 
+#: ../../../lib/web/src/hooks/use-accounts.ts:213
+msgid "Failed to add account"
+msgstr "Kuhlulekile ukungeza i-akhawunti"
+
 #: src/features/wiki/tag-manager.tsx:60
 msgid "Failed to add tag"
 msgstr "Kuhlulekile ukungeza ithegi"
@@ -1366,7 +1386,7 @@ msgid "Failed to create page"
 msgstr "Kuhlulekile ukudala ikhasi"
 
 #: src/features/wiki/redirects-page.tsx:209
-#: src/features/wiki/wiki-settings.tsx:1008
+#: src/features/wiki/wiki-settings.tsx:1006
 msgid "Failed to create redirect"
 msgstr "Kuhlulekile ukudala uqondiso lubuyiselwe"
 
@@ -1380,7 +1400,7 @@ msgstr "Kuhlulekile ukudala iwiki"
 msgid "Failed to delete attachment"
 msgstr "Kuhlulekile ukususa okunanyathiselwe"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:191
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:192
 msgid "Failed to delete comment"
 msgstr "Kuhlulekile ukususa ukuphawula"
 
@@ -1393,11 +1413,11 @@ msgid "Failed to delete page"
 msgstr "Kuhlulekile ukususa ikhasi"
 
 #: src/features/wiki/redirects-page.tsx:120
-#: src/features/wiki/wiki-settings.tsx:867
+#: src/features/wiki/wiki-settings.tsx:865
 msgid "Failed to delete redirect"
 msgstr "Kuhlulekile ukususa uqondiso lubuyiselwe"
 
-#: src/features/wiki/wiki-settings.tsx:349
+#: src/features/wiki/wiki-settings.tsx:347
 msgid "Failed to delete wiki"
 msgstr "Kuhlulekile ukususa iwiki"
 
@@ -1416,7 +1436,7 @@ msgstr "Kuhlulekile ukujoyina iwiki"
 msgid "Failed to load"
 msgstr "Kuhlulekile ukulayisha"
 
-#: src/features/wiki/wiki-settings.tsx:535
+#: src/features/wiki/wiki-settings.tsx:533
 msgid "Failed to load access rules"
 msgstr "Kuhlulekile ukulayisha imithetho yokufinyelela"
 
@@ -1424,7 +1444,7 @@ msgstr "Kuhlulekile ukulayisha imithetho yokufinyelela"
 msgid "Failed to load history"
 msgstr "Kuhlulekile ukulayisha umlando"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:338
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
 msgid "Failed to load image"
 msgstr "Yehlulekile ukulayisha isithombe"
 
@@ -1432,15 +1452,15 @@ msgstr "Yehlulekile ukulayisha isithombe"
 msgid "Failed to load prompts"
 msgstr "Kuhlulekile ukulayisha imiyalo"
 
-#: src/features/wiki/wiki-settings.tsx:849
+#: src/features/wiki/wiki-settings.tsx:847
 msgid "Failed to load redirects"
 msgstr "Kuhlulekile ukulayisha okuqondiselwe kabusha"
 
-#: src/features/wiki/wiki-settings.tsx:658
+#: src/features/wiki/wiki-settings.tsx:656
 msgid "Failed to load replicas"
 msgstr "Kuhlulekile ukulayisha amakhophi"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:338
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
 msgid "Failed to load video"
 msgstr "Yehlulekile ukulayisha ividiyo"
 
@@ -1453,15 +1473,15 @@ msgstr "Kuhlulekile ukulayisha ulwazi lwewiki"
 msgid "Failed to load wikis"
 msgstr "Kuhlulekile ukulayisha amawiki"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:154
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:155
 msgid "Failed to post comment"
 msgstr "Kuhlulekile ukuthumela ukuphawula"
 
-#: src/features/wiki/wiki-settings.tsx:580
+#: src/features/wiki/wiki-settings.tsx:578
 msgid "Failed to remove access"
 msgstr "Kuhlulekile ukususa ukufinyelela"
 
-#: src/features/wiki/wiki-settings.tsx:677
+#: src/features/wiki/wiki-settings.tsx:675
 msgid "Failed to remove replica"
 msgstr "Kuhlulekile ukususa ikhophi"
 
@@ -1473,7 +1493,7 @@ msgstr "Kuhlulekile ukususa ithegi"
 msgid "Failed to rename page"
 msgstr "Kuhlulekile ukuqamba kabusha ikhasi"
 
-#: src/features/wiki/wiki-settings.tsx:282
+#: src/features/wiki/wiki-settings.tsx:280
 msgid "Failed to rename wiki"
 msgstr "Kuhlulekile ukuqamba kabusha iwiki"
 
@@ -1503,7 +1523,7 @@ msgstr "Kuhlulekile ukulondoloza ikhasi"
 msgid "Failed to save prompt"
 msgstr "Kuhlulekile ukulondoloza umyalo"
 
-#: src/features/wiki/wiki-settings.tsx:306
+#: src/features/wiki/wiki-settings.tsx:304
 msgid "Failed to save settings"
 msgstr "Kuhlulekile ukulondoloza izilungiselelo"
 
@@ -1512,7 +1532,7 @@ msgstr "Kuhlulekile ukulondoloza izilungiselelo"
 msgid "Failed to search wikis"
 msgstr "Kuhlulekile ukusesha amawiki"
 
-#: src/features/wiki/wiki-settings.tsx:551
+#: src/features/wiki/wiki-settings.tsx:549
 msgid "Failed to set access level"
 msgstr "Kuhlulekile ukusetha izinga lokufinyelela"
 
@@ -1522,22 +1542,22 @@ msgstr "Kuhlulekile ukusetha izinga lokufinyelela"
 msgid "Failed to subscribe"
 msgstr "Kuhlulekile ukubhalisa"
 
-#: src/features/wiki/wiki-settings.tsx:328
+#: src/features/wiki/wiki-settings.tsx:326
 msgid "Failed to sync wiki"
 msgstr "Kuhlulekile ukuvumelanisa iwiki"
 
 #: src/features/wiki/wiki-page-content.tsx:81
 #: src/routes/_authenticated/$page/index.tsx:77
 #: src/routes/_authenticated/index.tsx:288
-#: src/routes/_authenticated/index.tsx:934
+#: src/routes/_authenticated/index.tsx:933
 msgid "Failed to unsubscribe"
 msgstr "Kuhlulekile ukukhansela ukubhalisa"
 
-#: src/features/wiki/wiki-settings.tsx:564
+#: src/features/wiki/wiki-settings.tsx:562
 msgid "Failed to update access level"
 msgstr "Kuhlulekile ukubuyekeza izinga lokufinyelela"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:174
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:175
 msgid "Failed to update comment"
 msgstr "Kuhlulekile ukubuyekeza ukuphawula"
 
@@ -1550,9 +1570,9 @@ msgstr "Kuhlulekile ukulayisha okunanyathiselwe"
 msgid "Failed to upload files"
 msgstr "Kuhlulekile ukulayisha amafayela"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:589
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:155
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:175
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:611
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:160
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:180
 msgid "Files"
 msgstr "Amafayela"
 
@@ -1565,15 +1585,15 @@ msgstr "Hlunga"
 msgid "Find wikis"
 msgstr "Thola amawiki"
 
-#: src/features/wiki/wiki-settings.tsx:402
+#: src/features/wiki/wiki-settings.tsx:400
 msgid "Fingerprint"
 msgstr "Isigxivizo somunwe"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:97
+#: ../../../lib/web/src/components/restore-banner.tsx:83
 msgid "Finish moving your account"
 msgstr "Qeda ukudlulisa i-akhawunti yakho"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:221
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
 msgid "Flags"
 msgstr "Amafulegi"
 
@@ -1590,11 +1610,11 @@ msgstr "Kutholakale {0} ku-«{debouncedQuery}»"
 msgid "Friday"
 msgstr "ULwesihlanu"
 
-#: ../../../lib/web/src/components/person-picker.tsx:207
+#: ../../../lib/web/src/components/person-picker.tsx:183
 msgid "Friends"
 msgstr "Abangane"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:153
+#: ../../../lib/web/src/components/travelling-picker.tsx:134
 msgid "From"
 msgstr "Kusukela"
 
@@ -1606,8 +1626,8 @@ msgstr "Kusukela"
 msgid "From theme"
 msgstr "Kusukela endikimbeni"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:25
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:26
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:26
 msgid "Go back"
 msgstr "Buyela"
 
@@ -1620,7 +1640,7 @@ msgstr "Umbukiso wegridi"
 msgid "Group"
 msgstr "Iqembu"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:347
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:350
 msgid "Group by"
 msgstr "Hlanganisa nge"
 
@@ -1647,19 +1667,19 @@ msgstr "Umlando"
 msgid "History: {pageTitle}"
 msgstr "Umlando: {pageTitle}"
 
-#: src/features/wiki/wiki-settings.tsx:443
+#: src/features/wiki/wiki-settings.tsx:441
 msgid "home"
 msgstr "home"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:90
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:185
-#: ../../../lib/web/src/components/layout/top-bar.tsx:71
-#: ../../../lib/web/src/components/layout/top-bar.tsx:100
+#: ../../../lib/web/src/components/layout/top-bar.tsx:86
+#: ../../../lib/web/src/components/layout/top-bar.tsx:115
 #: src/routes/_authenticated/index.tsx:260
 msgid "Home"
 msgstr "Ikhaya"
 
-#: src/features/wiki/wiki-settings.tsx:431
+#: src/features/wiki/wiki-settings.tsx:429
 msgid "Home page"
 msgstr "Ikhasi lekhaya"
 
@@ -1667,12 +1687,12 @@ msgstr "Ikhasi lekhaya"
 msgid "Hot"
 msgstr "Okushisayo"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
-#: src/features/wiki/wiki-settings.tsx:743
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:156
+#: src/features/wiki/wiki-settings.tsx:741
 msgid "ID"
 msgstr "I-ID"
 
-#: src/features/wiki/wiki-settings.tsx:389
+#: src/features/wiki/wiki-settings.tsx:387
 msgid "Identity"
 msgstr "Ubunikazi"
 
@@ -1681,7 +1701,7 @@ msgid "Image"
 msgstr "Isithombe"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:316
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
 msgid "Image viewer: {0}"
 msgstr "Isibonisi sesithombe: {0}"
 
@@ -1717,11 +1737,15 @@ msgstr "Faka"
 msgid "Insert attachment"
 msgstr "Faka okunanyathiselwe"
 
+#: ../../../lib/web/src/components/post-tags.tsx:168
+msgid "Interest {weight}"
+msgstr "Intshisekelo {weight}"
+
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "Izintshisekelo"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:550
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:591
 msgid "Invalid date"
 msgstr "Idethi engalungile"
 
@@ -1755,17 +1779,17 @@ msgstr "Okukhulu"
 msgid "Large uploads may be limited by your server or proxy configuration."
 msgstr "Ukulayishwa okukhulu kungase kunciphiswe ukulungiselelwa kweseva noma i-proxy yakho."
 
-#: src/features/wiki/wiki-settings.tsx:745
+#: src/features/wiki/wiki-settings.tsx:743
 msgid "Last synced"
 msgstr "Kuvumelaniswe okokugcina"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:306
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:309
 msgid "Layout"
 msgstr "Isakhiwo"
 
-#: ../../../lib/web/src/components/post-tags.tsx:72
-msgid "Letters, numbers, spaces, and hyphens only"
-msgstr "Izinhlamvu, izinombolo, izikhala, nemigqa kuphela"
+#: ../../../lib/web/src/components/post-tags.tsx:73
+msgid "Letters, numbers, spaces, hyphens, and slashes only"
+msgstr "Izinhlamvu, izinombolo, izikhala, ohayifeni namaslashi kuphela"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:14
 msgid "Light"
@@ -1787,7 +1811,7 @@ msgstr "Isixhumanisi se-{headingText}"
 msgid "Links"
 msgstr "Izixhumanisi"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:318
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:321
 msgid "List"
 msgstr "Uhla"
 
@@ -1796,7 +1820,7 @@ msgstr "Uhla"
 msgid "List view"
 msgstr "Umbukiso wohla"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:35
+#: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: src/features/wiki/changes-list.tsx:105
 #: src/features/wiki/page-history.tsx:161
 msgid "Load more"
@@ -1806,7 +1830,7 @@ msgstr "Layisha okuningi"
 msgid "Loading content…"
 msgstr "Ilayisha okuqukethwe…"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:35
+#: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: ../../../lib/web/src/features/document/document-page.tsx:88
 msgid "Loading..."
 msgstr "Kulayishwa..."
@@ -1836,12 +1860,12 @@ msgstr "Phatha izigaba"
 msgid "Manual"
 msgstr "Mathupha"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:207
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:214
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:203
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:210
 msgid "Mark all as read"
 msgstr "Maka konke njengokufundiwe"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:198
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:202
 msgid "Maximum length"
 msgstr "Ubude obukhulu"
 
@@ -1852,6 +1876,10 @@ msgstr "Iseva ye-MCP"
 #: ../../../lib/web/src/lib/preference-utils.ts:102
 msgid "Medium"
 msgstr "Maphakathi"
+
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:377
+msgid "Members"
+msgstr "Amalungu"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:200
 msgid "Menu"
@@ -1865,7 +1893,7 @@ msgstr "Umyalezo"
 msgid "Metric"
 msgstr "Imethrikhi"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:187
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:191
 msgid "Minimum length"
 msgstr "Ubude obuncane"
 
@@ -1886,46 +1914,58 @@ msgstr "UMsombuluko"
 msgid "More options"
 msgstr "Eziningi izinketho"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:60
+msgid "Moved"
+msgstr "Kuhanjiswe"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:60
+msgid "Moved {field}"
+msgstr "Kuhanjiswe {field}"
+
 #: src/features/wiki/page-editor.tsx:446
 msgid "my-page-name"
 msgstr "igama-lekhasi-lami"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:600
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:125
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:293
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:122
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:601
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:145
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:126
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:296
 #: src/features/wiki/attachments-page.tsx:405
-#: src/features/wiki/wiki-settings.tsx:392
+#: src/features/wiki/wiki-settings.tsx:390
 msgid "Name"
 msgstr "Igama"
 
-#: src/features/wiki/wiki-settings.tsx:271
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:104
+msgid "Name cannot contain < or > characters"
+msgstr "Igama alikwazi ukuqukatha izinhlamvu ezithi < noma >"
+
+#: src/features/wiki/wiki-settings.tsx:269
 msgid "Name cannot contain < or > characters, or line breaks"
 msgstr "Igama alikwazi ukuqukatha izinhlamvu ezithi < noma >, noma ukwephuka kwemigqa"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
-msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
-msgstr "Igama alikwazi ukuqukatha izibiyeli zamakhona, umudwa ongemuva, ikholoni enesiqinti, izimpawu zokucaphuna noma ama-backtick"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:101
+msgid "Name is required"
+msgstr "Kudingeka igama"
 
-#: src/features/wiki/wiki-settings.tsx:270
+#: src/features/wiki/wiki-settings.tsx:268
 msgid "Name must be 100 characters or less"
 msgstr "Igama kufanele libe nezinhlamvu ezingu-100 noma ngaphansi"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:100
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
 msgid "Name must be 1000 characters or less"
 msgstr "Igama kufanele libe nezinhlamvu ezingu-1000 noma ngaphansi"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:53
+#: ../../../lib/web/src/features/errors/general-error.tsx:51
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:313
 msgid "Network error"
 msgstr "Iphutha lenethiwekhi"
 
-#: src/features/wiki/wiki-settings.tsx:759
+#: src/features/wiki/wiki-settings.tsx:757
 msgid "Never"
 msgstr "Akekho"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:476
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:498
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "Okusha"
@@ -1965,20 +2005,20 @@ msgid "New URL must be different from current URL"
 msgstr "I-URL entsha kufanele ihluke ku-URL yamanje"
 
 #: src/features/wiki/redirects-page.tsx:258
-#: src/features/wiki/wiki-settings.tsx:1057
+#: src/features/wiki/wiki-settings.tsx:1055
 msgid "new-page-name"
 msgstr "igama-lekhasi-elisha"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:530
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:536
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:541
 msgid "Next image"
 msgstr "Isithombe esilandelayo"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:555
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:577
 msgid "No {parentClassNames} to add to"
 msgstr "Asikho i-{parentClassNames} okufanele kwengezwe kuyo"
 
-#: src/features/wiki/wiki-settings.tsx:501
+#: src/features/wiki/wiki-settings.tsx:499
 msgid "No access"
 msgstr "Akukho ukufinyelela"
 
@@ -1986,7 +2026,7 @@ msgstr "Akukho ukufinyelela"
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "Awekho amarela okufinyelela acushiwe. Engeza amarela ukulawula ukuthi ubani ongafinyelela kulesi sisetshenziswa."
 
-#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:65
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:74
 msgid "No activity yet"
 msgstr "Awukho umsebenzi okwamanje"
 
@@ -2003,7 +2043,7 @@ msgstr "Akukho okunamathiselwe okwamanje"
 msgid "No changes yet"
 msgstr "Akukho ukushintsha okwamanje"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:322
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:324
 #: src/features/wiki/page-comments.tsx:152
 msgid "No comments yet"
 msgstr "Awekho amazwana okwamanje"
@@ -2016,7 +2056,7 @@ msgstr "Ayikho imidlalo okwamanje"
 msgid "No groups available"
 msgstr "Awekho amaqembu atholakalayo"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "Azikho izinhlobo zezinto ezingadalwa okwamanje. Dala izinto zomzali ezidingekayo kuqala."
 
@@ -2032,31 +2072,31 @@ msgstr "Awekho amakhasi atholakelayo ku-«{debouncedQuery}»"
 msgid "No pages found with this tag"
 msgstr "Awekho amakhasi atholakele analelithegi"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:341
-#: ../../../lib/web/src/components/person-picker.tsx:84
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:382
+#: ../../../lib/web/src/components/person-picker.tsx:71
 msgid "No people found"
 msgstr "Abakho abantu abatholakele"
 
-#: ../../../lib/web/src/components/place-picker.tsx:133
+#: ../../../lib/web/src/components/place-picker.tsx:120
 msgid "No places found"
 msgstr "Azikho izindawo ezitholakele"
 
 #: src/features/wiki/redirects-page.tsx:84
-#: src/features/wiki/wiki-settings.tsx:894
+#: src/features/wiki/wiki-settings.tsx:892
 msgid "No redirects configured"
 msgstr "Akukho ukuqondisa kabusha okucushiwe"
 
-#: src/features/wiki/wiki-settings.tsx:724
-#: src/features/wiki/wiki-settings.tsx:808
+#: src/features/wiki/wiki-settings.tsx:722
+#: src/features/wiki/wiki-settings.tsx:806
 msgid "No replicas yet"
 msgstr "Awekho amakhophi okwamanje"
 
-#: ../../../lib/web/src/components/inline-entity-search.tsx:64
+#: ../../../lib/web/src/components/inline-entity-search.tsx:65
 #: ../../../lib/web/src/components/search-entity-page.tsx:73
 msgid "No results found"
 msgstr "Ayikho imiphumela etholakele"
 
-#: ../../../lib/web/src/components/command-menu.tsx:55
+#: ../../../lib/web/src/components/command-menu.tsx:57
 msgid "No results found."
 msgstr "Imiphumela ayitholakali."
 
@@ -2066,7 +2106,7 @@ msgstr "Akukho ukubuyekezwa okutholakele"
 
 #: ../../../lib/web/src/components/entity/entity-board-container.tsx:824
 #: ../../../lib/web/src/components/entity/entity-board-container.tsx:869
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:336
 msgid "No status"
 msgstr "Asikho isimo"
 
@@ -2086,7 +2126,7 @@ msgstr "Asikho isikhathi sendawo esitholakele."
 msgid "No topic record yet — try again after the next notification."
 msgstr "Awukho umbiko wesihloko okwamanje — zama futhi ngemva kwesaziso esilandelayo."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:139
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:135
 msgid "No unread notifications"
 msgstr "Azikho izaziso ezingafundiwe"
 
@@ -2104,17 +2144,17 @@ msgid "No wikis found"
 msgstr "Awekho ama-wiki atholakele"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:541
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:545
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:382
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:560
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:563
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:412
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:415
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:488
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
-#: ../../../lib/web/src/components/person-picker.tsx:350
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/person-picker.tsx:326
 #: ../../../lib/web/src/lib/preference-utils.ts:100
 msgid "None"
 msgstr "Lutho"
@@ -2124,31 +2164,31 @@ msgid "Normal"
 msgstr "Okuvamile"
 
 #: ../../../lib/web/src/components/attachment-image.tsx:50
-#: ../../../lib/web/src/features/errors/general-error.tsx:67
+#: ../../../lib/web/src/features/errors/general-error.tsx:65
 msgid "Not found"
 msgstr "Ayitholakalanga"
 
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:146
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:150
 msgid "Not set"
 msgstr "Akusethiwe"
 
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:671
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:668
 msgid "Nothing found"
 msgstr "Akukho okutholakele"
 
 #. placeholder {0}: unread.length
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:200
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:196
 msgid "Notifications: {0}"
 msgstr "Izaziso: {0}"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:140
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:54
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:493
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:497
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:15
 msgid "Number"
 msgstr "Inombolo"
 
 #: src/features/wiki/redirects-page.tsx:246
-#: src/features/wiki/wiki-settings.tsx:1045
+#: src/features/wiki/wiki-settings.tsx:1043
 msgid "old-page-name"
 msgstr "igama-lekhasi-elidala"
 
@@ -2166,12 +2206,12 @@ msgid "Oops! Page Not Found!"
 msgstr "Yini! Ikhasi Alitholakali!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:857
+#: src/routes/_authenticated/index.tsx:856
 msgid "Open {0}"
 msgstr "Vula {0}"
 
-#: ../../../lib/web/src/components/layout/nav-group.tsx:199
-#: ../../../lib/web/src/components/layout/nav-group.tsx:204
+#: ../../../lib/web/src/components/layout/nav-group.tsx:227
+#: ../../../lib/web/src/components/layout/nav-group.tsx:232
 msgid "Open actions"
 msgstr "Vula izenzo"
 
@@ -2184,13 +2224,13 @@ msgstr "Vula okunamathiselwe"
 msgid "Open menu"
 msgstr "Vula imenyu"
 
-#: ../../../lib/web/src/components/layout/top-bar.tsx:63
-#: ../../../lib/web/src/components/layout/top-bar.tsx:68
+#: ../../../lib/web/src/components/layout/top-bar.tsx:78
+#: ../../../lib/web/src/components/layout/top-bar.tsx:83
 msgid "Open navigation"
 msgstr "Vula ukuzulazula"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:105
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:111
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:106
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:112
 msgid "Open option actions"
 msgstr "Vula izenzo zenketho"
 
@@ -2198,8 +2238,8 @@ msgstr "Vula izenzo zenketho"
 msgid "Open selected card"
 msgstr "Vula ikhadi elikhethiwe"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:274
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:279
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:277
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:282
 msgid "Open view actions"
 msgstr "Vula izenzo zokubuka"
 
@@ -2208,13 +2248,13 @@ msgstr "Vula izenzo zokubuka"
 msgid "Open view controls"
 msgstr "Vula izilawuli zokubuka"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:200
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:155
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:202
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:157
 msgid "Option name"
 msgstr "Igama lenketho"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:168
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:240
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:170
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:244
 msgid "Options"
 msgstr "Izinketho"
 
@@ -2290,45 +2330,45 @@ msgstr "Kudingeka i-URL yekhasi"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "Amakhasi anethegi <0>{tag}</0>"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:530
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:552
 msgid "Parent"
 msgstr "Umzali"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:337
+#: ../../../lib/web/src/components/step-up-dialog.tsx:325
 msgid "Passkey"
 msgstr "Ukhiye wokungena"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:207
+#: ../../../lib/web/src/components/step-up-dialog.tsx:195
 msgid "Passkey verification failed. Please try again."
 msgstr "Ukuqinisekiswa kwe-passkey kuhlulekile. Sicela uzame futhi."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:146
+#: ../../../lib/web/src/components/restore-banner.tsx:132
 msgid "Passkeys"
 msgstr "Ama-passkey"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:209
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:213
 msgid "Pattern (regex)"
 msgstr "Iphethini (i-regex)"
 
-#: src/features/wiki/wiki-settings.tsx:466
+#: ../../../lib/web/src/components/person-picker.tsx:176
+msgid "People"
+msgstr "Abantu"
+
+#: src/features/wiki/wiki-settings.tsx:464
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "Susa unomphela le-wiki nakho konke okuqukethe. Lokhu akukwazi ukubuyiselwa emuva."
 
 #: ../../../lib/web/src/components/comment-composer.tsx:89
-#: ../../../lib/web/src/features/errors/general-error.tsx:54
+#: ../../../lib/web/src/features/errors/general-error.tsx:52
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:314
 msgid "Please check your internet connection and try again."
 msgstr "Sicela uhlole uxhumano lwakho lwe-inthanethi bese uzama futhi."
 
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:18
-msgid "Please log in with the appropriate credentials <0/> to access this resource."
-msgstr "Sicela ungene ngemininingwane efanele <0/> ukuze ufinyelele le nsiza."
-
-#: ../../../lib/web/src/features/errors/general-error.tsx:83
+#: ../../../lib/web/src/features/errors/general-error.tsx:81
 msgid "Please try again."
 msgstr "Sicela uzame futhi."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:75
+#: ../../../lib/web/src/features/errors/general-error.tsx:73
 msgid "Please wait a moment and try again."
 msgstr "Sicela ulinde isikhashana bese uzama futhi."
 
@@ -2344,8 +2384,8 @@ msgstr "Okwabiwayo namazwana"
 msgid "Preview"
 msgstr "Buka kuqala"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:509
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:514
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:520
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
 msgid "Previous image"
 msgstr "Isithombe esedlule"
 
@@ -2357,10 +2397,6 @@ msgstr "Ubumfihlo"
 #: ../../../lib/web/src/components/ui/upload-progress.tsx:50
 msgid "Processing…"
 msgstr "Iyacutshungulwa…"
-
-#: ../../../lib/web/src/components/person-picker.tsx:200
-msgid "Project members"
-msgstr "Amalungu ephrojekthi"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:108
 msgid "Prompt saved"
@@ -2379,11 +2415,11 @@ msgstr "Iphakanyisiwe"
 msgid "Re-derive from title"
 msgstr "Yenza kabusha kusukela esihlokweni"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:118
+#: ../../../lib/web/src/components/restore-banner.tsx:104
 msgid "Re-link your accounts on this server"
 msgstr "Xhuma kabusha ama-akhawunti akho kule server"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:140
+#: ../../../lib/web/src/components/restore-banner.tsx:126
 msgid "Re-register your passkeys on this server"
 msgstr "Phinda ubhalise okhiye bakho bokungena kule seva"
 
@@ -2413,7 +2449,7 @@ msgstr "Ukuhlelwa kwakamuva kuwo wonke amakhasi kule-wiki."
 msgid "Recommended"
 msgstr "Kunconywayo"
 
-#: src/routes/_authenticated/index.tsx:780
+#: src/routes/_authenticated/index.tsx:779
 msgid "Recommended wikis"
 msgstr "Ama-wiki anconywayo"
 
@@ -2426,29 +2462,29 @@ msgstr "Iyaxhuma kabusha ({retries})..."
 msgid "Redirect \"{0}\" deleted"
 msgstr "Ukuqondiswa kabusha «{0}» kususiwe"
 
-#: src/features/wiki/wiki-settings.tsx:866
+#: src/features/wiki/wiki-settings.tsx:864
 msgid "Redirect \"{source}\" deleted"
 msgstr "Ukuqondiswa kabusha «{source}» kususiwe"
 
 #: src/features/wiki/redirects-page.tsx:208
-#: src/features/wiki/wiki-settings.tsx:1007
+#: src/features/wiki/wiki-settings.tsx:1005
 msgid "Redirect created"
 msgstr "Ukuqondisa kabusha kudaliwe"
 
-#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:136
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:135
 msgid "Redirecting to login."
 msgstr "Iqondisa kabusha ekungeneni."
 
 #: src/features/wiki/redirects-page.tsx:73
-#: src/features/wiki/wiki-settings.tsx:106
-#: src/features/wiki/wiki-settings.tsx:882
+#: src/features/wiki/wiki-settings.tsx:107
+#: src/features/wiki/wiki-settings.tsx:880
 #: src/routes/_authenticated/redirects.tsx:27
 #: src/routes/_authenticated/redirects.tsx:30
 msgid "Redirects"
 msgstr "Ukuqondisa kabusha"
 
-#: ../../../lib/web/src/components/post-tags.tsx:200
-#: ../../../lib/web/src/components/post-tags.tsx:212
+#: ../../../lib/web/src/components/post-tags.tsx:214
+#: ../../../lib/web/src/components/post-tags.tsx:226
 msgid "Reduce interest"
 msgstr "Yehlisa intshisekelo"
 
@@ -2464,13 +2500,21 @@ msgstr "Okuhlobene (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "Okuhlobene phakathi kwamahora angu-24, ngale kwalokho okuphelele"
 
+#: ../../../lib/web/src/components/post-tags.tsx:166
+msgid "Relevance {relevance}"
+msgstr "Ukufaneleka {relevance}"
+
+#: ../../../lib/web/src/components/post-tags.tsx:164
+msgid "Relevance {relevance}, interest {weight}"
+msgstr "Ukufaneleka {relevance}, intshisekelo {weight}"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:285
 #: ../../../lib/web/src/components/attachment-composer.tsx:330
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:192
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: src/features/wiki/tag-manager.tsx:117
 #: src/features/wiki/tag-manager.tsx:122
-#: src/features/wiki/wiki-settings.tsx:795
+#: src/features/wiki/wiki-settings.tsx:793
 msgid "Remove"
 msgstr "Khipha"
 
@@ -2494,12 +2538,12 @@ msgstr "Susa umthetho wokufinyelela we-\"{0}\"?"
 msgid "Remove access?"
 msgstr "Khipha ukufinyelela?"
 
-#: ../../../lib/web/src/components/post-tags.tsx:220
-#: ../../../lib/web/src/components/post-tags.tsx:232
+#: ../../../lib/web/src/components/post-tags.tsx:234
+#: ../../../lib/web/src/components/post-tags.tsx:246
 msgid "Remove interest"
 msgstr "Khipha intshisekelo"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:674
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:712
 msgid "Remove item"
 msgstr "Khipha into"
 
@@ -2509,25 +2553,25 @@ msgid "Remove link"
 msgstr "Susa isixhumanisi"
 
 #. placeholder {0}: replica.name || replica.id
-#: src/features/wiki/wiki-settings.tsx:771
-#: src/features/wiki/wiki-settings.tsx:777
+#: src/features/wiki/wiki-settings.tsx:769
+#: src/features/wiki/wiki-settings.tsx:775
 msgid "Remove replica {0}"
 msgstr "Susa ireplika {0}"
 
-#: src/features/wiki/wiki-settings.tsx:781
+#: src/features/wiki/wiki-settings.tsx:779
 msgid "Remove replica?"
 msgstr "Khipha ikhophi?"
 
-#: src/features/wiki/wiki-settings.tsx:578
+#: src/features/wiki/wiki-settings.tsx:576
 msgid "Removing access..."
 msgstr "Kususwa ukufinyelela..."
 
-#: src/features/wiki/wiki-settings.tsx:675
+#: src/features/wiki/wiki-settings.tsx:673
 msgid "Removing replica..."
 msgstr "Kususwa ikhophi..."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:561
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:618
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:562
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:620
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:297
@@ -2536,7 +2580,7 @@ msgstr "Kususwa ikhophi..."
 msgid "Rename"
 msgstr "Qamba kabusha"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:596
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
 msgid "Rename column"
 msgstr "Qamba kabusha ikholomu"
 
@@ -2544,7 +2588,7 @@ msgstr "Qamba kabusha ikholomu"
 msgid "Rename page"
 msgstr "Qamba kabusha ikhasi"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:598
 msgid "Rename this board column"
 msgstr "Qamba kabusha leli kholomu lebhodi"
 
@@ -2558,15 +2602,15 @@ msgstr "Kuqanjwa kabusha..."
 msgid "Replace"
 msgstr "Buyisela"
 
-#: src/features/wiki/wiki-settings.tsx:676
+#: src/features/wiki/wiki-settings.tsx:674
 msgid "Replica \"{displayName}\" removed"
 msgstr "Ikhophi \"{displayName}\" isusiwe"
 
-#: src/features/wiki/wiki-settings.tsx:108
-#: src/features/wiki/wiki-settings.tsx:692
-#: src/features/wiki/wiki-settings.tsx:705
-#: src/features/wiki/wiki-settings.tsx:719
-#: src/features/wiki/wiki-settings.tsx:736
+#: src/features/wiki/wiki-settings.tsx:109
+#: src/features/wiki/wiki-settings.tsx:690
+#: src/features/wiki/wiki-settings.tsx:703
+#: src/features/wiki/wiki-settings.tsx:717
+#: src/features/wiki/wiki-settings.tsx:734
 msgid "Replicas"
 msgstr "Amakhophi"
 
@@ -2598,11 +2642,11 @@ msgstr "Phendula ku-{0}..."
 msgid "Request URL: {baseURL}{slug}"
 msgstr "I-URL yesicelo: {baseURL}{slug}"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:224
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:228
 msgid "Required"
 msgstr "Kuyadingeka"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:370
+#: ../../../lib/web/src/components/step-up-dialog.tsx:358
 msgid "Resend email"
 msgstr "Thumela i-imeyili futhi"
 
@@ -2653,7 +2697,7 @@ msgstr "Hoxisa"
 
 #: ../../../lib/web/src/components/options-menu.tsx:181
 #: src/routes/_authenticated/index.tsx:460
-#: src/routes/_authenticated/index.tsx:731
+#: src/routes/_authenticated/index.tsx:730
 msgid "Revoke access"
 msgstr "Buyisela ukufinyelela"
 
@@ -2661,12 +2705,12 @@ msgstr "Buyisela ukufinyelela"
 msgid "Revoke RSS access?"
 msgstr "Hoxisa ukufinyelela kwe-RSS?"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:152
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:172
 msgid "Rows"
 msgstr "Imigqa"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:373
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:376
 msgid "Rows group by"
 msgstr "Imigqa iqoqwa nge"
 
@@ -2679,7 +2723,7 @@ msgstr "Ukufinyelela kwe-RSS kubuyiselwe"
 #: ../../../lib/web/src/components/options-menu.tsx:171
 #: src/features/wiki/wiki-page-content.tsx:343
 #: src/routes/_authenticated/index.tsx:443
-#: src/routes/_authenticated/index.tsx:712
+#: src/routes/_authenticated/index.tsx:711
 msgid "RSS feed"
 msgstr "Ifidi ye-RSS"
 
@@ -2697,30 +2741,30 @@ msgstr "UMgqibelo"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: ../../../lib/web/src/components/attachment-composer.tsx:430
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:170
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:172
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:126
 #: ../../../lib/web/src/components/ui/secret-field.tsx:79
 #: src/features/wiki/page-editor.tsx:408
 #: src/features/wiki/wiki-comment-thread.tsx:202
 msgid "Save"
 msgstr "Londoloza"
 
-#: src/features/wiki/wiki-settings.tsx:452
+#: src/features/wiki/wiki-settings.tsx:450
 msgid "Save changes"
 msgstr "Londoloza izinguquko"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: src/features/wiki/page-editor.tsx:408
-#: src/features/wiki/wiki-settings.tsx:280
-#: src/features/wiki/wiki-settings.tsx:304
-#: src/features/wiki/wiki-settings.tsx:452
+#: src/features/wiki/wiki-settings.tsx:278
+#: src/features/wiki/wiki-settings.tsx:302
+#: src/features/wiki/wiki-settings.tsx:450
 msgid "Saving..."
 msgstr "Kuyalondolozwa..."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:175
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
-#: ../../../lib/web/src/components/search.tsx:18
+#: ../../../lib/web/src/components/search.tsx:17
 #: src/features/wiki/wiki-page-content.tsx:325
 #: src/routes/_authenticated/$page/index.tsx:234
 #: src/routes/_authenticated/$wikiId/search.tsx:31
@@ -2743,23 +2787,23 @@ msgstr "Sesha ngegama, i-ID, isigxivizo somunwe, noma i-URL..."
 msgid "Search for a command to run..."
 msgstr "Sesha umyalo ozowusebenzisa..."
 
-#: ../../../lib/web/src/components/place-picker.tsx:86
+#: ../../../lib/web/src/components/place-picker.tsx:73
 msgid "Search for a place"
 msgstr "Sesha indawo"
 
-#: ../../../lib/web/src/components/place-picker.tsx:50
+#: ../../../lib/web/src/components/place-picker.tsx:37
 msgid "Search for a place..."
 msgstr "Sesha indawo..."
 
-#: src/routes/_authenticated/index.tsx:756
+#: src/routes/_authenticated/index.tsx:755
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "Sesha iwiki ozobhalisa kuyo, noma dala enye ukuze ushicilele amadokhumenti akho."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:250
+#: ../../../lib/web/src/components/travelling-picker.tsx:231
 msgid "Search for destination..."
 msgstr "Sesha indawo oya kuyo..."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:183
+#: ../../../lib/web/src/components/travelling-picker.tsx:164
 msgid "Search for origin..."
 msgstr "Sesha indawo yokuqala..."
 
@@ -2798,8 +2842,8 @@ msgstr "Sesha, buka, futhi uhlunge lokhu okubukwayo."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:179
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
-#: ../../../lib/web/src/components/inline-entity-search.tsx:63
-#: ../../../lib/web/src/components/person-picker.tsx:324
+#: ../../../lib/web/src/components/inline-entity-search.tsx:64
+#: ../../../lib/web/src/components/person-picker.tsx:300
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "Sesha..."
@@ -2809,11 +2853,11 @@ msgstr "Sesha..."
 msgid "Searching..."
 msgstr "Kuyaseshwa..."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:141
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:16
 msgid "Select"
 msgstr "Khetha"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:356
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
 msgid "Select a field"
 msgstr "Khetha indawo"
 
@@ -2841,7 +2885,7 @@ msgstr "Khetha okunamathiselwe ozokufaka ekhasini lakho, noma layisha ifayela el
 msgid "Select group"
 msgstr "Khetha iqembu"
 
-#: ../../../lib/web/src/components/place-picker.tsx:49
+#: ../../../lib/web/src/components/place-picker.tsx:36
 msgid "Select location"
 msgstr "Khetha indawo"
 
@@ -2849,7 +2893,7 @@ msgstr "Khetha indawo"
 msgid "Select next card"
 msgstr "Khetha ikhadi elilandelayo"
 
-#: ../../../lib/web/src/components/person-picker.tsx:83
+#: ../../../lib/web/src/components/person-picker.tsx:70
 msgid "Select person..."
 msgstr "Khetha umuntu..."
 
@@ -2857,8 +2901,8 @@ msgstr "Khetha umuntu..."
 msgid "Select previous card"
 msgstr "Khetha ikhadi langaphambili"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:257
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:340
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:289
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:381
 msgid "Select..."
 msgstr "Khetha..."
 
@@ -2871,7 +2915,7 @@ msgstr "Ekhethiwe: <0>{0}</0>"
 msgid "Send again"
 msgstr "Thumela futhi"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:310
+#: ../../../lib/web/src/components/step-up-dialog.tsx:298
 msgid "Send email"
 msgstr "Thumela i-imeyili"
 
@@ -2898,11 +2942,11 @@ msgstr "Imithetho yeseva"
 msgid "Session expired. Please log in again."
 msgstr "Iseshini iphelelwe yisikhathi. Sicela uphinde ungene ngemvume."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:147
+#: ../../../lib/web/src/components/travelling-picker.tsx:128
 msgid "Set origin and destination"
 msgstr "Misa indawo yokuqala neyokuya"
 
-#: src/features/wiki/wiki-settings.tsx:549
+#: src/features/wiki/wiki-settings.tsx:547
 msgid "Setting access..."
 msgstr "Kusethwa ukufinyelela..."
 
@@ -2910,21 +2954,21 @@ msgstr "Kusethwa ukufinyelela..."
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:125
 #: ../../../lib/web/src/components/options-menu.tsx:196
 #: src/features/wiki/wiki-page-content.tsx:370
-#: src/features/wiki/wiki-settings.tsx:105
+#: src/features/wiki/wiki-settings.tsx:106
 #: src/routes/_authenticated/$page/index.tsx:268
 #: src/routes/_authenticated/index.tsx:483
 msgid "Settings"
 msgstr "Izilungiselelo"
 
-#: src/features/wiki/wiki-settings.tsx:305
+#: src/features/wiki/wiki-settings.tsx:303
 msgid "Settings saved"
 msgstr "Izilungiselelo zilondoloziwe"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:327
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:330
 msgid "Show classes"
 msgstr "Bonisa amakilasi"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:428
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:431
 msgid "Show fields"
 msgstr "Bonisa izindawo"
 
@@ -2936,7 +2980,7 @@ msgstr "Bonisa ikhasi"
 msgid "Show this help"
 msgstr "Bonisa lolu sizo"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:39
+#: ../../../lib/web/src/components/ui/load-more.tsx:43
 msgid "Showing {totalShown} of {total}"
 msgstr "Kuboniswa {totalShown} ku-{total}"
 
@@ -2944,17 +2988,21 @@ msgstr "Kuboniswa {totalShown} ku-{total}"
 msgid "Sidebar"
 msgstr "Ibha eseceleni"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:18
+msgid "Sign in with an account that has access <0/> to this resource."
+msgstr "Ngena ngokusebenzisa i-akhawunti enokufinyelela <0/> kulesi sisetshenziswa."
+
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:131
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:137
 msgid "Sign out"
 msgstr "Phuma"
 
-#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:134
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:133
 msgid "Signing out..."
 msgstr "Kuyaphunywa..."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:161
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:179
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:163
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:183
 msgid "Single line of text only"
 msgstr "Umugqa owodwa wombhalo kuphela"
 
@@ -2973,13 +3021,13 @@ msgid "Sort"
 msgstr "Hlunga"
 
 #: src/features/wiki/redirects-page.tsx:92
-#: src/features/wiki/wiki-settings.tsx:422
-#: src/features/wiki/wiki-settings.tsx:902
+#: src/features/wiki/wiki-settings.tsx:420
+#: src/features/wiki/wiki-settings.tsx:900
 msgid "Source"
 msgstr "Umthombo"
 
 #: src/features/wiki/redirects-page.tsx:241
-#: src/features/wiki/wiki-settings.tsx:1040
+#: src/features/wiki/wiki-settings.tsx:1038
 msgid "Source URL"
 msgstr "I-URL yomthombo"
 
@@ -2991,11 +3039,11 @@ msgstr "Imithombo"
 msgid "Spacious"
 msgstr "Ukukhula"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:323
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:325
 msgid "Start the discussion by adding the first comment."
 msgstr "Qala ingxoxo ngokwengeza amazwana okuqala."
 
-#: src/routes/_authenticated/index.tsx:753
+#: src/routes/_authenticated/index.tsx:752
 msgid "Start your first wiki"
 msgstr "Qala iwiki lakho lokuqala"
 
@@ -3003,24 +3051,24 @@ msgstr "Qala iwiki lakho lokuqala"
 msgid "Subject"
 msgstr "Isihloko"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Submit comment"
 msgstr "Hambisa amazwana"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Submit reply"
 msgstr "Hambisa impendulo"
 
-#: ../../../lib/web/src/components/inline-entity-search.tsx:66
-#: ../../../lib/web/src/components/recommended-entities.tsx:58
+#: ../../../lib/web/src/components/inline-entity-search.tsx:67
+#: ../../../lib/web/src/components/recommended-entities.tsx:59
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:120
-#: src/routes/_authenticated/index.tsx:819
+#: src/routes/_authenticated/index.tsx:818
 msgid "Subscribe"
 msgstr "Bhalisa"
 
 #: src/features/wiki/inline-wiki-search.tsx:95
-#: src/features/wiki/wiki-settings.tsx:744
+#: src/features/wiki/wiki-settings.tsx:742
 #: src/routes/_authenticated/find.tsx:64
 msgid "Subscribed"
 msgstr "Kubhalisiwe"
@@ -3036,7 +3084,7 @@ msgstr "Kubhaliselwe ku-{0}"
 msgid "Subscribing..."
 msgstr "Kuyabhaliswa..."
 
-#: src/features/wiki/wiki-settings.tsx:412
+#: src/features/wiki/wiki-settings.tsx:410
 msgid "Subscription"
 msgstr "Ukubhalisa"
 
@@ -3056,12 +3104,12 @@ msgstr "Amafayela asekelwayo: izithombe, i-PDF, i-DOC, i-DOCX, i-TXT, ne-MD."
 msgid "Switch to view 1-9"
 msgstr "Shintshela kombono 1-9"
 
-#: src/features/wiki/wiki-settings.tsx:417
+#: src/features/wiki/wiki-settings.tsx:415
 msgid "Sync now"
 msgstr "Vumelanisa manje"
 
-#: src/features/wiki/wiki-settings.tsx:326
-#: src/features/wiki/wiki-settings.tsx:417
+#: src/features/wiki/wiki-settings.tsx:324
+#: src/features/wiki/wiki-settings.tsx:415
 msgid "Syncing..."
 msgstr "Kuyavumelaniswa..."
 
@@ -3083,12 +3131,12 @@ msgstr "Ithegi «{tag}» ingeziwe"
 msgid "Tag \"{tag}\" removed"
 msgstr "Ithegi «{tag}» isusiwe"
 
-#: ../../../lib/web/src/components/post-tags.tsx:76
+#: ../../../lib/web/src/components/post-tags.tsx:77
 #: src/features/wiki/tag-manager.tsx:47
 msgid "Tag already exists"
 msgstr "Ithegi selikhona"
 
-#: ../../../lib/web/src/components/post-tags.tsx:68
+#: ../../../lib/web/src/components/post-tags.tsx:69
 msgid "Tag must be 50 characters or less"
 msgstr "Ithegi kumele ibe ngezinhlamvu ezingama-50 noma ngaphansi"
 
@@ -3103,8 +3151,8 @@ msgstr "Ithegi kumele ibe ngezinhlamvu ezingama-50 noma ngaphansi"
 msgid "Tag: {tag}"
 msgstr "Ithegi: {tag}"
 
-#: ../../../lib/web/src/components/post-tags.tsx:101
-#: ../../../lib/web/src/components/post-tags.tsx:115
+#: ../../../lib/web/src/components/post-tags.tsx:102
+#: ../../../lib/web/src/components/post-tags.tsx:116
 #: src/features/wiki/wiki-page-content.tsx:331
 #: src/routes/_authenticated/$page/index.tsx:240
 #: src/routes/_authenticated/index.tsx:431
@@ -3112,12 +3160,12 @@ msgid "Tags"
 msgstr "Amathegi"
 
 #: src/features/wiki/redirects-page.tsx:94
-#: src/features/wiki/wiki-settings.tsx:904
+#: src/features/wiki/wiki-settings.tsx:902
 msgid "Target"
 msgstr "Okuqondiwe"
 
 #: src/features/wiki/redirects-page.tsx:253
-#: src/features/wiki/wiki-settings.tsx:1052
+#: src/features/wiki/wiki-settings.tsx:1050
 msgid "Target URL"
 msgstr "I-URL Eqondiwe"
 
@@ -3126,11 +3174,11 @@ msgstr "I-URL Eqondiwe"
 msgid "Terms and conditions"
 msgstr "Imibandela nemigomo"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:142
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:17
 msgid "Text"
 msgstr "Umbhalo"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:193
+#: ../../../lib/web/src/components/step-up-dialog.tsx:181
 msgid "That code is incorrect or has expired."
 msgstr "Leyo khodi ayilungile noma isiphelelwe yisikhathi."
 
@@ -3147,7 +3195,7 @@ msgstr "Bekukukhulu kakhulu ukuthi kulayishwe. Susa noma unciphise amafayela bes
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "I-ID yohlaka lwewiki ofuna ukulukopisha."
 
-#: src/features/wiki/wiki-settings.tsx:1060
+#: src/features/wiki/wiki-settings.tsx:1058
 msgid "The existing page to redirect to"
 msgstr "Ikhasi elikhona ozoqondiselwa kulo"
 
@@ -3159,11 +3207,11 @@ msgstr "Ikhasi elikhona ozoqondisa kuye (isib. «new-page»)"
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "Ikhasi «{slug}» alikabikho."
 
-#: src/features/wiki/wiki-settings.tsx:433
+#: src/features/wiki/wiki-settings.tsx:431
 msgid "The page that users see when they first visit the wiki."
 msgstr "Ikhasi abasebenzisi abalibonayo lapho beqala ukuvakashela iwiki."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:68
+#: ../../../lib/web/src/features/errors/general-error.tsx:66
 msgid "The requested content could not be found."
 msgstr "Okuqukethwe okuceliwe akutholakalanga."
 
@@ -3171,7 +3219,7 @@ msgstr "Okuqukethwe okuceliwe akutholakalanga."
 msgid "The server returned a web page instead of data."
 msgstr "Iseva ibuyise ikhasi lewebhu esikhundleni sedatha."
 
-#: src/features/wiki/wiki-settings.tsx:1048
+#: src/features/wiki/wiki-settings.tsx:1046
 msgid "The URL that will be redirected"
 msgstr "I-URL ezoqondiswa kabusha"
 
@@ -3179,7 +3227,7 @@ msgstr "I-URL ezoqondiswa kabusha"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "I-URL ezoqondiswa kabusha (isib. «old-page»)"
 
-#: src/features/wiki/wiki-settings.tsx:482
+#: src/features/wiki/wiki-settings.tsx:480
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "Lesi senzo asikwazi ukuhlehliswa. Lokhu kuzosusa iwiki nakho konke okuqukethwe ngokuphelele."
 
@@ -3199,7 +3247,7 @@ msgstr "Leli fayela likhulu kakhulu kumkhawulo wokulayisha weseva wamanje. Zama 
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "Leli fayela likhulu kakhulu ukuthi lingalayishwa. Zama ifayela elincane."
 
-#: src/features/wiki/wiki-settings.tsx:413
+#: src/features/wiki/wiki-settings.tsx:411
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Leli wiki libhalisele iwiki lomthombo futhi lithola izibuyekezo kulo."
 
@@ -3209,7 +3257,7 @@ msgstr "Lokhu kuzoba indlela yekhasi. Sebenzisa izinhlamvu ezincane, izinombolo,
 
 #. placeholder {0}: redirect.source
 #. placeholder {1}: redirect.target
-#: src/features/wiki/wiki-settings.tsx:946
+#: src/features/wiki/wiki-settings.tsx:944
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "Lokhu kuzosusa ukuqondiswa kabusha kusukela ku-«{0}» kuya ku-«{1}»."
 
@@ -3220,7 +3268,7 @@ msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the
 msgstr "Lokhu kuzosusa ukuqondiswa kabusha kusukela ku-«{0}» kuya ku-«{1}». Abasebenzisi abavakashela i-URL yomthombo abasayikuqondiswa kabusha."
 
 #. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
-#: src/features/wiki/wiki-settings.tsx:783
+#: src/features/wiki/wiki-settings.tsx:781
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "Lokhu kuzomisa ukuthumela izibuyekezo ku-«{0}». Bangaphinda baphinde uma befuna."
 
@@ -3237,26 +3285,23 @@ msgstr "Isihloko"
 msgid "Title is required"
 msgstr "Isihloko siyadingeka"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:220
+#: ../../../lib/web/src/components/travelling-picker.tsx:201
 msgid "To"
 msgstr "Kuya"
 
-#: ../../../lib/web/src/components/layout/nav-group.tsx:365
-#: ../../../lib/web/src/components/layout/nav-group.tsx:372
-#: ../../../lib/web/src/components/layout/nav-group.tsx:490
-#: ../../../lib/web/src/components/layout/nav-group.tsx:497
+#: ../../../lib/web/src/components/layout/nav-group.tsx:393
+#: ../../../lib/web/src/components/layout/nav-group.tsx:400
+#: ../../../lib/web/src/components/layout/nav-group.tsx:522
+#: ../../../lib/web/src/components/layout/nav-group.tsx:529
 msgid "Toggle section"
 msgstr "Vula/vala isigaba"
 
 #: ../../../lib/web/src/components/ui/sidebar.tsx:337
 #: ../../../lib/web/src/components/ui/sidebar.tsx:340
-msgid "Toggle sidebar"
-msgstr "Shintsha i-sidebar"
-
 #: ../../../lib/web/src/components/ui/sidebar.tsx:352
 #: ../../../lib/web/src/components/ui/sidebar.tsx:355
-msgid "Toggle Sidebar"
-msgstr "Vula/vala ibha eseceleni"
+msgid "Toggle sidebar"
+msgstr "Shintsha i-sidebar"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:26
 msgid "Toggle view options"
@@ -3267,7 +3312,7 @@ msgstr "Guqula izinketho zokubuka"
 msgid "Toggle watched filter"
 msgstr "Shintsha isefa ebhekiwe"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:74
+#: ../../../lib/web/src/features/errors/general-error.tsx:72
 msgid "Too many requests"
 msgstr "Izicelo eziningi kakhulu"
 
@@ -3275,7 +3320,7 @@ msgstr "Izicelo eziningi kakhulu"
 msgid "Top"
 msgstr "Phezulu"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:145
+#: ../../../lib/web/src/components/travelling-picker.tsx:126
 msgid "Travelling"
 msgstr "Kuyahanjwa"
 
@@ -3291,8 +3336,8 @@ msgstr "Zama ithegi elihlukile."
 msgid "Try adjusting your search terms"
 msgstr "Zama ukulungisa amatemu okusesha kwakho"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:140
-#: ../../../lib/web/src/features/errors/general-error.tsx:180
+#: ../../../lib/web/src/features/errors/general-error.tsx:138
+#: ../../../lib/web/src/features/errors/general-error.tsx:178
 msgid "Try again"
 msgstr "Zama futhi"
 
@@ -3304,12 +3349,12 @@ msgstr "Zama amatemu ahlukile okusesha."
 msgid "Tuesday"
 msgstr "ULwesibili"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:130
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:162
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:134
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:166
 msgid "Type"
 msgstr "Uhlobo"
 
-#: ../../../lib/web/src/components/command-menu.tsx:52
+#: ../../../lib/web/src/components/command-menu.tsx:54
 msgid "Type a command or search..."
 msgstr "Thayipha umyalo noma sesha..."
 
@@ -3329,8 +3374,8 @@ msgstr "Thayipha ukuze useshe..."
 msgid "Unable to connect to remote server"
 msgstr "Ayikwazi ukuxhuma kuseva ekude"
 
-#: ../../../lib/web/src/lib/auth-manager.ts:92
-#: ../../../lib/web/src/lib/auth-manager.ts:104
+#: ../../../lib/web/src/lib/auth-manager.ts:89
+#: ../../../lib/web/src/lib/auth-manager.ts:101
 msgid "Unable to redirect to login. Please try again."
 msgstr "Ayikwazi ukuqondisa kabusha ekungeneni. Sicela uzame futhi."
 
@@ -3338,16 +3383,12 @@ msgstr "Ayikwazi ukuqondisa kabusha ekungeneni. Sicela uzame futhi."
 msgid "Unassigned"
 msgstr "Akwabelwanga"
 
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:16
-msgid "Unauthorized Access"
-msgstr "Ukufinyelela Okungavunyelwe"
-
 #: ../../../lib/web/src/components/attachment-image.tsx:50
 msgid "Unavailable"
 msgstr "Akutholakali"
 
 #: ../../../lib/web/src/lib/request.ts:133
-#: ../../../lib/web/src/lib/request.ts:206
+#: ../../../lib/web/src/lib/request.ts:209
 msgid "Unexpected API error"
 msgstr "Iphutha le-API elingalindelekile"
 
@@ -3355,6 +3396,11 @@ msgstr "Iphutha le-API elingalindelekile"
 msgid "United States"
 msgstr "I-United States"
 
+#: ../../../lib/web/src/components/audit-timeline.tsx:103
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:167
+#: ../../../lib/web/src/components/tree-row.tsx:219
+#: ../../../lib/web/src/components/tree-row.tsx:373
+#: ../../../lib/web/src/components/tree-table-header.tsx:70
 #: ../../../lib/web/src/features/accounts/types.ts:29
 #: src/features/wiki/wiki-comment-thread.tsx:126
 msgid "Unknown"
@@ -3370,16 +3416,16 @@ msgstr "Akwaziwa"
 #: src/routes/_authenticated/index.tsx:494
 #: src/routes/_authenticated/index.tsx:522
 #: src/routes/_authenticated/index.tsx:524
-#: src/routes/_authenticated/index.tsx:890
-#: src/routes/_authenticated/index.tsx:922
-#: src/routes/_authenticated/index.tsx:924
+#: src/routes/_authenticated/index.tsx:889
+#: src/routes/_authenticated/index.tsx:921
+#: src/routes/_authenticated/index.tsx:923
 msgid "Unsubscribe"
 msgstr "Susa ukubhalisa"
 
 #: src/features/wiki/wiki-page-content.tsx:80
 #: src/routes/_authenticated/$page/index.tsx:76
 #: src/routes/_authenticated/index.tsx:287
-#: src/routes/_authenticated/index.tsx:933
+#: src/routes/_authenticated/index.tsx:932
 msgid "Unsubscribed"
 msgstr "Kususiwe ukubhalisa"
 
@@ -3389,8 +3435,8 @@ msgstr "Kususiwe ukubhalisa"
 #: src/routes/_authenticated/$page/index.tsx:280
 #: src/routes/_authenticated/index.tsx:286
 #: src/routes/_authenticated/index.tsx:494
-#: src/routes/_authenticated/index.tsx:889
-#: src/routes/_authenticated/index.tsx:932
+#: src/routes/_authenticated/index.tsx:888
+#: src/routes/_authenticated/index.tsx:931
 msgid "Unsubscribing..."
 msgstr "Kuyasuswa ukubhalisa..."
 
@@ -3404,15 +3450,16 @@ msgstr "Uhlobo lwefayela olungasekelwa: {names}. Amafayela asekelwayo: izithombe
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Izinhlobo zamafayela ezingasekelwa: {names}. Amafayela asekelwayo: izithombe, i-PDF, i-DOC, i-DOCX, i-TXT, ne-MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:285
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:299
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
 #: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "Akunasihloko"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:56
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:499
 msgid "Updated"
 msgstr "Kubuyekeziwe"
 
@@ -3422,16 +3469,20 @@ msgstr "Kubuyekeziwe"
 #: src/features/wiki/page-view.tsx:264
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:74
-#: src/routes/_authenticated/index.tsx:906
+#: src/routes/_authenticated/index.tsx:905
 msgid "Updated {0}"
 msgstr "Kubuyekeziwe {0}"
 
-#: src/features/wiki/wiki-settings.tsx:562
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:56
+msgid "Updated {field}"
+msgstr "Kubuyekezwe {field}"
+
+#: src/features/wiki/wiki-settings.tsx:560
 msgid "Updating access..."
 msgstr "Kubuyekezwa ukufinyelela..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:639
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:301
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:661
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:304
 msgid "Upload"
 msgstr "Layisha"
 
@@ -3470,17 +3521,17 @@ msgstr "Layisha okusha"
 msgid "Upload progress"
 msgstr "Inqubekela phambili yokulayisha"
 
-#: src/features/wiki/wiki-settings.tsx:438
+#: src/features/wiki/wiki-settings.tsx:436
 msgid "Use as home"
 msgstr "Sebenzisa njengekhaya"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:341
+#: ../../../lib/web/src/components/step-up-dialog.tsx:329
 msgid "Use your passkey"
 msgstr "Sebenzisa i-passkey yakho"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:143
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:112
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:18
 msgid "User"
 msgstr "Umsebenzisi"
 
@@ -3492,7 +3543,7 @@ msgstr "Okuguquguqukayo: {variables}"
 msgid "Verification code"
 msgstr "Ikhodi yokuqinisekiswa"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:391
+#: ../../../lib/web/src/components/step-up-dialog.tsx:379
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:111
 msgid "Verify"
 msgstr "Qinisekisa"
@@ -3511,12 +3562,12 @@ msgstr "Inguqulo"
 msgid "Version {0}"
 msgstr "Inguqulo {0}"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:95
+#: ../../../lib/web/src/components/attachment-gallery.tsx:96
 msgid "Video thumbnail"
 msgstr "Isithombe esincane sevidiyo"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:315
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:326
 msgid "Video viewer: {0}"
 msgstr "Isibonisi sevidiyo: {0}"
 
@@ -3526,8 +3577,8 @@ msgctxt "action"
 msgid "View"
 msgstr "Buka"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:220
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:228
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:216
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:224
 msgid "View all notifications"
 msgstr "Buka zonke izaziso"
 
@@ -3535,7 +3586,7 @@ msgstr "Buka zonke izaziso"
 msgid "View controls"
 msgstr "Buka izilawuli"
 
-#: src/features/wiki/wiki-settings.tsx:500
+#: src/features/wiki/wiki-settings.tsx:498
 msgid "View only"
 msgstr "Bukela kuphela"
 
@@ -3561,13 +3612,16 @@ msgstr "Sithumele ikhodi yokuqinisekisa ku-<0>{0}</0>. Faka ikhodi ngezansi ukuz
 msgid "Wednesday"
 msgstr "ULwesithathu"
 
-#: src/features/wiki/wiki-settings.tsx:725
-#: src/features/wiki/wiki-settings.tsx:809
+#: src/features/wiki/wiki-settings.tsx:723
+#: src/features/wiki/wiki-settings.tsx:807
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "Lapho amanye ama-wiki ekopisha leli wiki, azobonakala lapha."
 
+#: src/components/layout/wiki-layout.tsx:152
+msgid "wiki"
+msgstr ""
+
 #: src/components/layout/wiki-layout.tsx:103
-#: src/components/layout/wiki-layout.tsx:153
 #: src/features/wiki/wiki-page-content.tsx:103
 #: src/features/wiki/wiki-page-content.tsx:321
 #: src/routes/_authenticated/$page/index.tsx:230
@@ -3577,10 +3631,10 @@ msgstr "Lapho amanye ama-wiki ekopisha leli wiki, azobonakala lapha."
 msgid "Wiki"
 msgstr "I-Wiki"
 
-#: src/routes/_authenticated/index.tsx:699
-#: src/routes/_authenticated/index.tsx:706
-#: src/routes/_authenticated/index.tsx:870
-#: src/routes/_authenticated/index.tsx:877
+#: src/routes/_authenticated/index.tsx:698
+#: src/routes/_authenticated/index.tsx:705
+#: src/routes/_authenticated/index.tsx:869
+#: src/routes/_authenticated/index.tsx:876
 msgid "Wiki actions"
 msgstr "Izenzo zewiki"
 
@@ -3588,7 +3642,7 @@ msgstr "Izenzo zewiki"
 msgid "Wiki created"
 msgstr "Iwiki idaliwe"
 
-#: src/features/wiki/wiki-settings.tsx:348
+#: src/features/wiki/wiki-settings.tsx:346
 msgid "Wiki deleted"
 msgstr "Iwiki isusiwe"
 
@@ -3605,7 +3659,7 @@ msgstr "I-ID yewiki iyadingeka"
 msgid "Wiki link"
 msgstr "Isixhumanisi sewiki"
 
-#: src/features/wiki/wiki-settings.tsx:269
+#: src/features/wiki/wiki-settings.tsx:267
 msgid "Wiki name is required"
 msgstr "Igama lewiki liyadingeka"
 
@@ -3614,7 +3668,7 @@ msgstr "Igama lewiki liyadingeka"
 msgid "Wiki not found"
 msgstr "Iwiki ayitholakali"
 
-#: src/features/wiki/wiki-settings.tsx:281
+#: src/features/wiki/wiki-settings.tsx:279
 msgid "Wiki renamed"
 msgstr "Iwiki iqanjwe kabusha"
 
@@ -3623,11 +3677,11 @@ msgstr "Iwiki iqanjwe kabusha"
 msgid "Wiki settings"
 msgstr "Izilungiselelo zewiki"
 
-#: src/features/wiki/wiki-settings.tsx:158
+#: src/features/wiki/wiki-settings.tsx:159
 msgid "Wiki settings sections"
 msgstr "Izigaba zezilungiselelo zewiki"
 
-#: src/features/wiki/wiki-settings.tsx:327
+#: src/features/wiki/wiki-settings.tsx:325
 msgid "Wiki synced"
 msgstr "Iwiki ivumelaniswe"
 
@@ -3652,11 +3706,11 @@ msgstr "Usuzosusa ikhasi <0>«{title}»</0> ({slug}). Lesi senzo singahlehliswa 
 msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
 msgstr "Usuzobuyisela <0>{slug}</0> enguqulweni <1>{version}</1>. Lokhu kuzodala ukubuyekezwa okusha okunokuqukethwe okuvela enguqulweni {version}."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:61
+#: ../../../lib/web/src/features/errors/general-error.tsx:59
 msgid "You do not have access to this section."
 msgstr "Awunakho ukufinyelela kule ngxenye."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:100
+#: ../../../lib/web/src/components/restore-banner.tsx:86
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "I-akhawunti yakho isuswe lapha ivela ku-{source}. Uze uyisuse lapho, imilayezo nezaziso zingafika eziservereni zombili, ingxenye yomqukathi wakho iqhubeka inikezwa eservereni endala, futhi abalandeli bangathatha imizuzu embalwa ukukuthola lapha."
 

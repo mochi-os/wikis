@@ -687,7 +687,6 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       <CommonPageHeader
         title={t`Wikis`}
         icon={<BookOpen className='size-4 md:size-5' />}
-        showSidebarTrigger
         menuAction={
           <DropdownMenu>
             <Tooltip>

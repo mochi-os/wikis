@@ -14,20 +14,16 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: ../../../lib/web/src/lib/error-normalizer.ts:215
+#: ../../../lib/web/src/lib/error-normalizer.ts:219
 msgid "Please check your internet connection and try again."
 msgstr "කරුණාකර ඔබගේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:301
-msgid " or "
-msgstr " හෝ "
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:190
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:189
 #: src/features/wiki/wiki-comment-thread.tsx:167
 msgid "(edited)"
 msgstr "(සංස්කරණය කළා)"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:174
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:173
 #: src/features/wiki/wiki-comment-thread.tsx:153
 msgid "(expand)"
 msgstr "(පුළුල් කරන්න)"
@@ -51,6 +47,16 @@ msgstr "{0, plural, one {# පිටුව} other {# පිටු}}"
 msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# ප්‍රතිඵලය} other {# ප්‍රතිඵල}}"
 
+#. placeholder {0}: displayInfo.count
+#: ../../../lib/web/src/components/person-picker.tsx:257
+msgid "{0, plural, one {# selected} other {# selected}}"
+msgstr "{0, plural, one {# තෝරාගත්} other {# තෝරාගත්}}"
+
+#. placeholder {0}: countDeepChildren(object.id)
+#: ../../../lib/web/src/components/entity/entity-board-card.tsx:421
+msgid "{0, plural, one {+# nested} other {+# nested}}"
+msgstr "{0, plural, one {+# කැදැලි} other {+# කැදැලි}}"
+
 #. placeholder {0}: comments.length
 #: src/features/wiki/page-comments.tsx:180
 msgid "{0, plural, one {Showing the first # comment.} other {Showing the first # comments.}}"
@@ -64,7 +70,7 @@ msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}, {2})"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:900
+#: src/routes/_authenticated/index.tsx:899
 msgid "{0} pages"
 msgstr "පිටු {0}"
 
@@ -98,13 +104,9 @@ msgstr "{count, plural, one {#සති} other {#සති}}"
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# ලේඛනය} other {# ලේඛන}}"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:176
 msgid "{entityLabel} name"
 msgstr "{entityLabel} නම"
-
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:99
-msgid "{entityLabel} name is required"
-msgstr "{entityLabel} නම අවශ්‍යයි"
 
 #: src/features/wiki/attachments-page.tsx:189
 #: src/features/wiki/page-editor.tsx:235
@@ -139,10 +141,11 @@ msgstr "{renamedCount, plural, one {පිටු 1ක නම වෙනස් ක
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{totalLabel}න් {sentLabel}"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:530
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:531
 msgid "{totalCount, plural, one {# item} other {# items}}"
 msgstr "{totalCount, plural, one {අයිතම #} other {අයිතම #}}"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
 #: src/features/wiki/wiki-comment-thread.tsx:151
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# පිළිතුර} other {+# තවත් පිළිතුරු}}"
@@ -162,19 +165,6 @@ msgstr "{wikiName} සැකසුම්"
 msgid "*No content*"
 msgstr "*අන්තර්ගතයක් නැත*"
 
-#. placeholder {0}: countDeepChildren(object.id)
-#: ../../../lib/web/src/components/entity/entity-board-card.tsx:418
-msgid "+{0} nested"
-msgstr "+{0} කැදලි"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:171
-msgid "+{totalDescendants} more replies"
-msgstr "+{totalDescendants} තවත් පිළිතුරු"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
-msgid "1 reply"
-msgstr "පිළිතුරු 1"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:37
 msgid "12 hours"
 msgstr "පැය 12"
@@ -191,11 +181,12 @@ msgstr "නිරපේක්ෂ (දිනය සහ වේලාව)"
 msgid "Accept"
 msgstr "පිළිගන්න"
 
-#: src/features/wiki/wiki-settings.tsx:107
+#: src/features/wiki/wiki-settings.tsx:108
 msgid "Access"
 msgstr "ප්‍රවේශය"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:60
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:16
+#: ../../../lib/web/src/features/errors/general-error.tsx:58
 msgid "Access denied"
 msgstr "ප්‍රවේශය ප්‍රතික්ෂේප විය"
 
@@ -203,15 +194,15 @@ msgstr "ප්‍රවේශය ප්‍රතික්ෂේප විය"
 msgid "Access level"
 msgstr "ප්‍රවේශ මට්ටම"
 
-#: src/features/wiki/wiki-settings.tsx:563
+#: src/features/wiki/wiki-settings.tsx:561
 msgid "Access level updated"
 msgstr "ප්‍රවේශ මට්ටම යාවත්කාලීන කරන ලදී"
 
-#: src/features/wiki/wiki-settings.tsx:579
+#: src/features/wiki/wiki-settings.tsx:577
 msgid "Access removed"
 msgstr "ප්‍රවේශය ඉවත් කරන ලදී"
 
-#: src/features/wiki/wiki-settings.tsx:550
+#: src/features/wiki/wiki-settings.tsx:548
 msgid "Access set for {subjectName}"
 msgstr "{subjectName} සඳහා ප්‍රවේශය සකසා ඇත"
 
@@ -221,21 +212,21 @@ msgstr "ගිණුම් වර්ගය"
 
 #: src/features/wiki/page-history.tsx:60
 #: src/features/wiki/redirects-page.tsx:96
-#: src/features/wiki/wiki-settings.tsx:746
+#: src/features/wiki/wiki-settings.tsx:744
 msgid "Actions"
 msgstr "ක්‍රියා"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:720
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:758
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
 #: src/features/wiki/tag-manager.tsx:134
 #: src/features/wiki/tag-manager.tsx:139
 #: src/features/wiki/tag-manager.tsx:164
-#: src/features/wiki/wiki-settings.tsx:596
+#: src/features/wiki/wiki-settings.tsx:594
 msgid "Add"
 msgstr "එක් කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:312
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:314
 msgid "Add a comment..."
 msgstr "අදහසක් එක් කරන්න..."
 
@@ -243,7 +234,7 @@ msgstr "අදහසක් එක් කරන්න..."
 msgid "Add a new account"
 msgstr "නව ගිණුමක් එක් කරන්න"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:106
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:110
 msgid "Add a new field to this class"
 msgstr "මෙම පන්තියට නව ක්ෂේත්‍රයක් එක් කරන්න"
 
@@ -263,16 +254,16 @@ msgstr "ගිණුමක් එක් කරන්න"
 msgid "Add caption"
 msgstr "සිරස්තලයක් එක් කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:690
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:728
 msgid "Add checklist item"
 msgstr "පරීක්ෂා ලැයිස්තු අයිතමයක් එක් කරන්න"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:105
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:233
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:235
 msgid "Add field"
 msgstr "ක්ෂේත්‍රයක් එක් කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:708
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:746
 msgid "Add item..."
 msgstr "අයිතමයක් එක් කරන්න..."
 
@@ -280,20 +271,20 @@ msgstr "අයිතමයක් එක් කරන්න..."
 msgid "Add link"
 msgstr "සබැඳියක් එක් කරන්න"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:291
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:91
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:191
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:217
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:222
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:295
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:92
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:193
 msgid "Add option"
 msgstr "විකල්පයක් එක් කරන්න"
 
 #: src/features/wiki/redirects-page.tsx:225
-#: src/features/wiki/wiki-settings.tsx:1027
+#: src/features/wiki/wiki-settings.tsx:1025
 msgid "Add redirect"
 msgstr "යළි-යොමුකිරීමක් එක් කරන්න"
 
-#: ../../../lib/web/src/components/post-tags.tsx:137
+#: ../../../lib/web/src/components/post-tags.tsx:138
 msgid "Add tag..."
 msgstr "ටැගයක් එක් කරන්න..."
 
@@ -305,8 +296,8 @@ msgstr "ඕනෑම පිටුවක පහළින් ටැග් එක�
 msgid "Add to existing notifications"
 msgstr "පවතින දැනුම්දීම් වෙත එක් කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:258
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:513
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:261
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:518
 #: ../../../lib/web/src/components/view-tabs.tsx:87
 #: ../../../lib/web/src/components/view-tabs.tsx:93
 msgid "Add view"
@@ -342,16 +333,15 @@ msgstr "සියලු ටැග"
 msgid "All wikis"
 msgstr "සියලු wikis"
 
-#. placeholder {0}: entityLabel.toLowerCase()
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
-msgid "Allow anyone to search for {0}"
-msgstr "ඕනෑම කෙනෙකුට {0} සෙවීමට ඉඩ දෙන්න"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:87
+msgid "Allow anyone to search for {entityLabel}"
+msgstr "ඕනෑම කෙනෙකුට {entityLabel} සෙවීමට ඉඩ දෙන්න"
 
-#: src/components/layout/wiki-layout.tsx:155
+#: src/components/layout/wiki-layout.tsx:154
 msgid "Allow anyone to search for wiki"
 msgstr "wiki එක සොයා ගැනීමට ඕනෑම කෙනෙකුට අවසර දෙන්න"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:229
 msgid "Allow sort by"
 msgstr "මෙයින් වර්ග කිරීමට අවසර දෙන්න"
 
@@ -360,6 +350,7 @@ msgid "An error occurred"
 msgstr "දෝෂයක් සිදු විය"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:266
+#: ../../../lib/web/src/lib/error-normalizer.ts:11
 msgid "An unexpected error occurred"
 msgstr "අනපේක්ෂිත දෝෂයක් සිදු විය"
 
@@ -380,16 +371,16 @@ msgstr "පිවිසී සිටින ඕනෑම කෙනෙක්"
 msgid "Anything subscribed to this feed will stop receiving it. You can copy a new URL afterwards."
 msgstr "මෙම සංග්‍රහයට දායක වූ සියල්ල එය ලැබීම නවත්වනු ඇත. පසුව ඔබට නව URL එකක් පිටපත් කළ හැකිය."
 
-#: src/features/wiki/wiki-settings.tsx:481
+#: src/features/wiki/wiki-settings.tsx:479
 msgid "Are you absolutely sure?"
 msgstr "ඔබට නිසැකවම විශ්වාසද?"
 
 #. placeholder {0}: deleteTarget?.name
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:313
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:316
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "ඔබට \"{0}\" මැකීමට අවශ්‍ය බව විශ්වාසද?"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:629
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:631
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "ඔබට \"{name}\" තීරුව මැකීමට අවශ්‍ය බව විශ්වාසද? මෙය අහෝසි කළ නොහැක."
 
@@ -408,7 +399,7 @@ msgstr "ඔබට පිටවීමට අවශ්‍ය බව විශ්�
 #: src/features/wiki/wiki-page-content.tsx:404
 #: src/routes/_authenticated/$page/index.tsx:303
 #: src/routes/_authenticated/index.tsx:523
-#: src/routes/_authenticated/index.tsx:923
+#: src/routes/_authenticated/index.tsx:922
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "ඔබට මෙම wiki එකෙන් දායකත්වය ඉවත් කිරීමට අවශ්‍ය බව විශ්වාසද?"
 
@@ -416,11 +407,11 @@ msgstr "ඔබට මෙම wiki එකෙන් දායකත්වය ඉව
 msgid "Ascending"
 msgstr "ආරෝහණ"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Attach comment files"
 msgstr "අදහස්වල ගොනු අමුණන්න"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Attach reply files"
 msgstr "පිළිතුරු ගොනු අමුණන්න"
 
@@ -444,7 +435,7 @@ msgstr "ඇමුණුම්"
 msgid "Authenticated users"
 msgstr "සත්‍යාපිත පරිශීලකයන්"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:318
+#: ../../../lib/web/src/components/step-up-dialog.tsx:306
 msgid "Authenticator code"
 msgstr "Authenticator කේතය"
 
@@ -457,15 +448,15 @@ msgstr "කතුවරයා"
 msgid "Available keyboard shortcuts"
 msgstr "පවතින keyboard shortcuts"
 
-#: ../../../lib/web/src/components/entity-avatar.tsx:99
+#: ../../../lib/web/src/components/entity-avatar.tsx:98
 msgid "Avatar"
 msgstr "අවතාරය"
 
-#: ../../../lib/web/src/components/entity-avatar.tsx:99
+#: ../../../lib/web/src/components/entity-avatar.tsx:98
 msgid "Avatar for {name}"
 msgstr "{name} සඳහා අවතාරය"
 
-#: ../../../lib/web/src/components/place-picker.tsx:156
+#: ../../../lib/web/src/components/place-picker.tsx:142
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
@@ -479,8 +470,8 @@ msgstr "ආපසු"
 msgid "Back to history"
 msgstr "ඉතිහාසය වෙත ආපසු"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:27
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:28
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:28
 msgid "Back to home"
 msgstr "මුල් පිටුවට ආපසු"
 
@@ -560,8 +551,8 @@ msgstr "මෙම පිටුවේ අදහස් දැක්වීමට �
 msgid "Blocked by"
 msgstr "අවහිර කළ"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:242
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:252
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:238
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:248
 msgid "Blocked navigation to untrusted link"
 msgstr "විශ්වාස නොකළ සබැඳියකට සංචාලනය අවහිර කරන ලදී"
 
@@ -569,21 +560,21 @@ msgstr "විශ්වාස නොකළ සබැඳියකට සංචා
 msgid "Blocks"
 msgstr "අවහිර කරයි"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:312
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:315
 msgid "Board"
 msgstr "පුවරුව"
 
-#: ../../../lib/web/src/components/post-tags.tsx:180
-#: ../../../lib/web/src/components/post-tags.tsx:192
+#: ../../../lib/web/src/components/post-tags.tsx:194
+#: ../../../lib/web/src/components/post-tags.tsx:206
 msgid "Boost interest"
 msgstr "කැමැත්ත වැඩි කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:399
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:402
 msgid "Border colour"
 msgstr "මායිම් වර්ණය"
 
 #: src/features/wiki/redirects-page.tsx:199
-#: src/features/wiki/wiki-settings.tsx:994
+#: src/features/wiki/wiki-settings.tsx:992
 msgid "Both source and target are required"
 msgstr "ප්‍රභවය සහ ඉලක්කය යන දෙකම අවශ්‍යය"
 
@@ -600,15 +591,15 @@ msgid "Browser notifications"
 msgstr "බ්‍රවුසර දැනුම්දීම්"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:426
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:166
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:183
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:185
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
-#: ../../../lib/web/src/components/step-up-dialog.tsx:366
-#: ../../../lib/web/src/components/travelling-picker.tsx:308
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
+#: ../../../lib/web/src/components/step-up-dialog.tsx:354
+#: ../../../lib/web/src/components/travelling-picker.tsx:288
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:251
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:136
 #: ../../../lib/web/src/features/access/access-dialog.tsx:328
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:201
@@ -623,18 +614,18 @@ msgstr "බ්‍රවුසර දැනුම්දීම්"
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:156
 #: src/features/wiki/wiki-comment-thread.tsx:182
-#: src/features/wiki/wiki-settings.tsx:790
-#: src/features/wiki/wiki-settings.tsx:953
-#: src/features/wiki/wiki-settings.tsx:1066
+#: src/features/wiki/wiki-settings.tsx:788
+#: src/features/wiki/wiki-settings.tsx:951
+#: src/features/wiki/wiki-settings.tsx:1064
 #: src/routes/_authenticated/join.tsx:120
 msgid "Cancel"
 msgstr "අවලංගු කරන්න"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Cancel comment"
 msgstr "අදහස අවලංගු කරන්න"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Cancel reply"
 msgstr "පිළිතුර අවලංගු කරන්න"
 
@@ -652,15 +643,23 @@ msgstr "මෙම දැනුම්දීම් සඳහා ප්‍රවර
 msgid "Change notification category"
 msgstr "දැනුම්දීම් ප්‍රවර්ගය වෙනස් කරන්න"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:62
+msgid "Changed"
+msgstr "වෙනස් කරන ලදී"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:62
+msgid "Changed {field}"
+msgstr "{field} වෙනස් කරන ලදී"
+
 #: src/features/wiki/wiki-page-content.tsx:346
 #: src/routes/_authenticated/index.tsx:449
-#: src/routes/_authenticated/index.tsx:718
+#: src/routes/_authenticated/index.tsx:717
 msgid "Changes"
 msgstr "වෙනස්කම්"
 
 #: src/features/wiki/wiki-page-content.tsx:348
 #: src/routes/_authenticated/index.tsx:457
-#: src/routes/_authenticated/index.tsx:728
+#: src/routes/_authenticated/index.tsx:727
 msgid "Changes and comments"
 msgstr "වෙනස්කම් සහ අදහස්"
 
@@ -674,11 +673,11 @@ msgstr "{0} → {1} අනුවාදයේ වෙනස්කම්"
 msgid "Changes will appear here when pages are edited."
 msgstr "පිටු සංස්කරණය කළ විට වෙනස්කම් මෙහි දිස්වේ."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:12
 msgid "Checkbox"
 msgstr "පරීක්ෂා පෙට්ටිය"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:138
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:13
 msgid "Checklist"
 msgstr "පරීක්ෂා ලැයිස්තුව"
 
@@ -693,10 +692,10 @@ msgstr "භාෂාව තෝරන්න"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:274
 #: ../../../lib/web/src/components/colour-picker.tsx:355
-#: ../../../lib/web/src/components/travelling-picker.tsx:164
-#: ../../../lib/web/src/components/travelling-picker.tsx:170
-#: ../../../lib/web/src/components/travelling-picker.tsx:231
-#: ../../../lib/web/src/components/travelling-picker.tsx:237
+#: ../../../lib/web/src/components/travelling-picker.tsx:145
+#: ../../../lib/web/src/components/travelling-picker.tsx:151
+#: ../../../lib/web/src/components/travelling-picker.tsx:212
+#: ../../../lib/web/src/components/travelling-picker.tsx:218
 msgid "Clear"
 msgstr "හිස් කරන්න"
 
@@ -710,19 +709,19 @@ msgstr "සියල්ල හිස් කරන්න"
 msgid "Clear search"
 msgstr "සෙවුම හිස් කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:501
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:506
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:468
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:471
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:479
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "වසන්න"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:113
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:263
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:267
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:117
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:266
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:270
 msgid "Close dialog"
 msgstr "සංවාදය වසන්න"
 
@@ -755,16 +754,16 @@ msgstr "හකුළන්න"
 msgid "Collapse sidebar"
 msgstr "පැති තීරුව හකුළන්න"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:146
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:148
 msgid "Colour"
 msgstr "වර්ණය"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:539
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:540
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:545
 msgid "Column actions"
 msgstr "තීරු ක්‍රියා"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:347
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:350
 msgid "Columns group by"
 msgstr "තීරු කාණ්ඩගත කරන්නේ මෙයින්"
 
@@ -786,11 +785,11 @@ msgstr "අදහස"
 msgid "Comment actions"
 msgstr "අදහස් ක්‍රියා"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:431
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:442
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:454
 #: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/index.tsx:454
-#: src/routes/_authenticated/index.tsx:723
+#: src/routes/_authenticated/index.tsx:722
 msgid "Comments"
 msgstr "අදහස්"
 
@@ -802,16 +801,16 @@ msgstr "සංයුක්ත"
 msgid "Compare changes"
 msgstr "වෙනස්කම් සංසන්දනය කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:95
 msgid "Configure option settings"
 msgstr "විකල්ප සැකසීම් වින්‍යාස කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:259
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:262
 msgid "Configure view settings"
 msgstr "දැක්ම් සැකසීම් වින්‍යාස කරන්න"
 
-#: ../../../lib/web/src/components/place-picker.tsx:160
-#: ../../../lib/web/src/components/travelling-picker.tsx:316
+#: ../../../lib/web/src/components/place-picker.tsx:146
+#: ../../../lib/web/src/components/travelling-picker.tsx:296
 msgid "Confirm"
 msgstr "තහවුරු කරන්න"
 
@@ -831,7 +830,7 @@ msgstr "අන්තර්ගතය"
 msgid "Content not found."
 msgstr "අන්තර්ගතය හමු නොවීය."
 
-#: ../../../lib/web/src/lib/query-client.ts:78
+#: ../../../lib/web/src/lib/query-client.ts:73
 msgid "Content not modified"
 msgstr "අන්තර්ගතය වෙනස් කර නැත"
 
@@ -843,7 +842,7 @@ msgstr "සන්දර්භීය තොරතුරු සහ විස්ත
 msgid "Continue"
 msgstr "ඉදිරියට"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:355
+#: ../../../lib/web/src/components/step-up-dialog.tsx:343
 msgid "Continue with {label}"
 msgstr "{label} සමඟ ඉදිරියට යන්න"
 
@@ -874,36 +873,35 @@ msgstr "සංසන්දනය සඳහා පෙර අනුවාදය �
 msgid "Could not load this document. Please try again later."
 msgstr "මෙම ලේඛනය පූරණය කළ නොහැකි විය. කරුණාකර පසුව නැවත උත්සාහ කරන්න."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:128
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:124
 msgid "Couldn't load notifications"
 msgstr "දැනුම්දීම් පූරණය කළ නොහැකි විය"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:182
+#: ../../../lib/web/src/components/step-up-dialog.tsx:170
 msgid "Couldn't send the code. Please try again."
 msgstr "කේතය යැවිය නොහැකි විය. නැවත උත්සාහ කරන්න."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:136
+#: ../../../lib/web/src/components/step-up-dialog.tsx:124
 msgid "Couldn't start re-authentication. Please try again."
 msgstr "නැවත සත්‍යාපනය ආරම්භ කළ නොහැකි විය. නැවත උත්සාහ කරන්න."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:224
+#: ../../../lib/web/src/components/step-up-dialog.tsx:212
 msgid "Couldn't verify with that account. Please try again."
 msgstr "එම ගිණුම සමඟ සත්‍යාපනය කළ නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:550
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:689
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:491
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:675
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:551
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:691
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:513
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
 msgid "Create"
 msgstr "නිර්මාණය කරන්න"
 
-#. placeholder {0}: entityLabel.toLowerCase()
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
-msgid "Create {0}"
-msgstr "{0} සාදන්න"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:146
+msgid "Create {entityLabel}"
+msgstr "{entityLabel} සාදන්න"
 
-#: src/features/wiki/wiki-settings.tsx:1035
+#: src/features/wiki/wiki-settings.tsx:1033
 msgid "Create a redirect from one URL to another."
 msgstr "එක් URL එකක සිට තවත් එකකට යළි-යොමුකිරීමක් නිර්මාණය කරන්න."
 
@@ -912,7 +910,7 @@ msgid "Create a redirect from one URL to another. The source URL must not be an 
 msgstr "එක් URL එකකින් වෙනත් URL එකකට හරවායැවීමක් සාදන්න. මූලාශ්‍ර URL පවතින පිටුවක් නොවිය යුතුය."
 
 #: src/features/wiki/redirects-page.tsx:85
-#: src/features/wiki/wiki-settings.tsx:895
+#: src/features/wiki/wiki-settings.tsx:893
 msgid "Create a redirect to forward one URL to another."
 msgstr "එක් URL එකක් තවත් එකකට ඉදිරියට යැවීම සඳහා යළි-යොමුකිරීමක් නිර්මාණය කරන්න."
 
@@ -926,8 +924,8 @@ msgstr "පිටුව සාදන්න"
 
 #: src/features/wiki/redirects-page.tsx:231
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1033
-#: src/features/wiki/wiki-settings.tsx:1069
+#: src/features/wiki/wiki-settings.tsx:1031
+#: src/features/wiki/wiki-settings.tsx:1067
 msgid "Create redirect"
 msgstr "යළි-යොමුකිරීමක් නිර්මාණය කරන්න"
 
@@ -943,20 +941,25 @@ msgid "Create this page"
 msgstr "මෙම පිටුව නිර්මාණය කරන්න"
 
 #: src/components/layout/wiki-layout.tsx:132
-#: src/components/layout/wiki-layout.tsx:152
-#: src/routes/_authenticated/index.tsx:770
+#: src/components/layout/wiki-layout.tsx:151
+#: src/routes/_authenticated/index.tsx:769
 msgid "Create wiki"
 msgstr "wiki එකක් නිර්මාණය කරන්න"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:54
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:492
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:495
 #: src/features/wiki/redirects-page.tsx:95
-#: src/features/wiki/wiki-settings.tsx:905
+#: src/features/wiki/wiki-settings.tsx:903
 msgid "Created"
 msgstr "නිර්මාණය කරන ලදී"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:54
+msgid "Created {field}"
+msgstr "{field} සාදන ලදී"
+
 #: src/features/wiki/redirects-page.tsx:207
-#: src/features/wiki/wiki-settings.tsx:1006
+#: src/features/wiki/wiki-settings.tsx:1004
 msgid "Creating redirect..."
 msgstr "යළි-යොමුව සාදමින්..."
 
@@ -964,11 +967,11 @@ msgstr "යළි-යොමුව සාදමින්..."
 msgid "Creating wiki..."
 msgstr "විකි සාදමින්..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:260
 #: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1069
+#: src/features/wiki/wiki-settings.tsx:1067
 msgid "Creating..."
 msgstr "නිර්මාණය කරමින්..."
 
@@ -976,7 +979,7 @@ msgstr "නිර්මාණය කරමින්..."
 msgid "Current"
 msgstr "වත්මන්"
 
-#: ../../../lib/web/src/components/map-view.tsx:217
+#: ../../../lib/web/src/components/map-view.tsx:249
 msgid "Current location"
 msgstr "වත්මන් ස්ථානය"
 
@@ -993,7 +996,7 @@ msgstr "අඳුරු"
 msgid "Data conflict"
 msgstr "දත්ත ගැටුමක්"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:139
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:14
 #: src/features/wiki/attachments-page.tsx:404
 #: src/features/wiki/changes-list.tsx:48
 #: src/features/wiki/page-history.tsx:58
@@ -1012,19 +1015,19 @@ msgstr "පෙරනිමි"
 msgid "Default AI account"
 msgstr "පෙරනිමි AI ගිණුම"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:479
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:482
 msgid "Default sort"
 msgstr "පෙරනිමි වර්ග කිරීම"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:569
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:570
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:632
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:280
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:323
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:353
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:198
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:203
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:252
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:314
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:208
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:255
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:317
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:648
@@ -1032,7 +1035,7 @@ msgstr "පෙරනිමි වර්ග කිරීම"
 #: src/features/wiki/wiki-comment-thread.tsx:255
 #: src/features/wiki/wiki-comment-thread.tsx:282
 #: src/features/wiki/wiki-page-content.tsx:316
-#: src/features/wiki/wiki-settings.tsx:958
+#: src/features/wiki/wiki-settings.tsx:956
 msgid "Delete"
 msgstr "මකන්න"
 
@@ -1042,7 +1045,7 @@ msgstr "මකන්න"
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "«{0}» මකන්නද? මෙය නැවත ලබා දිය නොහැක."
 
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:312
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:315
 #: src/features/wiki/attachments-page.tsx:530
 #: src/features/wiki/attachments-page.tsx:641
 #: src/features/wiki/attachments-page.tsx:650
@@ -1054,7 +1057,7 @@ msgstr "«{0}» මකන්නද? මෙය නැවත ලබා දිය �
 msgid "Delete attachment"
 msgstr "ඇමුණුම මකන්න"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
 msgid "Delete column"
 msgstr "තීරුව මකන්න"
 
@@ -1063,17 +1066,17 @@ msgstr "තීරුව මකන්න"
 msgid "Delete comment"
 msgstr "අදහස මකන්න"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:300
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:304
 msgid "Delete field"
 msgstr "ක්ෂේත්‍රය මකන්න"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:116
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:117
 msgid "Delete option"
 msgstr "විකල්පය මකන්න"
 
 #. placeholder {0}: opt.name
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:278
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:283
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:282
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:287
 msgid "Delete option {0}"
 msgstr "විකල්පය {0} මකන්න"
 
@@ -1086,27 +1089,27 @@ msgstr "පිටුව මකන්න"
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:153
 #: src/features/wiki/redirects-page.tsx:159
-#: src/features/wiki/wiki-settings.tsx:934
-#: src/features/wiki/wiki-settings.tsx:940
+#: src/features/wiki/wiki-settings.tsx:932
+#: src/features/wiki/wiki-settings.tsx:938
 msgid "Delete redirect {0}"
 msgstr "හරවායැවීම {0} මකන්න"
 
 #: src/features/wiki/redirects-page.tsx:163
-#: src/features/wiki/wiki-settings.tsx:944
+#: src/features/wiki/wiki-settings.tsx:942
 msgid "Delete redirect?"
 msgstr "යළි-යොමුකිරීම මකන්නද?"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:284
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:287
 msgid "Delete view"
 msgstr "දැක්ම මකන්න"
 
-#: src/features/wiki/wiki-settings.tsx:464
-#: src/features/wiki/wiki-settings.tsx:475
-#: src/features/wiki/wiki-settings.tsx:483
+#: src/features/wiki/wiki-settings.tsx:462
+#: src/features/wiki/wiki-settings.tsx:473
+#: src/features/wiki/wiki-settings.tsx:481
 msgid "Delete wiki"
 msgstr "wiki එක මකන්න"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:109
+#: ../../../lib/web/src/components/restore-banner.tsx:95
 msgid "Delete your account on the old server"
 msgstr "පැරණි සේවාදායකයේ ඔබේ ගිණුම මකන්න"
 
@@ -1123,17 +1126,25 @@ msgstr "පැරණි සේවාදායකයේ ඔබේ ගිණුම
 msgid "Delete: {pageTitle}"
 msgstr "මකන්න: {pageTitle}"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:58
+msgid "Deleted"
+msgstr "මකා දමන ලදී"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:58
+msgid "Deleted {field}"
+msgstr "{field} මකා දමන ලදී"
+
 #: src/features/wiki/redirects-page.tsx:118
-#: src/features/wiki/wiki-settings.tsx:865
+#: src/features/wiki/wiki-settings.tsx:863
 msgid "Deleting redirect..."
 msgstr "යළි-යොමුව මකමින්..."
 
-#: src/features/wiki/wiki-settings.tsx:347
+#: src/features/wiki/wiki-settings.tsx:345
 msgid "Deleting wiki..."
 msgstr "විකි මකමින්..."
 
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/wiki-settings.tsx:475
+#: src/features/wiki/wiki-settings.tsx:473
 msgid "Deleting..."
 msgstr "මකමින්..."
 
@@ -1141,7 +1152,7 @@ msgstr "මකමින්..."
 msgid "Descending"
 msgstr "අවරෝහණ"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:83
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
 msgid "Description"
 msgstr "විස්තරය"
 
@@ -1160,7 +1171,7 @@ msgstr "විස්තර Panel"
 msgid "Detect from web browser"
 msgstr "වෙබ් බ්‍රවුසරයෙන් හඳුනාගන්න"
 
-#: ../../../lib/web/src/components/person-picker.tsx:214
+#: ../../../lib/web/src/components/person-picker.tsx:190
 msgid "Directory"
 msgstr "නාමාවලිය"
 
@@ -1177,8 +1188,8 @@ msgstr "කෙටුම්පත ඉවත ලන්නද?"
 msgid "Disconnected"
 msgstr "විසන්ධියි"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:88
-#: ../../../lib/web/src/components/restore-banner.tsx:94
+#: ../../../lib/web/src/components/restore-banner.tsx:74
+#: ../../../lib/web/src/components/restore-banner.tsx:80
 msgid "Dismiss"
 msgstr "ඉවත ලන්න"
 
@@ -1190,18 +1201,23 @@ msgstr "ජංගම පැති තීරුව සංදර්ශනය ක�
 msgid "Documents"
 msgstr "ලේඛන"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:305
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:518
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:111
+msgid "Does not match the required pattern"
+msgstr "අවශ්‍ය රටාවට නොගැළපේ"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:309
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:523
 msgid "Done"
 msgstr "නිමයි"
 
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:239
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:452
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:462
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:243
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:473
 msgid "Download"
 msgstr "බාගත කරන්න"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:98
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:149
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:100
 msgid "Download failed"
 msgstr "බාගත කිරීම අසාර්ථක විය"
 
@@ -1227,11 +1243,11 @@ msgstr "ඩිස්ලෙක්සියාවට මිත්‍ර"
 msgid "Edit"
 msgstr "සංස්කරණය කරන්න"
 
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:154
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:158
 msgid "Edit {label}"
 msgstr "{label} සංස්කරණය කරන්න"
 
-#: src/features/wiki/wiki-settings.tsx:499
+#: src/features/wiki/wiki-settings.tsx:497
 msgid "Edit and view"
 msgstr "සංස්කරණය හා බැලීම"
 
@@ -1243,21 +1259,21 @@ msgstr "සංස්කරණය හා බැලීම"
 msgid "Edit caption"
 msgstr "සිරස්තලය සංස්කරණය කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:137
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:140
 msgid "Edit field"
 msgstr "ක්ෂේත්‍රය සංස්කරණය කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:138
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:141
 msgid "Edit field settings"
 msgstr "ක්ෂේත්‍ර සැකසුම් සංස්කරණය කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:91
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:92
 msgid "Edit option"
 msgstr "විකල්පය සංස්කරණය කරන්න"
 
 #. placeholder {0}: opt.name
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:263
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:268
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:267
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:272
 msgid "Edit option {0}"
 msgstr "විකල්පය {0} සංස්කරණය කරන්න"
 
@@ -1269,7 +1285,7 @@ msgstr "තේරූ කාඩ්පත සංස්කරණය කරන්න
 msgid "Edit summary (optional)"
 msgstr "සංස්කරණ සාරාංශය (විකල්ප)"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:258
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:261
 msgid "Edit view"
 msgstr "දසුන සංස්කරණය කරන්න"
 
@@ -1290,7 +1306,7 @@ msgstr "සංස්කරණය කරන්න: {pageTitle}"
 msgid "Email"
 msgstr "ඊමේල්"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:292
+#: ../../../lib/web/src/components/step-up-dialog.tsx:280
 msgid "Email code"
 msgstr "ඊමේල් කේතය"
 
@@ -1306,15 +1322,15 @@ msgstr "සෙවුම් පදයක් ඇතුළු කරන්න"
 msgid "Enter tag name"
 msgstr "ටැග් නාමය ඇතුළු කරන්න"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:302
+#: ../../../lib/web/src/components/step-up-dialog.tsx:290
 msgid "Enter the code from your email"
 msgstr "ඔබේ විද්‍යුත් තැපෑලෙහි ඇති කේතය ඇතුළු කරන්න"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:327
+#: ../../../lib/web/src/components/step-up-dialog.tsx:315
 msgid "Enter your authenticator code"
 msgstr "ඔබගේ සත්‍යාපන කේතය ඇතුළත් කරන්න"
 
-#: src/features/wiki/wiki-settings.tsx:398
+#: src/features/wiki/wiki-settings.tsx:396
 msgid "Entity ID"
 msgstr "ආයතන හැඳුනුම"
 
@@ -1322,7 +1338,7 @@ msgstr "ආයතන හැඳුනුම"
 msgid "Error: Received invalid response from server."
 msgstr "දෝෂයක්: සේවාදායකයෙන් අවලංගු ප්‍රතිචාරයක් ලැබුණි."
 
-#: src/features/wiki/wiki-settings.tsx:446
+#: src/features/wiki/wiki-settings.tsx:444
 msgid "Example: \"home\", \"welcome\", \"index\""
 msgstr "උදාහරණය: «home», «welcome», «index»"
 
@@ -1345,6 +1361,10 @@ msgstr "බාහිර URL"
 msgid "Extra large"
 msgstr "අමතර විශාල"
 
+#: ../../../lib/web/src/hooks/use-accounts.ts:213
+msgid "Failed to add account"
+msgstr "ගිණුම එක් කිරීමට අසමත් විය"
+
 #: src/features/wiki/tag-manager.tsx:60
 msgid "Failed to add tag"
 msgstr "ටැගය එක් කිරීමට අසමත් විය"
@@ -1366,7 +1386,7 @@ msgid "Failed to create page"
 msgstr "පිටුවක් සෑදීමට අසමත් විය"
 
 #: src/features/wiki/redirects-page.tsx:209
-#: src/features/wiki/wiki-settings.tsx:1008
+#: src/features/wiki/wiki-settings.tsx:1006
 msgid "Failed to create redirect"
 msgstr "යළි-යොමුවීමක් සෑදීමට අසමත් විය"
 
@@ -1380,7 +1400,7 @@ msgstr "විකියක් සෑදීමට අසමත් විය"
 msgid "Failed to delete attachment"
 msgstr "ඇමුණුම මැකීමට අසමත් විය"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:191
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:192
 msgid "Failed to delete comment"
 msgstr "අදහස මැකීමට අසමත් විය"
 
@@ -1393,11 +1413,11 @@ msgid "Failed to delete page"
 msgstr "පිටුව මැකීමට අසමත් විය"
 
 #: src/features/wiki/redirects-page.tsx:120
-#: src/features/wiki/wiki-settings.tsx:867
+#: src/features/wiki/wiki-settings.tsx:865
 msgid "Failed to delete redirect"
 msgstr "යළි-යොමුවීම මැකීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:349
+#: src/features/wiki/wiki-settings.tsx:347
 msgid "Failed to delete wiki"
 msgstr "විකිය මැකීමට අසමත් විය"
 
@@ -1416,7 +1436,7 @@ msgstr "විකියට එක් වීමට අසමත් විය"
 msgid "Failed to load"
 msgstr "පූරණය කිරීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:535
+#: src/features/wiki/wiki-settings.tsx:533
 msgid "Failed to load access rules"
 msgstr "ප්‍රවේශ නීති පූරණය කිරීමට අසමත් විය"
 
@@ -1424,7 +1444,7 @@ msgstr "ප්‍රවේශ නීති පූරණය කිරීමට �
 msgid "Failed to load history"
 msgstr "ඉතිහාසය පූරණය කිරීමට අසමත් විය"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:338
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
 msgid "Failed to load image"
 msgstr "රූපය පූරණය කිරීමට අසමත් විය"
 
@@ -1432,15 +1452,15 @@ msgstr "රූපය පූරණය කිරීමට අසමත් වි�
 msgid "Failed to load prompts"
 msgstr "prompt පූරණය කිරීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:849
+#: src/features/wiki/wiki-settings.tsx:847
 msgid "Failed to load redirects"
 msgstr "යළි-යොමුවීම් පූරණය කිරීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:658
+#: src/features/wiki/wiki-settings.tsx:656
 msgid "Failed to load replicas"
 msgstr "අනුරූ පූරණය කිරීමට අසමත් විය"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:338
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
 msgid "Failed to load video"
 msgstr "වීඩියෝව පූරණය කිරීමට අසමත් විය"
 
@@ -1453,15 +1473,15 @@ msgstr "විකි තොරතුරු පූරණය කිරීමට �
 msgid "Failed to load wikis"
 msgstr "විකි පූරණය කිරීමට අසමත් විය"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:154
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:155
 msgid "Failed to post comment"
 msgstr "අදහස පළ කිරීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:580
+#: src/features/wiki/wiki-settings.tsx:578
 msgid "Failed to remove access"
 msgstr "ප්‍රවේශය ඉවත් කිරීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:677
+#: src/features/wiki/wiki-settings.tsx:675
 msgid "Failed to remove replica"
 msgstr "අනුරූ ඉවත් කිරීමට අසමත් විය"
 
@@ -1473,7 +1493,7 @@ msgstr "ටැගය ඉවත් කිරීමට අසමත් විය"
 msgid "Failed to rename page"
 msgstr "පිටුව නැවත නම් කිරීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:282
+#: src/features/wiki/wiki-settings.tsx:280
 msgid "Failed to rename wiki"
 msgstr "විකිය නැවත නම් කිරීමට අසමත් විය"
 
@@ -1503,7 +1523,7 @@ msgstr "පිටුව සුරැකීමට අසමත් විය"
 msgid "Failed to save prompt"
 msgstr "prompt එක සුරැකීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:306
+#: src/features/wiki/wiki-settings.tsx:304
 msgid "Failed to save settings"
 msgstr "සැකසුම් සුරැකීමට අසමත් විය"
 
@@ -1512,7 +1532,7 @@ msgstr "සැකසුම් සුරැකීමට අසමත් විය
 msgid "Failed to search wikis"
 msgstr "විකි සෙවීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:551
+#: src/features/wiki/wiki-settings.tsx:549
 msgid "Failed to set access level"
 msgstr "ප්‍රවේශ මට්ටම සැකසීමට අසමත් විය"
 
@@ -1522,22 +1542,22 @@ msgstr "ප්‍රවේශ මට්ටම සැකසීමට අසමත
 msgid "Failed to subscribe"
 msgstr "දායක වීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:328
+#: src/features/wiki/wiki-settings.tsx:326
 msgid "Failed to sync wiki"
 msgstr "විකිය සමමුහුර්ත කිරීමට අසමත් විය"
 
 #: src/features/wiki/wiki-page-content.tsx:81
 #: src/routes/_authenticated/$page/index.tsx:77
 #: src/routes/_authenticated/index.tsx:288
-#: src/routes/_authenticated/index.tsx:934
+#: src/routes/_authenticated/index.tsx:933
 msgid "Failed to unsubscribe"
 msgstr "දායකත්වයෙන් ඉවත් වීමට අසමත් විය"
 
-#: src/features/wiki/wiki-settings.tsx:564
+#: src/features/wiki/wiki-settings.tsx:562
 msgid "Failed to update access level"
 msgstr "ප්‍රවේශ මට්ටම යාවත්කාලීන කිරීමට අසමත් විය"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:174
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:175
 msgid "Failed to update comment"
 msgstr "අදහස යාවත්කාලීන කිරීමට අසමත් විය"
 
@@ -1550,9 +1570,9 @@ msgstr "ඇමුණුම උඩුගත කිරීමට අසමත් �
 msgid "Failed to upload files"
 msgstr "ගොනු උඩුගත කිරීමට අසමත් විය"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:589
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:155
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:175
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:611
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:160
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:180
 msgid "Files"
 msgstr "ගොනු"
 
@@ -1565,15 +1585,15 @@ msgstr "පෙරහන"
 msgid "Find wikis"
 msgstr "විකි සොයන්න"
 
-#: src/features/wiki/wiki-settings.tsx:402
+#: src/features/wiki/wiki-settings.tsx:400
 msgid "Fingerprint"
 msgstr "ඇඟිලි සලකුණ"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:97
+#: ../../../lib/web/src/components/restore-banner.tsx:83
 msgid "Finish moving your account"
 msgstr "ඔබේ ගිණුම ගෙන යාම අවසන් කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:221
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
 msgid "Flags"
 msgstr "කොඩි"
 
@@ -1590,11 +1610,11 @@ msgstr "«{debouncedQuery}» සඳහා {0} සොයා ගත්තා"
 msgid "Friday"
 msgstr "සිකුරාදා"
 
-#: ../../../lib/web/src/components/person-picker.tsx:207
+#: ../../../lib/web/src/components/person-picker.tsx:183
 msgid "Friends"
 msgstr "මිතුරන්"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:153
+#: ../../../lib/web/src/components/travelling-picker.tsx:134
 msgid "From"
 msgstr "සිට"
 
@@ -1606,8 +1626,8 @@ msgstr "සිට"
 msgid "From theme"
 msgstr "තේමාවෙන්"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:25
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:26
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:26
 msgid "Go back"
 msgstr "ආපසු යන්න"
 
@@ -1620,7 +1640,7 @@ msgstr "ජාල දසුන"
 msgid "Group"
 msgstr "කණ්ඩායම"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:347
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:350
 msgid "Group by"
 msgstr "අනුව කාණ්ඩ කරන්න"
 
@@ -1647,19 +1667,19 @@ msgstr "ඉතිහාසය"
 msgid "History: {pageTitle}"
 msgstr "ඉතිහාසය: {pageTitle}"
 
-#: src/features/wiki/wiki-settings.tsx:443
+#: src/features/wiki/wiki-settings.tsx:441
 msgid "home"
 msgstr "home"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:90
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:185
-#: ../../../lib/web/src/components/layout/top-bar.tsx:71
-#: ../../../lib/web/src/components/layout/top-bar.tsx:100
+#: ../../../lib/web/src/components/layout/top-bar.tsx:86
+#: ../../../lib/web/src/components/layout/top-bar.tsx:115
 #: src/routes/_authenticated/index.tsx:260
 msgid "Home"
 msgstr "මුල් පිටුව"
 
-#: src/features/wiki/wiki-settings.tsx:431
+#: src/features/wiki/wiki-settings.tsx:429
 msgid "Home page"
 msgstr "මුල් පිටුව"
 
@@ -1667,12 +1687,12 @@ msgstr "මුල් පිටුව"
 msgid "Hot"
 msgstr "උණුසුම්"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
-#: src/features/wiki/wiki-settings.tsx:743
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:156
+#: src/features/wiki/wiki-settings.tsx:741
 msgid "ID"
 msgstr "හැඳුනුම්පත"
 
-#: src/features/wiki/wiki-settings.tsx:389
+#: src/features/wiki/wiki-settings.tsx:387
 msgid "Identity"
 msgstr "අනන්‍යතාවය"
 
@@ -1681,7 +1701,7 @@ msgid "Image"
 msgstr "රූපය"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:316
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
 msgid "Image viewer: {0}"
 msgstr "රූප දර්ශකය: {0}"
 
@@ -1717,11 +1737,15 @@ msgstr "ඇතුළු කරන්න"
 msgid "Insert attachment"
 msgstr "ඇමුණුම ඇතුළු කරන්න"
 
+#: ../../../lib/web/src/components/post-tags.tsx:168
+msgid "Interest {weight}"
+msgstr "උනන්දුව {weight}"
+
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "උනන්දු"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:550
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:591
 msgid "Invalid date"
 msgstr "අවලංගු දිනය"
 
@@ -1755,17 +1779,17 @@ msgstr "විශාල"
 msgid "Large uploads may be limited by your server or proxy configuration."
 msgstr "විශාල උඩුගත කිරීම් ඔබේ සේවාදායකය හෝ ප්‍රොක්සි වින්‍යාසය මගින් සීමා විය හැක."
 
-#: src/features/wiki/wiki-settings.tsx:745
+#: src/features/wiki/wiki-settings.tsx:743
 msgid "Last synced"
 msgstr "අවසන් වරට සමමුහුර්ත කළ"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:306
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:309
 msgid "Layout"
 msgstr "පිරිසැලසුම"
 
-#: ../../../lib/web/src/components/post-tags.tsx:72
-msgid "Letters, numbers, spaces, and hyphens only"
-msgstr "අකුරු, අංක, හිස්තැන් සහ යා-කුරු පමණි"
+#: ../../../lib/web/src/components/post-tags.tsx:73
+msgid "Letters, numbers, spaces, hyphens, and slashes only"
+msgstr "අකුරු, ඉලක්කම්, හිස්තැන්, ඉරි සහ ස්ලෑෂ් පමණි"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:14
 msgid "Light"
@@ -1787,7 +1811,7 @@ msgstr "{headingText} වෙත සබැඳිය"
 msgid "Links"
 msgstr "සබැඳි"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:318
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:321
 msgid "List"
 msgstr "ලැයිස්තුව"
 
@@ -1796,7 +1820,7 @@ msgstr "ලැයිස්තුව"
 msgid "List view"
 msgstr "ලැයිස්තු දසුන"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:35
+#: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: src/features/wiki/changes-list.tsx:105
 #: src/features/wiki/page-history.tsx:161
 msgid "Load more"
@@ -1806,7 +1830,7 @@ msgstr "තවත් පූරණය කරන්න"
 msgid "Loading content…"
 msgstr "අන්තර්ගතය පූරණය වෙමින්…"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:35
+#: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: ../../../lib/web/src/features/document/document-page.tsx:88
 msgid "Loading..."
 msgstr "පූරණය වෙමින්..."
@@ -1836,12 +1860,12 @@ msgstr "ප්‍රවර්ග කළමනාකරණය කරන්න"
 msgid "Manual"
 msgstr "අතින්"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:207
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:214
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:203
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:210
 msgid "Mark all as read"
 msgstr "සියල්ල කියවූ ලෙස සලකුණු කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:198
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:202
 msgid "Maximum length"
 msgstr "උපරිම දිග"
 
@@ -1852,6 +1876,10 @@ msgstr "MCP සේවාදායකය"
 #: ../../../lib/web/src/lib/preference-utils.ts:102
 msgid "Medium"
 msgstr "මධ්‍යම"
+
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:377
+msgid "Members"
+msgstr "සාමාජිකයින්"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:200
 msgid "Menu"
@@ -1865,7 +1893,7 @@ msgstr "පණිවිඩය"
 msgid "Metric"
 msgstr "මිනුම"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:187
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:191
 msgid "Minimum length"
 msgstr "අවම දිග"
 
@@ -1886,46 +1914,58 @@ msgstr "සඳුදා"
 msgid "More options"
 msgstr "තවත් විකල්ප"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:60
+msgid "Moved"
+msgstr "ගෙන යන ලදී"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:60
+msgid "Moved {field}"
+msgstr "{field} ගෙන යන ලදී"
+
 #: src/features/wiki/page-editor.tsx:446
 msgid "my-page-name"
 msgstr "my-page-name"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:600
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:125
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:293
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:122
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:601
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:145
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:126
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:296
 #: src/features/wiki/attachments-page.tsx:405
-#: src/features/wiki/wiki-settings.tsx:392
+#: src/features/wiki/wiki-settings.tsx:390
 msgid "Name"
 msgstr "නම"
 
-#: src/features/wiki/wiki-settings.tsx:271
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:104
+msgid "Name cannot contain < or > characters"
+msgstr "නම තුළ < හෝ > අක්ෂර තිබිය නොහැක"
+
+#: src/features/wiki/wiki-settings.tsx:269
 msgid "Name cannot contain < or > characters, or line breaks"
 msgstr "නමෙහි < හෝ > අක්ෂර, හෝ පේළි බිඳීම් තිබිය නොහැක"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
-msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
-msgstr "නමෙහි කෝණ වරහන්, පසුපස ඇල ඉරි, තිත් කොමා, උද්ධෘත ලකුණු හෝ පසුපස ලකුණු තිබිය නොහැක"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:101
+msgid "Name is required"
+msgstr "නම අවශ්‍යයි"
 
-#: src/features/wiki/wiki-settings.tsx:270
+#: src/features/wiki/wiki-settings.tsx:268
 msgid "Name must be 100 characters or less"
 msgstr "නම අක්ෂර 100 ක් හෝ ඊට අඩු විය යුතුය"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:100
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
 msgid "Name must be 1000 characters or less"
 msgstr "නම අක්ෂර 1000 ක් හෝ ඊට අඩු විය යුතුය"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:53
+#: ../../../lib/web/src/features/errors/general-error.tsx:51
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:313
 msgid "Network error"
 msgstr "ජාල දෝෂය"
 
-#: src/features/wiki/wiki-settings.tsx:759
+#: src/features/wiki/wiki-settings.tsx:757
 msgid "Never"
 msgstr "කවදාවත්"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:476
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:498
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "අලුත්"
@@ -1965,20 +2005,20 @@ msgid "New URL must be different from current URL"
 msgstr "නව URL වර්තමාන URL වලින් වෙනස් විය යුතුය"
 
 #: src/features/wiki/redirects-page.tsx:258
-#: src/features/wiki/wiki-settings.tsx:1057
+#: src/features/wiki/wiki-settings.tsx:1055
 msgid "new-page-name"
 msgstr "new-page-name"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:530
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:536
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:541
 msgid "Next image"
 msgstr "ඊළඟ පින්තූරය"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:555
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:577
 msgid "No {parentClassNames} to add to"
 msgstr "එක් කිරීමට {parentClassNames} නොමැත"
 
-#: src/features/wiki/wiki-settings.tsx:501
+#: src/features/wiki/wiki-settings.tsx:499
 msgid "No access"
 msgstr "ප්‍රවේශය නැත"
 
@@ -1986,7 +2026,7 @@ msgstr "ප්‍රවේශය නැත"
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "ප්‍රවේශ නියමයන් කිසිවක් සැකසී නැත. මෙම සම්පතට ප්‍රවේශ විය හැක්කේ කවුද යන්න පාලනය කිරීමට නියමයන් එක් කරන්න."
 
-#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:65
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:74
 msgid "No activity yet"
 msgstr "තවම ක්‍රියාකාරකම් නැත"
 
@@ -2003,7 +2043,7 @@ msgstr "තවම ඇමුණුම් නොමැත"
 msgid "No changes yet"
 msgstr "තවම වෙනස්කම් නොමැත"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:322
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:324
 #: src/features/wiki/page-comments.tsx:152
 msgid "No comments yet"
 msgstr "තවම අදහස් නැත"
@@ -2016,7 +2056,7 @@ msgstr "තවම ක්‍රීඩා නැත"
 msgid "No groups available"
 msgstr "කණ්ඩායම් ලබා ගත නොහැක"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "තවම අයිතම වර්ග සෑදිය නොහැක. අවශ්‍ය මූලික අයිතම පළමුව සාදන්න."
 
@@ -2032,31 +2072,31 @@ msgstr "«{debouncedQuery}» සඳහා පිටු හමු නොවීය
 msgid "No pages found with this tag"
 msgstr "මෙම ටැගය සහිත පිටු හමු නොවීය"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:341
-#: ../../../lib/web/src/components/person-picker.tsx:84
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:382
+#: ../../../lib/web/src/components/person-picker.tsx:71
 msgid "No people found"
 msgstr "පුද්ගලයන් හමු නොවීය"
 
-#: ../../../lib/web/src/components/place-picker.tsx:133
+#: ../../../lib/web/src/components/place-picker.tsx:120
 msgid "No places found"
 msgstr "ස්ථාන හමු නොවීය"
 
 #: src/features/wiki/redirects-page.tsx:84
-#: src/features/wiki/wiki-settings.tsx:894
+#: src/features/wiki/wiki-settings.tsx:892
 msgid "No redirects configured"
 msgstr "redirects සැකසී නැත"
 
-#: src/features/wiki/wiki-settings.tsx:724
-#: src/features/wiki/wiki-settings.tsx:808
+#: src/features/wiki/wiki-settings.tsx:722
+#: src/features/wiki/wiki-settings.tsx:806
 msgid "No replicas yet"
 msgstr "තවම replicas නැත"
 
-#: ../../../lib/web/src/components/inline-entity-search.tsx:64
+#: ../../../lib/web/src/components/inline-entity-search.tsx:65
 #: ../../../lib/web/src/components/search-entity-page.tsx:73
 msgid "No results found"
 msgstr "ප්‍රතිඵල හමු නොවීය"
 
-#: ../../../lib/web/src/components/command-menu.tsx:55
+#: ../../../lib/web/src/components/command-menu.tsx:57
 msgid "No results found."
 msgstr "ප්‍රතිඵල හමු නොවීය."
 
@@ -2066,7 +2106,7 @@ msgstr "සංශෝධන හමු නොවීය"
 
 #: ../../../lib/web/src/components/entity/entity-board-container.tsx:824
 #: ../../../lib/web/src/components/entity/entity-board-container.tsx:869
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:336
 msgid "No status"
 msgstr "තත්වයක් නැත"
 
@@ -2086,7 +2126,7 @@ msgstr "වේලා කලාප හමු නොවීය."
 msgid "No topic record yet — try again after the next notification."
 msgstr "තවම topic වාර්තාවක් නැත — ඊළඟ දැනුම්දීමෙන් පසු නැවත උත්සාහ කරන්න."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:139
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:135
 msgid "No unread notifications"
 msgstr "නොකියවූ දැනුම්දීම් නැත"
 
@@ -2104,17 +2144,17 @@ msgid "No wikis found"
 msgstr "wikis හමු නොවීය"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:541
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:545
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:382
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:560
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:563
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:412
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:415
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:488
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
-#: ../../../lib/web/src/components/person-picker.tsx:350
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/person-picker.tsx:326
 #: ../../../lib/web/src/lib/preference-utils.ts:100
 msgid "None"
 msgstr "කිසිවක් නැත"
@@ -2124,31 +2164,31 @@ msgid "Normal"
 msgstr "සාමාන්‍ය"
 
 #: ../../../lib/web/src/components/attachment-image.tsx:50
-#: ../../../lib/web/src/features/errors/general-error.tsx:67
+#: ../../../lib/web/src/features/errors/general-error.tsx:65
 msgid "Not found"
 msgstr "හමු නොවීය"
 
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:146
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:150
 msgid "Not set"
 msgstr "සකසා නැත"
 
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:671
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:668
 msgid "Nothing found"
 msgstr "කිසිවක් හමු නොවීය"
 
 #. placeholder {0}: unread.length
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:200
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:196
 msgid "Notifications: {0}"
 msgstr "දැනුම්දීම්: {0}"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:140
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:54
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:493
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:497
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:15
 msgid "Number"
 msgstr "අංකය"
 
 #: src/features/wiki/redirects-page.tsx:246
-#: src/features/wiki/wiki-settings.tsx:1045
+#: src/features/wiki/wiki-settings.tsx:1043
 msgid "old-page-name"
 msgstr "old-page-name"
 
@@ -2166,12 +2206,12 @@ msgid "Oops! Page Not Found!"
 msgstr "අහෝ! පිටුව හමු නොවීය!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:857
+#: src/routes/_authenticated/index.tsx:856
 msgid "Open {0}"
 msgstr "{0} විවෘත කරන්න"
 
-#: ../../../lib/web/src/components/layout/nav-group.tsx:199
-#: ../../../lib/web/src/components/layout/nav-group.tsx:204
+#: ../../../lib/web/src/components/layout/nav-group.tsx:227
+#: ../../../lib/web/src/components/layout/nav-group.tsx:232
 msgid "Open actions"
 msgstr "ක්‍රියා විවෘත කරන්න"
 
@@ -2184,13 +2224,13 @@ msgstr "ඇමුණුම විවෘත කරන්න"
 msgid "Open menu"
 msgstr "මෙනුව විවෘත කරන්න"
 
-#: ../../../lib/web/src/components/layout/top-bar.tsx:63
-#: ../../../lib/web/src/components/layout/top-bar.tsx:68
+#: ../../../lib/web/src/components/layout/top-bar.tsx:78
+#: ../../../lib/web/src/components/layout/top-bar.tsx:83
 msgid "Open navigation"
 msgstr "සංචාලනය විවෘත කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:105
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:111
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:106
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:112
 msgid "Open option actions"
 msgstr "විකල්ප ක්‍රියා විවෘත කරන්න"
 
@@ -2198,8 +2238,8 @@ msgstr "විකල්ප ක්‍රියා විවෘත කරන්න
 msgid "Open selected card"
 msgstr "තේරූ කාඩ්පත විවෘත කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:274
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:279
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:277
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:282
 msgid "Open view actions"
 msgstr "view ක්‍රියා විවෘත කරන්න"
 
@@ -2208,13 +2248,13 @@ msgstr "view ක්‍රියා විවෘත කරන්න"
 msgid "Open view controls"
 msgstr "view පාලන විවෘත කරන්න"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:200
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:155
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:202
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:157
 msgid "Option name"
 msgstr "විකල්ප නම"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:168
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:240
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:170
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:244
 msgid "Options"
 msgstr "විකල්ප"
 
@@ -2290,45 +2330,45 @@ msgstr "පිටු URL අවශ්‍යයි"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "<0>{tag}</0> ටැග් කළ පිටු"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:530
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:552
 msgid "Parent"
 msgstr "මව්"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:337
+#: ../../../lib/web/src/components/step-up-dialog.tsx:325
 msgid "Passkey"
 msgstr "ප්‍රවේශ යතුර"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:207
+#: ../../../lib/web/src/components/step-up-dialog.tsx:195
 msgid "Passkey verification failed. Please try again."
 msgstr "මුරයතුර සත්‍යාපනය අසාර්ථක විය. නැවත උත්සාහ කරන්න."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:146
+#: ../../../lib/web/src/components/restore-banner.tsx:132
 msgid "Passkeys"
 msgstr "Passkeys"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:209
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:213
 msgid "Pattern (regex)"
 msgstr "රටාව (regex)"
 
-#: src/features/wiki/wiki-settings.tsx:466
+#: ../../../lib/web/src/components/person-picker.tsx:176
+msgid "People"
+msgstr "පුද්ගලයන්"
+
+#: src/features/wiki/wiki-settings.tsx:464
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "මෙම wiki සහ එහි සියලු අන්තර්ගතය ස්ථිරව මකන්න. මෙය පෙරළිය නොහැක."
 
 #: ../../../lib/web/src/components/comment-composer.tsx:89
-#: ../../../lib/web/src/features/errors/general-error.tsx:54
+#: ../../../lib/web/src/features/errors/general-error.tsx:52
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:314
 msgid "Please check your internet connection and try again."
 msgstr "කරුණාකර ඔබගේ අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න."
 
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:18
-msgid "Please log in with the appropriate credentials <0/> to access this resource."
-msgstr "මෙම සම්පතට ප්‍රවේශ වීමට <0/> කරුණාකර සුදුසු අක්තපත්‍ර සමඟ පිවිසෙන්න."
-
-#: ../../../lib/web/src/features/errors/general-error.tsx:83
+#: ../../../lib/web/src/features/errors/general-error.tsx:81
 msgid "Please try again."
 msgstr "කරුණාකර නැවත උත්සාහ කරන්න."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:75
+#: ../../../lib/web/src/features/errors/general-error.tsx:73
 msgid "Please wait a moment and try again."
 msgstr "කරුණාකර මොහොතක් රැඳී සිට නැවත උත්සාහ කරන්න."
 
@@ -2344,8 +2384,8 @@ msgstr "පළ කිරීම් සහ අදහස්"
 msgid "Preview"
 msgstr "පෙරදසුන"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:509
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:514
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:520
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
 msgid "Previous image"
 msgstr "පෙර පින්තූරය"
 
@@ -2357,10 +2397,6 @@ msgstr "පෞද්ගලිකත්වය"
 #: ../../../lib/web/src/components/ui/upload-progress.tsx:50
 msgid "Processing…"
 msgstr "සකසමින්…"
-
-#: ../../../lib/web/src/components/person-picker.tsx:200
-msgid "Project members"
-msgstr "ව්‍යාපෘති සාමාජිකයන්"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:108
 msgid "Prompt saved"
@@ -2379,11 +2415,11 @@ msgstr "උස්කළ"
 msgid "Re-derive from title"
 msgstr "මාතෘකාවෙන් නැවත ව්‍යුත්පන්න කරන්න"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:118
+#: ../../../lib/web/src/components/restore-banner.tsx:104
 msgid "Re-link your accounts on this server"
 msgstr "මෙම සේවාදායකයේ ඔබේ ගිණුම් නැවත සම්බන්ධ කරන්න"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:140
+#: ../../../lib/web/src/components/restore-banner.tsx:126
 msgid "Re-register your passkeys on this server"
 msgstr "මෙම සේවාදායකයේ ඔබගේ මුරයතුරු නැවත ලියාපදිංචි කරන්න"
 
@@ -2413,7 +2449,7 @@ msgstr "මෙම wiki එකේ සියලු පිටු හරහා ම�
 msgid "Recommended"
 msgstr "නිර්දේශිත"
 
-#: src/routes/_authenticated/index.tsx:780
+#: src/routes/_authenticated/index.tsx:779
 msgid "Recommended wikis"
 msgstr "නිර්දේශිත wikis"
 
@@ -2426,29 +2462,29 @@ msgstr "නැවත සම්බන්ධ වෙමින් ({retries})..."
 msgid "Redirect \"{0}\" deleted"
 msgstr "හරවායැවීම «{0}» මකා දැමුවා"
 
-#: src/features/wiki/wiki-settings.tsx:866
+#: src/features/wiki/wiki-settings.tsx:864
 msgid "Redirect \"{source}\" deleted"
 msgstr "හරවායැවීම «{source}» මකා දැමුවා"
 
 #: src/features/wiki/redirects-page.tsx:208
-#: src/features/wiki/wiki-settings.tsx:1007
+#: src/features/wiki/wiki-settings.tsx:1005
 msgid "Redirect created"
 msgstr "redirect සාදන ලදී"
 
-#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:136
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:135
 msgid "Redirecting to login."
 msgstr "පිවිසුම වෙත redirect කරමින්."
 
 #: src/features/wiki/redirects-page.tsx:73
-#: src/features/wiki/wiki-settings.tsx:106
-#: src/features/wiki/wiki-settings.tsx:882
+#: src/features/wiki/wiki-settings.tsx:107
+#: src/features/wiki/wiki-settings.tsx:880
 #: src/routes/_authenticated/redirects.tsx:27
 #: src/routes/_authenticated/redirects.tsx:30
 msgid "Redirects"
 msgstr "redirects"
 
-#: ../../../lib/web/src/components/post-tags.tsx:200
-#: ../../../lib/web/src/components/post-tags.tsx:212
+#: ../../../lib/web/src/components/post-tags.tsx:214
+#: ../../../lib/web/src/components/post-tags.tsx:226
 msgid "Reduce interest"
 msgstr "උනන්දුව අඩු කරන්න"
 
@@ -2464,13 +2500,21 @@ msgstr "සාපේක්ෂ (5m, 3h, 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "පැය 24 තුළ සාපේක්ෂ, නැතහොත් නිරපේක්ෂ"
 
+#: ../../../lib/web/src/components/post-tags.tsx:166
+msgid "Relevance {relevance}"
+msgstr "අදාළත්වය {relevance}"
+
+#: ../../../lib/web/src/components/post-tags.tsx:164
+msgid "Relevance {relevance}, interest {weight}"
+msgstr "අදාළත්වය {relevance}, උනන්දුව {weight}"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:285
 #: ../../../lib/web/src/components/attachment-composer.tsx:330
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:192
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: src/features/wiki/tag-manager.tsx:117
 #: src/features/wiki/tag-manager.tsx:122
-#: src/features/wiki/wiki-settings.tsx:795
+#: src/features/wiki/wiki-settings.tsx:793
 msgid "Remove"
 msgstr "ඉවත් කරන්න"
 
@@ -2494,12 +2538,12 @@ msgstr "\"{0}\" සඳහා ප්‍රවේශ නීතිය ඉවත් 
 msgid "Remove access?"
 msgstr "ප්‍රවේශය ඉවත් කරන්නද?"
 
-#: ../../../lib/web/src/components/post-tags.tsx:220
-#: ../../../lib/web/src/components/post-tags.tsx:232
+#: ../../../lib/web/src/components/post-tags.tsx:234
+#: ../../../lib/web/src/components/post-tags.tsx:246
 msgid "Remove interest"
 msgstr "උනන්දුව ඉවත් කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:674
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:712
 msgid "Remove item"
 msgstr "අයිතමය ඉවත් කරන්න"
 
@@ -2509,25 +2553,25 @@ msgid "Remove link"
 msgstr "සබැඳිය ඉවත් කරන්න"
 
 #. placeholder {0}: replica.name || replica.id
-#: src/features/wiki/wiki-settings.tsx:771
-#: src/features/wiki/wiki-settings.tsx:777
+#: src/features/wiki/wiki-settings.tsx:769
+#: src/features/wiki/wiki-settings.tsx:775
 msgid "Remove replica {0}"
 msgstr "පිටපත {0} ඉවත් කරන්න"
 
-#: src/features/wiki/wiki-settings.tsx:781
+#: src/features/wiki/wiki-settings.tsx:779
 msgid "Remove replica?"
 msgstr "replica ඉවත් කරන්නද?"
 
-#: src/features/wiki/wiki-settings.tsx:578
+#: src/features/wiki/wiki-settings.tsx:576
 msgid "Removing access..."
 msgstr "ප්‍රවේශය ඉවත් කරමින්..."
 
-#: src/features/wiki/wiki-settings.tsx:675
+#: src/features/wiki/wiki-settings.tsx:673
 msgid "Removing replica..."
 msgstr " පිටපත ඉවත් කරමින්..."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:561
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:618
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:562
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:620
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:297
@@ -2536,7 +2580,7 @@ msgstr " පිටපත ඉවත් කරමින්..."
 msgid "Rename"
 msgstr "නැවත නම් කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:596
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
 msgid "Rename column"
 msgstr "තීරුව නැවත නම් කරන්න"
 
@@ -2544,7 +2588,7 @@ msgstr "තීරුව නැවත නම් කරන්න"
 msgid "Rename page"
 msgstr "පිටුව නැවත නම් කරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:598
 msgid "Rename this board column"
 msgstr "මෙම board තීරුව නැවත නම් කරන්න"
 
@@ -2558,15 +2602,15 @@ msgstr "නැවත නම් කරමින්..."
 msgid "Replace"
 msgstr "ප්‍රතිස්ථාපනය"
 
-#: src/features/wiki/wiki-settings.tsx:676
+#: src/features/wiki/wiki-settings.tsx:674
 msgid "Replica \"{displayName}\" removed"
 msgstr "පිටපත \"{displayName}\" ඉවත් කරන ලදී"
 
-#: src/features/wiki/wiki-settings.tsx:108
-#: src/features/wiki/wiki-settings.tsx:692
-#: src/features/wiki/wiki-settings.tsx:705
-#: src/features/wiki/wiki-settings.tsx:719
-#: src/features/wiki/wiki-settings.tsx:736
+#: src/features/wiki/wiki-settings.tsx:109
+#: src/features/wiki/wiki-settings.tsx:690
+#: src/features/wiki/wiki-settings.tsx:703
+#: src/features/wiki/wiki-settings.tsx:717
+#: src/features/wiki/wiki-settings.tsx:734
 msgid "Replicas"
 msgstr "replicas"
 
@@ -2598,11 +2642,11 @@ msgstr "{0} ට පිළිතුරු දෙන්න..."
 msgid "Request URL: {baseURL}{slug}"
 msgstr "ඉල්ලුම් URL: {baseURL}{slug}"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:224
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:228
 msgid "Required"
 msgstr "අවශ්‍යයි"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:370
+#: ../../../lib/web/src/components/step-up-dialog.tsx:358
 msgid "Resend email"
 msgstr "විද්‍යුත් තැපෑල නැවත එවන්න"
 
@@ -2653,7 +2697,7 @@ msgstr "අවලංගු කරන්න"
 
 #: ../../../lib/web/src/components/options-menu.tsx:181
 #: src/routes/_authenticated/index.tsx:460
-#: src/routes/_authenticated/index.tsx:731
+#: src/routes/_authenticated/index.tsx:730
 msgid "Revoke access"
 msgstr "ප්‍රවේශය අවලංගු කරන්න"
 
@@ -2661,12 +2705,12 @@ msgstr "ප්‍රවේශය අවලංගු කරන්න"
 msgid "Revoke RSS access?"
 msgstr "RSS ප්‍රවේශය අවලංගු කරන්නද?"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:152
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:172
 msgid "Rows"
 msgstr "පේළි"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:373
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:376
 msgid "Rows group by"
 msgstr "පේළි කාණ්ඩගත කරන්නේ"
 
@@ -2679,7 +2723,7 @@ msgstr "RSS ප්‍රවේශය අවලංගු කරන ලදී"
 #: ../../../lib/web/src/components/options-menu.tsx:171
 #: src/features/wiki/wiki-page-content.tsx:343
 #: src/routes/_authenticated/index.tsx:443
-#: src/routes/_authenticated/index.tsx:712
+#: src/routes/_authenticated/index.tsx:711
 msgid "RSS feed"
 msgstr "RSS පෝෂණය"
 
@@ -2697,30 +2741,30 @@ msgstr "සෙනසුරාදා"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: ../../../lib/web/src/components/attachment-composer.tsx:430
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:170
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:172
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:126
 #: ../../../lib/web/src/components/ui/secret-field.tsx:79
 #: src/features/wiki/page-editor.tsx:408
 #: src/features/wiki/wiki-comment-thread.tsx:202
 msgid "Save"
 msgstr "සුරකින්න"
 
-#: src/features/wiki/wiki-settings.tsx:452
+#: src/features/wiki/wiki-settings.tsx:450
 msgid "Save changes"
 msgstr "වෙනස්කම් සුරකින්න"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: src/features/wiki/page-editor.tsx:408
-#: src/features/wiki/wiki-settings.tsx:280
-#: src/features/wiki/wiki-settings.tsx:304
-#: src/features/wiki/wiki-settings.tsx:452
+#: src/features/wiki/wiki-settings.tsx:278
+#: src/features/wiki/wiki-settings.tsx:302
+#: src/features/wiki/wiki-settings.tsx:450
 msgid "Saving..."
 msgstr "සුරකිමින්..."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:175
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
-#: ../../../lib/web/src/components/search.tsx:18
+#: ../../../lib/web/src/components/search.tsx:17
 #: src/features/wiki/wiki-page-content.tsx:325
 #: src/routes/_authenticated/$page/index.tsx:234
 #: src/routes/_authenticated/$wikiId/search.tsx:31
@@ -2743,23 +2787,23 @@ msgstr "නම, ID, ඇඟිලි සලකුණ, හෝ URL අනුව ස
 msgid "Search for a command to run..."
 msgstr "ධාවනය කිරීමට විධානයක් සොයන්න..."
 
-#: ../../../lib/web/src/components/place-picker.tsx:86
+#: ../../../lib/web/src/components/place-picker.tsx:73
 msgid "Search for a place"
 msgstr "ස්ථානයක් සොයන්න"
 
-#: ../../../lib/web/src/components/place-picker.tsx:50
+#: ../../../lib/web/src/components/place-picker.tsx:37
 msgid "Search for a place..."
 msgstr "ස්ථානයක් සොයන්න..."
 
-#: src/routes/_authenticated/index.tsx:756
+#: src/routes/_authenticated/index.tsx:755
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "දායකත්වය ලබා ගැනීමට විකියක් සොයන්න, හෝ ඔබේම ලේඛන ප්‍රකාශ කිරීමට නවයක් සාදන්න."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:250
+#: ../../../lib/web/src/components/travelling-picker.tsx:231
 msgid "Search for destination..."
 msgstr "ගමනාන්තය සොයන්න..."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:183
+#: ../../../lib/web/src/components/travelling-picker.tsx:164
 msgid "Search for origin..."
 msgstr "මූලාරම්භය සොයන්න..."
 
@@ -2798,8 +2842,8 @@ msgstr "මෙම දසුන සොයන්න, නරඹන්න, සහ �
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:179
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
-#: ../../../lib/web/src/components/inline-entity-search.tsx:63
-#: ../../../lib/web/src/components/person-picker.tsx:324
+#: ../../../lib/web/src/components/inline-entity-search.tsx:64
+#: ../../../lib/web/src/components/person-picker.tsx:300
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "සොයන්න..."
@@ -2809,11 +2853,11 @@ msgstr "සොයන්න..."
 msgid "Searching..."
 msgstr "සොයමින්..."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:141
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:16
 msgid "Select"
 msgstr "තෝරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:356
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
 msgid "Select a field"
 msgstr "ක්ෂේත්‍රයක් තෝරන්න"
 
@@ -2841,7 +2885,7 @@ msgstr "ඔබේ පිටුවට ඇතුළු කිරීමට ඇම�
 msgid "Select group"
 msgstr "කණ්ඩායම තෝරන්න"
 
-#: ../../../lib/web/src/components/place-picker.tsx:49
+#: ../../../lib/web/src/components/place-picker.tsx:36
 msgid "Select location"
 msgstr "ස්ථානය තෝරන්න"
 
@@ -2849,7 +2893,7 @@ msgstr "ස්ථානය තෝරන්න"
 msgid "Select next card"
 msgstr "ඊළඟ කාඩ්පත තෝරන්න"
 
-#: ../../../lib/web/src/components/person-picker.tsx:83
+#: ../../../lib/web/src/components/person-picker.tsx:70
 msgid "Select person..."
 msgstr "පුද්ගලයෙකු තෝරන්න..."
 
@@ -2857,8 +2901,8 @@ msgstr "පුද්ගලයෙකු තෝරන්න..."
 msgid "Select previous card"
 msgstr "පෙර කාඩ්පත තෝරන්න"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:257
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:340
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:289
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:381
 msgid "Select..."
 msgstr "තෝරන්න..."
 
@@ -2871,7 +2915,7 @@ msgstr "තෝරාගත්: <0>{0}</0>"
 msgid "Send again"
 msgstr "නැවත යවන්න"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:310
+#: ../../../lib/web/src/components/step-up-dialog.tsx:298
 msgid "Send email"
 msgstr "ඊමේල් යවන්න"
 
@@ -2898,11 +2942,11 @@ msgstr "සේවාදායක නීති"
 msgid "Session expired. Please log in again."
 msgstr "සැසිය කල් ඉකුත් වී ඇත. කරුණාකර නැවත පිවිසෙන්න."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:147
+#: ../../../lib/web/src/components/travelling-picker.tsx:128
 msgid "Set origin and destination"
 msgstr "මූලාරම්භය සහ ගමනාන්තය සකසන්න"
 
-#: src/features/wiki/wiki-settings.tsx:549
+#: src/features/wiki/wiki-settings.tsx:547
 msgid "Setting access..."
 msgstr "ප්‍රවේශය සකසමින්..."
 
@@ -2910,21 +2954,21 @@ msgstr "ප්‍රවේශය සකසමින්..."
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:125
 #: ../../../lib/web/src/components/options-menu.tsx:196
 #: src/features/wiki/wiki-page-content.tsx:370
-#: src/features/wiki/wiki-settings.tsx:105
+#: src/features/wiki/wiki-settings.tsx:106
 #: src/routes/_authenticated/$page/index.tsx:268
 #: src/routes/_authenticated/index.tsx:483
 msgid "Settings"
 msgstr "සැකසුම්"
 
-#: src/features/wiki/wiki-settings.tsx:305
+#: src/features/wiki/wiki-settings.tsx:303
 msgid "Settings saved"
 msgstr "සැකසුම් සුරකින ලදී"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:327
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:330
 msgid "Show classes"
 msgstr "classes පෙන්වන්න"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:428
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:431
 msgid "Show fields"
 msgstr "ක්ෂේත්‍ර පෙන්වන්න"
 
@@ -2936,7 +2980,7 @@ msgstr "පිටුව පෙන්වන්න"
 msgid "Show this help"
 msgstr "මෙම උදව් පෙන්වන්න"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:39
+#: ../../../lib/web/src/components/ui/load-more.tsx:43
 msgid "Showing {totalShown} of {total}"
 msgstr "{total}න් {totalShown}ක් පෙන්වමින්"
 
@@ -2944,17 +2988,21 @@ msgstr "{total}න් {totalShown}ක් පෙන්වමින්"
 msgid "Sidebar"
 msgstr "sidebar"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:18
+msgid "Sign in with an account that has access <0/> to this resource."
+msgstr "මෙම සම්පතට <0/> ප්‍රවේශය ඇති ගිණුමකින් පිවිසෙන්න."
+
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:131
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:137
 msgid "Sign out"
 msgstr "පිටවන්න"
 
-#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:134
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:133
 msgid "Signing out..."
 msgstr "පිට වෙමින්..."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:161
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:179
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:163
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:183
 msgid "Single line of text only"
 msgstr "පෙළ එක් පේළියක් පමණි"
 
@@ -2973,13 +3021,13 @@ msgid "Sort"
 msgstr "වර්ග කරන්න"
 
 #: src/features/wiki/redirects-page.tsx:92
-#: src/features/wiki/wiki-settings.tsx:422
-#: src/features/wiki/wiki-settings.tsx:902
+#: src/features/wiki/wiki-settings.tsx:420
+#: src/features/wiki/wiki-settings.tsx:900
 msgid "Source"
 msgstr "මූලාරම්භය"
 
 #: src/features/wiki/redirects-page.tsx:241
-#: src/features/wiki/wiki-settings.tsx:1040
+#: src/features/wiki/wiki-settings.tsx:1038
 msgid "Source URL"
 msgstr "මූලාරම්භ URL"
 
@@ -2991,11 +3039,11 @@ msgstr "මූලාරම්භ"
 msgid "Spacious"
 msgstr "විශාල"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:323
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:325
 msgid "Start the discussion by adding the first comment."
 msgstr "පළමු අදහස එක් කිරීමෙන් සාකච්ඡාව ආරම්භ කරන්න."
 
-#: src/routes/_authenticated/index.tsx:753
+#: src/routes/_authenticated/index.tsx:752
 msgid "Start your first wiki"
 msgstr "ඔබේ පළමු wiki එක ආරම්භ කරන්න"
 
@@ -3003,24 +3051,24 @@ msgstr "ඔබේ පළමු wiki එක ආරම්භ කරන්න"
 msgid "Subject"
 msgstr "විෂය"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Submit comment"
 msgstr "අදහස ඉදිරිපත් කරන්න"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Submit reply"
 msgstr "පිළිතුර ඉදිරිපත් කරන්න"
 
-#: ../../../lib/web/src/components/inline-entity-search.tsx:66
-#: ../../../lib/web/src/components/recommended-entities.tsx:58
+#: ../../../lib/web/src/components/inline-entity-search.tsx:67
+#: ../../../lib/web/src/components/recommended-entities.tsx:59
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:120
-#: src/routes/_authenticated/index.tsx:819
+#: src/routes/_authenticated/index.tsx:818
 msgid "Subscribe"
 msgstr "දායක වන්න"
 
 #: src/features/wiki/inline-wiki-search.tsx:95
-#: src/features/wiki/wiki-settings.tsx:744
+#: src/features/wiki/wiki-settings.tsx:742
 #: src/routes/_authenticated/find.tsx:64
 msgid "Subscribed"
 msgstr "දායක වී ඇත"
@@ -3036,7 +3084,7 @@ msgstr "{0} ට දායක විය"
 msgid "Subscribing..."
 msgstr "දායක වෙමින්..."
 
-#: src/features/wiki/wiki-settings.tsx:412
+#: src/features/wiki/wiki-settings.tsx:410
 msgid "Subscription"
 msgstr "දායකත්වය"
 
@@ -3056,12 +3104,12 @@ msgstr "සහාය දක්වන ගොනු: රූප, PDF, DOC, DOCX, TX
 msgid "Switch to view 1-9"
 msgstr "දර්ශනය 1-9 වෙත මාරු වන්න"
 
-#: src/features/wiki/wiki-settings.tsx:417
+#: src/features/wiki/wiki-settings.tsx:415
 msgid "Sync now"
 msgstr "දැන් සමමුහුර්ත කරන්න"
 
-#: src/features/wiki/wiki-settings.tsx:326
-#: src/features/wiki/wiki-settings.tsx:417
+#: src/features/wiki/wiki-settings.tsx:324
+#: src/features/wiki/wiki-settings.tsx:415
 msgid "Syncing..."
 msgstr "සමමුහුර්ත කරමින්..."
 
@@ -3083,12 +3131,12 @@ msgstr "ටැගය «{tag}» එකතු කළා"
 msgid "Tag \"{tag}\" removed"
 msgstr "ටැගය «{tag}» ඉවත් කළා"
 
-#: ../../../lib/web/src/components/post-tags.tsx:76
+#: ../../../lib/web/src/components/post-tags.tsx:77
 #: src/features/wiki/tag-manager.tsx:47
 msgid "Tag already exists"
 msgstr "ටැගය දැනටමත් පවතී"
 
-#: ../../../lib/web/src/components/post-tags.tsx:68
+#: ../../../lib/web/src/components/post-tags.tsx:69
 msgid "Tag must be 50 characters or less"
 msgstr "ටැගය අක්ෂර 50ක් හෝ ඊට අඩු විය යුතුය"
 
@@ -3103,8 +3151,8 @@ msgstr "ටැගය අක්ෂර 50ක් හෝ ඊට අඩු විය 
 msgid "Tag: {tag}"
 msgstr "ටැගය: {tag}"
 
-#: ../../../lib/web/src/components/post-tags.tsx:101
-#: ../../../lib/web/src/components/post-tags.tsx:115
+#: ../../../lib/web/src/components/post-tags.tsx:102
+#: ../../../lib/web/src/components/post-tags.tsx:116
 #: src/features/wiki/wiki-page-content.tsx:331
 #: src/routes/_authenticated/$page/index.tsx:240
 #: src/routes/_authenticated/index.tsx:431
@@ -3112,12 +3160,12 @@ msgid "Tags"
 msgstr "ටැග"
 
 #: src/features/wiki/redirects-page.tsx:94
-#: src/features/wiki/wiki-settings.tsx:904
+#: src/features/wiki/wiki-settings.tsx:902
 msgid "Target"
 msgstr "ඉලක්කය"
 
 #: src/features/wiki/redirects-page.tsx:253
-#: src/features/wiki/wiki-settings.tsx:1052
+#: src/features/wiki/wiki-settings.tsx:1050
 msgid "Target URL"
 msgstr "ඉලක්ක URL"
 
@@ -3126,11 +3174,11 @@ msgstr "ඉලක්ක URL"
 msgid "Terms and conditions"
 msgstr "නියම සහ කොන්දේසි"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:142
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:17
 msgid "Text"
 msgstr "පෙළ"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:193
+#: ../../../lib/web/src/components/step-up-dialog.tsx:181
 msgid "That code is incorrect or has expired."
 msgstr "එම කේතය වැරදියි හෝ කල් ඉකුත් වී ඇත."
 
@@ -3147,7 +3195,7 @@ msgstr "උඩුගත කිරීමට ඉතා විශාල විය. 
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "ඔබට අනුකරණය කිරීමට අවශ්‍ය wiki එකේ entity ID."
 
-#: src/features/wiki/wiki-settings.tsx:1060
+#: src/features/wiki/wiki-settings.tsx:1058
 msgid "The existing page to redirect to"
 msgstr "යළි-යොමු කිරීමට පවතින පිටුව"
 
@@ -3159,11 +3207,11 @@ msgstr "හරවායැවීමට ඇති පිටුව (උදා. «n
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "«{slug}» පිටුව තවම නොපවතී."
 
-#: src/features/wiki/wiki-settings.tsx:433
+#: src/features/wiki/wiki-settings.tsx:431
 msgid "The page that users see when they first visit the wiki."
 msgstr "පරිශීලකයින් wiki එක මුලින්ම පැමිණි විට දකින පිටුව."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:68
+#: ../../../lib/web/src/features/errors/general-error.tsx:66
 msgid "The requested content could not be found."
 msgstr "ඉල්ලූ අන්තර්ගතය සොයාගත නොහැකි විය."
 
@@ -3171,7 +3219,7 @@ msgstr "ඉල්ලූ අන්තර්ගතය සොයාගත නොහ
 msgid "The server returned a web page instead of data."
 msgstr "සේවාදායකය දත්ත වෙනුවට වෙබ් පිටුවක් ලබා දුන්නේය."
 
-#: src/features/wiki/wiki-settings.tsx:1048
+#: src/features/wiki/wiki-settings.tsx:1046
 msgid "The URL that will be redirected"
 msgstr "යළි-යොමු කරනු ලබන URL"
 
@@ -3179,7 +3227,7 @@ msgstr "යළි-යොමු කරනු ලබන URL"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "හරවනු ලබන URL (උදා. «old-page»)"
 
-#: src/features/wiki/wiki-settings.tsx:482
+#: src/features/wiki/wiki-settings.tsx:480
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "මෙම ක්‍රියාව ආපසු හැරවිය නොහැක. මෙය wiki එක සහ එහි සියලුම අන්තර්ගතය ස්ථිරවම මකා දමනු ඇත."
 
@@ -3199,7 +3247,7 @@ msgstr "මෙම ගොනුව වත්මන් සේවාදායක �
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "මෙම ගොනුව උඩුගත කිරීමට වඩා විශාලය. කුඩා ගොනුවක් උත්සාහ කරන්න."
 
-#: src/features/wiki/wiki-settings.tsx:413
+#: src/features/wiki/wiki-settings.tsx:411
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "මෙම wiki මූලාරම්භ wiki එකකට දායක වී ඇති අතර එයින් යාවත්කාලීන ලබා ගනී."
 
@@ -3209,7 +3257,7 @@ msgstr "මෙය පිටුවේ මාර්ගය වනු ඇත. කු
 
 #. placeholder {0}: redirect.source
 #. placeholder {1}: redirect.target
-#: src/features/wiki/wiki-settings.tsx:946
+#: src/features/wiki/wiki-settings.tsx:944
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "මෙය «{0}» සිට «{1}» දක්වා හරවායැවීම ඉවත් කරයි."
 
@@ -3220,7 +3268,7 @@ msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the
 msgstr "මෙය «{0}» සිට «{1}» දක්වා හරවායැවීම ඉවත් කරයි. මූලාශ්‍ර URL වෙත පිවිසෙන පරිශීලකයන් තවදුරටත් හරවනු නොලැබේ."
 
 #. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
-#: src/features/wiki/wiki-settings.tsx:783
+#: src/features/wiki/wiki-settings.tsx:781
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "මෙය «{0}» වෙත යාවත්කාලීන කිරීම් යැවීම නවත්වයි. ඔවුන්ට අවශ්‍ය නම් නැවත පිටපත් කළ හැක."
 
@@ -3237,26 +3285,23 @@ msgstr "මාතෘකාව"
 msgid "Title is required"
 msgstr "මාතෘකාව අවශ්‍යයි"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:220
+#: ../../../lib/web/src/components/travelling-picker.tsx:201
 msgid "To"
 msgstr "වෙත"
 
-#: ../../../lib/web/src/components/layout/nav-group.tsx:365
-#: ../../../lib/web/src/components/layout/nav-group.tsx:372
-#: ../../../lib/web/src/components/layout/nav-group.tsx:490
-#: ../../../lib/web/src/components/layout/nav-group.tsx:497
+#: ../../../lib/web/src/components/layout/nav-group.tsx:393
+#: ../../../lib/web/src/components/layout/nav-group.tsx:400
+#: ../../../lib/web/src/components/layout/nav-group.tsx:522
+#: ../../../lib/web/src/components/layout/nav-group.tsx:529
 msgid "Toggle section"
 msgstr "කොටස ටොගල් කරන්න"
 
 #: ../../../lib/web/src/components/ui/sidebar.tsx:337
 #: ../../../lib/web/src/components/ui/sidebar.tsx:340
-msgid "Toggle sidebar"
-msgstr "පැති තීරුව මාරු කරන්න"
-
 #: ../../../lib/web/src/components/ui/sidebar.tsx:352
 #: ../../../lib/web/src/components/ui/sidebar.tsx:355
-msgid "Toggle Sidebar"
-msgstr "sidebar මාරු කරන්න"
+msgid "Toggle sidebar"
+msgstr "පැති තීරුව මාරු කරන්න"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:26
 msgid "Toggle view options"
@@ -3267,7 +3312,7 @@ msgstr "දර්ශන විකල්ප ටොගල කරන්න"
 msgid "Toggle watched filter"
 msgstr "නැරඹූ පෙරහන මාරු කරන්න"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:74
+#: ../../../lib/web/src/features/errors/general-error.tsx:72
 msgid "Too many requests"
 msgstr "ඉල්ලීම් ඕනෑවට වඩා වැඩියි"
 
@@ -3275,7 +3320,7 @@ msgstr "ඉල්ලීම් ඕනෑවට වඩා වැඩියි"
 msgid "Top"
 msgstr "ඉහළ"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:145
+#: ../../../lib/web/src/components/travelling-picker.tsx:126
 msgid "Travelling"
 msgstr "ගමන් කරමින්"
 
@@ -3291,8 +3336,8 @@ msgstr "වෙනස් ටැගයක් උත්සාහ කරන්න."
 msgid "Try adjusting your search terms"
 msgstr "ඔබේ සෙවුම් යෙදුම් සකස් කිරීම උත්සාහ කරන්න"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:140
-#: ../../../lib/web/src/features/errors/general-error.tsx:180
+#: ../../../lib/web/src/features/errors/general-error.tsx:138
+#: ../../../lib/web/src/features/errors/general-error.tsx:178
 msgid "Try again"
 msgstr "නැවත උත්සාහ කරන්න"
 
@@ -3304,12 +3349,12 @@ msgstr "වෙනස් සෙවුම් යෙදුම් උත්සාහ
 msgid "Tuesday"
 msgstr "අඟහරුවාදා"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:130
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:162
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:134
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:166
 msgid "Type"
 msgstr "වර්ගය"
 
-#: ../../../lib/web/src/components/command-menu.tsx:52
+#: ../../../lib/web/src/components/command-menu.tsx:54
 msgid "Type a command or search..."
 msgstr "විධානයක් ටයිප් කරන්න හෝ සොයන්න..."
 
@@ -3329,8 +3374,8 @@ msgstr "සෙවීමට ටයිප් කරන්න..."
 msgid "Unable to connect to remote server"
 msgstr "දුරස්ථ සේවාදායකයට සම්බන්ධ විය නොහැක"
 
-#: ../../../lib/web/src/lib/auth-manager.ts:92
-#: ../../../lib/web/src/lib/auth-manager.ts:104
+#: ../../../lib/web/src/lib/auth-manager.ts:89
+#: ../../../lib/web/src/lib/auth-manager.ts:101
 msgid "Unable to redirect to login. Please try again."
 msgstr "login එකට යළි-යොමු කළ නොහැක. කරුණාකර නැවත උත්සාහ කරන්න."
 
@@ -3338,16 +3383,12 @@ msgstr "login එකට යළි-යොමු කළ නොහැක. කරු
 msgid "Unassigned"
 msgstr "පවරා නැත"
 
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:16
-msgid "Unauthorized Access"
-msgstr "අනවසර ප්‍රවේශය"
-
 #: ../../../lib/web/src/components/attachment-image.tsx:50
 msgid "Unavailable"
 msgstr "ලබා ගත නොහැක"
 
 #: ../../../lib/web/src/lib/request.ts:133
-#: ../../../lib/web/src/lib/request.ts:206
+#: ../../../lib/web/src/lib/request.ts:209
 msgid "Unexpected API error"
 msgstr "අනපේක්ෂිත API දෝෂය"
 
@@ -3355,6 +3396,11 @@ msgstr "අනපේක්ෂිත API දෝෂය"
 msgid "United States"
 msgstr "එක්සත් ජනපදය"
 
+#: ../../../lib/web/src/components/audit-timeline.tsx:103
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:167
+#: ../../../lib/web/src/components/tree-row.tsx:219
+#: ../../../lib/web/src/components/tree-row.tsx:373
+#: ../../../lib/web/src/components/tree-table-header.tsx:70
 #: ../../../lib/web/src/features/accounts/types.ts:29
 #: src/features/wiki/wiki-comment-thread.tsx:126
 msgid "Unknown"
@@ -3370,16 +3416,16 @@ msgstr "නොදන්නා"
 #: src/routes/_authenticated/index.tsx:494
 #: src/routes/_authenticated/index.tsx:522
 #: src/routes/_authenticated/index.tsx:524
-#: src/routes/_authenticated/index.tsx:890
-#: src/routes/_authenticated/index.tsx:922
-#: src/routes/_authenticated/index.tsx:924
+#: src/routes/_authenticated/index.tsx:889
+#: src/routes/_authenticated/index.tsx:921
+#: src/routes/_authenticated/index.tsx:923
 msgid "Unsubscribe"
 msgstr "දායකත්වය ඉවත් කරන්න"
 
 #: src/features/wiki/wiki-page-content.tsx:80
 #: src/routes/_authenticated/$page/index.tsx:76
 #: src/routes/_authenticated/index.tsx:287
-#: src/routes/_authenticated/index.tsx:933
+#: src/routes/_authenticated/index.tsx:932
 msgid "Unsubscribed"
 msgstr "දායකත්වය ඉවත් කරන ලදී"
 
@@ -3389,8 +3435,8 @@ msgstr "දායකත්වය ඉවත් කරන ලදී"
 #: src/routes/_authenticated/$page/index.tsx:280
 #: src/routes/_authenticated/index.tsx:286
 #: src/routes/_authenticated/index.tsx:494
-#: src/routes/_authenticated/index.tsx:889
-#: src/routes/_authenticated/index.tsx:932
+#: src/routes/_authenticated/index.tsx:888
+#: src/routes/_authenticated/index.tsx:931
 msgid "Unsubscribing..."
 msgstr "දායකත්වය ඉවත් කරමින්..."
 
@@ -3404,15 +3450,16 @@ msgstr "සහාය නොදක්වන ගොනු වර්ගය: {names}
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "සහාය නොදක්වන ගොනු වර්ග: {names}. සහාය දක්වන ගොනු: රූප, PDF, DOC, DOCX, TXT, සහ MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:285
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:299
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
 #: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "මාතෘකා රහිත"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:56
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:499
 msgid "Updated"
 msgstr "යාවත්කාලීන කරන ලදී"
 
@@ -3422,16 +3469,20 @@ msgstr "යාවත්කාලීන කරන ලදී"
 #: src/features/wiki/page-view.tsx:264
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:74
-#: src/routes/_authenticated/index.tsx:906
+#: src/routes/_authenticated/index.tsx:905
 msgid "Updated {0}"
 msgstr "යාවත්කාලීන කළා {0}"
 
-#: src/features/wiki/wiki-settings.tsx:562
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:56
+msgid "Updated {field}"
+msgstr "{field} යාවත්කාලීන කරන ලදී"
+
+#: src/features/wiki/wiki-settings.tsx:560
 msgid "Updating access..."
 msgstr "ප්‍රවේශය යාවත්කාලීන කරමින්..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:639
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:301
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:661
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:304
 msgid "Upload"
 msgstr "උඩුගත කරන්න"
 
@@ -3470,17 +3521,17 @@ msgstr "අලුත් එකක් උඩුගත කරන්න"
 msgid "Upload progress"
 msgstr "උඩුගත කිරීමේ ප්‍රගතිය"
 
-#: src/features/wiki/wiki-settings.tsx:438
+#: src/features/wiki/wiki-settings.tsx:436
 msgid "Use as home"
 msgstr "home එක ලෙස භාවිතා කරන්න"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:341
+#: ../../../lib/web/src/components/step-up-dialog.tsx:329
 msgid "Use your passkey"
 msgstr "ඔබගේ මුරයතුර භාවිතා කරන්න"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:143
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:112
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:18
 msgid "User"
 msgstr "පරිශීලකයා"
 
@@ -3492,7 +3543,7 @@ msgstr "විචල්‍ය: {variables}"
 msgid "Verification code"
 msgstr "සත්‍යාපන කේතය"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:391
+#: ../../../lib/web/src/components/step-up-dialog.tsx:379
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:111
 msgid "Verify"
 msgstr "සත්‍යාපනය කරන්න"
@@ -3511,12 +3562,12 @@ msgstr "අනුවාදය"
 msgid "Version {0}"
 msgstr "අනුවාදය {0}"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:95
+#: ../../../lib/web/src/components/attachment-gallery.tsx:96
 msgid "Video thumbnail"
 msgstr "වීඩියෝ සංක්ෂිප්ත රූපය"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:315
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:326
 msgid "Video viewer: {0}"
 msgstr "වීඩියෝ දර්ශකය: {0}"
 
@@ -3526,8 +3577,8 @@ msgctxt "action"
 msgid "View"
 msgstr "බලන්න"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:220
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:228
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:216
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:224
 msgid "View all notifications"
 msgstr "සියලුම දැනුම්දීම් බලන්න"
 
@@ -3535,7 +3586,7 @@ msgstr "සියලුම දැනුම්දීම් බලන්න"
 msgid "View controls"
 msgstr "පාලන බලන්න"
 
-#: src/features/wiki/wiki-settings.tsx:500
+#: src/features/wiki/wiki-settings.tsx:498
 msgid "View only"
 msgstr "බැලීම පමණි"
 
@@ -3561,13 +3612,16 @@ msgstr "අපි <0>{0}</0> වෙත සත්‍යාපන කේතයක�
 msgid "Wednesday"
 msgstr "බදාදා"
 
-#: src/features/wiki/wiki-settings.tsx:725
-#: src/features/wiki/wiki-settings.tsx:809
+#: src/features/wiki/wiki-settings.tsx:723
+#: src/features/wiki/wiki-settings.tsx:807
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "වෙනත් wikis මෙම wiki අනුකරණය කරන විට, ඒවා මෙහි දිස් වේ."
 
+#: src/components/layout/wiki-layout.tsx:152
+msgid "wiki"
+msgstr ""
+
 #: src/components/layout/wiki-layout.tsx:103
-#: src/components/layout/wiki-layout.tsx:153
 #: src/features/wiki/wiki-page-content.tsx:103
 #: src/features/wiki/wiki-page-content.tsx:321
 #: src/routes/_authenticated/$page/index.tsx:230
@@ -3577,10 +3631,10 @@ msgstr "වෙනත් wikis මෙම wiki අනුකරණය කරන ව
 msgid "Wiki"
 msgstr "wiki"
 
-#: src/routes/_authenticated/index.tsx:699
-#: src/routes/_authenticated/index.tsx:706
-#: src/routes/_authenticated/index.tsx:870
-#: src/routes/_authenticated/index.tsx:877
+#: src/routes/_authenticated/index.tsx:698
+#: src/routes/_authenticated/index.tsx:705
+#: src/routes/_authenticated/index.tsx:869
+#: src/routes/_authenticated/index.tsx:876
 msgid "Wiki actions"
 msgstr "wiki ක්‍රියා"
 
@@ -3588,7 +3642,7 @@ msgstr "wiki ක්‍රියා"
 msgid "Wiki created"
 msgstr "wiki නිර්මාණය කරන ලදී"
 
-#: src/features/wiki/wiki-settings.tsx:348
+#: src/features/wiki/wiki-settings.tsx:346
 msgid "Wiki deleted"
 msgstr "wiki මකා දමන ලදී"
 
@@ -3605,7 +3659,7 @@ msgstr "wiki ID අවශ්‍යයි"
 msgid "Wiki link"
 msgstr "විකි සබැඳිය"
 
-#: src/features/wiki/wiki-settings.tsx:269
+#: src/features/wiki/wiki-settings.tsx:267
 msgid "Wiki name is required"
 msgstr "විකි නාමය අවශ්‍යයි"
 
@@ -3614,7 +3668,7 @@ msgstr "විකි නාමය අවශ්‍යයි"
 msgid "Wiki not found"
 msgstr "wiki සොයා ගත නොහැක"
 
-#: src/features/wiki/wiki-settings.tsx:281
+#: src/features/wiki/wiki-settings.tsx:279
 msgid "Wiki renamed"
 msgstr "wiki නම වෙනස් කරන ලදී"
 
@@ -3623,11 +3677,11 @@ msgstr "wiki නම වෙනස් කරන ලදී"
 msgid "Wiki settings"
 msgstr "wiki සැකසුම්"
 
-#: src/features/wiki/wiki-settings.tsx:158
+#: src/features/wiki/wiki-settings.tsx:159
 msgid "Wiki settings sections"
 msgstr "wiki සැකසුම් කොටස්"
 
-#: src/features/wiki/wiki-settings.tsx:327
+#: src/features/wiki/wiki-settings.tsx:325
 msgid "Wiki synced"
 msgstr "wiki සමමුහුර්ත කරන ලදී"
 
@@ -3652,11 +3706,11 @@ msgstr "ඔබ <0>«{title}»</0> ({slug}) පිටුව මැකීමට �
 msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
 msgstr "ඔබ <0>{slug}</0> අනුවාදය <1>{version}</1> වෙත ආපසු හැරවීමට යයි. මෙය අනුවාදය {version} හි අන්තර්ගතය සහිත නව සංශෝධනයක් සාදනු ඇත."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:61
+#: ../../../lib/web/src/features/errors/general-error.tsx:59
 msgid "You do not have access to this section."
 msgstr "ඔබට මෙම කොටසට ප්‍රවේශය නොමැත."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:100
+#: ../../../lib/web/src/components/restore-banner.tsx:86
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "ඔබේ ගිණුම {source} සිට මෙහි ගෙන ආවා. එතන ඉවත් කරන තෙක්, පණිවිඩ සහ දැනුම්දීම් සේවාදායකයන් දෙකටම ළඟා විය හැකිය, ඔබේ සමහර අන්තර්ගතය පැරණි සේවාදායකයෙන් ලබාදීම ඉදිරියටත් සිදු වේ, සහ අනුගාමිකයින්ට ඔබව මෙහිදී සොයා ගැනීමට මිනිත්තු කිහිපයක් ගත වනු ඇත."
 

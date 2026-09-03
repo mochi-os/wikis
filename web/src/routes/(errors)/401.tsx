@@ -4,8 +4,8 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 import { createFileRoute } from '@tanstack/react-router'
-import { UnauthorisedError } from '@mochi/web'
+import { AccessDeniedError } from '@mochi/web'
 
 export const Route = createFileRoute('/(errors)/401')({
-  component: UnauthorisedError,
+  component: AccessDeniedError,
 })

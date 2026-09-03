@@ -35,7 +35,6 @@ function NewPageRoute() {
       <WikiRouteHeader
         title={t`New page`}
         back={{ label: wiki.name ?? t`Back`, onFallback: goBackToWiki }}
-        showSidebarTrigger
       />
       <Main>
         <PageEditor slug={slug ?? ''} isNew wikiId={wikiId} />

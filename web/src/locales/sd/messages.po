@@ -14,20 +14,16 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: ../../../lib/web/src/lib/error-normalizer.ts:215
+#: ../../../lib/web/src/lib/error-normalizer.ts:219
 msgid "Please check your internet connection and try again."
 msgstr "مهرباني ڪري پنهنجو انٽرنيٽ ڪنيڪشن چيڪ ڪريو ۽ ٻيهر ڪوشش ڪريو."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:301
-msgid " or "
-msgstr " يا "
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:190
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:189
 #: src/features/wiki/wiki-comment-thread.tsx:167
 msgid "(edited)"
 msgstr "(تبديل ٿيل)"
 
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:174
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:173
 #: src/features/wiki/wiki-comment-thread.tsx:153
 msgid "(expand)"
 msgstr "(وڌايو)"
@@ -51,6 +47,16 @@ msgstr "{0, plural, one {# صفحو} other {# صفحا}}"
 msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# نتيجو} other {# نتيجا}}"
 
+#. placeholder {0}: displayInfo.count
+#: ../../../lib/web/src/components/person-picker.tsx:257
+msgid "{0, plural, one {# selected} other {# selected}}"
+msgstr "{0, plural, one {# چونڊيل} other {# چونڊيل}}"
+
+#. placeholder {0}: countDeepChildren(object.id)
+#: ../../../lib/web/src/components/entity/entity-board-card.tsx:421
+msgid "{0, plural, one {+# nested} other {+# nested}}"
+msgstr "{0, plural, one {+# ذيلي} other {+# ذيلي}}"
+
 #. placeholder {0}: comments.length
 #: src/features/wiki/page-comments.tsx:180
 msgid "{0, plural, one {Showing the first # comment.} other {Showing the first # comments.}}"
@@ -64,7 +70,7 @@ msgid "{0} ({1}, {2})"
 msgstr "{0} ({1}، {2})"
 
 #. placeholder {0}: wiki.pages
-#: src/routes/_authenticated/index.tsx:900
+#: src/routes/_authenticated/index.tsx:899
 msgid "{0} pages"
 msgstr "{0} صفحا"
 
@@ -98,13 +104,9 @@ msgstr "{count, plural, one {#ه} other {#ه}}"
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# دستاويز} other {# دستاويز}}"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:174
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:176
 msgid "{entityLabel} name"
 msgstr "{entityLabel} جو نالو"
-
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:99
-msgid "{entityLabel} name is required"
-msgstr "{entityLabel} جو نالو گھربل آهي"
 
 #: src/features/wiki/attachments-page.tsx:189
 #: src/features/wiki/page-editor.tsx:235
@@ -139,10 +141,11 @@ msgstr "{renamedCount, plural, one {1 صفحي جو نالو تبديل ٿيو} 
 msgid "{sentLabel} of {totalLabel}"
 msgstr "{totalLabel} مان {sentLabel}"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:530
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:531
 msgid "{totalCount, plural, one {# item} other {# items}}"
 msgstr "{totalCount, plural, one {# شيءِ} other {# شيون}}"
 
+#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
 #: src/features/wiki/wiki-comment-thread.tsx:151
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# جواب} other {+# وڌيڪ جواب}}"
@@ -162,19 +165,6 @@ msgstr "{wikiName} سيٽنگون"
 msgid "*No content*"
 msgstr "*ڪو مواد نه آهي*"
 
-#. placeholder {0}: countDeepChildren(object.id)
-#: ../../../lib/web/src/components/entity/entity-board-card.tsx:418
-msgid "+{0} nested"
-msgstr "+{0} اندروني"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:171
-msgid "+{totalDescendants} more replies"
-msgstr "+{totalDescendants} وڌيڪ جواب"
-
-#: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:170
-msgid "1 reply"
-msgstr "1 جواب"
-
 #: ../../../lib/web/src/lib/preference-utils.ts:37
 msgid "12 hours"
 msgstr "12 ڪلاڪ"
@@ -191,11 +181,12 @@ msgstr "مطلق (تاريخ ۽ وقت)"
 msgid "Accept"
 msgstr "قبول ڪريو"
 
-#: src/features/wiki/wiki-settings.tsx:107
+#: src/features/wiki/wiki-settings.tsx:108
 msgid "Access"
 msgstr "رسائي"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:60
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:16
+#: ../../../lib/web/src/features/errors/general-error.tsx:58
 msgid "Access denied"
 msgstr "رسائي رد ڪئي وئي"
 
@@ -203,15 +194,15 @@ msgstr "رسائي رد ڪئي وئي"
 msgid "Access level"
 msgstr "رسائي جي سطح"
 
-#: src/features/wiki/wiki-settings.tsx:563
+#: src/features/wiki/wiki-settings.tsx:561
 msgid "Access level updated"
 msgstr "رسائي جي سطح اپڊيٽ ڪئي وئي"
 
-#: src/features/wiki/wiki-settings.tsx:579
+#: src/features/wiki/wiki-settings.tsx:577
 msgid "Access removed"
 msgstr "رسائي هٽائي وئي"
 
-#: src/features/wiki/wiki-settings.tsx:550
+#: src/features/wiki/wiki-settings.tsx:548
 msgid "Access set for {subjectName}"
 msgstr "{subjectName} لاءِ رسائي مقرر ڪئي وئي"
 
@@ -221,21 +212,21 @@ msgstr "اڪائونٽ جو قسم"
 
 #: src/features/wiki/page-history.tsx:60
 #: src/features/wiki/redirects-page.tsx:96
-#: src/features/wiki/wiki-settings.tsx:746
+#: src/features/wiki/wiki-settings.tsx:744
 msgid "Actions"
 msgstr "عمل"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:720
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:758
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
 #: src/features/wiki/tag-manager.tsx:134
 #: src/features/wiki/tag-manager.tsx:139
 #: src/features/wiki/tag-manager.tsx:164
-#: src/features/wiki/wiki-settings.tsx:596
+#: src/features/wiki/wiki-settings.tsx:594
 msgid "Add"
 msgstr "شامل ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:312
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:314
 msgid "Add a comment..."
 msgstr "تبصرو شامل ڪريو..."
 
@@ -243,7 +234,7 @@ msgstr "تبصرو شامل ڪريو..."
 msgid "Add a new account"
 msgstr "نئون اڪائونٽ شامل ڪريو"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:106
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:110
 msgid "Add a new field to this class"
 msgstr "هن ڪلاس ۾ نئون فيلڊ شامل ڪريو"
 
@@ -263,16 +254,16 @@ msgstr "اڪائونٽ شامل ڪريو"
 msgid "Add caption"
 msgstr "ڪيپشن شامل ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:690
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:728
 msgid "Add checklist item"
 msgstr "چيڪ لسٽ شيءِ شامل ڪريو"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:105
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:233
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:235
 msgid "Add field"
 msgstr "فيلڊ شامل ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:708
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:746
 msgid "Add item..."
 msgstr "شيءِ شامل ڪريو..."
 
@@ -280,20 +271,20 @@ msgstr "شيءِ شامل ڪريو..."
 msgid "Add link"
 msgstr "لنڪ شامل ڪريو"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:215
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:220
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:291
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:91
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:191
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:217
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:222
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:295
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:92
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:193
 msgid "Add option"
 msgstr "اختيار شامل ڪريو"
 
 #: src/features/wiki/redirects-page.tsx:225
-#: src/features/wiki/wiki-settings.tsx:1027
+#: src/features/wiki/wiki-settings.tsx:1025
 msgid "Add redirect"
 msgstr "ريڊائريڪٽ شامل ڪريو"
 
-#: ../../../lib/web/src/components/post-tags.tsx:137
+#: ../../../lib/web/src/components/post-tags.tsx:138
 msgid "Add tag..."
 msgstr "ٽيگ شامل ڪريو..."
 
@@ -305,8 +296,8 @@ msgstr "ڪنهن به صفحي جي هيٺان ٽيگ شامل ڪريو."
 msgid "Add to existing notifications"
 msgstr "موجود اطلاعن ۾ شامل ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:258
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:513
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:261
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:518
 #: ../../../lib/web/src/components/view-tabs.tsx:87
 #: ../../../lib/web/src/components/view-tabs.tsx:93
 msgid "Add view"
@@ -342,16 +333,15 @@ msgstr "سڀ ٽيگ"
 msgid "All wikis"
 msgstr "سڀ wikis"
 
-#. placeholder {0}: entityLabel.toLowerCase()
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
-msgid "Allow anyone to search for {0}"
-msgstr "ڪنھن کي به {0} ڳولڻ جي اجازت ڏيو"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:87
+msgid "Allow anyone to search for {entityLabel}"
+msgstr "سڀ ڪنهن کي {entityLabel} ڳولڻ جي اجازت ڏيو"
 
-#: src/components/layout/wiki-layout.tsx:155
+#: src/components/layout/wiki-layout.tsx:154
 msgid "Allow anyone to search for wiki"
 msgstr "ڪنهن کي به wiki ڳولڻ جي اجازت ڏيو"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:229
 msgid "Allow sort by"
 msgstr "ترتيب جي اجازت ڏيو"
 
@@ -360,6 +350,7 @@ msgid "An error occurred"
 msgstr "هڪ خرابي پيش آئي"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:266
+#: ../../../lib/web/src/lib/error-normalizer.ts:11
 msgid "An unexpected error occurred"
 msgstr "هڪ غير متوقع خرابي پيش آئي"
 
@@ -380,16 +371,16 @@ msgstr "ڪو به جيڪو لاگ ان آهي"
 msgid "Anything subscribed to this feed will stop receiving it. You can copy a new URL afterwards."
 msgstr "هن فيڊ جي رڪنيت وٺندڙ سڀ ڪجهه ان کي حاصل ڪرڻ بند ڪري ڇڏيندو. بعد ۾ توهان نئون URL ڪاپي ڪري سگهو ٿا."
 
-#: src/features/wiki/wiki-settings.tsx:481
+#: src/features/wiki/wiki-settings.tsx:479
 msgid "Are you absolutely sure?"
 msgstr "ڇا توهان بلڪل پڪا آهيو؟"
 
 #. placeholder {0}: deleteTarget?.name
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:313
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:316
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "ڇا توهان پڪ سان \"{0}\" ختم ڪرڻ چاهيو ٿا؟"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:629
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:631
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "ڇا توهان پڪ سان \"{name}\" ڪالم ختم ڪرڻ چاهيو ٿا؟ هي واپس نه ٿو ٿي سگهي."
 
@@ -408,7 +399,7 @@ msgstr "ڇا توهان پڪ سان لاگ آئوٽ ڪرڻ چاهيو ٿا؟ پ�
 #: src/features/wiki/wiki-page-content.tsx:404
 #: src/routes/_authenticated/$page/index.tsx:303
 #: src/routes/_authenticated/index.tsx:523
-#: src/routes/_authenticated/index.tsx:923
+#: src/routes/_authenticated/index.tsx:922
 msgid "Are you sure you want to unsubscribe from this wiki?"
 msgstr "ڇا توهان پڪ سان هن wiki کان سبسڪرپشن هٽائڻ چاهيو ٿا؟"
 
@@ -416,11 +407,11 @@ msgstr "ڇا توهان پڪ سان هن wiki کان سبسڪرپشن هٽائڻ
 msgid "Ascending"
 msgstr "گهٽ کان وڌيڪ"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Attach comment files"
 msgstr "تبصري جون فائلون ڳنڍيو"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Attach reply files"
 msgstr "جواب جون فائلون ڳنڍيو"
 
@@ -444,7 +435,7 @@ msgstr "ڳنڍيل فائلون"
 msgid "Authenticated users"
 msgstr "تصديق ٿيل صارف"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:318
+#: ../../../lib/web/src/components/step-up-dialog.tsx:306
 msgid "Authenticator code"
 msgstr "Authenticator ڪوڊ"
 
@@ -457,15 +448,15 @@ msgstr "ليکڪ"
 msgid "Available keyboard shortcuts"
 msgstr "موجود ڪيبورڊ شارٽ ڪٽ"
 
-#: ../../../lib/web/src/components/entity-avatar.tsx:99
+#: ../../../lib/web/src/components/entity-avatar.tsx:98
 msgid "Avatar"
 msgstr "اوتار"
 
-#: ../../../lib/web/src/components/entity-avatar.tsx:99
+#: ../../../lib/web/src/components/entity-avatar.tsx:98
 msgid "Avatar for {name}"
 msgstr "{name} لاءِ اوتار"
 
-#: ../../../lib/web/src/components/place-picker.tsx:156
+#: ../../../lib/web/src/components/place-picker.tsx:142
 #: src/routes/_authenticated/$wikiId/changes.tsx:46
 #: src/routes/_authenticated/$wikiId/changes.tsx:57
 #: src/routes/_authenticated/$wikiId/changes.tsx:67
@@ -479,8 +470,8 @@ msgstr "واپس"
 msgid "Back to history"
 msgstr "تاريخ ڏانهن واپس"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:27
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:28
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:28
 msgid "Back to home"
 msgstr "گهر ڏانهن واپس"
 
@@ -560,8 +551,8 @@ msgstr "هن صفحي تي پهريون تبصرو ڪندڙ ٿيو."
 msgid "Blocked by"
 msgstr "بلاڪ ڪندڙ"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:242
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:252
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:238
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:248
 msgid "Blocked navigation to untrusted link"
 msgstr "غير قابل اعتماد لنڪ ڏانهن ناقابل اعتماد ناقابل تشريح روڪي"
 
@@ -569,21 +560,21 @@ msgstr "غير قابل اعتماد لنڪ ڏانهن ناقابل اعتماد
 msgid "Blocks"
 msgstr "بلاڪ"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:312
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:315
 msgid "Board"
 msgstr "بورڊ"
 
-#: ../../../lib/web/src/components/post-tags.tsx:180
-#: ../../../lib/web/src/components/post-tags.tsx:192
+#: ../../../lib/web/src/components/post-tags.tsx:194
+#: ../../../lib/web/src/components/post-tags.tsx:206
 msgid "Boost interest"
 msgstr "دلچسپي وڌايو"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:399
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:402
 msgid "Border colour"
 msgstr "ڪناري جو رنگ"
 
 #: src/features/wiki/redirects-page.tsx:199
-#: src/features/wiki/wiki-settings.tsx:994
+#: src/features/wiki/wiki-settings.tsx:992
 msgid "Both source and target are required"
 msgstr "ذريعو ۽ هدف ٻئي گهربل آهن"
 
@@ -600,15 +591,15 @@ msgid "Browser notifications"
 msgstr "براؤزر اطلاع"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:426
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:614
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:166
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:183
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:185
 #: ../../../lib/web/src/components/responsive-confirm-dialog.tsx:67
-#: ../../../lib/web/src/components/step-up-dialog.tsx:366
-#: ../../../lib/web/src/components/travelling-picker.tsx:308
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:249
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:132
+#: ../../../lib/web/src/components/step-up-dialog.tsx:354
+#: ../../../lib/web/src/components/travelling-picker.tsx:288
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:251
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:136
 #: ../../../lib/web/src/features/access/access-dialog.tsx:328
 #: ../../../lib/web/src/features/access/access-list.tsx:268
 #: ../../../lib/web/src/features/accounts/account-add.tsx:201
@@ -623,18 +614,18 @@ msgstr "براؤزر اطلاع"
 #: src/features/wiki/revert-page.tsx:95
 #: src/features/wiki/tag-manager.tsx:156
 #: src/features/wiki/wiki-comment-thread.tsx:182
-#: src/features/wiki/wiki-settings.tsx:790
-#: src/features/wiki/wiki-settings.tsx:953
-#: src/features/wiki/wiki-settings.tsx:1066
+#: src/features/wiki/wiki-settings.tsx:788
+#: src/features/wiki/wiki-settings.tsx:951
+#: src/features/wiki/wiki-settings.tsx:1064
 #: src/routes/_authenticated/join.tsx:120
 msgid "Cancel"
 msgstr "منسوخ ڪريو"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Cancel comment"
 msgstr "تبصرو منسوخ ڪريو"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Cancel reply"
 msgstr "جواب منسوخ ڪريو"
 
@@ -652,15 +643,23 @@ msgstr "هنن اطلاعن لاءِ زمرو"
 msgid "Change notification category"
 msgstr "اطلاع جو زمرو تبديل ڪريو"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:62
+msgid "Changed"
+msgstr "تبديل ٿيو"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:62
+msgid "Changed {field}"
+msgstr "{field} تبديل ٿيو"
+
 #: src/features/wiki/wiki-page-content.tsx:346
 #: src/routes/_authenticated/index.tsx:449
-#: src/routes/_authenticated/index.tsx:718
+#: src/routes/_authenticated/index.tsx:717
 msgid "Changes"
 msgstr "تبديليون"
 
 #: src/features/wiki/wiki-page-content.tsx:348
 #: src/routes/_authenticated/index.tsx:457
-#: src/routes/_authenticated/index.tsx:728
+#: src/routes/_authenticated/index.tsx:727
 msgid "Changes and comments"
 msgstr "تبديليون ۽ تبصرا"
 
@@ -674,11 +673,11 @@ msgstr "نسخي {0} → {1} کان تبديليون"
 msgid "Changes will appear here when pages are edited."
 msgstr "صفحن کي تبديل ڪرڻ تي تبديليون هتي ظاهر ٿينديون."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:137
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:12
 msgid "Checkbox"
 msgstr "چيڪ بڪس"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:138
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:13
 msgid "Checklist"
 msgstr "چيڪ لسٽ"
 
@@ -693,10 +692,10 @@ msgstr "ٻولي چونڊيو"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:274
 #: ../../../lib/web/src/components/colour-picker.tsx:355
-#: ../../../lib/web/src/components/travelling-picker.tsx:164
-#: ../../../lib/web/src/components/travelling-picker.tsx:170
-#: ../../../lib/web/src/components/travelling-picker.tsx:231
-#: ../../../lib/web/src/components/travelling-picker.tsx:237
+#: ../../../lib/web/src/components/travelling-picker.tsx:145
+#: ../../../lib/web/src/components/travelling-picker.tsx:151
+#: ../../../lib/web/src/components/travelling-picker.tsx:212
+#: ../../../lib/web/src/components/travelling-picker.tsx:218
 msgid "Clear"
 msgstr "صاف ڪريو"
 
@@ -710,19 +709,19 @@ msgstr "سڀ صاف ڪريو"
 msgid "Clear search"
 msgstr "ڳولا صاف ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:501
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:506
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:468
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:471
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:479
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "بند ڪريو"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:109
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx:113
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:263
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:267
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:117
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:266
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:270
 msgid "Close dialog"
 msgstr "ڊائلاگ بند ڪريو"
 
@@ -755,16 +754,16 @@ msgstr "سُيڪيڙيو"
 msgid "Collapse sidebar"
 msgstr "سائڊبار کي سُڪيڙيو"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:146
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:148
 msgid "Colour"
 msgstr "رنگ"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:539
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:544
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:540
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:545
 msgid "Column actions"
 msgstr "ڪالم جا عمل"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:347
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:350
 msgid "Columns group by"
 msgstr "ڪالم جي گروپنگ"
 
@@ -786,11 +785,11 @@ msgstr "تبصرو"
 msgid "Comment actions"
 msgstr "تبصري جا عمل"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:431
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:442
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:454
 #: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/index.tsx:454
-#: src/routes/_authenticated/index.tsx:723
+#: src/routes/_authenticated/index.tsx:722
 msgid "Comments"
 msgstr "تبصرا"
 
@@ -802,16 +801,16 @@ msgstr "گهٽ"
 msgid "Compare changes"
 msgstr "تبديليون ڀيٽيو"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:94
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:95
 msgid "Configure option settings"
 msgstr "اختيار جون سيٽنگون ترتيب ڏيو"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:259
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:262
 msgid "Configure view settings"
 msgstr "نظاري جون سيٽنگون ترتيب ڏيو"
 
-#: ../../../lib/web/src/components/place-picker.tsx:160
-#: ../../../lib/web/src/components/travelling-picker.tsx:316
+#: ../../../lib/web/src/components/place-picker.tsx:146
+#: ../../../lib/web/src/components/travelling-picker.tsx:296
 msgid "Confirm"
 msgstr "تصديق ڪريو"
 
@@ -831,7 +830,7 @@ msgstr "مواد"
 msgid "Content not found."
 msgstr "مواد نه مليو."
 
-#: ../../../lib/web/src/lib/query-client.ts:78
+#: ../../../lib/web/src/lib/query-client.ts:73
 msgid "Content not modified"
 msgstr "مواد تبديل نه ٿيو"
 
@@ -843,7 +842,7 @@ msgstr "حوالي جي معلومات ۽ تفصيل."
 msgid "Continue"
 msgstr "جاري رکو"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:355
+#: ../../../lib/web/src/components/step-up-dialog.tsx:343
 msgid "Continue with {label}"
 msgstr "{label} سان جاري رکو"
 
@@ -874,36 +873,35 @@ msgstr "ڀيٽ لاءِ اڳوڻو نسخو لوڊ نه ٿي سگهيو."
 msgid "Could not load this document. Please try again later."
 msgstr "هي دستاويز لوڊ نه ٿي سگهيو. مهرباني ڪري بعد ۾ ٻيهر ڪوشش ڪريو."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:128
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:124
 msgid "Couldn't load notifications"
 msgstr "اطلاعون لوڊ نه ٿي سگهيا"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:182
+#: ../../../lib/web/src/components/step-up-dialog.tsx:170
 msgid "Couldn't send the code. Please try again."
 msgstr "ڪوڊ موڪلي نه سگهيو. مهرباني ڪري ٻيهر ڪوشش ڪريو."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:136
+#: ../../../lib/web/src/components/step-up-dialog.tsx:124
 msgid "Couldn't start re-authentication. Please try again."
 msgstr "ٻيهر تصديق شروع نه ٿي سگهي. مهرباني ڪري ٻيهر ڪوشش ڪريو."
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:224
+#: ../../../lib/web/src/components/step-up-dialog.tsx:212
 msgid "Couldn't verify with that account. Please try again."
 msgstr "ان اڪائونٽ سان تصديق نه ٿي سگهي. مهرباني ڪري ٻيهر ڪوشش ڪريو."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:550
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:689
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:491
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:675
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:551
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:691
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:513
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
 msgid "Create"
 msgstr "ٺاهيو"
 
-#. placeholder {0}: entityLabel.toLowerCase()
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:144
-msgid "Create {0}"
-msgstr "{0} ٺاھيو"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:146
+msgid "Create {entityLabel}"
+msgstr "{entityLabel} ٺاهيو"
 
-#: src/features/wiki/wiki-settings.tsx:1035
+#: src/features/wiki/wiki-settings.tsx:1033
 msgid "Create a redirect from one URL to another."
 msgstr "هڪ URL کان ٻئي ڏانهن ريڊائريڪٽ ٺاهيو."
 
@@ -912,7 +910,7 @@ msgid "Create a redirect from one URL to another. The source URL must not be an 
 msgstr "هڪ URL کان ٻئي ڏانهن ريڊائريڪٽ ٺاهيو. ذريعو URL هڪ موجود صفحو نه هجڻ گهرجي."
 
 #: src/features/wiki/redirects-page.tsx:85
-#: src/features/wiki/wiki-settings.tsx:895
+#: src/features/wiki/wiki-settings.tsx:893
 msgid "Create a redirect to forward one URL to another."
 msgstr "هڪ URL کي ٻئي ڏانهن اڳتي پھچائڻ لاءِ ريڊائريڪٽ ٺاهيو."
 
@@ -926,8 +924,8 @@ msgstr "صفحو ٺاهيو"
 
 #: src/features/wiki/redirects-page.tsx:231
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1033
-#: src/features/wiki/wiki-settings.tsx:1069
+#: src/features/wiki/wiki-settings.tsx:1031
+#: src/features/wiki/wiki-settings.tsx:1067
 msgid "Create redirect"
 msgstr "ريڊائريڪٽ ٺاهيو"
 
@@ -943,20 +941,25 @@ msgid "Create this page"
 msgstr "هي صفحو ٺاهيو"
 
 #: src/components/layout/wiki-layout.tsx:132
-#: src/components/layout/wiki-layout.tsx:152
-#: src/routes/_authenticated/index.tsx:770
+#: src/components/layout/wiki-layout.tsx:151
+#: src/routes/_authenticated/index.tsx:769
 msgid "Create wiki"
 msgstr "wiki ٺاهيو"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:54
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:56
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:492
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:495
 #: src/features/wiki/redirects-page.tsx:95
-#: src/features/wiki/wiki-settings.tsx:905
+#: src/features/wiki/wiki-settings.tsx:903
 msgid "Created"
 msgstr "ٺاهيو ويو"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:54
+msgid "Created {field}"
+msgstr "{field} ٺاهيو ويو"
+
 #: src/features/wiki/redirects-page.tsx:207
-#: src/features/wiki/wiki-settings.tsx:1006
+#: src/features/wiki/wiki-settings.tsx:1004
 msgid "Creating redirect..."
 msgstr "ريڊائريڪٽ ٺاهيو پيو وڃي..."
 
@@ -964,11 +967,11 @@ msgstr "ريڊائريڪٽ ٺاهيو پيو وڃي..."
 msgid "Creating wiki..."
 msgstr "وڪي ٺاهيو پيو وڃي..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:656
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:258
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:260
 #: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
-#: src/features/wiki/wiki-settings.tsx:1069
+#: src/features/wiki/wiki-settings.tsx:1067
 msgid "Creating..."
 msgstr "ٺاهي رهيو آهي..."
 
@@ -976,7 +979,7 @@ msgstr "ٺاهي رهيو آهي..."
 msgid "Current"
 msgstr "موجوده"
 
-#: ../../../lib/web/src/components/map-view.tsx:217
+#: ../../../lib/web/src/components/map-view.tsx:249
 msgid "Current location"
 msgstr "موجوده جڳھ"
 
@@ -993,7 +996,7 @@ msgstr "اونداهو"
 msgid "Data conflict"
 msgstr "ڊيٽا جو ٽڪراءُ"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:139
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:14
 #: src/features/wiki/attachments-page.tsx:404
 #: src/features/wiki/changes-list.tsx:48
 #: src/features/wiki/page-history.tsx:58
@@ -1012,19 +1015,19 @@ msgstr "ڊفالٽ"
 msgid "Default AI account"
 msgstr "ڊفالٽ AI اڪائونٽ"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:479
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:482
 msgid "Default sort"
 msgstr "ڊفالٽ ترتيب"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:569
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:570
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:632
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:280
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:323
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:353
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:198
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:203
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:252
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:314
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:208
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:255
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:317
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:648
@@ -1032,7 +1035,7 @@ msgstr "ڊفالٽ ترتيب"
 #: src/features/wiki/wiki-comment-thread.tsx:255
 #: src/features/wiki/wiki-comment-thread.tsx:282
 #: src/features/wiki/wiki-page-content.tsx:316
-#: src/features/wiki/wiki-settings.tsx:958
+#: src/features/wiki/wiki-settings.tsx:956
 msgid "Delete"
 msgstr "ختم ڪريو"
 
@@ -1042,7 +1045,7 @@ msgstr "ختم ڪريو"
 msgid "Delete \"{0}\"? This cannot be undone."
 msgstr "\"{0}\" ختم ڪجي؟ هي واپس نه ٿو ٿي سگهي."
 
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:312
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:315
 #: src/features/wiki/attachments-page.tsx:530
 #: src/features/wiki/attachments-page.tsx:641
 #: src/features/wiki/attachments-page.tsx:650
@@ -1054,7 +1057,7 @@ msgstr "\"{0}\" ختم ڪجي؟ هي واپس نه ٿو ٿي سگهي."
 msgid "Delete attachment"
 msgstr "ڳنڍيل فائل ختم ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:628
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:630
 msgid "Delete column"
 msgstr "ڪالم ختم ڪريو"
 
@@ -1063,17 +1066,17 @@ msgstr "ڪالم ختم ڪريو"
 msgid "Delete comment"
 msgstr "تبصرو ختم ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:300
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:304
 msgid "Delete field"
 msgstr "فيلڊ ختم ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:116
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:117
 msgid "Delete option"
 msgstr "اختيار ختم ڪريو"
 
 #. placeholder {0}: opt.name
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:278
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:283
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:282
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:287
 msgid "Delete option {0}"
 msgstr "اختيار {0} ختم ڪريو"
 
@@ -1086,27 +1089,27 @@ msgstr "صفحو ختم ڪريو"
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:153
 #: src/features/wiki/redirects-page.tsx:159
-#: src/features/wiki/wiki-settings.tsx:934
-#: src/features/wiki/wiki-settings.tsx:940
+#: src/features/wiki/wiki-settings.tsx:932
+#: src/features/wiki/wiki-settings.tsx:938
 msgid "Delete redirect {0}"
 msgstr "ريڊائريڪٽ {0} ختم ڪريو"
 
 #: src/features/wiki/redirects-page.tsx:163
-#: src/features/wiki/wiki-settings.tsx:944
+#: src/features/wiki/wiki-settings.tsx:942
 msgid "Delete redirect?"
 msgstr "ريڊائريڪٽ ختم ڪجي؟"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:284
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:287
 msgid "Delete view"
 msgstr "نظارو ختم ڪريو"
 
-#: src/features/wiki/wiki-settings.tsx:464
-#: src/features/wiki/wiki-settings.tsx:475
-#: src/features/wiki/wiki-settings.tsx:483
+#: src/features/wiki/wiki-settings.tsx:462
+#: src/features/wiki/wiki-settings.tsx:473
+#: src/features/wiki/wiki-settings.tsx:481
 msgid "Delete wiki"
 msgstr "wiki ختم ڪريو"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:109
+#: ../../../lib/web/src/components/restore-banner.tsx:95
 msgid "Delete your account on the old server"
 msgstr "پراڻي سرور تي پنهنجو اڪائونٽ ختم ڪريو"
 
@@ -1123,17 +1126,25 @@ msgstr "پراڻي سرور تي پنهنجو اڪائونٽ ختم ڪريو"
 msgid "Delete: {pageTitle}"
 msgstr "ختم ڪريو: {pageTitle}"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:58
+msgid "Deleted"
+msgstr "ختم ڪيو ويو"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:58
+msgid "Deleted {field}"
+msgstr "{field} ختم ڪيو ويو"
+
 #: src/features/wiki/redirects-page.tsx:118
-#: src/features/wiki/wiki-settings.tsx:865
+#: src/features/wiki/wiki-settings.tsx:863
 msgid "Deleting redirect..."
 msgstr "ريڊائريڪٽ ڊاهيو پيو وڃي..."
 
-#: src/features/wiki/wiki-settings.tsx:347
+#: src/features/wiki/wiki-settings.tsx:345
 msgid "Deleting wiki..."
 msgstr "وڪي ڊاهيو پيو وڃي..."
 
 #: src/features/wiki/delete-page.tsx:86
-#: src/features/wiki/wiki-settings.tsx:475
+#: src/features/wiki/wiki-settings.tsx:473
 msgid "Deleting..."
 msgstr "ختم ڪري رهيو آهي..."
 
@@ -1141,7 +1152,7 @@ msgstr "ختم ڪري رهيو آهي..."
 msgid "Descending"
 msgstr "وڌيڪ کان گهٽ"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:83
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:85
 msgid "Description"
 msgstr "تفصيل"
 
@@ -1160,7 +1171,7 @@ msgstr "تفصيل پينل"
 msgid "Detect from web browser"
 msgstr "ويب براؤزر کان معلوم ڪريو"
 
-#: ../../../lib/web/src/components/person-picker.tsx:214
+#: ../../../lib/web/src/components/person-picker.tsx:190
 msgid "Directory"
 msgstr "ڊائريڪٽري"
 
@@ -1177,8 +1188,8 @@ msgstr "مسودو رد ڪجي؟"
 msgid "Disconnected"
 msgstr "ڳنڍيل ناهي"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:88
-#: ../../../lib/web/src/components/restore-banner.tsx:94
+#: ../../../lib/web/src/components/restore-banner.tsx:74
+#: ../../../lib/web/src/components/restore-banner.tsx:80
 msgid "Dismiss"
 msgstr "رد ڪريو"
 
@@ -1190,18 +1201,23 @@ msgstr "موبائل سائڊبار ڏيکاري ٿو."
 msgid "Documents"
 msgstr "دستاويز"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:305
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:518
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:111
+msgid "Does not match the required pattern"
+msgstr "گهربل نموني سان ميل نٿو کائي"
+
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:309
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:523
 msgid "Done"
 msgstr "مڪمل"
 
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:239
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:452
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:462
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:243
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:473
 msgid "Download"
 msgstr "ڊائون لوڊ"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:98
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:149
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:100
 msgid "Download failed"
 msgstr "ڊائون لوڊ ناڪام ٿيو"
 
@@ -1227,11 +1243,11 @@ msgstr "ڊسليڪسيا لاءِ مناسب"
 msgid "Edit"
 msgstr "ترميم"
 
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:154
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:158
 msgid "Edit {label}"
 msgstr "{label} ايڊٽ ڪريو"
 
-#: src/features/wiki/wiki-settings.tsx:499
+#: src/features/wiki/wiki-settings.tsx:497
 msgid "Edit and view"
 msgstr "ترميم ۽ ڏسو"
 
@@ -1243,21 +1259,21 @@ msgstr "ترميم ۽ ڏسو"
 msgid "Edit caption"
 msgstr "ڪيپشن ۾ ترميم ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:137
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:140
 msgid "Edit field"
 msgstr "فيلڊ ۾ ترميم ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:138
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:141
 msgid "Edit field settings"
 msgstr "فيلڊ سيٽنگن ۾ ترميم ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:91
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:92
 msgid "Edit option"
 msgstr "آپشن ۾ ترميم ڪريو"
 
 #. placeholder {0}: opt.name
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:263
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:268
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:267
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:272
 msgid "Edit option {0}"
 msgstr "آپشن {0} ۾ ترميم ڪريو"
 
@@ -1269,7 +1285,7 @@ msgstr "چونڊيل ڪارڊ ۾ ترميم ڪريو"
 msgid "Edit summary (optional)"
 msgstr "خلاصي ۾ ترميم ڪريو (اختياري)"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:258
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:261
 msgid "Edit view"
 msgstr "ڏيک ۾ ترميم ڪريو"
 
@@ -1290,7 +1306,7 @@ msgstr "ترميم: {pageTitle}"
 msgid "Email"
 msgstr "اي ميل"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:292
+#: ../../../lib/web/src/components/step-up-dialog.tsx:280
 msgid "Email code"
 msgstr "اي ميل ڪوڊ"
 
@@ -1306,15 +1322,15 @@ msgstr "ڳولا جي اصطلاح داخل ڪريو"
 msgid "Enter tag name"
 msgstr "ٽيگ نالو داخل ڪريو"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:302
+#: ../../../lib/web/src/components/step-up-dialog.tsx:290
 msgid "Enter the code from your email"
 msgstr "پنھنجي اِيميل مان ڪوڊ داخل ڪريو"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:327
+#: ../../../lib/web/src/components/step-up-dialog.tsx:315
 msgid "Enter your authenticator code"
 msgstr "پنهنجو تصديق ڪندڙ ڪوڊ داخل ڪريو"
 
-#: src/features/wiki/wiki-settings.tsx:398
+#: src/features/wiki/wiki-settings.tsx:396
 msgid "Entity ID"
 msgstr "اينٽٽي ID"
 
@@ -1322,7 +1338,7 @@ msgstr "اينٽٽي ID"
 msgid "Error: Received invalid response from server."
 msgstr "خرابي: سرور کان غلط جواب مليو."
 
-#: src/features/wiki/wiki-settings.tsx:446
+#: src/features/wiki/wiki-settings.tsx:444
 msgid "Example: \"home\", \"welcome\", \"index\""
 msgstr "مثال: \"home\"، \"welcome\"، \"index\""
 
@@ -1345,6 +1361,10 @@ msgstr "خارجي URL"
 msgid "Extra large"
 msgstr "تمام وڏو"
 
+#: ../../../lib/web/src/hooks/use-accounts.ts:213
+msgid "Failed to add account"
+msgstr "اڪائونٽ شامل ڪرڻ ۾ ناڪام"
+
 #: src/features/wiki/tag-manager.tsx:60
 msgid "Failed to add tag"
 msgstr "ٽيگ شامل ڪرڻ ۾ ناڪام"
@@ -1366,7 +1386,7 @@ msgid "Failed to create page"
 msgstr "صفحو ٺاهڻ ۾ ناڪام"
 
 #: src/features/wiki/redirects-page.tsx:209
-#: src/features/wiki/wiki-settings.tsx:1008
+#: src/features/wiki/wiki-settings.tsx:1006
 msgid "Failed to create redirect"
 msgstr "ريڊائريڪٽ ٺاهڻ ۾ ناڪام"
 
@@ -1380,7 +1400,7 @@ msgstr "وڪي ٺاهڻ ۾ ناڪام"
 msgid "Failed to delete attachment"
 msgstr "ضميمو ختم ڪرڻ ۾ ناڪام"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:191
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:192
 msgid "Failed to delete comment"
 msgstr "تبصرو ختم ڪرڻ ۾ ناڪام"
 
@@ -1393,11 +1413,11 @@ msgid "Failed to delete page"
 msgstr "صفحو ختم ڪرڻ ۾ ناڪام"
 
 #: src/features/wiki/redirects-page.tsx:120
-#: src/features/wiki/wiki-settings.tsx:867
+#: src/features/wiki/wiki-settings.tsx:865
 msgid "Failed to delete redirect"
 msgstr "ريڊائريڪٽ ختم ڪرڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:349
+#: src/features/wiki/wiki-settings.tsx:347
 msgid "Failed to delete wiki"
 msgstr "وڪي ختم ڪرڻ ۾ ناڪام"
 
@@ -1416,7 +1436,7 @@ msgstr "وڪي ۾ شامل ٿيڻ ۾ ناڪام"
 msgid "Failed to load"
 msgstr "لوڊ ڪرڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:535
+#: src/features/wiki/wiki-settings.tsx:533
 msgid "Failed to load access rules"
 msgstr "رسائي جا قاعدا لوڊ ڪرڻ ۾ ناڪام"
 
@@ -1424,7 +1444,7 @@ msgstr "رسائي جا قاعدا لوڊ ڪرڻ ۾ ناڪام"
 msgid "Failed to load history"
 msgstr "تاريخ لوڊ ڪرڻ ۾ ناڪام"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:338
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
 msgid "Failed to load image"
 msgstr "تصوير لوڊ ٿي نه سگهيو"
 
@@ -1432,15 +1452,15 @@ msgstr "تصوير لوڊ ٿي نه سگهيو"
 msgid "Failed to load prompts"
 msgstr "پرامپٽ لوڊ ڪرڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:849
+#: src/features/wiki/wiki-settings.tsx:847
 msgid "Failed to load redirects"
 msgstr "ريڊائريڪٽَ لوڊ ڪرڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:658
+#: src/features/wiki/wiki-settings.tsx:656
 msgid "Failed to load replicas"
 msgstr "ريپليڪا لوڊ ڪرڻ ۾ ناڪام"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:338
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
 msgid "Failed to load video"
 msgstr "وڊيو لوڊ ٿي نه سگهيو"
 
@@ -1453,15 +1473,15 @@ msgstr "وڪي معلومات لوڊ ڪرڻ ۾ ناڪام"
 msgid "Failed to load wikis"
 msgstr "وڪيز لوڊ ڪرڻ ۾ ناڪام"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:154
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:155
 msgid "Failed to post comment"
 msgstr "تبصرو پوسٽ ڪرڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:580
+#: src/features/wiki/wiki-settings.tsx:578
 msgid "Failed to remove access"
 msgstr "رسائي هٽائڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:677
+#: src/features/wiki/wiki-settings.tsx:675
 msgid "Failed to remove replica"
 msgstr "ريپليڪا هٽائڻ ۾ ناڪام"
 
@@ -1473,7 +1493,7 @@ msgstr "ٽيگ هٽائڻ ۾ ناڪام"
 msgid "Failed to rename page"
 msgstr "صفحي جو نالو تبديل ڪرڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:282
+#: src/features/wiki/wiki-settings.tsx:280
 msgid "Failed to rename wiki"
 msgstr "وڪي جو نالو تبديل ڪرڻ ۾ ناڪام"
 
@@ -1503,7 +1523,7 @@ msgstr "صفحو محفوظ ڪرڻ ۾ ناڪام"
 msgid "Failed to save prompt"
 msgstr "پرامپٽ محفوظ ڪرڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:306
+#: src/features/wiki/wiki-settings.tsx:304
 msgid "Failed to save settings"
 msgstr "سيٽنگون محفوظ ڪرڻ ۾ ناڪام"
 
@@ -1512,7 +1532,7 @@ msgstr "سيٽنگون محفوظ ڪرڻ ۾ ناڪام"
 msgid "Failed to search wikis"
 msgstr "وڪيز ڳولڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:551
+#: src/features/wiki/wiki-settings.tsx:549
 msgid "Failed to set access level"
 msgstr "رسائي جي سطح مقرر ڪرڻ ۾ ناڪام"
 
@@ -1522,22 +1542,22 @@ msgstr "رسائي جي سطح مقرر ڪرڻ ۾ ناڪام"
 msgid "Failed to subscribe"
 msgstr "سبسڪرائيب ڪرڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:328
+#: src/features/wiki/wiki-settings.tsx:326
 msgid "Failed to sync wiki"
 msgstr "وڪي سِنڪ ڪرڻ ۾ ناڪام"
 
 #: src/features/wiki/wiki-page-content.tsx:81
 #: src/routes/_authenticated/$page/index.tsx:77
 #: src/routes/_authenticated/index.tsx:288
-#: src/routes/_authenticated/index.tsx:934
+#: src/routes/_authenticated/index.tsx:933
 msgid "Failed to unsubscribe"
 msgstr "ان سبسڪرائيب ڪرڻ ۾ ناڪام"
 
-#: src/features/wiki/wiki-settings.tsx:564
+#: src/features/wiki/wiki-settings.tsx:562
 msgid "Failed to update access level"
 msgstr "رسائي جي سطح اپڊيٽ ڪرڻ ۾ ناڪام"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:174
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:175
 msgid "Failed to update comment"
 msgstr "تبصرو اپڊيٽ ڪرڻ ۾ ناڪام"
 
@@ -1550,9 +1570,9 @@ msgstr "ضميمو اپ لوڊ ڪرڻ ۾ ناڪام"
 msgid "Failed to upload files"
 msgstr "فائلون اپ لوڊ ڪرڻ ۾ ناڪام"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:589
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:155
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:175
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:611
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:160
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:180
 msgid "Files"
 msgstr "فائلون"
 
@@ -1565,15 +1585,15 @@ msgstr "فلٽر"
 msgid "Find wikis"
 msgstr "وڪيز ڳوليو"
 
-#: src/features/wiki/wiki-settings.tsx:402
+#: src/features/wiki/wiki-settings.tsx:400
 msgid "Fingerprint"
 msgstr "فنگر پرنٽ"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:97
+#: ../../../lib/web/src/components/restore-banner.tsx:83
 msgid "Finish moving your account"
 msgstr "پنهنجو اڪائونٽ منتقل ڪرڻ پورو ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:221
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:225
 msgid "Flags"
 msgstr "نشان"
 
@@ -1590,11 +1610,11 @@ msgstr "\"{debouncedQuery}\" لاءِ {0} مليا"
 msgid "Friday"
 msgstr "جمعو"
 
-#: ../../../lib/web/src/components/person-picker.tsx:207
+#: ../../../lib/web/src/components/person-picker.tsx:183
 msgid "Friends"
 msgstr "دوست"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:153
+#: ../../../lib/web/src/components/travelling-picker.tsx:134
 msgid "From"
 msgstr "کان"
 
@@ -1606,8 +1626,8 @@ msgstr "کان"
 msgid "From theme"
 msgstr "ٿيم کان"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:25
 #: ../../../lib/web/src/features/errors/not-found-error.tsx:26
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:26
 msgid "Go back"
 msgstr "واپس"
 
@@ -1620,7 +1640,7 @@ msgstr "گرڊ ڏيک"
 msgid "Group"
 msgstr "گروپ"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:347
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:350
 msgid "Group by"
 msgstr "گروپ بندي ڪريو"
 
@@ -1647,19 +1667,19 @@ msgstr "تاريخ"
 msgid "History: {pageTitle}"
 msgstr "تاريخ: {pageTitle}"
 
-#: src/features/wiki/wiki-settings.tsx:443
+#: src/features/wiki/wiki-settings.tsx:441
 msgid "home"
 msgstr "گھر"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx:90
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:185
-#: ../../../lib/web/src/components/layout/top-bar.tsx:71
-#: ../../../lib/web/src/components/layout/top-bar.tsx:100
+#: ../../../lib/web/src/components/layout/top-bar.tsx:86
+#: ../../../lib/web/src/components/layout/top-bar.tsx:115
 #: src/routes/_authenticated/index.tsx:260
 msgid "Home"
 msgstr "گهر"
 
-#: src/features/wiki/wiki-settings.tsx:431
+#: src/features/wiki/wiki-settings.tsx:429
 msgid "Home page"
 msgstr "گهر جو صفحو"
 
@@ -1667,12 +1687,12 @@ msgstr "گهر جو صفحو"
 msgid "Hot"
 msgstr "گرم"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:152
-#: src/features/wiki/wiki-settings.tsx:743
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:156
+#: src/features/wiki/wiki-settings.tsx:741
 msgid "ID"
 msgstr "سڃاڻپ"
 
-#: src/features/wiki/wiki-settings.tsx:389
+#: src/features/wiki/wiki-settings.tsx:387
 msgid "Identity"
 msgstr "سڃاڻپ"
 
@@ -1681,7 +1701,7 @@ msgid "Image"
 msgstr "تصوير"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:316
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
 msgid "Image viewer: {0}"
 msgstr "تصوير ڏسڻ وارو: {0}"
 
@@ -1717,11 +1737,15 @@ msgstr "داخل ڪريو"
 msgid "Insert attachment"
 msgstr "ضميمو داخل ڪريو"
 
+#: ../../../lib/web/src/components/post-tags.tsx:168
+msgid "Interest {weight}"
+msgstr "دلچسپي {weight}"
+
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:42
 msgid "Interests"
 msgstr "دلچسپيون"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:550
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:591
 msgid "Invalid date"
 msgstr "غلط تاريخ"
 
@@ -1755,17 +1779,17 @@ msgstr "وڏو"
 msgid "Large uploads may be limited by your server or proxy configuration."
 msgstr "وڏين فائلن جو اپلوڊ توهان جي سرور يا پراڪسي ترتيب جي ڪري محدود ٿي سگهي ٿو."
 
-#: src/features/wiki/wiki-settings.tsx:745
+#: src/features/wiki/wiki-settings.tsx:743
 msgid "Last synced"
 msgstr "آخري ڀيرو سِنڪ ٿيو"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:306
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:309
 msgid "Layout"
 msgstr "ليئوٽ"
 
-#: ../../../lib/web/src/components/post-tags.tsx:72
-msgid "Letters, numbers, spaces, and hyphens only"
-msgstr "صرف اکر، انگ، خالي جاءِ ۽ ڊيش"
+#: ../../../lib/web/src/components/post-tags.tsx:73
+msgid "Letters, numbers, spaces, hyphens, and slashes only"
+msgstr "رڳو اکر، انگ، خالي جايون، ڊيش ۽ ترڇيون ليڪون"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:14
 msgid "Light"
@@ -1787,7 +1811,7 @@ msgstr "{headingText} ڏانهن لنڪ"
 msgid "Links"
 msgstr "لنڪس"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:318
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:321
 msgid "List"
 msgstr "لسٽ"
 
@@ -1796,7 +1820,7 @@ msgstr "لسٽ"
 msgid "List view"
 msgstr "لسٽ ڏيک"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:35
+#: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: src/features/wiki/changes-list.tsx:105
 #: src/features/wiki/page-history.tsx:161
 msgid "Load more"
@@ -1806,7 +1830,7 @@ msgstr "وڌيڪ لوڊ ڪريو"
 msgid "Loading content…"
 msgstr "مواد لوڊ ٿي رهيو آهي…"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:35
+#: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: ../../../lib/web/src/features/document/document-page.tsx:88
 msgid "Loading..."
 msgstr "لوڊ ٿي رهيو آهي..."
@@ -1836,12 +1860,12 @@ msgstr "زمرن جو انتظام ڪريو"
 msgid "Manual"
 msgstr "دستي"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:207
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:214
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:203
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:210
 msgid "Mark all as read"
 msgstr "سڀ پڙهيل طور نشانبر ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:198
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:202
 msgid "Maximum length"
 msgstr "وڌ ۾ وڌ ڊگھائي"
 
@@ -1852,6 +1876,10 @@ msgstr "MCP سرور"
 #: ../../../lib/web/src/lib/preference-utils.ts:102
 msgid "Medium"
 msgstr "وچولو"
+
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:377
+msgid "Members"
+msgstr "ميمبر"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:200
 msgid "Menu"
@@ -1865,7 +1893,7 @@ msgstr "پيغام"
 msgid "Metric"
 msgstr "ميٽرڪ"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:187
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:191
 msgid "Minimum length"
 msgstr "گھٽ ۾ گھٽ ڊگھائي"
 
@@ -1886,46 +1914,58 @@ msgstr "سومر"
 msgid "More options"
 msgstr "وڌيڪ اختيار"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:60
+msgid "Moved"
+msgstr "منتقل ٿيو"
+
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:60
+msgid "Moved {field}"
+msgstr "{field} منتقل ٿيو"
+
 #: src/features/wiki/page-editor.tsx:446
 msgid "my-page-name"
 msgstr "my-page-name"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:118
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:600
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:142
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:125
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:293
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:122
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:601
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:145
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:126
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:296
 #: src/features/wiki/attachments-page.tsx:405
-#: src/features/wiki/wiki-settings.tsx:392
+#: src/features/wiki/wiki-settings.tsx:390
 msgid "Name"
 msgstr "نالو"
 
-#: src/features/wiki/wiki-settings.tsx:271
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:104
+msgid "Name cannot contain < or > characters"
+msgstr "نالي ۾ < يا > اکر شامل نه ٿي سگھن ٿا"
+
+#: src/features/wiki/wiki-settings.tsx:269
 msgid "Name cannot contain < or > characters, or line breaks"
 msgstr "نالو ۾ < يا > اکر، يا لائين ٽوڙ نه ٿي سگهن ٿا"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
-msgid "Name cannot contain angle brackets, backslash, semicolon, quotes or backticks"
-msgstr "نالي ۾ ڪنڊائتا ڏنگا، بيڪ سليش، سيمي ڪالن، اقتباسي نشان يا بيڪ ٽڪ نه ٿا ٿي سگهن"
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:101
+msgid "Name is required"
+msgstr "نالو گهربل آهي"
 
-#: src/features/wiki/wiki-settings.tsx:270
+#: src/features/wiki/wiki-settings.tsx:268
 msgid "Name must be 100 characters or less"
 msgstr "نالو 100 اکرن يا گهٽ هجڻ گهرجي"
 
-#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:100
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:102
 msgid "Name must be 1000 characters or less"
 msgstr "نالو 1000 اکرن يا گهٽ هجڻ گهرجي"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:53
+#: ../../../lib/web/src/features/errors/general-error.tsx:51
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:313
 msgid "Network error"
 msgstr "نيٽ ورڪ جي خرابي"
 
-#: src/features/wiki/wiki-settings.tsx:759
+#: src/features/wiki/wiki-settings.tsx:757
 msgid "Never"
 msgstr "ڪڏهن به نه"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:476
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:498
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "نئون"
@@ -1965,20 +2005,20 @@ msgid "New URL must be different from current URL"
 msgstr "نئون URL موجوده URL کان مختلف هجڻ گهرجي"
 
 #: src/features/wiki/redirects-page.tsx:258
-#: src/features/wiki/wiki-settings.tsx:1057
+#: src/features/wiki/wiki-settings.tsx:1055
 msgid "new-page-name"
 msgstr "new-page-name"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:530
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:536
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:541
 msgid "Next image"
 msgstr "اڳيون تصوير"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:555
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:577
 msgid "No {parentClassNames} to add to"
 msgstr "شامل ڪرڻ لاءِ ڪي {parentClassNames} نه آهن"
 
-#: src/features/wiki/wiki-settings.tsx:501
+#: src/features/wiki/wiki-settings.tsx:499
 msgid "No access"
 msgstr "ڪو رسائي نه"
 
@@ -1986,7 +2026,7 @@ msgstr "ڪو رسائي نه"
 msgid "No access rules configured. Add rules to control who can access this resource."
 msgstr "ڪي به رسائي قاعدا ترتيب نه ڏنا ويا. هن وسيلي تائين رسائي ڪنٽرول ڪرڻ لاءِ قاعدا شامل ڪريو."
 
-#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:65
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:74
 msgid "No activity yet"
 msgstr "اڃا ڪا سرگرمي نه آهي"
 
@@ -2003,7 +2043,7 @@ msgstr "اڃا ڪو منسلڪ نه آهي"
 msgid "No changes yet"
 msgstr "اڃا ڪا تبديلي نه آهي"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:322
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:324
 #: src/features/wiki/page-comments.tsx:152
 msgid "No comments yet"
 msgstr "اڃا ڪو تبصرو نه آهي"
@@ -2016,7 +2056,7 @@ msgstr "اڃا ڪا گيم نه آهي"
 msgid "No groups available"
 msgstr "ڪو گروپ دستياب ناهي"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "اڃا ڪي شيون قسم ٺاهي نٿا سگهجن. پهريائين گهربل والدين شيون ٺاهيو."
 
@@ -2032,31 +2072,31 @@ msgstr "\"{debouncedQuery}\" لاءِ ڪو صفحو نه مليو"
 msgid "No pages found with this tag"
 msgstr "هن ٽيگ سان ڪو صفحو نه مليو"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:341
-#: ../../../lib/web/src/components/person-picker.tsx:84
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:382
+#: ../../../lib/web/src/components/person-picker.tsx:71
 msgid "No people found"
 msgstr "ڪو ماڻهو نه مليو"
 
-#: ../../../lib/web/src/components/place-picker.tsx:133
+#: ../../../lib/web/src/components/place-picker.tsx:120
 msgid "No places found"
 msgstr "ڪا جاءِ نه ملي"
 
 #: src/features/wiki/redirects-page.tsx:84
-#: src/features/wiki/wiki-settings.tsx:894
+#: src/features/wiki/wiki-settings.tsx:892
 msgid "No redirects configured"
 msgstr "ڪي redirects ترتيب نه ڏنا ويا"
 
-#: src/features/wiki/wiki-settings.tsx:724
-#: src/features/wiki/wiki-settings.tsx:808
+#: src/features/wiki/wiki-settings.tsx:722
+#: src/features/wiki/wiki-settings.tsx:806
 msgid "No replicas yet"
 msgstr "اڃا ڪي replicas نه آهن"
 
-#: ../../../lib/web/src/components/inline-entity-search.tsx:64
+#: ../../../lib/web/src/components/inline-entity-search.tsx:65
 #: ../../../lib/web/src/components/search-entity-page.tsx:73
 msgid "No results found"
 msgstr "ڪو نتيجو نه مليو"
 
-#: ../../../lib/web/src/components/command-menu.tsx:55
+#: ../../../lib/web/src/components/command-menu.tsx:57
 msgid "No results found."
 msgstr "ڪو نتيجو نه مليو."
 
@@ -2066,7 +2106,7 @@ msgstr "ڪي ترميمون نه مليون"
 
 #: ../../../lib/web/src/components/entity/entity-board-container.tsx:824
 #: ../../../lib/web/src/components/entity/entity-board-container.tsx:869
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:339
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:336
 msgid "No status"
 msgstr "ڪا حالت نه آهي"
 
@@ -2086,7 +2126,7 @@ msgstr "ڪو ٽائيم زون نه مليو."
 msgid "No topic record yet — try again after the next notification."
 msgstr "اڃا ڪو ٽاپڪ رڪارڊ نه آهي — اڳيون اطلاع کان پوءِ ٻيهر ڪوشش ڪريو."
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:139
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:135
 msgid "No unread notifications"
 msgstr "ڪا اڻ پڙهيل اطلاع نه آهي"
 
@@ -2104,17 +2144,17 @@ msgid "No wikis found"
 msgstr "ڪي wikis نه مليون"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:541
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:545
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:382
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:560
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:563
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:412
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:415
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:488
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
-#: ../../../lib/web/src/components/person-picker.tsx:350
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/person-picker.tsx:326
 #: ../../../lib/web/src/lib/preference-utils.ts:100
 msgid "None"
 msgstr "ڪا به نه"
@@ -2124,31 +2164,31 @@ msgid "Normal"
 msgstr "عام"
 
 #: ../../../lib/web/src/components/attachment-image.tsx:50
-#: ../../../lib/web/src/features/errors/general-error.tsx:67
+#: ../../../lib/web/src/features/errors/general-error.tsx:65
 msgid "Not found"
 msgstr "نه مليو"
 
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:146
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:150
 msgid "Not set"
 msgstr "سيٽ نه ٿيل"
 
-#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:671
+#: ../../../lib/web/src/components/entity/entity-tree-view.tsx:668
 msgid "Nothing found"
 msgstr "ڪجهه نه مليو"
 
 #. placeholder {0}: unread.length
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:200
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:196
 msgid "Notifications: {0}"
 msgstr "اطلاعون: {0}"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:140
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:54
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:493
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:497
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:15
 msgid "Number"
 msgstr "نمبر"
 
 #: src/features/wiki/redirects-page.tsx:246
-#: src/features/wiki/wiki-settings.tsx:1045
+#: src/features/wiki/wiki-settings.tsx:1043
 msgid "old-page-name"
 msgstr "old-page-name"
 
@@ -2166,12 +2206,12 @@ msgid "Oops! Page Not Found!"
 msgstr "افسوس! صفحو نه مليو!"
 
 #. placeholder {0}: wiki.name
-#: src/routes/_authenticated/index.tsx:857
+#: src/routes/_authenticated/index.tsx:856
 msgid "Open {0}"
 msgstr "{0} کوليو"
 
-#: ../../../lib/web/src/components/layout/nav-group.tsx:199
-#: ../../../lib/web/src/components/layout/nav-group.tsx:204
+#: ../../../lib/web/src/components/layout/nav-group.tsx:227
+#: ../../../lib/web/src/components/layout/nav-group.tsx:232
 msgid "Open actions"
 msgstr "ڪارروايون کوليو"
 
@@ -2184,13 +2224,13 @@ msgstr "منسلڪ کوليو"
 msgid "Open menu"
 msgstr "مينيو کوليو"
 
-#: ../../../lib/web/src/components/layout/top-bar.tsx:63
-#: ../../../lib/web/src/components/layout/top-bar.tsx:68
+#: ../../../lib/web/src/components/layout/top-bar.tsx:78
+#: ../../../lib/web/src/components/layout/top-bar.tsx:83
 msgid "Open navigation"
 msgstr "نيويگيشن کوليو"
 
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:105
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:111
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:106
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:112
 msgid "Open option actions"
 msgstr "اختيار ڪارناما کوليو"
 
@@ -2198,8 +2238,8 @@ msgstr "اختيار ڪارناما کوليو"
 msgid "Open selected card"
 msgstr "چونڊيل ڪارڊ کوليو"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:274
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:279
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:277
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:282
 msgid "Open view actions"
 msgstr "ڏيک ڪارناما کوليو"
 
@@ -2208,13 +2248,13 @@ msgstr "ڏيک ڪارناما کوليو"
 msgid "Open view controls"
 msgstr "ڏيک ڪنٽرول کوليو"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:200
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:155
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:202
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:157
 msgid "Option name"
 msgstr "اختيار جو نالو"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:168
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:240
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:170
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:244
 msgid "Options"
 msgstr "اختيار"
 
@@ -2290,45 +2330,45 @@ msgstr "صفحي جو URL گهربل آهي"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "ٽيگ ٿيل صفحا <0>{tag}</0>"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:530
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:552
 msgid "Parent"
 msgstr "والدين"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:337
+#: ../../../lib/web/src/components/step-up-dialog.tsx:325
 msgid "Passkey"
 msgstr "Passkey"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:207
+#: ../../../lib/web/src/components/step-up-dialog.tsx:195
 msgid "Passkey verification failed. Please try again."
 msgstr "پاس ڪي جي تصديق ناڪام ٿي. مهرباني ڪري ٻيهر ڪوشش ڪريو."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:146
+#: ../../../lib/web/src/components/restore-banner.tsx:132
 msgid "Passkeys"
 msgstr "Passkeys"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:209
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:213
 msgid "Pattern (regex)"
 msgstr "نمونو (regex)"
 
-#: src/features/wiki/wiki-settings.tsx:466
+#: ../../../lib/web/src/components/person-picker.tsx:176
+msgid "People"
+msgstr "ماڻهو"
+
+#: src/features/wiki/wiki-settings.tsx:464
 msgid "Permanently delete this wiki and all its contents. This cannot be undone."
 msgstr "هن wiki ۽ ان جي سموري مواد کي مستقل طور تي حذف ڪريو. هي واپس نه ٿو ٿي سگهي."
 
 #: ../../../lib/web/src/components/comment-composer.tsx:89
-#: ../../../lib/web/src/features/errors/general-error.tsx:54
+#: ../../../lib/web/src/features/errors/general-error.tsx:52
 #: ../../../lib/web/src/lib/api-response-interceptors.ts:314
 msgid "Please check your internet connection and try again."
 msgstr "مهرباني ڪري پنهنجو انٽرنيٽ ڪنيڪشن چيڪ ڪريو ۽ ٻيهر ڪوشش ڪريو."
 
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:18
-msgid "Please log in with the appropriate credentials <0/> to access this resource."
-msgstr "مهرباني ڪري ھن وسيلي تائين رسائي لاءِ <0/> مناسب سندن سان لاگ ان ٿيو."
-
-#: ../../../lib/web/src/features/errors/general-error.tsx:83
+#: ../../../lib/web/src/features/errors/general-error.tsx:81
 msgid "Please try again."
 msgstr "مهرباني ڪري ٻيهر ڪوشش ڪريو."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:75
+#: ../../../lib/web/src/features/errors/general-error.tsx:73
 msgid "Please wait a moment and try again."
 msgstr "مهرباني ڪري ٿورو انتظار ڪريو ۽ ٻيهر ڪوشش ڪريو."
 
@@ -2344,8 +2384,8 @@ msgstr "پوسٽون ۽ تبصرا"
 msgid "Preview"
 msgstr "پيش نظر"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:509
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:514
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:520
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
 msgid "Previous image"
 msgstr "پوئيون تصوير"
 
@@ -2357,10 +2397,6 @@ msgstr "رازداري"
 #: ../../../lib/web/src/components/ui/upload-progress.tsx:50
 msgid "Processing…"
 msgstr "پروسيس ٿي رهيو آهي…"
-
-#: ../../../lib/web/src/components/person-picker.tsx:200
-msgid "Project members"
-msgstr "منصوبي جا ميمبر"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:108
 msgid "Prompt saved"
@@ -2379,11 +2415,11 @@ msgstr "مٿي ٿيل"
 msgid "Re-derive from title"
 msgstr "عنوان مان وري ٺاهيو"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:118
+#: ../../../lib/web/src/components/restore-banner.tsx:104
 msgid "Re-link your accounts on this server"
 msgstr "هن سرور تي پنهنجا اڪائونٽ ٻيهر ڳنڍيو"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:140
+#: ../../../lib/web/src/components/restore-banner.tsx:126
 msgid "Re-register your passkeys on this server"
 msgstr "هن سرور تي پنهنجون پاسي ڪيز ٻيهر رجسٽر ڪريو"
 
@@ -2413,7 +2449,7 @@ msgstr "هن wiki جي سمورن صفحن تي تازيون ترميمون."
 msgid "Recommended"
 msgstr "تجويز ڪيل"
 
-#: src/routes/_authenticated/index.tsx:780
+#: src/routes/_authenticated/index.tsx:779
 msgid "Recommended wikis"
 msgstr "تجويز ڪيل wikis"
 
@@ -2426,29 +2462,29 @@ msgstr "ٻيهر ڳنڍجي رهيو آهي ({retries})..."
 msgid "Redirect \"{0}\" deleted"
 msgstr "ريڊائريڪٽ \"{0}\" حذف ٿيو"
 
-#: src/features/wiki/wiki-settings.tsx:866
+#: src/features/wiki/wiki-settings.tsx:864
 msgid "Redirect \"{source}\" deleted"
 msgstr "ريڊائريڪٽ \"{source}\" حذف ٿيو"
 
 #: src/features/wiki/redirects-page.tsx:208
-#: src/features/wiki/wiki-settings.tsx:1007
+#: src/features/wiki/wiki-settings.tsx:1005
 msgid "Redirect created"
 msgstr "ريڊائريڪٽ ٺاهيو ويو"
 
-#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:136
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:135
 msgid "Redirecting to login."
 msgstr "لاگ ان ڏانهن ريڊائريڪٽ ٿي رهيو آهي."
 
 #: src/features/wiki/redirects-page.tsx:73
-#: src/features/wiki/wiki-settings.tsx:106
-#: src/features/wiki/wiki-settings.tsx:882
+#: src/features/wiki/wiki-settings.tsx:107
+#: src/features/wiki/wiki-settings.tsx:880
 #: src/routes/_authenticated/redirects.tsx:27
 #: src/routes/_authenticated/redirects.tsx:30
 msgid "Redirects"
 msgstr "ريڊائريڪٽ"
 
-#: ../../../lib/web/src/components/post-tags.tsx:200
-#: ../../../lib/web/src/components/post-tags.tsx:212
+#: ../../../lib/web/src/components/post-tags.tsx:214
+#: ../../../lib/web/src/components/post-tags.tsx:226
 msgid "Reduce interest"
 msgstr "دلچسپي گهٽايو"
 
@@ -2464,13 +2500,21 @@ msgstr "نسبتي (5m، 3h، 2d)"
 msgid "Relative within 24 hours, else absolute"
 msgstr "24 ڪلاڪن اندر نسبتي، ٻي صورت ۾ مطلق"
 
+#: ../../../lib/web/src/components/post-tags.tsx:166
+msgid "Relevance {relevance}"
+msgstr "لاڳاپو {relevance}"
+
+#: ../../../lib/web/src/components/post-tags.tsx:164
+msgid "Relevance {relevance}, interest {weight}"
+msgstr "لاڳاپو {relevance}، دلچسپي {weight}"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:285
 #: ../../../lib/web/src/components/attachment-composer.tsx:330
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:190
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:192
 #: ../../../lib/web/src/features/access/access-list.tsx:270
 #: src/features/wiki/tag-manager.tsx:117
 #: src/features/wiki/tag-manager.tsx:122
-#: src/features/wiki/wiki-settings.tsx:795
+#: src/features/wiki/wiki-settings.tsx:793
 msgid "Remove"
 msgstr "هٽايو"
 
@@ -2494,12 +2538,12 @@ msgstr "\"{0}\" لاءِ رسائي جو قاعدو هٽايو؟"
 msgid "Remove access?"
 msgstr "رسائي هٽائجي؟"
 
-#: ../../../lib/web/src/components/post-tags.tsx:220
-#: ../../../lib/web/src/components/post-tags.tsx:232
+#: ../../../lib/web/src/components/post-tags.tsx:234
+#: ../../../lib/web/src/components/post-tags.tsx:246
 msgid "Remove interest"
 msgstr "دلچسپي هٽايو"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:674
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:712
 msgid "Remove item"
 msgstr "شيءِ هٽايو"
 
@@ -2509,25 +2553,25 @@ msgid "Remove link"
 msgstr "لنڪ هٽايو"
 
 #. placeholder {0}: replica.name || replica.id
-#: src/features/wiki/wiki-settings.tsx:771
-#: src/features/wiki/wiki-settings.tsx:777
+#: src/features/wiki/wiki-settings.tsx:769
+#: src/features/wiki/wiki-settings.tsx:775
 msgid "Remove replica {0}"
 msgstr "replica {0} هٽايو"
 
-#: src/features/wiki/wiki-settings.tsx:781
+#: src/features/wiki/wiki-settings.tsx:779
 msgid "Remove replica?"
 msgstr "replica هٽائجي؟"
 
-#: src/features/wiki/wiki-settings.tsx:578
+#: src/features/wiki/wiki-settings.tsx:576
 msgid "Removing access..."
 msgstr "رسائي هٽائي پئي وڃي..."
 
-#: src/features/wiki/wiki-settings.tsx:675
+#: src/features/wiki/wiki-settings.tsx:673
 msgid "Removing replica..."
 msgstr "نقل هٽائي پئي وڃي..."
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:561
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:618
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:562
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:620
 #: src/features/wiki/rename-page-dialog.tsx:132
 #: src/features/wiki/rename-page-dialog.tsx:155
 #: src/features/wiki/wiki-page-content.tsx:297
@@ -2536,7 +2580,7 @@ msgstr "نقل هٽائي پئي وڃي..."
 msgid "Rename"
 msgstr "نالو تبديل ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:596
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
 msgid "Rename column"
 msgstr "ڪالم جو نالو تبديل ڪريو"
 
@@ -2544,7 +2588,7 @@ msgstr "ڪالم جو نالو تبديل ڪريو"
 msgid "Rename page"
 msgstr "صفحي جو نالو تبديل ڪريو"
 
-#: ../../../lib/web/src/components/entity/entity-board-column.tsx:597
+#: ../../../lib/web/src/components/entity/entity-board-column.tsx:598
 msgid "Rename this board column"
 msgstr "هن بورڊ ڪالم جو نالو تبديل ڪريو"
 
@@ -2558,15 +2602,15 @@ msgstr "نالو تبديل ٿي رهيو آهي..."
 msgid "Replace"
 msgstr "بدلايو"
 
-#: src/features/wiki/wiki-settings.tsx:676
+#: src/features/wiki/wiki-settings.tsx:674
 msgid "Replica \"{displayName}\" removed"
 msgstr "نقل \"{displayName}\" هٽائي ويئي"
 
-#: src/features/wiki/wiki-settings.tsx:108
-#: src/features/wiki/wiki-settings.tsx:692
-#: src/features/wiki/wiki-settings.tsx:705
-#: src/features/wiki/wiki-settings.tsx:719
-#: src/features/wiki/wiki-settings.tsx:736
+#: src/features/wiki/wiki-settings.tsx:109
+#: src/features/wiki/wiki-settings.tsx:690
+#: src/features/wiki/wiki-settings.tsx:703
+#: src/features/wiki/wiki-settings.tsx:717
+#: src/features/wiki/wiki-settings.tsx:734
 msgid "Replicas"
 msgstr "Replicas"
 
@@ -2598,11 +2642,11 @@ msgstr "{0} کي جواب ڏيو..."
 msgid "Request URL: {baseURL}{slug}"
 msgstr "درخواست URL: {baseURL}{slug}"
 
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:224
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:228
 msgid "Required"
 msgstr "گهربل"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:370
+#: ../../../lib/web/src/components/step-up-dialog.tsx:358
 msgid "Resend email"
 msgstr "اي ميل ٻيهر موڪليو"
 
@@ -2653,7 +2697,7 @@ msgstr "رد ڪريو"
 
 #: ../../../lib/web/src/components/options-menu.tsx:181
 #: src/routes/_authenticated/index.tsx:460
-#: src/routes/_authenticated/index.tsx:731
+#: src/routes/_authenticated/index.tsx:730
 msgid "Revoke access"
 msgstr "رسائي واپس وٺو"
 
@@ -2661,12 +2705,12 @@ msgstr "رسائي واپس وٺو"
 msgid "Revoke RSS access?"
 msgstr "RSS رسائي منسوخ ڪجي؟"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:150
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:168
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:152
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:172
 msgid "Rows"
 msgstr "قطارون"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:373
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:376
 msgid "Rows group by"
 msgstr "قطارن جو گروپ"
 
@@ -2679,7 +2723,7 @@ msgstr "RSS رسائي واپس ورتي وئي"
 #: ../../../lib/web/src/components/options-menu.tsx:171
 #: src/features/wiki/wiki-page-content.tsx:343
 #: src/routes/_authenticated/index.tsx:443
-#: src/routes/_authenticated/index.tsx:712
+#: src/routes/_authenticated/index.tsx:711
 msgid "RSS feed"
 msgstr "RSS feed"
 
@@ -2697,30 +2741,30 @@ msgstr "ڇنڇر"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: ../../../lib/web/src/components/attachment-composer.tsx:430
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
-#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:170
-#: ../../../lib/web/src/components/ui/editable-field-row.tsx:122
+#: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:172
+#: ../../../lib/web/src/components/ui/editable-field-row.tsx:126
 #: ../../../lib/web/src/components/ui/secret-field.tsx:79
 #: src/features/wiki/page-editor.tsx:408
 #: src/features/wiki/wiki-comment-thread.tsx:202
 msgid "Save"
 msgstr "محفوظ ڪريو"
 
-#: src/features/wiki/wiki-settings.tsx:452
+#: src/features/wiki/wiki-settings.tsx:450
 msgid "Save changes"
 msgstr "تبديليون محفوظ ڪريو"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: src/features/wiki/page-editor.tsx:408
-#: src/features/wiki/wiki-settings.tsx:280
-#: src/features/wiki/wiki-settings.tsx:304
-#: src/features/wiki/wiki-settings.tsx:452
+#: src/features/wiki/wiki-settings.tsx:278
+#: src/features/wiki/wiki-settings.tsx:302
+#: src/features/wiki/wiki-settings.tsx:450
 msgid "Saving..."
 msgstr "محفوظ ٿي رهيو آهي..."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:175
 #: ../../../lib/web/src/components/filter-bar.tsx:32
 #: ../../../lib/web/src/components/header-search.tsx:22
-#: ../../../lib/web/src/components/search.tsx:18
+#: ../../../lib/web/src/components/search.tsx:17
 #: src/features/wiki/wiki-page-content.tsx:325
 #: src/routes/_authenticated/$page/index.tsx:234
 #: src/routes/_authenticated/$wikiId/search.tsx:31
@@ -2743,23 +2787,23 @@ msgstr "نالو، ID، fingerprint، يا URL سان ڳوليو..."
 msgid "Search for a command to run..."
 msgstr "هلائڻ لاءِ ڪمانڊ ڳوليو..."
 
-#: ../../../lib/web/src/components/place-picker.tsx:86
+#: ../../../lib/web/src/components/place-picker.tsx:73
 msgid "Search for a place"
 msgstr "هڪ جاءِ ڳوليو"
 
-#: ../../../lib/web/src/components/place-picker.tsx:50
+#: ../../../lib/web/src/components/place-picker.tsx:37
 msgid "Search for a place..."
 msgstr "جڳھ ڳوليو..."
 
-#: src/routes/_authenticated/index.tsx:756
+#: src/routes/_authenticated/index.tsx:755
 msgid "Search for a wiki to subscribe, or create one to publish your own documentation."
 msgstr "سبسڪرائب ڪرڻ لاءِ wiki ڳوليو، يا پنهنجي دستاويزن کي شايع ڪرڻ لاءِ هڪ ٺاهيو."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:250
+#: ../../../lib/web/src/components/travelling-picker.tsx:231
 msgid "Search for destination..."
 msgstr "منزل ڳوليو..."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:183
+#: ../../../lib/web/src/components/travelling-picker.tsx:164
 msgid "Search for origin..."
 msgstr "اصل ڳوليو..."
 
@@ -2798,8 +2842,8 @@ msgstr "هن ڏيک کي ڳوليو، ڏسو، ۽ ترتيب ڏيو."
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:179
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
-#: ../../../lib/web/src/components/inline-entity-search.tsx:63
-#: ../../../lib/web/src/components/person-picker.tsx:324
+#: ../../../lib/web/src/components/inline-entity-search.tsx:64
+#: ../../../lib/web/src/components/person-picker.tsx:300
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "ڳوليو..."
@@ -2809,11 +2853,11 @@ msgstr "ڳوليو..."
 msgid "Searching..."
 msgstr "ڳولي رهيو آهي..."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:141
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:16
 msgid "Select"
 msgstr "چونڊيو"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:356
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:359
 msgid "Select a field"
 msgstr "هڪ فيلڊ چونڊيو"
 
@@ -2841,7 +2885,7 @@ msgstr "پنهنجي صفحي ۾ داخل ڪرڻ لاءِ منسلڪ چونڊي�
 msgid "Select group"
 msgstr "گروپ چونڊيو"
 
-#: ../../../lib/web/src/components/place-picker.tsx:49
+#: ../../../lib/web/src/components/place-picker.tsx:36
 msgid "Select location"
 msgstr "هنڌ چونڊيو"
 
@@ -2849,7 +2893,7 @@ msgstr "هنڌ چونڊيو"
 msgid "Select next card"
 msgstr "اڳيون ڪارڊ چونڊيو"
 
-#: ../../../lib/web/src/components/person-picker.tsx:83
+#: ../../../lib/web/src/components/person-picker.tsx:70
 msgid "Select person..."
 msgstr "شخص چونڊيو..."
 
@@ -2857,8 +2901,8 @@ msgstr "شخص چونڊيو..."
 msgid "Select previous card"
 msgstr "پويون ڪارڊ چونڊيو"
 
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:257
-#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:340
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:289
+#: ../../../lib/web/src/components/entity/entity-field-editor.tsx:381
 msgid "Select..."
 msgstr "چونڊيو..."
 
@@ -2871,7 +2915,7 @@ msgstr "چونڊيل: <0>{0}</0>"
 msgid "Send again"
 msgstr "ٻيهر موڪليو"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:310
+#: ../../../lib/web/src/components/step-up-dialog.tsx:298
 msgid "Send email"
 msgstr "اي ميل موڪليو"
 
@@ -2898,11 +2942,11 @@ msgstr "سرور جا ضابطا"
 msgid "Session expired. Please log in again."
 msgstr "سيشن ختم ٿي ويو. مهرباني ڪري ٻيهر لاگ ان ٿيو."
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:147
+#: ../../../lib/web/src/components/travelling-picker.tsx:128
 msgid "Set origin and destination"
 msgstr "اصل ۽ منزل مقرر ڪريو"
 
-#: src/features/wiki/wiki-settings.tsx:549
+#: src/features/wiki/wiki-settings.tsx:547
 msgid "Setting access..."
 msgstr "رسائي مقرر ٿي رهي آهي..."
 
@@ -2910,21 +2954,21 @@ msgstr "رسائي مقرر ٿي رهي آهي..."
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:125
 #: ../../../lib/web/src/components/options-menu.tsx:196
 #: src/features/wiki/wiki-page-content.tsx:370
-#: src/features/wiki/wiki-settings.tsx:105
+#: src/features/wiki/wiki-settings.tsx:106
 #: src/routes/_authenticated/$page/index.tsx:268
 #: src/routes/_authenticated/index.tsx:483
 msgid "Settings"
 msgstr "سيٽنگون"
 
-#: src/features/wiki/wiki-settings.tsx:305
+#: src/features/wiki/wiki-settings.tsx:303
 msgid "Settings saved"
 msgstr "سيٽنگون محفوظ ٿي ويون"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:327
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:330
 msgid "Show classes"
 msgstr "ڪلاسز ڏيکاريو"
 
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:428
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:431
 msgid "Show fields"
 msgstr "فيلڊ ڏيکاريو"
 
@@ -2936,7 +2980,7 @@ msgstr "صفحو ڏيکاريو"
 msgid "Show this help"
 msgstr "هي مدد ڏيکاريو"
 
-#: ../../../lib/web/src/components/ui/load-more.tsx:39
+#: ../../../lib/web/src/components/ui/load-more.tsx:43
 msgid "Showing {totalShown} of {total}"
 msgstr "{total} مان {totalShown} ڏيکاري رهيو آھي"
 
@@ -2944,17 +2988,21 @@ msgstr "{total} مان {totalShown} ڏيکاري رهيو آھي"
 msgid "Sidebar"
 msgstr "سائيڊبار"
 
+#: ../../../lib/web/src/features/errors/access-denied-error.tsx:18
+msgid "Sign in with an account that has access <0/> to this resource."
+msgstr "اهڙي اڪائونٽ سان سائن ان ٿيو جنهن کي هن وسيلي تائين <0/> رسائي هجي."
+
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:131
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:137
 msgid "Sign out"
 msgstr "سائن آئوٽ ڪريو"
 
-#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:134
+#: ../../../lib/web/src/components/layout/authenticated-layout.tsx:133
 msgid "Signing out..."
 msgstr "سائن آئوٽ ٿي رهيو آھي..."
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:161
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:179
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:163
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:183
 msgid "Single line of text only"
 msgstr "صرف ٽيڪسٽ جي ھڪ سٽ"
 
@@ -2973,13 +3021,13 @@ msgid "Sort"
 msgstr "ترتيب"
 
 #: src/features/wiki/redirects-page.tsx:92
-#: src/features/wiki/wiki-settings.tsx:422
-#: src/features/wiki/wiki-settings.tsx:902
+#: src/features/wiki/wiki-settings.tsx:420
+#: src/features/wiki/wiki-settings.tsx:900
 msgid "Source"
 msgstr "ماخذ"
 
 #: src/features/wiki/redirects-page.tsx:241
-#: src/features/wiki/wiki-settings.tsx:1040
+#: src/features/wiki/wiki-settings.tsx:1038
 msgid "Source URL"
 msgstr "ماخذ URL"
 
@@ -2991,11 +3039,11 @@ msgstr "ماخذ"
 msgid "Spacious"
 msgstr "ڪشادو"
 
-#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:323
+#: ../../../lib/web/src/components/entity/entity-comment-list.tsx:325
 msgid "Start the discussion by adding the first comment."
 msgstr "پهريون تبصرو شامل ڪري بحث شروع ڪريو."
 
-#: src/routes/_authenticated/index.tsx:753
+#: src/routes/_authenticated/index.tsx:752
 msgid "Start your first wiki"
 msgstr "پنهنجي پهرين wiki شروع ڪريو"
 
@@ -3003,24 +3051,24 @@ msgstr "پنهنجي پهرين wiki شروع ڪريو"
 msgid "Subject"
 msgstr "موضوع"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:427
+#: ../../../lib/web/src/components/comment-composer.tsx:430
 msgid "Submit comment"
 msgstr "تبصرو جمع ڪريو"
 
-#: ../../../lib/web/src/components/comment-composer.tsx:426
+#: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Submit reply"
 msgstr "جواب جمع ڪريو"
 
-#: ../../../lib/web/src/components/inline-entity-search.tsx:66
-#: ../../../lib/web/src/components/recommended-entities.tsx:58
+#: ../../../lib/web/src/components/inline-entity-search.tsx:67
+#: ../../../lib/web/src/components/recommended-entities.tsx:59
 #: ../../../lib/web/src/components/search-entity-page.tsx:74
 #: src/features/wiki/inline-wiki-search.tsx:120
-#: src/routes/_authenticated/index.tsx:819
+#: src/routes/_authenticated/index.tsx:818
 msgid "Subscribe"
 msgstr "سبسڪرائب ڪريو"
 
 #: src/features/wiki/inline-wiki-search.tsx:95
-#: src/features/wiki/wiki-settings.tsx:744
+#: src/features/wiki/wiki-settings.tsx:742
 #: src/routes/_authenticated/find.tsx:64
 msgid "Subscribed"
 msgstr "سبسڪرائبڊ"
@@ -3036,7 +3084,7 @@ msgstr "{0} تي سبسڪرائب ٿيو"
 msgid "Subscribing..."
 msgstr "سبسڪرائب ٿي رهيو آھي..."
 
-#: src/features/wiki/wiki-settings.tsx:412
+#: src/features/wiki/wiki-settings.tsx:410
 msgid "Subscription"
 msgstr "سبسڪرپشن"
 
@@ -3056,12 +3104,12 @@ msgstr "سهڪاري فائلون: تصويرون، PDF، DOC، DOCX، TXT، ۽ 
 msgid "Switch to view 1-9"
 msgstr "ڏيک 1-9 تي مٽايو"
 
-#: src/features/wiki/wiki-settings.tsx:417
+#: src/features/wiki/wiki-settings.tsx:415
 msgid "Sync now"
 msgstr "هاڻي سنڪ ڪريو"
 
-#: src/features/wiki/wiki-settings.tsx:326
-#: src/features/wiki/wiki-settings.tsx:417
+#: src/features/wiki/wiki-settings.tsx:324
+#: src/features/wiki/wiki-settings.tsx:415
 msgid "Syncing..."
 msgstr "سنڪ ٿي رهيو آھي..."
 
@@ -3083,12 +3131,12 @@ msgstr "ٽيگ \"{tag}\" شامل ڪيو ويو"
 msgid "Tag \"{tag}\" removed"
 msgstr "ٽيگ \"{tag}\" هٽايو ويو"
 
-#: ../../../lib/web/src/components/post-tags.tsx:76
+#: ../../../lib/web/src/components/post-tags.tsx:77
 #: src/features/wiki/tag-manager.tsx:47
 msgid "Tag already exists"
 msgstr "ٽيگ اڳ ۾ ئي موجود آهي"
 
-#: ../../../lib/web/src/components/post-tags.tsx:68
+#: ../../../lib/web/src/components/post-tags.tsx:69
 msgid "Tag must be 50 characters or less"
 msgstr "ٽيگ 50 اکر يا گھٽ ھجڻ گھرجي"
 
@@ -3103,8 +3151,8 @@ msgstr "ٽيگ 50 اکر يا گھٽ ھجڻ گھرجي"
 msgid "Tag: {tag}"
 msgstr "ٽيگ: {tag}"
 
-#: ../../../lib/web/src/components/post-tags.tsx:101
-#: ../../../lib/web/src/components/post-tags.tsx:115
+#: ../../../lib/web/src/components/post-tags.tsx:102
+#: ../../../lib/web/src/components/post-tags.tsx:116
 #: src/features/wiki/wiki-page-content.tsx:331
 #: src/routes/_authenticated/$page/index.tsx:240
 #: src/routes/_authenticated/index.tsx:431
@@ -3112,12 +3160,12 @@ msgid "Tags"
 msgstr "ٽيگ"
 
 #: src/features/wiki/redirects-page.tsx:94
-#: src/features/wiki/wiki-settings.tsx:904
+#: src/features/wiki/wiki-settings.tsx:902
 msgid "Target"
 msgstr "ھدف"
 
 #: src/features/wiki/redirects-page.tsx:253
-#: src/features/wiki/wiki-settings.tsx:1052
+#: src/features/wiki/wiki-settings.tsx:1050
 msgid "Target URL"
 msgstr "ھدف URL"
 
@@ -3126,11 +3174,11 @@ msgstr "ھدف URL"
 msgid "Terms and conditions"
 msgstr "شرطون ۽ ضابطا"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:142
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:17
 msgid "Text"
 msgstr "ٽيڪسٽ"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:193
+#: ../../../lib/web/src/components/step-up-dialog.tsx:181
 msgid "That code is incorrect or has expired."
 msgstr "اهو ڪوڊ غلط آهي يا ختم ٿي ويو آهي."
 
@@ -3147,7 +3195,7 @@ msgstr "اپلوڊ لاءِ تمام وڏو هو. فائلون هٽايو يا �
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "ھن wiki جي ادارن جو ID جنھن کي توھان نقل ڪرڻ چاھيو ٿا."
 
-#: src/features/wiki/wiki-settings.tsx:1060
+#: src/features/wiki/wiki-settings.tsx:1058
 msgid "The existing page to redirect to"
 msgstr "موجوده صفحو جنھن ڏانھن ريڊائريڪٽ ڪرڻو آھي"
 
@@ -3159,11 +3207,11 @@ msgstr "موجوده صفحو جنھن ڏانھن ريڊائريڪٽ ڪرڻو آ
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "صفحو \"{slug}\" اڃا موجود نه آھي."
 
-#: src/features/wiki/wiki-settings.tsx:433
+#: src/features/wiki/wiki-settings.tsx:431
 msgid "The page that users see when they first visit the wiki."
 msgstr "صفحو جيڪو صارفن کي ڏيکاريو ويندو جڏھن اھي پھريون wiki ڏسن ٿا."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:68
+#: ../../../lib/web/src/features/errors/general-error.tsx:66
 msgid "The requested content could not be found."
 msgstr "گهربل مواد نه ملي سگهيو."
 
@@ -3171,7 +3219,7 @@ msgstr "گهربل مواد نه ملي سگهيو."
 msgid "The server returned a web page instead of data."
 msgstr "سرور ڊيٽا جي بجاءِ ويب پيج موٽايو."
 
-#: src/features/wiki/wiki-settings.tsx:1048
+#: src/features/wiki/wiki-settings.tsx:1046
 msgid "The URL that will be redirected"
 msgstr "URL جنھن کي ريڊائريڪٽ ڪيو ويندو"
 
@@ -3179,7 +3227,7 @@ msgstr "URL جنھن کي ريڊائريڪٽ ڪيو ويندو"
 msgid "The URL that will be redirected (e.g., \"old-page\")"
 msgstr "URL جنھن کي ريڊائريڪٽ ڪيو ويندو (مثال طور، \"old-page\")"
 
-#: src/features/wiki/wiki-settings.tsx:482
+#: src/features/wiki/wiki-settings.tsx:480
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "ھي عمل واپس نه ٿو ٿي سگھي. ھي wiki ۽ ان جا سڀ مواد مستقل طور تي حذف ٿي ويندا."
 
@@ -3199,7 +3247,7 @@ msgstr "هيءَ فائل موجوده سرور جي اپلوڊ حد لاءِ ت
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "هيءَ فائل اپلوڊ ڪرڻ لاءِ تمام وڏي آهي. ننڍي فائل آزمايو."
 
-#: src/features/wiki/wiki-settings.tsx:413
+#: src/features/wiki/wiki-settings.tsx:411
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "ھي wiki ھڪ ماخذ wiki سان سبسڪرائب ٿيل آھي ۽ ان کان اپڊيٽس حاصل ڪري ٿو."
 
@@ -3209,7 +3257,7 @@ msgstr "ھي صفحي لاءِ رستو ھوندو. ننڍا اکر، نمبر،
 
 #. placeholder {0}: redirect.source
 #. placeholder {1}: redirect.target
-#: src/features/wiki/wiki-settings.tsx:946
+#: src/features/wiki/wiki-settings.tsx:944
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "ھي \"{0}\" کان \"{1}\" تائين ريڊائريڪٽ ھٽائيندو."
 
@@ -3220,7 +3268,7 @@ msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the
 msgstr "ھي \"{0}\" کان \"{1}\" تائين ريڊائريڪٽ ھٽائيندو. ماخذ URL ڏسندڙ صارف وڌيڪ ريڊائريڪٽ نه ٿيندا."
 
 #. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
-#: src/features/wiki/wiki-settings.tsx:783
+#: src/features/wiki/wiki-settings.tsx:781
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "ھي \"{0}\" کي اپڊيٽون موڪلڻ بند ڪندو. اھي ٻيھر نقل ڪري سگھن ٿا جيڪڏھن چاھن."
 
@@ -3237,26 +3285,23 @@ msgstr "عنوان"
 msgid "Title is required"
 msgstr "عنوان گھربل آھي"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:220
+#: ../../../lib/web/src/components/travelling-picker.tsx:201
 msgid "To"
 msgstr "ڏانھن"
 
-#: ../../../lib/web/src/components/layout/nav-group.tsx:365
-#: ../../../lib/web/src/components/layout/nav-group.tsx:372
-#: ../../../lib/web/src/components/layout/nav-group.tsx:490
-#: ../../../lib/web/src/components/layout/nav-group.tsx:497
+#: ../../../lib/web/src/components/layout/nav-group.tsx:393
+#: ../../../lib/web/src/components/layout/nav-group.tsx:400
+#: ../../../lib/web/src/components/layout/nav-group.tsx:522
+#: ../../../lib/web/src/components/layout/nav-group.tsx:529
 msgid "Toggle section"
 msgstr "سيڪشن ٽوگل ڪريو"
 
 #: ../../../lib/web/src/components/ui/sidebar.tsx:337
 #: ../../../lib/web/src/components/ui/sidebar.tsx:340
-msgid "Toggle sidebar"
-msgstr "سائڊبار ٽوگل ڪريو"
-
 #: ../../../lib/web/src/components/ui/sidebar.tsx:352
 #: ../../../lib/web/src/components/ui/sidebar.tsx:355
-msgid "Toggle Sidebar"
-msgstr "سائيڊبار ٽوگل ڪريو"
+msgid "Toggle sidebar"
+msgstr "سائڊبار ٽوگل ڪريو"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx:26
 msgid "Toggle view options"
@@ -3267,7 +3312,7 @@ msgstr "ڏيک اختيار ٽوگل ڪريو"
 msgid "Toggle watched filter"
 msgstr "ڏٺو فلٽر ٽوگل ڪريو"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:74
+#: ../../../lib/web/src/features/errors/general-error.tsx:72
 msgid "Too many requests"
 msgstr "تمام گهڻيون درخواستون"
 
@@ -3275,7 +3320,7 @@ msgstr "تمام گهڻيون درخواستون"
 msgid "Top"
 msgstr "مٿي"
 
-#: ../../../lib/web/src/components/travelling-picker.tsx:145
+#: ../../../lib/web/src/components/travelling-picker.tsx:126
 msgid "Travelling"
 msgstr "سفر ڪرڻ"
 
@@ -3291,8 +3336,8 @@ msgstr "ڪو ٻيو ٽيگ آزمايو."
 msgid "Try adjusting your search terms"
 msgstr "پنھنجي ڳولا جي اصطلاحن کي ترتيب ڏيڻ جي ڪوشش ڪريو"
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:140
-#: ../../../lib/web/src/features/errors/general-error.tsx:180
+#: ../../../lib/web/src/features/errors/general-error.tsx:138
+#: ../../../lib/web/src/features/errors/general-error.tsx:178
 msgid "Try again"
 msgstr "ٻيهر ڪوشش ڪريو"
 
@@ -3304,12 +3349,12 @@ msgstr "مختلف ڳولا اصطلاح آزمايو."
 msgid "Tuesday"
 msgstr "اڱارو"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:130
-#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:162
+#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:134
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:166
 msgid "Type"
 msgstr "قسم"
 
-#: ../../../lib/web/src/components/command-menu.tsx:52
+#: ../../../lib/web/src/components/command-menu.tsx:54
 msgid "Type a command or search..."
 msgstr "ھدايت ٽائپ ڪريو يا ڳوليو..."
 
@@ -3329,8 +3374,8 @@ msgstr "ڳولڻ لاءِ ٽائپ ڪريو..."
 msgid "Unable to connect to remote server"
 msgstr "ريموٽ سرور سان ڳنڍڻ ناممڪن"
 
-#: ../../../lib/web/src/lib/auth-manager.ts:92
-#: ../../../lib/web/src/lib/auth-manager.ts:104
+#: ../../../lib/web/src/lib/auth-manager.ts:89
+#: ../../../lib/web/src/lib/auth-manager.ts:101
 msgid "Unable to redirect to login. Please try again."
 msgstr "لاگ ان ڏانھن ريڊائريڪٽ ڪرڻ ۾ ناڪام. مھرباني ڪري ٻيھر ڪوشش ڪريو."
 
@@ -3338,16 +3383,12 @@ msgstr "لاگ ان ڏانھن ريڊائريڪٽ ڪرڻ ۾ ناڪام. مھرب
 msgid "Unassigned"
 msgstr "غير تفويض ٿيل"
 
-#: ../../../lib/web/src/features/errors/unauthorized-error.tsx:16
-msgid "Unauthorized Access"
-msgstr "غير مجاز رسائي"
-
 #: ../../../lib/web/src/components/attachment-image.tsx:50
 msgid "Unavailable"
 msgstr "دستياب نه آھي"
 
 #: ../../../lib/web/src/lib/request.ts:133
-#: ../../../lib/web/src/lib/request.ts:206
+#: ../../../lib/web/src/lib/request.ts:209
 msgid "Unexpected API error"
 msgstr "غير متوقع API غلطي"
 
@@ -3355,6 +3396,11 @@ msgstr "غير متوقع API غلطي"
 msgid "United States"
 msgstr "آمريڪا"
 
+#: ../../../lib/web/src/components/audit-timeline.tsx:103
+#: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:167
+#: ../../../lib/web/src/components/tree-row.tsx:219
+#: ../../../lib/web/src/components/tree-row.tsx:373
+#: ../../../lib/web/src/components/tree-table-header.tsx:70
 #: ../../../lib/web/src/features/accounts/types.ts:29
 #: src/features/wiki/wiki-comment-thread.tsx:126
 msgid "Unknown"
@@ -3370,16 +3416,16 @@ msgstr "اڻڄاتل"
 #: src/routes/_authenticated/index.tsx:494
 #: src/routes/_authenticated/index.tsx:522
 #: src/routes/_authenticated/index.tsx:524
-#: src/routes/_authenticated/index.tsx:890
-#: src/routes/_authenticated/index.tsx:922
-#: src/routes/_authenticated/index.tsx:924
+#: src/routes/_authenticated/index.tsx:889
+#: src/routes/_authenticated/index.tsx:921
+#: src/routes/_authenticated/index.tsx:923
 msgid "Unsubscribe"
 msgstr "ان سبسڪرائب ڪريو"
 
 #: src/features/wiki/wiki-page-content.tsx:80
 #: src/routes/_authenticated/$page/index.tsx:76
 #: src/routes/_authenticated/index.tsx:287
-#: src/routes/_authenticated/index.tsx:933
+#: src/routes/_authenticated/index.tsx:932
 msgid "Unsubscribed"
 msgstr "ان سبسڪرائبڊ"
 
@@ -3389,8 +3435,8 @@ msgstr "ان سبسڪرائبڊ"
 #: src/routes/_authenticated/$page/index.tsx:280
 #: src/routes/_authenticated/index.tsx:286
 #: src/routes/_authenticated/index.tsx:494
-#: src/routes/_authenticated/index.tsx:889
-#: src/routes/_authenticated/index.tsx:932
+#: src/routes/_authenticated/index.tsx:888
+#: src/routes/_authenticated/index.tsx:931
 msgid "Unsubscribing..."
 msgstr "ان سبسڪرائب ٿي رهيو آھي..."
 
@@ -3404,15 +3450,16 @@ msgstr "غير سهڪاري فائل قسم: {names}. سهڪاري فائلون:
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "غير سهڪاري فائل قسم: {names}. سهڪاري فائلون: تصويرون، PDF، DOC، DOCX، TXT، ۽ MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:285
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:299
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
 #: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "بي عنوان"
 
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:56
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:57
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:499
 msgid "Updated"
 msgstr "اپڊيٽ ٿيو"
 
@@ -3422,16 +3469,20 @@ msgstr "اپڊيٽ ٿيو"
 #: src/features/wiki/page-view.tsx:264
 #: src/features/wiki/search-page.tsx:117
 #: src/features/wiki/tag-pages.tsx:74
-#: src/routes/_authenticated/index.tsx:906
+#: src/routes/_authenticated/index.tsx:905
 msgid "Updated {0}"
 msgstr "{0} اپڊيٽ ٿيو"
 
-#: src/features/wiki/wiki-settings.tsx:562
+#: ../../../lib/web/src/components/entity/entity-activity-list.tsx:56
+msgid "Updated {field}"
+msgstr "{field} اپڊيٽ ٿيو"
+
+#: src/features/wiki/wiki-settings.tsx:560
 msgid "Updating access..."
 msgstr "رسائي اپڊيٽ ٿي رهي آهي..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:639
-#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:301
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:661
+#: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:304
 msgid "Upload"
 msgstr "اپ لوڊ ڪريو"
 
@@ -3470,17 +3521,17 @@ msgstr "نئون اپ لوڊ ڪريو"
 msgid "Upload progress"
 msgstr "اپلوڊ جي پيش رفت"
 
-#: src/features/wiki/wiki-settings.tsx:438
+#: src/features/wiki/wiki-settings.tsx:436
 msgid "Use as home"
 msgstr "گھر طور استعمال ڪريو"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:341
+#: ../../../lib/web/src/components/step-up-dialog.tsx:329
 msgid "Use your passkey"
 msgstr "پنهنجي پاس ڪي استعمال ڪريو"
 
-#: ../../../lib/web/src/components/entity/add-field-dialog.tsx:143
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx:112
 #: ../../../lib/web/src/features/access/access-dialog.tsx:158
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts:18
 msgid "User"
 msgstr "صارف"
 
@@ -3492,7 +3543,7 @@ msgstr "متغير: {variables}"
 msgid "Verification code"
 msgstr "تصديق ڪوڊ"
 
-#: ../../../lib/web/src/components/step-up-dialog.tsx:391
+#: ../../../lib/web/src/components/step-up-dialog.tsx:379
 #: ../../../lib/web/src/features/accounts/account-verify.tsx:111
 msgid "Verify"
 msgstr "تصديق ڪريو"
@@ -3511,12 +3562,12 @@ msgstr "ورزن"
 msgid "Version {0}"
 msgstr "ورزن {0}"
 
-#: ../../../lib/web/src/components/attachment-gallery.tsx:95
+#: ../../../lib/web/src/components/attachment-gallery.tsx:96
 msgid "Video thumbnail"
 msgstr "وڊيو ٿمب نيل"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:315
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:326
 msgid "Video viewer: {0}"
 msgstr "وڊيو ڏسڻ وارو: {0}"
 
@@ -3526,8 +3577,8 @@ msgctxt "action"
 msgid "View"
 msgstr "ڏسو"
 
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:220
-#: ../../../lib/web/src/components/layout/notification-menu.tsx:228
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:216
+#: ../../../lib/web/src/components/layout/notification-menu.tsx:224
 msgid "View all notifications"
 msgstr "سڀ اطلاع ڏسو"
 
@@ -3535,7 +3586,7 @@ msgstr "سڀ اطلاع ڏسو"
 msgid "View controls"
 msgstr "ڏيک ڪنٽرول"
 
-#: src/features/wiki/wiki-settings.tsx:500
+#: src/features/wiki/wiki-settings.tsx:498
 msgid "View only"
 msgstr "صرف ڏسڻ"
 
@@ -3561,13 +3612,16 @@ msgstr "اسان تصديقي ڪوڊ <0>{0}</0> تي موڪليو. پنھنجو 
 msgid "Wednesday"
 msgstr "اربع"
 
-#: src/features/wiki/wiki-settings.tsx:725
-#: src/features/wiki/wiki-settings.tsx:809
+#: src/features/wiki/wiki-settings.tsx:723
+#: src/features/wiki/wiki-settings.tsx:807
 msgid "When other wikis replicate this wiki, they will appear here."
 msgstr "جڏھن ٻيون wikis ھن wiki کي نقل ڪن ٿيون، اھي ھتي ظاھر ٿينديون."
 
+#: src/components/layout/wiki-layout.tsx:152
+msgid "wiki"
+msgstr ""
+
 #: src/components/layout/wiki-layout.tsx:103
-#: src/components/layout/wiki-layout.tsx:153
 #: src/features/wiki/wiki-page-content.tsx:103
 #: src/features/wiki/wiki-page-content.tsx:321
 #: src/routes/_authenticated/$page/index.tsx:230
@@ -3577,10 +3631,10 @@ msgstr "جڏھن ٻيون wikis ھن wiki کي نقل ڪن ٿيون، اھي ھ�
 msgid "Wiki"
 msgstr "Wiki"
 
-#: src/routes/_authenticated/index.tsx:699
-#: src/routes/_authenticated/index.tsx:706
-#: src/routes/_authenticated/index.tsx:870
-#: src/routes/_authenticated/index.tsx:877
+#: src/routes/_authenticated/index.tsx:698
+#: src/routes/_authenticated/index.tsx:705
+#: src/routes/_authenticated/index.tsx:869
+#: src/routes/_authenticated/index.tsx:876
 msgid "Wiki actions"
 msgstr "Wiki عمل"
 
@@ -3588,7 +3642,7 @@ msgstr "Wiki عمل"
 msgid "Wiki created"
 msgstr "Wiki ٺاهي وئي"
 
-#: src/features/wiki/wiki-settings.tsx:348
+#: src/features/wiki/wiki-settings.tsx:346
 msgid "Wiki deleted"
 msgstr "Wiki حذف ڪئي وئي"
 
@@ -3605,7 +3659,7 @@ msgstr "Wiki ID گھربل آھي"
 msgid "Wiki link"
 msgstr "وڪي لنڪ"
 
-#: src/features/wiki/wiki-settings.tsx:269
+#: src/features/wiki/wiki-settings.tsx:267
 msgid "Wiki name is required"
 msgstr "Wiki نالو گھربل آھي"
 
@@ -3614,7 +3668,7 @@ msgstr "Wiki نالو گھربل آھي"
 msgid "Wiki not found"
 msgstr "Wiki نه ملي"
 
-#: src/features/wiki/wiki-settings.tsx:281
+#: src/features/wiki/wiki-settings.tsx:279
 msgid "Wiki renamed"
 msgstr "Wiki جو نالو تبديل ڪيو ويو"
 
@@ -3623,11 +3677,11 @@ msgstr "Wiki جو نالو تبديل ڪيو ويو"
 msgid "Wiki settings"
 msgstr "Wiki سيٽنگون"
 
-#: src/features/wiki/wiki-settings.tsx:158
+#: src/features/wiki/wiki-settings.tsx:159
 msgid "Wiki settings sections"
 msgstr "Wiki سيٽنگون حصا"
 
-#: src/features/wiki/wiki-settings.tsx:327
+#: src/features/wiki/wiki-settings.tsx:325
 msgid "Wiki synced"
 msgstr "Wiki سنڪ ٿيو"
 
@@ -3652,11 +3706,11 @@ msgstr "توھان صفحو <0>\"{title}\"</0> ({slug}) حذف ڪرڻ وارا �
 msgid "You are about to revert <0>{slug}</0> to version <1>{version}</1>. This will create a new revision with the content from version {version}."
 msgstr "توھان <0>{slug}</0> کي ورزن <1>{version}</1> تي واپس آڻڻ وارا آھيو. ھي ورزن {version} جي مواد سان ھڪ نئين نظرثاني ٺاھيندو."
 
-#: ../../../lib/web/src/features/errors/general-error.tsx:61
+#: ../../../lib/web/src/features/errors/general-error.tsx:59
 msgid "You do not have access to this section."
 msgstr "توهان کي هن حصي تائين رسائي ناهي."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:100
+#: ../../../lib/web/src/components/restore-banner.tsx:86
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "توهان جو اڪائونٽ {source} کان هتي منتقل ڪيو ويو. جيستائين توهان اتي ان کي نه ختم ڪيو، پيغام ۽ اطلاع ٻنهي سرورن تي پهچي سگهن ٿا، توهان جو ڪجهه مواد اڃا به پراڻي سرور کان فراهم ٿئي ٿو، ۽ پيروڪارن کي هتي توهان کي ڳولڻ ۾ ڪجهه منٽ لڳي سگهن ٿا."
 

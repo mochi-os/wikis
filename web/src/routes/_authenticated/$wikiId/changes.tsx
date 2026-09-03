@@ -43,7 +43,7 @@ function WikiChangesRoute() {
   if (isLoading && offset === 0) {
     return (
       <>
-        <WikiRouteHeader title={t`Recent changes`} back={{ label: wiki.name ?? t`Back`, onFallback: goBack }} showSidebarTrigger />
+        <WikiRouteHeader title={t`Recent changes`} back={{ label: wiki.name ?? t`Back`, onFallback: goBack }} />
         <Main>
           <ChangesListSkeleton />
         </Main>
@@ -54,7 +54,7 @@ function WikiChangesRoute() {
   if (error && offset === 0) {
     return (
       <>
-        <WikiRouteHeader title={t`Recent changes`} back={{ label: wiki.name ?? t`Back`, onFallback: goBack }} showSidebarTrigger />
+        <WikiRouteHeader title={t`Recent changes`} back={{ label: wiki.name ?? t`Back`, onFallback: goBack }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -64,7 +64,7 @@ function WikiChangesRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={t`Recent changes`} back={{ label: wiki.name ?? t`Back`, onFallback: goBack }} showSidebarTrigger />
+      <WikiRouteHeader title={t`Recent changes`} back={{ label: wiki.name ?? t`Back`, onFallback: goBack }} />
       <Main>
         <ChangesList
           changes={changes}
