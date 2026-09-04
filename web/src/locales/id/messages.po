@@ -220,6 +220,10 @@ msgstr "Tipe akun"
 msgid "Actions"
 msgstr "Tindakan"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:415
+msgid "Activity"
+msgstr "Aktivitas"
+
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx:758
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
@@ -271,7 +275,7 @@ msgstr "Tambah field"
 msgid "Add item..."
 msgstr "Tambah item..."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:314
 msgid "Add link"
 msgstr "Tambah tautan"
 
@@ -384,6 +388,10 @@ msgstr "Apakah Anda benar-benar yakin?"
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "Apakah Anda yakin ingin menghapus \"{0}\"?"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:671
+msgid "Are you sure you want to delete \"{title}\"? This action cannot be undone."
+msgstr "Apakah Anda yakin ingin menghapus \"{title}\"? Tindakan ini tidak dapat dibatalkan."
+
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:631
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "Apakah Anda yakin ingin menghapus kolom \"{name}\"? Ini tidak dapat dibatalkan."
@@ -399,6 +407,14 @@ msgstr "Apakah Anda yakin ingin menghapus komentar ini? Ini juga akan menghapus 
 #: ../../../lib/web/src/components/sign-out-dialog.tsx:27
 msgid "Are you sure you want to log out? You will need to log in again to access your account."
 msgstr "Apakah Anda yakin ingin keluar? Anda perlu masuk kembali untuk mengakses akun Anda."
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:39
+msgid "Are you sure you want to resign?"
+msgstr "Yakin ingin menyerah?"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:38
+msgid "Are you sure you want to resign? {opponentName} will win the game."
+msgstr "Apakah Anda yakin ingin menyerah? {opponentName} akan memenangkan permainan."
 
 #: src/features/wiki/wiki-page-content.tsx:404
 #: src/routes/_authenticated/$page/index.tsx:303
@@ -542,16 +558,25 @@ msgstr "Kembali ke halaman"
 msgid "Back to wikis"
 msgstr "Kembali ke wiki"
 
+#: ../../../lib/web/src/components/banner-section.tsx:80
 #: ../../../lib/web/src/components/entity-banner.tsx:17
 msgid "Banner"
 msgstr "Spanduk"
+
+#: ../../../lib/web/src/components/banner-section.tsx:69
+msgid "Banner removed"
+msgstr "Banner dihapus"
+
+#: ../../../lib/web/src/components/banner-section.tsx:69
+msgid "Banner updated"
+msgstr "Banner diperbarui"
 
 #: src/features/wiki/page-comments.tsx:153
 msgid "Be the first to comment on this page."
 msgstr "Jadilah yang pertama berkomentar di halaman ini."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:68
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:215
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:72
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:209
 msgid "Blocked by"
 msgstr "Diblokir oleh"
 
@@ -560,7 +585,7 @@ msgstr "Diblokir oleh"
 msgid "Blocked navigation to untrusted link"
 msgstr "Navigasi ke tautan tidak tepercaya diblokir"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:66
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:70
 msgid "Blocks"
 msgstr "Memblokir"
 
@@ -708,6 +733,7 @@ msgstr "Pilih permainan dari sidebar atau mulai yang baru."
 msgid "Choose language"
 msgstr "Pilih bahasa"
 
+#: ../../../lib/web/src/components/banner-section.tsx:111
 #: ../../../lib/web/src/components/colour-picker.tsx:274
 #: ../../../lib/web/src/components/colour-picker.tsx:355
 #: ../../../lib/web/src/components/travelling-picker.tsx:145
@@ -727,8 +753,8 @@ msgstr "Bersihkan semua"
 msgid "Clear search"
 msgstr "Bersihkan pencarian"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:517
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:480
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:483
@@ -810,6 +836,11 @@ msgstr "Tindakan komentar"
 #: src/routes/_authenticated/index.tsx:722
 msgid "Comments"
 msgstr "Komentar"
+
+#. placeholder {0}: data.comment_count || 0
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:411
+msgid "Comments ({0})"
+msgstr "Komentar ({0})"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:90
 msgid "Compact"
@@ -909,8 +940,8 @@ msgstr "Tidak dapat memverifikasi dengan akun tersebut. Silakan coba lagi."
 
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:551
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:691
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:513
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:507
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:676
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
 msgid "Create"
 msgstr "Buat"
@@ -985,7 +1016,7 @@ msgstr "Membuat pengalihan..."
 msgid "Creating wiki..."
 msgstr "Membuat wiki..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:676
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:260
 #: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
@@ -1046,6 +1077,8 @@ msgstr "Pengurutan default"
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:208
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:255
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:317
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:672
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:78
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:648
@@ -1087,6 +1120,16 @@ msgstr "Hapus komentar"
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:304
 msgid "Delete field"
 msgstr "Hapus field"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:69
+msgid "Delete game?"
+msgstr "Hapus permainan?"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:486
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:491
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:670
+msgid "Delete item"
+msgstr "Hapus item"
 
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:117
 msgid "Delete option"
@@ -1161,6 +1204,7 @@ msgstr "Menghapus pengalihan..."
 msgid "Deleting wiki..."
 msgstr "Menghapus wiki..."
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:75
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/wiki-settings.tsx:473
 msgid "Deleting..."
@@ -1224,6 +1268,7 @@ msgid "Does not match the required pattern"
 msgstr "Tidak sesuai dengan pola yang diperlukan"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:309
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:495
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:523
 msgid "Done"
 msgstr "Selesai"
@@ -1243,7 +1288,7 @@ msgstr "Unduhan gagal"
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
 msgstr "Seret dan jatuhkan berkas di sini, atau klik «Unggah berkas» untuk memulai."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:67
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:71
 msgid "Duplicates"
 msgstr "Duplikat"
 
@@ -1336,6 +1381,10 @@ msgstr "Tautan sematan disalin"
 msgid "Enter a search term"
 msgstr "Masukkan kata pencarian"
 
+#: ../../../lib/web/src/components/banner-section.tsx:88
+msgid "Enter banner text (markdown supported)..."
+msgstr "Masukkan teks banner (markdown didukung)..."
+
 #: src/features/wiki/tag-manager.tsx:147
 msgid "Enter tag name"
 msgstr "Masukkan nama tag"
@@ -1351,6 +1400,10 @@ msgstr "Masukkan kode autentikator Anda"
 #: src/features/wiki/wiki-settings.tsx:396
 msgid "Entity ID"
 msgstr "ID entitas"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:381
+msgid "Error"
+msgstr "Galat"
 
 #: src/features/wiki/wiki-page-content.tsx:191
 msgid "Error: Received invalid response from server."
@@ -1393,7 +1446,7 @@ msgstr "Gagal menambahkan tag"
 msgid "Failed to copy"
 msgstr "Gagal menyalin"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:137
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:131
 #: ../../../lib/web/src/components/options-menu.tsx:98
 #: src/components/link-dialog.tsx:43
 msgid "Failed to create link"
@@ -1412,6 +1465,10 @@ msgstr "Gagal membuat pengalihan"
 msgid "Failed to create wiki"
 msgstr "Gagal membuat wiki"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:303
+msgid "Failed to delete"
+msgstr "Gagal menghapus"
+
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:130
 #: src/features/wiki/attachments-page.tsx:270
 #: src/features/wiki/page-editor.tsx:256
@@ -1422,7 +1479,7 @@ msgstr "Gagal menghapus lampiran"
 msgid "Failed to delete comment"
 msgstr "Gagal menghapus komentar"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:159
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:153
 msgid "Failed to delete link"
 msgstr "Gagal menghapus tautan"
 
@@ -1466,6 +1523,11 @@ msgstr "Gagal memuat riwayat"
 msgid "Failed to load image"
 msgstr "Gagal memuat gambar"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:382
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:385
+msgid "Failed to load item"
+msgstr "Gagal memuat item"
+
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:213
 msgid "Failed to load prompts"
 msgstr "Gagal memuat prompt"
@@ -1490,6 +1552,10 @@ msgstr "Gagal memuat info wiki"
 #: src/routes/_authenticated/index.tsx:137
 msgid "Failed to load wikis"
 msgstr "Gagal memuat wiki"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:317
+msgid "Failed to move"
+msgstr "Gagal memindahkan"
 
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx:155
 msgid "Failed to post comment"
@@ -1528,6 +1594,10 @@ msgstr "Gagal mengembalikan halaman"
 #: src/routes/_authenticated/index.tsx:616
 msgid "Failed to revoke RSS access"
 msgstr "Gagal mencabut akses RSS"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:273
+msgid "Failed to save"
+msgstr "Gagal menyimpan"
 
 #: src/features/wiki/attachments-page.tsx:255
 msgid "Failed to save caption"
@@ -1575,9 +1645,17 @@ msgstr "Gagal berhenti berlangganan"
 msgid "Failed to update access level"
 msgstr "Gagal memperbarui tingkat akses"
 
+#: ../../../lib/web/src/components/banner-section.tsx:71
+msgid "Failed to update banner"
+msgstr "Gagal memperbarui banner"
+
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx:175
 msgid "Failed to update comment"
 msgstr "Gagal memperbarui komentar"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:288
+msgid "Failed to update watching"
+msgstr "Gagal memperbarui pemantauan"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:114
 msgid "Failed to upload attachment"
@@ -1588,7 +1666,7 @@ msgstr "Gagal mengunggah lampiran"
 msgid "Failed to upload files"
 msgstr "Gagal mengunggah berkas"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:611
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:605
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:160
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:180
 msgid "Files"
@@ -1776,6 +1854,10 @@ msgstr "Nomor versi tidak valid"
 msgid "It seems like the page you're looking for <0/>does not exist or might have been removed."
 msgstr "Sepertinya halaman yang Anda cari <0/>tidak ada atau telah dihapus."
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:441
+msgid "Item details"
+msgstr "Detail item"
+
 #: src/routes/_authenticated/join.tsx:49
 msgid "Joined wiki"
 msgstr "Bergabung dengan wiki"
@@ -1825,7 +1907,7 @@ msgstr "Tautan"
 msgid "Link to {headingText}"
 msgstr "Tautan ke {headingText}"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:279
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:273
 msgid "Links"
 msgstr "Tautan"
 
@@ -1847,6 +1929,14 @@ msgstr "Muat lebih banyak"
 #: ../../../lib/web/src/components/ui/loading-content.tsx:26
 msgid "Loading content…"
 msgstr "Memuat konten…"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:365
+msgid "Loading item"
+msgstr "Memuat item"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:366
+msgid "Loading item details"
+msgstr "Memuat detail item"
 
 #: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: ../../../lib/web/src/features/document/document-page.tsx:88
@@ -1987,7 +2077,7 @@ msgstr "Kesalahan jaringan"
 msgid "Never"
 msgstr "Tidak pernah"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:498
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:492
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "Baru"
@@ -2036,7 +2126,7 @@ msgstr "nama-halaman-baru"
 msgid "Next image"
 msgstr "Gambar berikutnya"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:577
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:571
 msgid "No {parentClassNames} to add to"
 msgstr "Tidak ada {parentClassNames} untuk ditambahkan"
 
@@ -2078,11 +2168,11 @@ msgstr "Belum ada permainan"
 msgid "No groups available"
 msgstr "Tidak ada grup yang tersedia"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "Belum ada jenis item yang dapat dibuat. Buat item induk yang diperlukan terlebih dahulu."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:354
 msgid "No matching objects"
 msgstr "Tidak ada objek yang cocok"
 
@@ -2166,9 +2256,13 @@ msgid "No wikis found"
 msgstr "Tidak ada wiki yang ditemukan"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:560
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:563
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:554
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:557
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:561
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:557
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:570
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:571
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:575
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
@@ -2352,7 +2446,9 @@ msgstr "URL halaman wajib diisi"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "Halaman dengan tag <0>{tag}</0>"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:552
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:546
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:553
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:569
 msgid "Parent"
 msgstr "Induk"
 
@@ -2428,6 +2524,10 @@ msgstr "Memproses…"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:108
 msgid "Prompt saved"
 msgstr "Prompt disimpan"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:408
+msgid "Properties"
+msgstr "Properti"
 
 #: ../../../lib/web/src/features/accounts/types.ts:21
 msgid "Push notification"
@@ -2523,7 +2623,7 @@ msgstr "Pengalihan"
 msgid "Reduce interest"
 msgstr "Kurangi minat"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:65
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:69
 msgid "Relates"
 msgstr "Terkait"
 
@@ -2582,8 +2682,8 @@ msgstr "Hapus minat"
 msgid "Remove item"
 msgstr "Hapus item"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:304
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:309
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:298
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:303
 msgid "Remove link"
 msgstr "Hapus tautan"
 
@@ -2685,6 +2785,18 @@ msgstr "Wajib"
 msgid "Resend email"
 msgstr "Kirim ulang email"
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:48
+msgid "Resign"
+msgstr "Menyerah"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:35
+msgid "Resign game?"
+msgstr "Menyerah dalam permainan?"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:45
+msgid "Resigning..."
+msgstr "Menyerah..."
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:348
 msgid "Retry"
 msgstr "Coba lagi"
@@ -2775,6 +2887,7 @@ msgstr "Sabtu"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: ../../../lib/web/src/components/attachment-composer.tsx:430
+#: ../../../lib/web/src/components/banner-section.tsx:99
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:172
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:126
@@ -2851,7 +2964,7 @@ msgstr "Cari wiki publik atau masukkan ID entitas secara langsung."
 msgid "Search for wikis..."
 msgstr "Cari wiki..."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:337
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:331
 msgid "Search objects..."
 msgstr "Cari objek..."
 
@@ -3082,6 +3195,11 @@ msgstr "Mulai diskusi dengan menambahkan komentar pertama."
 msgid "Start your first wiki"
 msgstr "Mulai wiki pertama Anda"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:471
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:476
+msgid "Stop watching"
+msgstr "Berhenti memantau"
+
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "Subjek"
@@ -3302,6 +3420,10 @@ msgstr "Berkas ini terlalu besar untuk batas unggahan server saat ini. Coba berk
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "Berkas ini terlalu besar untuk diunggah. Coba berkas yang lebih kecil."
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:70
+msgid "This permanently deletes the game and its chat. This cannot be undone."
+msgstr "Ini akan menghapus permainan dan obrolannya secara permanen. Tindakan ini tidak dapat dibatalkan."
+
 #: src/features/wiki/wiki-settings.tsx:411
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Wiki ini berlangganan ke wiki sumber dan menerima pembaruan darinya."
@@ -3505,9 +3627,8 @@ msgstr "Jenis berkas tidak didukung: {names}. Berkas yang didukung: gambar, PDF,
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Jenis berkas tidak didukung: {names}. Berkas yang didukung: gambar, PDF, DOC, DOCX, TXT, dan MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:299
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:178
+#: ../../../lib/web/src/lib/entity-title.ts:40
 #: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "Tanpa judul"
@@ -3536,7 +3657,7 @@ msgstr "{field} diperbarui"
 msgid "Updating access..."
 msgstr "Memperbarui akses..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:661
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:655
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:304
 msgid "Upload"
 msgstr "Unggah"
@@ -3637,6 +3758,10 @@ msgstr "Lihat"
 msgid "View all notifications"
 msgstr "Lihat semua notifikasi"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:442
+msgid "View and edit item details"
+msgstr "Lihat dan edit detail item"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:170
 msgid "View controls"
 msgstr "Kontrol tampilan"
@@ -3652,6 +3777,11 @@ msgstr "Melihat riwayat <0>{slug}</0>, versi saat ini {currentVersion}"
 #: ../../../lib/web/src/lib/shell-errors.ts:33
 msgid "Voice recording is not supported in this browser"
 msgstr "Perekaman suara tidak didukung di browser ini"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:471
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:476
+msgid "Watch"
+msgstr "Pantau"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:269
 #: ../../../lib/web/src/components/filter-bar.tsx:35

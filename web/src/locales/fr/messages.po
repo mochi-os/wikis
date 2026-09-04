@@ -220,6 +220,10 @@ msgstr "Type de compte"
 msgid "Actions"
 msgstr "Actions"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:415
+msgid "Activity"
+msgstr "Activité"
+
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx:758
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
@@ -271,7 +275,7 @@ msgstr "Ajouter un champ"
 msgid "Add item..."
 msgstr "Ajouter un élément…"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:314
 msgid "Add link"
 msgstr "Ajouter un lien"
 
@@ -384,6 +388,10 @@ msgstr "Êtes-vous absolument sûr ?"
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "Voulez-vous vraiment supprimer « {0} » ?"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:671
+msgid "Are you sure you want to delete \"{title}\"? This action cannot be undone."
+msgstr "Voulez-vous vraiment supprimer « {title} » ? Cette action est irréversible."
+
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:631
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "Voulez-vous vraiment supprimer la colonne « {name} » ? Cette action est irréversible."
@@ -399,6 +407,14 @@ msgstr "Voulez-vous vraiment supprimer ce commentaire ? Toutes les réponses ser
 #: ../../../lib/web/src/components/sign-out-dialog.tsx:27
 msgid "Are you sure you want to log out? You will need to log in again to access your account."
 msgstr "Voulez-vous vraiment vous déconnecter ? Vous devrez vous reconnecter pour accéder à votre compte."
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:39
+msgid "Are you sure you want to resign?"
+msgstr "Voulez-vous vraiment abandonner ?"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:38
+msgid "Are you sure you want to resign? {opponentName} will win the game."
+msgstr "Êtes-vous sûr de vouloir abandonner ? {opponentName} gagnera la partie."
 
 #: src/features/wiki/wiki-page-content.tsx:404
 #: src/routes/_authenticated/$page/index.tsx:303
@@ -542,16 +558,25 @@ msgstr "Retour à la page"
 msgid "Back to wikis"
 msgstr "Retour aux wikis"
 
+#: ../../../lib/web/src/components/banner-section.tsx:80
 #: ../../../lib/web/src/components/entity-banner.tsx:17
 msgid "Banner"
 msgstr "Bannière"
+
+#: ../../../lib/web/src/components/banner-section.tsx:69
+msgid "Banner removed"
+msgstr "Bannière supprimée"
+
+#: ../../../lib/web/src/components/banner-section.tsx:69
+msgid "Banner updated"
+msgstr "Bannière mise à jour"
 
 #: src/features/wiki/page-comments.tsx:153
 msgid "Be the first to comment on this page."
 msgstr "Soyez le premier à commenter cette page."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:68
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:215
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:72
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:209
 msgid "Blocked by"
 msgstr "Bloqué par"
 
@@ -560,7 +585,7 @@ msgstr "Bloqué par"
 msgid "Blocked navigation to untrusted link"
 msgstr "Navigation vers un lien non fiable bloquée"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:66
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:70
 msgid "Blocks"
 msgstr "Bloque"
 
@@ -708,6 +733,7 @@ msgstr "Choisissez une partie dans la barre latérale ou commencez-en une nouvel
 msgid "Choose language"
 msgstr "Choisir la langue"
 
+#: ../../../lib/web/src/components/banner-section.tsx:111
 #: ../../../lib/web/src/components/colour-picker.tsx:274
 #: ../../../lib/web/src/components/colour-picker.tsx:355
 #: ../../../lib/web/src/components/travelling-picker.tsx:145
@@ -727,8 +753,8 @@ msgstr "Tout effacer"
 msgid "Clear search"
 msgstr "Effacer la recherche"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:517
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:480
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:483
@@ -810,6 +836,11 @@ msgstr "Actions du commentaire"
 #: src/routes/_authenticated/index.tsx:722
 msgid "Comments"
 msgstr "Commentaires"
+
+#. placeholder {0}: data.comment_count || 0
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:411
+msgid "Comments ({0})"
+msgstr "Commentaires ({0})"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:90
 msgid "Compact"
@@ -909,8 +940,8 @@ msgstr "Impossible de vérifier avec ce compte. Veuillez réessayer."
 
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:551
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:691
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:513
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:507
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:676
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
 msgid "Create"
 msgstr "Créer"
@@ -985,7 +1016,7 @@ msgstr "Création de la redirection..."
 msgid "Creating wiki..."
 msgstr "Création du wiki..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:676
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:260
 #: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
@@ -1046,6 +1077,8 @@ msgstr "Tri par défaut"
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:208
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:255
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:317
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:672
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:78
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:648
@@ -1087,6 +1120,16 @@ msgstr "Supprimer le commentaire"
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:304
 msgid "Delete field"
 msgstr "Supprimer le champ"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:69
+msgid "Delete game?"
+msgstr "Supprimer la partie ?"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:486
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:491
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:670
+msgid "Delete item"
+msgstr "Supprimer l'élément"
 
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:117
 msgid "Delete option"
@@ -1161,6 +1204,7 @@ msgstr "Suppression de la redirection..."
 msgid "Deleting wiki..."
 msgstr "Suppression du wiki..."
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:75
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/wiki-settings.tsx:473
 msgid "Deleting..."
@@ -1224,6 +1268,7 @@ msgid "Does not match the required pattern"
 msgstr "Ne correspond pas au motif requis"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:309
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:495
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:523
 msgid "Done"
 msgstr "Terminé"
@@ -1243,7 +1288,7 @@ msgstr "Échec du téléchargement"
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
 msgstr "Glissez-déposez des fichiers ici ou cliquez sur « Téléverser des fichiers » pour commencer."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:67
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:71
 msgid "Duplicates"
 msgstr "Duplique"
 
@@ -1336,6 +1381,10 @@ msgstr "Lien d'intégration copié"
 msgid "Enter a search term"
 msgstr "Saisissez un terme de recherche"
 
+#: ../../../lib/web/src/components/banner-section.tsx:88
+msgid "Enter banner text (markdown supported)..."
+msgstr "Entrez le texte de la bannière (markdown pris en charge)…"
+
 #: src/features/wiki/tag-manager.tsx:147
 msgid "Enter tag name"
 msgstr "Entrez le nom de l'étiquette"
@@ -1351,6 +1400,10 @@ msgstr "Saisissez le code de votre application d'authentification"
 #: src/features/wiki/wiki-settings.tsx:396
 msgid "Entity ID"
 msgstr "ID d'entité"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:381
+msgid "Error"
+msgstr "Erreur"
 
 #: src/features/wiki/wiki-page-content.tsx:191
 msgid "Error: Received invalid response from server."
@@ -1393,7 +1446,7 @@ msgstr "Échec de l'ajout de l'étiquette"
 msgid "Failed to copy"
 msgstr "Échec de la copie"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:137
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:131
 #: ../../../lib/web/src/components/options-menu.tsx:98
 #: src/components/link-dialog.tsx:43
 msgid "Failed to create link"
@@ -1412,6 +1465,10 @@ msgstr "Échec de la création de la redirection"
 msgid "Failed to create wiki"
 msgstr "Échec de la création du wiki"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:303
+msgid "Failed to delete"
+msgstr "Échec de la suppression"
+
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:130
 #: src/features/wiki/attachments-page.tsx:270
 #: src/features/wiki/page-editor.tsx:256
@@ -1422,7 +1479,7 @@ msgstr "Échec de la suppression de la pièce jointe"
 msgid "Failed to delete comment"
 msgstr "Échec de la suppression du commentaire"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:159
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:153
 msgid "Failed to delete link"
 msgstr "Échec de la suppression du lien"
 
@@ -1466,6 +1523,11 @@ msgstr "Échec du chargement de l'historique"
 msgid "Failed to load image"
 msgstr "Échec du chargement de l'image"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:382
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:385
+msgid "Failed to load item"
+msgstr "Échec du chargement de l'élément"
+
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:213
 msgid "Failed to load prompts"
 msgstr "Échec du chargement des invites"
@@ -1490,6 +1552,10 @@ msgstr "Échec du chargement des informations du wiki"
 #: src/routes/_authenticated/index.tsx:137
 msgid "Failed to load wikis"
 msgstr "Échec du chargement des wikis"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:317
+msgid "Failed to move"
+msgstr "Échec du déplacement"
 
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx:155
 msgid "Failed to post comment"
@@ -1528,6 +1594,10 @@ msgstr "Échec du retour à l'ancienne version"
 #: src/routes/_authenticated/index.tsx:616
 msgid "Failed to revoke RSS access"
 msgstr "Échec de la révocation de l'accès RSS"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:273
+msgid "Failed to save"
+msgstr "Échec de l'enregistrement"
 
 #: src/features/wiki/attachments-page.tsx:255
 msgid "Failed to save caption"
@@ -1575,9 +1645,17 @@ msgstr "Échec du désabonnement"
 msgid "Failed to update access level"
 msgstr "Échec de la mise à jour du niveau d'accès"
 
+#: ../../../lib/web/src/components/banner-section.tsx:71
+msgid "Failed to update banner"
+msgstr "Échec de la mise à jour de la bannière"
+
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx:175
 msgid "Failed to update comment"
 msgstr "Échec de la mise à jour du commentaire"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:288
+msgid "Failed to update watching"
+msgstr "Échec de la mise à jour du suivi"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:114
 msgid "Failed to upload attachment"
@@ -1588,7 +1666,7 @@ msgstr "Échec du téléversement de la pièce jointe"
 msgid "Failed to upload files"
 msgstr "Échec du téléversement des fichiers"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:611
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:605
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:160
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:180
 msgid "Files"
@@ -1776,6 +1854,10 @@ msgstr "Numéro de version invalide"
 msgid "It seems like the page you're looking for <0/>does not exist or might have been removed."
 msgstr "Il semble que la page que vous recherchez <0/>n'existe pas ou a été supprimée."
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:441
+msgid "Item details"
+msgstr "Détails de l'élément"
+
 #: src/routes/_authenticated/join.tsx:49
 msgid "Joined wiki"
 msgstr "A rejoint le wiki"
@@ -1825,7 +1907,7 @@ msgstr "Lien"
 msgid "Link to {headingText}"
 msgstr "Lien vers {headingText}"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:279
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:273
 msgid "Links"
 msgstr "Liens"
 
@@ -1847,6 +1929,14 @@ msgstr "Charger plus"
 #: ../../../lib/web/src/components/ui/loading-content.tsx:26
 msgid "Loading content…"
 msgstr "Chargement du contenu…"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:365
+msgid "Loading item"
+msgstr "Chargement de l'élément"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:366
+msgid "Loading item details"
+msgstr "Chargement des détails de l'élément"
 
 #: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: ../../../lib/web/src/features/document/document-page.tsx:88
@@ -1987,7 +2077,7 @@ msgstr "Erreur réseau"
 msgid "Never"
 msgstr "Jamais"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:498
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:492
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "Nouveau"
@@ -2036,7 +2126,7 @@ msgstr "nom-nouvelle-page"
 msgid "Next image"
 msgstr "Image suivante"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:577
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:571
 msgid "No {parentClassNames} to add to"
 msgstr "Aucun {parentClassNames} auquel ajouter"
 
@@ -2078,11 +2168,11 @@ msgstr "Aucune partie pour le moment"
 msgid "No groups available"
 msgstr "Aucun groupe disponible"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "Aucun type d'élément ne peut encore être créé. Créez d'abord les éléments parents requis."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:354
 msgid "No matching objects"
 msgstr "Aucun objet correspondant"
 
@@ -2166,9 +2256,13 @@ msgid "No wikis found"
 msgstr "Aucun wiki trouvé"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:560
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:563
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:554
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:557
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:561
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:557
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:570
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:571
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:575
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
@@ -2352,7 +2446,9 @@ msgstr "L'URL de la page est obligatoire"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "Pages étiquetées <0>{tag}</0>"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:552
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:546
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:553
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:569
 msgid "Parent"
 msgstr "Parent"
 
@@ -2428,6 +2524,10 @@ msgstr "Traitement…"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:108
 msgid "Prompt saved"
 msgstr "Invite enregistrée"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:408
+msgid "Properties"
+msgstr "Propriétés"
 
 #: ../../../lib/web/src/features/accounts/types.ts:21
 msgid "Push notification"
@@ -2523,7 +2623,7 @@ msgstr "Redirections"
 msgid "Reduce interest"
 msgstr "Réduire l'intérêt"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:65
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:69
 msgid "Relates"
 msgstr "Se rapporte à"
 
@@ -2582,8 +2682,8 @@ msgstr "Supprimer l'intérêt"
 msgid "Remove item"
 msgstr "Supprimer l'élément"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:304
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:309
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:298
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:303
 msgid "Remove link"
 msgstr "Supprimer le lien"
 
@@ -2685,6 +2785,18 @@ msgstr "Requis"
 msgid "Resend email"
 msgstr "Renvoyer l'e-mail"
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:48
+msgid "Resign"
+msgstr "Abandonner"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:35
+msgid "Resign game?"
+msgstr "Abandonner la partie ?"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:45
+msgid "Resigning..."
+msgstr "Abandon..."
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:348
 msgid "Retry"
 msgstr "Réessayer"
@@ -2775,6 +2887,7 @@ msgstr "Samedi"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: ../../../lib/web/src/components/attachment-composer.tsx:430
+#: ../../../lib/web/src/components/banner-section.tsx:99
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:172
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:126
@@ -2851,7 +2964,7 @@ msgstr "Rechercher des wikis publics ou saisissez directement un ID d'entité."
 msgid "Search for wikis..."
 msgstr "Rechercher des wikis..."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:337
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:331
 msgid "Search objects..."
 msgstr "Rechercher des objets…"
 
@@ -3082,6 +3195,11 @@ msgstr "Lancez la discussion en ajoutant le premier commentaire."
 msgid "Start your first wiki"
 msgstr "Démarrez votre premier wiki"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:471
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:476
+msgid "Stop watching"
+msgstr "Arrêter de suivre"
+
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "Sujet"
@@ -3302,6 +3420,10 @@ msgstr "Ce fichier est trop volumineux pour la limite d'envoi actuelle du serveu
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "Ce fichier est trop volumineux pour être envoyé. Essayez un fichier plus petit."
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:70
+msgid "This permanently deletes the game and its chat. This cannot be undone."
+msgstr "Cette action supprime définitivement la partie et son chat. Cette action est irréversible."
+
 #: src/features/wiki/wiki-settings.tsx:411
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Ce wiki est abonné à un wiki source et reçoit ses mises à jour."
@@ -3505,9 +3627,8 @@ msgstr "Type de fichier non pris en charge : {names}. Fichiers pris en charge : 
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Types de fichier non pris en charge : {names}. Fichiers pris en charge : images, PDF, DOC, DOCX, TXT et MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:299
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:178
+#: ../../../lib/web/src/lib/entity-title.ts:40
 #: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "Sans titre"
@@ -3536,7 +3657,7 @@ msgstr "{field} mis à jour"
 msgid "Updating access..."
 msgstr "Mise à jour de l'accès..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:661
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:655
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:304
 msgid "Upload"
 msgstr "Téléverser"
@@ -3637,6 +3758,10 @@ msgstr "Voir"
 msgid "View all notifications"
 msgstr "Voir toutes les notifications"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:442
+msgid "View and edit item details"
+msgstr "Voir et modifier les détails de l'élément"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:170
 msgid "View controls"
 msgstr "Contrôles de la vue"
@@ -3652,6 +3777,11 @@ msgstr "Affichage de l'historique de <0>{slug}</0>, version actuelle {currentVer
 #: ../../../lib/web/src/lib/shell-errors.ts:33
 msgid "Voice recording is not supported in this browser"
 msgstr "L'enregistrement vocal n'est pas pris en charge par ce navigateur"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:471
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:476
+msgid "Watch"
+msgstr "Suivre"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:269
 #: ../../../lib/web/src/components/filter-bar.tsx:35

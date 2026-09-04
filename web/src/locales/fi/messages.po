@@ -220,6 +220,10 @@ msgstr "Tilin tyyppi"
 msgid "Actions"
 msgstr "Toiminnot"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:415
+msgid "Activity"
+msgstr "Toiminta"
+
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx:758
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
@@ -271,7 +275,7 @@ msgstr "Lisää kenttä"
 msgid "Add item..."
 msgstr "Lisää kohde..."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:314
 msgid "Add link"
 msgstr "Lisää linkki"
 
@@ -384,6 +388,10 @@ msgstr "Oletko aivan varma?"
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "Haluatko varmasti poistaa kohteen \"{0}\"?"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:671
+msgid "Are you sure you want to delete \"{title}\"? This action cannot be undone."
+msgstr "Haluatko varmasti poistaa kohteen \"{title}\"? Tätä toimintoa ei voi kumota."
+
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:631
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "Haluatko varmasti poistaa sarakkeen \"{name}\"? Tätä ei voi kumota."
@@ -399,6 +407,14 @@ msgstr "Haluatko varmasti poistaa tämän kommentin? Tämä poistaa myös kaikki
 #: ../../../lib/web/src/components/sign-out-dialog.tsx:27
 msgid "Are you sure you want to log out? You will need to log in again to access your account."
 msgstr "Haluatko varmasti kirjautua ulos? Sinun täytyy kirjautua uudelleen sisään päästäksesi tilillesi."
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:39
+msgid "Are you sure you want to resign?"
+msgstr "Haluatko varmasti luovuttaa?"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:38
+msgid "Are you sure you want to resign? {opponentName} will win the game."
+msgstr "Haluatko varmasti luovuttaa? {opponentName} voittaa pelin."
 
 #: src/features/wiki/wiki-page-content.tsx:404
 #: src/routes/_authenticated/$page/index.tsx:303
@@ -542,16 +558,25 @@ msgstr "Takaisin sivulle"
 msgid "Back to wikis"
 msgstr "Takaisin wikeihin"
 
+#: ../../../lib/web/src/components/banner-section.tsx:80
 #: ../../../lib/web/src/components/entity-banner.tsx:17
 msgid "Banner"
 msgstr "Banneri"
+
+#: ../../../lib/web/src/components/banner-section.tsx:69
+msgid "Banner removed"
+msgstr "Banneri poistettu"
+
+#: ../../../lib/web/src/components/banner-section.tsx:69
+msgid "Banner updated"
+msgstr "Banneri päivitetty"
 
 #: src/features/wiki/page-comments.tsx:153
 msgid "Be the first to comment on this page."
 msgstr "Ole ensimmäinen, joka kommentoi tätä sivua."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:68
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:215
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:72
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:209
 msgid "Blocked by"
 msgstr "Estää"
 
@@ -560,7 +585,7 @@ msgstr "Estää"
 msgid "Blocked navigation to untrusted link"
 msgstr "Estetty siirtyminen epäluotettavaan linkkiin"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:66
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:70
 msgid "Blocks"
 msgstr "Estää"
 
@@ -708,6 +733,7 @@ msgstr "Valitse peli sivupalkista tai aloita uusi."
 msgid "Choose language"
 msgstr "Valitse kieli"
 
+#: ../../../lib/web/src/components/banner-section.tsx:111
 #: ../../../lib/web/src/components/colour-picker.tsx:274
 #: ../../../lib/web/src/components/colour-picker.tsx:355
 #: ../../../lib/web/src/components/travelling-picker.tsx:145
@@ -727,8 +753,8 @@ msgstr "Tyhjennä kaikki"
 msgid "Clear search"
 msgstr "Tyhjennä haku"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:517
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:480
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:483
@@ -810,6 +836,11 @@ msgstr "Kommentin toiminnot"
 #: src/routes/_authenticated/index.tsx:722
 msgid "Comments"
 msgstr "Kommentit"
+
+#. placeholder {0}: data.comment_count || 0
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:411
+msgid "Comments ({0})"
+msgstr "Kommentit ({0})"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:90
 msgid "Compact"
@@ -909,8 +940,8 @@ msgstr "Vahvistaminen tällä tilillä ei onnistunut. Yritä uudelleen."
 
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:551
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:691
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:513
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:507
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:676
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
 msgid "Create"
 msgstr "Luo"
@@ -985,7 +1016,7 @@ msgstr "Luodaan uudelleenohjausta..."
 msgid "Creating wiki..."
 msgstr "Luodaan wikiä..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:676
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:260
 #: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
@@ -1046,6 +1077,8 @@ msgstr "Oletuslajittelu"
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:208
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:255
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:317
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:672
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:78
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:648
@@ -1087,6 +1120,16 @@ msgstr "Poista kommentti"
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:304
 msgid "Delete field"
 msgstr "Poista kenttä"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:69
+msgid "Delete game?"
+msgstr "Poistetaanko peli?"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:486
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:491
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:670
+msgid "Delete item"
+msgstr "Poista kohde"
 
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:117
 msgid "Delete option"
@@ -1161,6 +1204,7 @@ msgstr "Poistetaan uudelleenohjausta..."
 msgid "Deleting wiki..."
 msgstr "Poistetaan wikiä..."
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:75
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/wiki-settings.tsx:473
 msgid "Deleting..."
@@ -1224,6 +1268,7 @@ msgid "Does not match the required pattern"
 msgstr "Ei vastaa vaadittua kaavaa"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:309
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:495
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:523
 msgid "Done"
 msgstr "Valmis"
@@ -1243,7 +1288,7 @@ msgstr "Lataus epäonnistui"
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
 msgstr "Vedä ja pudota tiedostot tähän, tai aloita napsauttamalla «Lataa tiedostot»."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:67
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:71
 msgid "Duplicates"
 msgstr "Duplikoi"
 
@@ -1336,6 +1381,10 @@ msgstr "Upotuslinkki kopioitu"
 msgid "Enter a search term"
 msgstr "Anna hakusana"
 
+#: ../../../lib/web/src/components/banner-section.tsx:88
+msgid "Enter banner text (markdown supported)..."
+msgstr "Anna bannerin teksti (markdown tuettu)..."
+
 #: src/features/wiki/tag-manager.tsx:147
 msgid "Enter tag name"
 msgstr "Anna tunnisteen nimi"
@@ -1351,6 +1400,10 @@ msgstr "Anna todennussovelluksen koodi"
 #: src/features/wiki/wiki-settings.tsx:396
 msgid "Entity ID"
 msgstr "Entiteetin tunnus"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:381
+msgid "Error"
+msgstr "Virhe"
 
 #: src/features/wiki/wiki-page-content.tsx:191
 msgid "Error: Received invalid response from server."
@@ -1393,7 +1446,7 @@ msgstr "Tunnisteen lisääminen epäonnistui"
 msgid "Failed to copy"
 msgstr "Kopiointi epäonnistui"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:137
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:131
 #: ../../../lib/web/src/components/options-menu.tsx:98
 #: src/components/link-dialog.tsx:43
 msgid "Failed to create link"
@@ -1412,6 +1465,10 @@ msgstr "Uudelleenohjauksen luominen epäonnistui"
 msgid "Failed to create wiki"
 msgstr "Wikin luominen epäonnistui"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:303
+msgid "Failed to delete"
+msgstr "Poistaminen epäonnistui"
+
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:130
 #: src/features/wiki/attachments-page.tsx:270
 #: src/features/wiki/page-editor.tsx:256
@@ -1422,7 +1479,7 @@ msgstr "Liitteen poistaminen epäonnistui"
 msgid "Failed to delete comment"
 msgstr "Kommentin poistaminen epäonnistui"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:159
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:153
 msgid "Failed to delete link"
 msgstr "Linkin poistaminen epäonnistui"
 
@@ -1466,6 +1523,11 @@ msgstr "Historian lataus epäonnistui"
 msgid "Failed to load image"
 msgstr "Kuvan lataus epäonnistui"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:382
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:385
+msgid "Failed to load item"
+msgstr "Kohteen lataus epäonnistui"
+
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:213
 msgid "Failed to load prompts"
 msgstr "Kehotteiden lataus epäonnistui"
@@ -1490,6 +1552,10 @@ msgstr "Wiki-tietojen lataus epäonnistui"
 #: src/routes/_authenticated/index.tsx:137
 msgid "Failed to load wikis"
 msgstr "Wikien lataus epäonnistui"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:317
+msgid "Failed to move"
+msgstr "Siirto epäonnistui"
 
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx:155
 msgid "Failed to post comment"
@@ -1528,6 +1594,10 @@ msgstr "Sivun palauttaminen epäonnistui"
 #: src/routes/_authenticated/index.tsx:616
 msgid "Failed to revoke RSS access"
 msgstr "RSS-käyttöoikeuden peruuttaminen epäonnistui"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:273
+msgid "Failed to save"
+msgstr "Tallennus epäonnistui"
 
 #: src/features/wiki/attachments-page.tsx:255
 msgid "Failed to save caption"
@@ -1575,9 +1645,17 @@ msgstr "Tilauksen peruutus epäonnistui"
 msgid "Failed to update access level"
 msgstr "Käyttöoikeustason päivitys epäonnistui"
 
+#: ../../../lib/web/src/components/banner-section.tsx:71
+msgid "Failed to update banner"
+msgstr "Bannerin päivitys epäonnistui"
+
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx:175
 msgid "Failed to update comment"
 msgstr "Kommentin päivitys epäonnistui"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:288
+msgid "Failed to update watching"
+msgstr "Seurannan päivitys epäonnistui"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:114
 msgid "Failed to upload attachment"
@@ -1588,7 +1666,7 @@ msgstr "Liitteen lähetys epäonnistui"
 msgid "Failed to upload files"
 msgstr "Tiedostojen lähetys epäonnistui"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:611
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:605
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:160
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:180
 msgid "Files"
@@ -1776,6 +1854,10 @@ msgstr "Virheellinen versionumero"
 msgid "It seems like the page you're looking for <0/>does not exist or might have been removed."
 msgstr "Näyttää siltä, että etsimääsi sivua <0/>ei ole olemassa tai se on poistettu."
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:441
+msgid "Item details"
+msgstr "Kohteen tiedot"
+
 #: src/routes/_authenticated/join.tsx:49
 msgid "Joined wiki"
 msgstr "Liityit wikiin"
@@ -1825,7 +1907,7 @@ msgstr "Linkki"
 msgid "Link to {headingText}"
 msgstr "Linkki kohteeseen {headingText}"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:279
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:273
 msgid "Links"
 msgstr "Linkit"
 
@@ -1847,6 +1929,14 @@ msgstr "Lataa lisää"
 #: ../../../lib/web/src/components/ui/loading-content.tsx:26
 msgid "Loading content…"
 msgstr "Ladataan sisältöä…"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:365
+msgid "Loading item"
+msgstr "Ladataan kohdetta"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:366
+msgid "Loading item details"
+msgstr "Ladataan kohteen tietoja"
 
 #: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: ../../../lib/web/src/features/document/document-page.tsx:88
@@ -1987,7 +2077,7 @@ msgstr "Verkkovirhe"
 msgid "Never"
 msgstr "Ei koskaan"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:498
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:492
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "Uusi"
@@ -2036,7 +2126,7 @@ msgstr "uusi-sivu"
 msgid "Next image"
 msgstr "Seuraava kuva"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:577
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:571
 msgid "No {parentClassNames} to add to"
 msgstr "Ei {parentClassNames}, johon lisätä"
 
@@ -2078,11 +2168,11 @@ msgstr "Ei vielä pelejä"
 msgid "No groups available"
 msgstr "Ei saatavilla olevia ryhmiä"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "Mitään kohdetyyppiä ei voi vielä luoda. Luo ensin vaaditut yläkohteet."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:354
 msgid "No matching objects"
 msgstr "Ei vastaavia kohteita"
 
@@ -2166,9 +2256,13 @@ msgid "No wikis found"
 msgstr "Wikejä ei löytynyt"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:560
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:563
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:554
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:557
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:561
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:557
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:570
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:571
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:575
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
@@ -2352,7 +2446,9 @@ msgstr "Sivun URL vaaditaan"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "Sivut, joilla on tunniste <0>{tag}</0>"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:552
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:546
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:553
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:569
 msgid "Parent"
 msgstr "Yläkohde"
 
@@ -2428,6 +2524,10 @@ msgstr "Käsitellään…"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:108
 msgid "Prompt saved"
 msgstr "Kehote tallennettu"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:408
+msgid "Properties"
+msgstr "Ominaisuudet"
 
 #: ../../../lib/web/src/features/accounts/types.ts:21
 msgid "Push notification"
@@ -2523,7 +2623,7 @@ msgstr "Uudelleenohjaukset"
 msgid "Reduce interest"
 msgstr "Vähennä kiinnostusta"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:65
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:69
 msgid "Relates"
 msgstr "Liittyy"
 
@@ -2582,8 +2682,8 @@ msgstr "Poista kiinnostus"
 msgid "Remove item"
 msgstr "Poista kohde"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:304
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:309
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:298
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:303
 msgid "Remove link"
 msgstr "Poista linkki"
 
@@ -2685,6 +2785,18 @@ msgstr "Pakollinen"
 msgid "Resend email"
 msgstr "Lähetä sähköposti uudelleen"
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:48
+msgid "Resign"
+msgstr "Luovuta"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:35
+msgid "Resign game?"
+msgstr "Luovutatko pelin?"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:45
+msgid "Resigning..."
+msgstr "Luovutetaan..."
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:348
 msgid "Retry"
 msgstr "Yritä uudelleen"
@@ -2775,6 +2887,7 @@ msgstr "Lauantai"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: ../../../lib/web/src/components/attachment-composer.tsx:430
+#: ../../../lib/web/src/components/banner-section.tsx:99
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:172
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:126
@@ -2851,7 +2964,7 @@ msgstr "Hae julkisia wikejä tai syötä entiteetin tunnus suoraan."
 msgid "Search for wikis..."
 msgstr "Hae wikejä..."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:337
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:331
 msgid "Search objects..."
 msgstr "Hae kohteita..."
 
@@ -3082,6 +3195,11 @@ msgstr "Aloita keskustelu lisäämällä ensimmäinen kommentti."
 msgid "Start your first wiki"
 msgstr "Aloita ensimmäinen wikisi"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:471
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:476
+msgid "Stop watching"
+msgstr "Lopeta seuranta"
+
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "Aihe"
@@ -3302,6 +3420,10 @@ msgstr "Tämä tiedosto on liian suuri palvelimen nykyiselle latausrajalle. Koke
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "Tämä tiedosto on liian suuri ladattavaksi. Kokeile pienempää tiedostoa."
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:70
+msgid "This permanently deletes the game and its chat. This cannot be undone."
+msgstr "Tämä poistaa pelin ja sen keskustelun pysyvästi. Tätä ei voi peruuttaa."
+
 #: src/features/wiki/wiki-settings.tsx:411
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Tämä wiki on tilannut lähde-wikin ja saa siltä päivityksiä."
@@ -3505,9 +3627,8 @@ msgstr "Tukematon tiedostotyyppi: {names}. Tuetut tiedostot: kuvat, PDF, DOC, DO
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Tukemattomat tiedostotyypit: {names}. Tuetut tiedostot: kuvat, PDF, DOC, DOCX, TXT ja MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:299
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:178
+#: ../../../lib/web/src/lib/entity-title.ts:40
 #: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "Nimetön"
@@ -3536,7 +3657,7 @@ msgstr "{field} päivitetty"
 msgid "Updating access..."
 msgstr "Päivitetään käyttöoikeutta..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:661
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:655
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:304
 msgid "Upload"
 msgstr "Lähetä"
@@ -3637,6 +3758,10 @@ msgstr "Näytä"
 msgid "View all notifications"
 msgstr "Näytä kaikki ilmoitukset"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:442
+msgid "View and edit item details"
+msgstr "Näytä ja muokkaa kohteen tietoja"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:170
 msgid "View controls"
 msgstr "Näkymän hallinta"
@@ -3652,6 +3777,11 @@ msgstr "Tarkastellaan kohteen <0>{slug}</0> historiaa, nykyinen versio {currentV
 #: ../../../lib/web/src/lib/shell-errors.ts:33
 msgid "Voice recording is not supported in this browser"
 msgstr "Äänitallennusta ei tueta tässä selaimessa"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:471
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:476
+msgid "Watch"
+msgstr "Seuraa"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:269
 #: ../../../lib/web/src/components/filter-bar.tsx:35

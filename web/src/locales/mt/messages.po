@@ -220,6 +220,10 @@ msgstr "Tip ta' kont"
 msgid "Actions"
 msgstr "Azzjonijiet"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:415
+msgid "Activity"
+msgstr "Attività"
+
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx:758
 #: ../../../lib/web/src/features/access/access-dialog.tsx:332
 #: ../../../lib/web/src/features/accounts/account-add.tsx:209
@@ -271,7 +275,7 @@ msgstr "Żid kamp"
 msgid "Add item..."
 msgstr "Żid item..."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:320
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:314
 msgid "Add link"
 msgstr "Żid link"
 
@@ -384,6 +388,10 @@ msgstr "Żgur sa l-aħħar?"
 msgid "Are you sure you want to delete \"{0}\"?"
 msgstr "Żgur trid tħassar \"{0}\"?"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:671
+msgid "Are you sure you want to delete \"{title}\"? This action cannot be undone."
+msgstr "Żgur trid tħassar \"{title}\"? Din l-azzjoni ma tistax tiġi ndirizzata."
+
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:631
 msgid "Are you sure you want to delete the \"{name}\" column? This cannot be undone."
 msgstr "Żgur trid tħassar il-kolonna \"{name}\"? Dan ma jistax jiġi ndirizzat."
@@ -399,6 +407,14 @@ msgstr "Żgur trid tħassar dan il-kumment? Dan iħassar ukoll ir-risposti kollh
 #: ../../../lib/web/src/components/sign-out-dialog.tsx:27
 msgid "Are you sure you want to log out? You will need to log in again to access your account."
 msgstr "Żgur trid toħroġ? Trid terġa' tidħol biex taċċessa l-kont tiegħek."
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:39
+msgid "Are you sure you want to resign?"
+msgstr "Żgur trid tirriżenja?"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:38
+msgid "Are you sure you want to resign? {opponentName} will win the game."
+msgstr "Żgur trid tirriżenja? {opponentName} tirbaħ il-logħba."
 
 #: src/features/wiki/wiki-page-content.tsx:404
 #: src/routes/_authenticated/$page/index.tsx:303
@@ -542,16 +558,25 @@ msgstr "Lura għall-paġna"
 msgid "Back to wikis"
 msgstr "Lura għall-wikis"
 
+#: ../../../lib/web/src/components/banner-section.tsx:80
 #: ../../../lib/web/src/components/entity-banner.tsx:17
 msgid "Banner"
 msgstr "Banner"
+
+#: ../../../lib/web/src/components/banner-section.tsx:69
+msgid "Banner removed"
+msgstr "Banner imneħħi"
+
+#: ../../../lib/web/src/components/banner-section.tsx:69
+msgid "Banner updated"
+msgstr "Banner aġġornat"
 
 #: src/features/wiki/page-comments.tsx:153
 msgid "Be the first to comment on this page."
 msgstr "Kun l-ewwel li tikkummenta fuq din il-paġna."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:68
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:215
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:72
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:209
 msgid "Blocked by"
 msgstr "Imblokkat minn"
 
@@ -560,7 +585,7 @@ msgstr "Imblokkat minn"
 msgid "Blocked navigation to untrusted link"
 msgstr "Navigazzjoni mblokkata lejn link mhux fdat"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:66
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:70
 msgid "Blocks"
 msgstr "Blocks"
 
@@ -708,6 +733,7 @@ msgstr "Agħżel logħba mill-barra tal-ġenb jew ibda waħda ġdida."
 msgid "Choose language"
 msgstr "Agħżel lingwa"
 
+#: ../../../lib/web/src/components/banner-section.tsx:111
 #: ../../../lib/web/src/components/colour-picker.tsx:274
 #: ../../../lib/web/src/components/colour-picker.tsx:355
 #: ../../../lib/web/src/components/travelling-picker.tsx:145
@@ -727,8 +753,8 @@ msgstr "Naddaf kollox"
 msgid "Clear search"
 msgstr "Naddaf it-tiftix"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:517
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:522
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:480
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx:483
@@ -810,6 +836,11 @@ msgstr "Azzjonijiet tal-kumment"
 #: src/routes/_authenticated/index.tsx:722
 msgid "Comments"
 msgstr "Kummenti"
+
+#. placeholder {0}: data.comment_count || 0
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:411
+msgid "Comments ({0})"
+msgstr "Kummenti ({0})"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:90
 msgid "Compact"
@@ -909,8 +940,8 @@ msgstr "Ma stajniex nivverifikaw b'dak il-kont. Jekk jogħġbok erġa' pprova."
 
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:551
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:691
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:513
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:507
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:676
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx:672
 msgid "Create"
 msgstr "Oħloq"
@@ -985,7 +1016,7 @@ msgstr "Qed jinħoloq ridirezzjoni..."
 msgid "Creating wiki..."
 msgstr "Qed jinħoloq wiki..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:682
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:676
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx:260
 #: src/features/wiki/page-editor.tsx:403
 #: src/features/wiki/redirects-page.tsx:274
@@ -1046,6 +1077,8 @@ msgstr "Ssortjar default"
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:208
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:255
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:317
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:672
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:78
 #: src/features/wiki/attachments-page.tsx:532
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/page-editor.tsx:648
@@ -1087,6 +1120,16 @@ msgstr "Ħassar kumment"
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:304
 msgid "Delete field"
 msgstr "Ħassar kamp"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:69
+msgid "Delete game?"
+msgstr "Ħassar il-logħba?"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:486
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:491
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:670
+msgid "Delete item"
+msgstr "Ħassar item"
 
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:117
 msgid "Delete option"
@@ -1161,6 +1204,7 @@ msgstr "Qed titħassar ridirezzjoni..."
 msgid "Deleting wiki..."
 msgstr "Qed jitħassar wiki..."
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:75
 #: src/features/wiki/delete-page.tsx:86
 #: src/features/wiki/wiki-settings.tsx:473
 msgid "Deleting..."
@@ -1224,6 +1268,7 @@ msgid "Does not match the required pattern"
 msgstr "Ma jaqbilx mal-mudell meħtieġ"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:309
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:495
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:523
 msgid "Done"
 msgstr "Lest"
@@ -1243,7 +1288,7 @@ msgstr "It-tniżżil falla"
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
 msgstr "Iġbed u itfa' fajls hawn, jew ikklikkja \"Tella' fajls\" biex tibda."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:67
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:71
 msgid "Duplicates"
 msgstr "Duplikati"
 
@@ -1336,6 +1381,10 @@ msgstr "Il-link tal-embed ġie ikkupjat"
 msgid "Enter a search term"
 msgstr "Daħħal terminu ta' tiftix"
 
+#: ../../../lib/web/src/components/banner-section.tsx:88
+msgid "Enter banner text (markdown supported)..."
+msgstr "Daħħal it-test tal-banner (markdown sapportit)..."
+
 #: src/features/wiki/tag-manager.tsx:147
 msgid "Enter tag name"
 msgstr "Daħħal isem tat-tag"
@@ -1351,6 +1400,10 @@ msgstr "Daħħal il-kodiċi tal-awtentikatur tiegħek"
 #: src/features/wiki/wiki-settings.tsx:396
 msgid "Entity ID"
 msgstr "ID tal-entità"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:381
+msgid "Error"
+msgstr "Żball"
 
 #: src/features/wiki/wiki-page-content.tsx:191
 msgid "Error: Received invalid response from server."
@@ -1393,7 +1446,7 @@ msgstr "Ma rnexxiex jiżdied it-tag"
 msgid "Failed to copy"
 msgstr "Ma rnexxiex jiġi kkupjat"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:137
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:131
 #: ../../../lib/web/src/components/options-menu.tsx:98
 #: src/components/link-dialog.tsx:43
 msgid "Failed to create link"
@@ -1412,6 +1465,10 @@ msgstr "Ma rnexxiex jinħoloq ir-redirect"
 msgid "Failed to create wiki"
 msgstr "Ma rnexxiex tinħoloq il-wiki"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:303
+msgid "Failed to delete"
+msgstr "Ma rnexxiex jitħassar"
+
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:130
 #: src/features/wiki/attachments-page.tsx:270
 #: src/features/wiki/page-editor.tsx:256
@@ -1422,7 +1479,7 @@ msgstr "Ma rnexxiex jitħassar l-attachment"
 msgid "Failed to delete comment"
 msgstr "Ma rnexxiex jitħassar il-kumment"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:159
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:153
 msgid "Failed to delete link"
 msgstr "Ma rnexxiex jitħassar il-link"
 
@@ -1466,6 +1523,11 @@ msgstr "Ma rnexxiex titgħabba l-istorja"
 msgid "Failed to load image"
 msgstr "Ma rnexxielux jitgħabba l-istampa"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:382
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:385
+msgid "Failed to load item"
+msgstr "Ma rnexxiex jitgħabba l-oġġett"
+
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:213
 msgid "Failed to load prompts"
 msgstr "Ma rnexxiex jitgħabbew il-prompts"
@@ -1490,6 +1552,10 @@ msgstr "Ma rnexxiex titgħabba l-informazzjoni tal-wiki"
 #: src/routes/_authenticated/index.tsx:137
 msgid "Failed to load wikis"
 msgstr "Ma rnexxiex jitgħabbew il-wikis"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:317
+msgid "Failed to move"
+msgstr "Ma rnexxiex jiġi mċaqlaq"
 
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx:155
 msgid "Failed to post comment"
@@ -1528,6 +1594,10 @@ msgstr "Ma rnexxiex tiġi riverżjata l-paġna"
 #: src/routes/_authenticated/index.tsx:616
 msgid "Failed to revoke RSS access"
 msgstr "Ma rnexxiex jiġi rrevokat l-aċċess RSS"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:273
+msgid "Failed to save"
+msgstr "Ma rnexxiex jiġi ssejvjat"
 
 #: src/features/wiki/attachments-page.tsx:255
 msgid "Failed to save caption"
@@ -1575,9 +1645,17 @@ msgstr "Ma rnexxiex tiġi unsubscribed"
 msgid "Failed to update access level"
 msgstr "Ma rnexxiex jiġi aġġornat il-livell tal-aċċess"
 
+#: ../../../lib/web/src/components/banner-section.tsx:71
+msgid "Failed to update banner"
+msgstr "Ma rnexxiex jiġi aġġornat il-banner"
+
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx:175
 msgid "Failed to update comment"
 msgstr "Ma rnexxiex jiġi aġġornat il-kumment"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:288
+msgid "Failed to update watching"
+msgstr "Ma rnexxiex jiġi aġġornat is-segwitu"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:114
 msgid "Failed to upload attachment"
@@ -1588,7 +1666,7 @@ msgstr "Ma rnexxiex jittella' l-attachment"
 msgid "Failed to upload files"
 msgstr "Ma rnexxiex jittellgħu l-fajls"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:611
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:605
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:160
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:180
 msgid "Files"
@@ -1776,6 +1854,10 @@ msgstr "Numru tal-verżjoni invalidu"
 msgid "It seems like the page you're looking for <0/>does not exist or might have been removed."
 msgstr "Jidher li l-paġna li qed tfittex <0/>ma teżistix jew tneħħiet."
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:441
+msgid "Item details"
+msgstr "Dettalji tal-oġġett"
+
 #: src/routes/_authenticated/join.tsx:49
 msgid "Joined wiki"
 msgstr "Ingħaqdet mal-wiki"
@@ -1825,7 +1907,7 @@ msgstr "Ħolqa"
 msgid "Link to {headingText}"
 msgstr "Link għal {headingText}"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:279
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:273
 msgid "Links"
 msgstr "Links"
 
@@ -1847,6 +1929,14 @@ msgstr "Tella' aktar"
 #: ../../../lib/web/src/components/ui/loading-content.tsx:26
 msgid "Loading content…"
 msgstr "Qed jitgħabba l-kontenut…"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:365
+msgid "Loading item"
+msgstr "Qed jitgħabba l-oġġett"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:366
+msgid "Loading item details"
+msgstr "Qed jitgħabbew id-dettalji tal-oġġett"
 
 #: ../../../lib/web/src/components/ui/load-more.tsx:39
 #: ../../../lib/web/src/features/document/document-page.tsx:88
@@ -1987,7 +2077,7 @@ msgstr "Żball tan-network"
 msgid "Never"
 msgstr "Qatt"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:498
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:492
 #: ../../../lib/web/src/components/ui/sort-selector.tsx:43
 msgid "New"
 msgstr "Ġdid"
@@ -2036,7 +2126,7 @@ msgstr "isem-paġna-ġdid"
 msgid "Next image"
 msgstr "Stampa li jmiss"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:577
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:571
 msgid "No {parentClassNames} to add to"
 msgstr "L-ebda {parentClassNames} biex iżżid magħhom"
 
@@ -2078,11 +2168,11 @@ msgstr "L-ebda logħob s'issa"
 msgid "No groups available"
 msgstr "L-ebda gruppi disponibbli"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:544
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:538
 msgid "No item types can be created yet. Create the required parent items first."
 msgstr "L-ebda tipi ta' oġġetti jistgħu jinħolqu għadhom. Oħloq l-oġġetti tal-ġenitur meħtieġa l-ewwel."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:360
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:354
 msgid "No matching objects"
 msgstr "L-ebda oġġetti li jaqblu"
 
@@ -2166,9 +2256,13 @@ msgid "No wikis found"
 msgstr "Ma nstabu l-ebda wikis"
 
 #: ../../../lib/web/src/components/colour-picker.tsx:349
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:560
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:563
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:567
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:554
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:557
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:561
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:557
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:570
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:571
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:575
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:362
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:385
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:388
@@ -2352,7 +2446,9 @@ msgstr "URL tal-paġna huwa meħtieġ"
 msgid "Pages tagged <0>{tag}</0>"
 msgstr "Paġni mmarkati <0>{tag}</0>"
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:552
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:546
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:553
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:569
 msgid "Parent"
 msgstr "Ġenitur"
 
@@ -2428,6 +2524,10 @@ msgstr "Qed jiġi pproċessat…"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:108
 msgid "Prompt saved"
 msgstr "Prompt issejvjat"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:408
+msgid "Properties"
+msgstr "Proprjetajiet"
 
 #: ../../../lib/web/src/features/accounts/types.ts:21
 msgid "Push notification"
@@ -2523,7 +2623,7 @@ msgstr "Redirects"
 msgid "Reduce interest"
 msgstr "Naqqas l-interess"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:65
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:69
 msgid "Relates"
 msgstr "Relates"
 
@@ -2582,8 +2682,8 @@ msgstr "Neħħi interess"
 msgid "Remove item"
 msgstr "Neħħi oġġett"
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:304
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:309
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:298
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:303
 msgid "Remove link"
 msgstr "Neħħi l-link"
 
@@ -2685,6 +2785,18 @@ msgstr "Meħtieġ"
 msgid "Resend email"
 msgstr "Erġa' ibgħat l-email"
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:48
+msgid "Resign"
+msgstr "Irriżenja"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:35
+msgid "Resign game?"
+msgstr "Tirriżenja l-logħba?"
+
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:45
+msgid "Resigning..."
+msgstr "Qed jirriżenja..."
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:348
 msgid "Retry"
 msgstr "Erġa' pprova"
@@ -2775,6 +2887,7 @@ msgstr "Is-Sibt"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx:156
 #: ../../../lib/web/src/components/attachment-composer.tsx:430
+#: ../../../lib/web/src/components/banner-section.tsx:99
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:231
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx:172
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx:126
@@ -2851,7 +2964,7 @@ msgstr "Fittex wikis pubbliċi jew daħħal entity ID direttament."
 msgid "Search for wikis..."
 msgstr "Fittex wikis..."
 
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:337
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:331
 msgid "Search objects..."
 msgstr "Fittex oġġetti..."
 
@@ -3082,6 +3195,11 @@ msgstr "Ibda d-diskussjoni billi żżid l-ewwel kumment."
 msgid "Start your first wiki"
 msgstr "Ibda l-ewwel wiki tiegħek"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:471
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:476
+msgid "Stop watching"
+msgstr "Ieqaf segwi"
+
 #: ../../../lib/web/src/features/access/access-list.tsx:196
 msgid "Subject"
 msgstr "Suġġett"
@@ -3302,6 +3420,10 @@ msgstr "Dan il-fajl huwa kbir wisq għal-limitu attwali tal-upload tas-server. I
 msgid "This file is too large to upload. Try a smaller file."
 msgstr "Dan il-fajl huwa kbir wisq biex jittella'. Ipprova fajl iżgħar."
 
+#: ../../../lib/web/src/components/game/game-end-dialogs.tsx:70
+msgid "This permanently deletes the game and its chat. This cannot be undone."
+msgstr "Dan għad iħassar il-logħba u ċ-chat tagħha b'mod permanenti. Din l-azzjoni ma tistax titħassar."
+
 #: src/features/wiki/wiki-settings.tsx:411
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Din il-wiki hija abbonata ma' wiki sors u tirċievi aġġornamenti minnha."
@@ -3505,9 +3627,8 @@ msgstr "Tip ta' fajl mhux appoġġjat: {names}. Fajls appoġġjati: stampi, PDF,
 msgid "Unsupported file types: {names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD."
 msgstr "Tipi ta' fajls mhux appoġġjati: {names}. Fajls appoġġjati: stampi, PDF, DOC, DOCX, TXT, u MD."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:299
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:103
-#: ../../../lib/web/src/components/entity/entity-object-links.tsx:184
+#: ../../../lib/web/src/components/entity/entity-object-links.tsx:178
+#: ../../../lib/web/src/lib/entity-title.ts:40
 #: src/features/wiki/page-editor.tsx:420
 msgid "Untitled"
 msgstr "Bla titlu"
@@ -3536,7 +3657,7 @@ msgstr "Ġie aġġornat {field}"
 msgid "Updating access..."
 msgstr "Qed jiġi aġġornat l-aċċess..."
 
-#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:661
+#: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:655
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:304
 msgid "Upload"
 msgstr "Tella'"
@@ -3637,6 +3758,10 @@ msgstr "Ara"
 msgid "View all notifications"
 msgstr "Ara n-notifiki kollha"
 
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:442
+msgid "View and edit item details"
+msgstr "Ara u editja d-dettalji tal-oġġett"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:170
 msgid "View controls"
 msgstr "Ara l-kontrolli"
@@ -3652,6 +3777,11 @@ msgstr "Qed tara l-istorja għal <0>{slug}</0>, verżjoni attwali {currentVersio
 #: ../../../lib/web/src/lib/shell-errors.ts:33
 msgid "Voice recording is not supported in this browser"
 msgstr "Ir-reġistrazzjoni tal-vuċi mhijiex appoġġjata f'dan il-brawżer"
+
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:471
+#: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx:476
+msgid "Watch"
+msgstr "Segwi"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:269
 #: ../../../lib/web/src/components/filter-bar.tsx:35
