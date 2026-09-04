@@ -48,7 +48,7 @@ msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# परिणाम} other {# परिणाम}}"
 
 #. placeholder {0}: displayInfo.count
-#: ../../../lib/web/src/components/person-picker.tsx:257
+#: ../../../lib/web/src/components/person-picker.tsx:260
 msgid "{0, plural, one {# selected} other {# selected}}"
 msgstr "{0, plural, one {# चयनित} other {# चयनित}}"
 
@@ -84,19 +84,19 @@ msgstr "इस टैग के साथ {0}।"
 msgid "{commentCount, plural, one {1 comment} other {# comments}}"
 msgstr "{commentCount, plural, one {1 कमेंट} other {# कमेंट}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:176
+#: ../../../lib/web/src/lib/locale-format.ts:191
 msgid "{count, plural, one {#d} other {#d}}"
 msgstr "{count, plural, one {#दि} other {#दि}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:172
+#: ../../../lib/web/src/lib/locale-format.ts:187
 msgid "{count, plural, one {#h} other {#h}}"
 msgstr "{count, plural, one {#घं} other {#घं}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:168
+#: ../../../lib/web/src/lib/locale-format.ts:183
 msgid "{count, plural, one {#m} other {#m}}"
 msgstr "{count, plural, one {#मि} other {#मि}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:180
+#: ../../../lib/web/src/lib/locale-format.ts:195
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#सप्ता} other {#सप्ता}}"
 
@@ -172,6 +172,10 @@ msgstr "12 घंटे"
 #: ../../../lib/web/src/lib/preference-utils.ts:36
 msgid "24 hours"
 msgstr "24 घंटे"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:35
+msgid "A recording is already in progress."
+msgstr "एक रिकॉर्डिंग पहले से चल रही है।"
 
 #: ../../../lib/web/src/lib/preference-utils.ts:46
 msgid "Absolute (date and time)"
@@ -590,6 +594,14 @@ msgstr "टैग के अनुसार पेज ब्राउज़ क�
 msgid "Browser notifications"
 msgstr "ब्राउज़र नोटिफ़िकेशन"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:48
+msgid "Camera permission denied"
+msgstr "कैमरा अनुमति अस्वीकृत"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:56
+msgid "Camera unavailable"
+msgstr "कैमरा उपलब्ध नहीं"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:426
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
@@ -628,6 +640,12 @@ msgstr "टिप्पणी रद्द करें"
 #: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Cancel reply"
 msgstr "उत्तर रद्द करें"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:24
+#: ../../../lib/web/src/lib/shell-errors.ts:37
+#: ../../../lib/web/src/lib/shell-errors.ts:52
+msgid "Cancelled"
+msgstr "रद्द किया गया"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:386
 #: ../../../lib/web/src/components/attachment-composer.tsx:421
@@ -712,8 +730,8 @@ msgstr "खोज साफ़ करें"
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:479
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:480
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:483
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "बंद करें"
@@ -785,8 +803,8 @@ msgstr "टिप्पणी"
 msgid "Comment actions"
 msgstr "टिप्पणी क्रियाएँ"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:442
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:454
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:455
 #: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/index.tsx:454
 #: src/routes/_authenticated/index.tsx:722
@@ -1109,7 +1127,7 @@ msgstr "व्यू हटाएँ"
 msgid "Delete wiki"
 msgstr "wiki हटाएँ"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:95
+#: ../../../lib/web/src/components/restore-banner.tsx:101
 msgid "Delete your account on the old server"
 msgstr "पुराने सर्वर पर अपना खाता हटाएं"
 
@@ -1171,7 +1189,7 @@ msgstr "विवरण पैनल"
 msgid "Detect from web browser"
 msgstr "वेब ब्राउज़र से पता लगाएँ"
 
-#: ../../../lib/web/src/components/person-picker.tsx:190
+#: ../../../lib/web/src/components/person-picker.tsx:193
 msgid "Directory"
 msgstr "निर्देशिका"
 
@@ -1188,8 +1206,8 @@ msgstr "ड्राफ्ट त्यागें?"
 msgid "Disconnected"
 msgstr "डिस्कनेक्ट किया गया"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:74
 #: ../../../lib/web/src/components/restore-banner.tsx:80
+#: ../../../lib/web/src/components/restore-banner.tsx:86
 msgid "Dismiss"
 msgstr "खारिज करें"
 
@@ -1211,8 +1229,8 @@ msgid "Done"
 msgstr "पूर्ण"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:243
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:473
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:464
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:474
 msgid "Download"
 msgstr "डाउनलोड"
 
@@ -1444,7 +1462,7 @@ msgstr "एक्सेस नियम लोड करने में वि�
 msgid "Failed to load history"
 msgstr "इतिहास लोड करने में विफल"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:350
 msgid "Failed to load image"
 msgstr "छवि लोड नहीं हो सकी"
 
@@ -1460,7 +1478,7 @@ msgstr "रीडायरेक्ट लोड करने में वि�
 msgid "Failed to load replicas"
 msgstr "रेप्लिकाएँ लोड करने में विफल"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:350
 msgid "Failed to load video"
 msgstr "वीडियो लोड नहीं हो सका"
 
@@ -1589,7 +1607,7 @@ msgstr "विकी खोजें"
 msgid "Fingerprint"
 msgstr "फिंगरप्रिंट"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:83
+#: ../../../lib/web/src/components/restore-banner.tsx:89
 msgid "Finish moving your account"
 msgstr "अपना खाता स्थानांतरित करना पूरा करें"
 
@@ -1610,7 +1628,7 @@ msgstr "«{debouncedQuery}» के लिए {0} मिले"
 msgid "Friday"
 msgstr "शुक्रवार"
 
-#: ../../../lib/web/src/components/person-picker.tsx:183
+#: ../../../lib/web/src/components/person-picker.tsx:186
 msgid "Friends"
 msgstr "मित्र"
 
@@ -1701,7 +1719,7 @@ msgid "Image"
 msgstr "छवि"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:328
 msgid "Image viewer: {0}"
 msgstr "छवि व्यूअर: {0}"
 
@@ -1762,7 +1780,7 @@ msgstr "ऐसा लगता है कि आप जिस पृष्ठ �
 msgid "Joined wiki"
 msgstr "विकी में शामिल हुए"
 
-#: ../../../lib/web/src/lib/locale-format.ts:165
+#: ../../../lib/web/src/lib/locale-format.ts:180
 msgid "Just now"
 msgstr "अभी"
 
@@ -1893,6 +1911,10 @@ msgstr "संदेश"
 msgid "Metric"
 msgstr "मीट्रिक"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:31
+msgid "Microphone permission denied"
+msgstr "माइक्रोफ़ोन अनुमति अस्वीकृत"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:191
 msgid "Minimum length"
 msgstr "न्यूनतम लंबाई"
@@ -2009,8 +2031,8 @@ msgstr "नया URL वर्तमान URL से अलग होना �
 msgid "new-page-name"
 msgstr "नया-पृष्ठ-नाम"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:536
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:541
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:537
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:542
 msgid "Next image"
 msgstr "अगली इमेज"
 
@@ -2154,7 +2176,7 @@ msgstr "कोई विकी नहीं मिले"
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
-#: ../../../lib/web/src/components/person-picker.tsx:326
+#: ../../../lib/web/src/components/person-picker.tsx:329
 #: ../../../lib/web/src/lib/preference-utils.ts:100
 msgid "None"
 msgstr "कोई नहीं"
@@ -2339,18 +2361,23 @@ msgid "Passkey"
 msgstr "पासकी"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:195
+#: ../../../lib/web/src/lib/shell-errors.ts:26
 msgid "Passkey verification failed. Please try again."
 msgstr "पासकी सत्यापन विफल रहा। कृपया पुनः प्रयास करें।"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:132
+#: ../../../lib/web/src/components/restore-banner.tsx:138
 msgid "Passkeys"
 msgstr "पासकीज़"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:19
+msgid "Passkeys are not available in this browser"
+msgstr "इस ब्राउज़र में पासकीज़ उपलब्ध नहीं हैं"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:213
 msgid "Pattern (regex)"
 msgstr "पैटर्न (regex)"
 
-#: ../../../lib/web/src/components/person-picker.tsx:176
+#: ../../../lib/web/src/components/person-picker.tsx:179
 msgid "People"
 msgstr "लोग"
 
@@ -2384,8 +2411,8 @@ msgstr "पोस्ट्स और कमेंट्स"
 msgid "Preview"
 msgstr "प्रीव्यू"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:520
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:521
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:526
 msgid "Previous image"
 msgstr "पिछली इमेज"
 
@@ -2415,11 +2442,11 @@ msgstr "उठा हुआ"
 msgid "Re-derive from title"
 msgstr "शीर्षक से पुनः व्युत्पन्न करें"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:104
+#: ../../../lib/web/src/components/restore-banner.tsx:110
 msgid "Re-link your accounts on this server"
 msgstr "इस सर्वर पर अपने खाते पुनः लिंक करें"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:126
+#: ../../../lib/web/src/components/restore-banner.tsx:132
 msgid "Re-register your passkeys on this server"
 msgstr "इस सर्वर पर अपनी पासकी फिर से पंजीकृत करें"
 
@@ -2456,6 +2483,14 @@ msgstr "सुझाई गई विकीज़"
 #: ../../../lib/web/src/lib/chat-ui.ts:21
 msgid "Reconnecting ({retries})..."
 msgstr "पुनः कनेक्ट हो रहा है ({retries})..."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:43
+msgid "Recording failed. Please try again."
+msgstr "रिकॉर्डिंग विफल रही। कृपया फिर से कोशिश करें।"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:39
+msgid "Recording produced no audio"
+msgstr "रिकॉर्डिंग में कोई आवाज़ नहीं है"
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:119
@@ -2843,7 +2878,7 @@ msgstr "इस व्यू को खोजें, देखें और स�
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:179
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
 #: ../../../lib/web/src/components/inline-entity-search.tsx:64
-#: ../../../lib/web/src/components/person-picker.tsx:300
+#: ../../../lib/web/src/components/person-picker.tsx:303
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "खोजें..."
@@ -3191,6 +3226,14 @@ msgstr "भेजा नहीं जा सका। फ़ाइलें ब�
 msgid "That was too large to upload. Remove or shrink files and try again."
 msgstr "अपलोड करने के लिए बहुत बड़ा था। फ़ाइलें हटाएँ या छोटी करें और फिर से प्रयास करें।"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:50
+msgid "The camera is already in use"
+msgstr "कैमरा पहले से उपयोग में है"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:54
+msgid "The camera request was not answered"
+msgstr "कैमरा अनुरोध का उत्तर नहीं मिला"
+
 #: src/routes/_authenticated/join.tsx:110
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "जिस विकि की रेप्लिका बनाना चाहते हैं उसकी एंटिटी ID।"
@@ -3203,6 +3246,10 @@ msgstr "जिस मौजूदा पेज पर रीडायरेक�
 msgid "The existing page to redirect to (e.g., \"new-page\")"
 msgstr "रीडायरेक्ट करने के लिए मौजूदा पृष्ठ (उदा. «new-page»)"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:41
+msgid "The microphone request was not answered"
+msgstr "माइक्रोफ़ोन अनुरोध का उत्तर नहीं मिला"
+
 #: src/features/wiki/page-view.tsx:294
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "पृष्ठ «{slug}» अभी तक मौजूद नहीं है।"
@@ -3210,6 +3257,10 @@ msgstr "पृष्ठ «{slug}» अभी तक मौजूद नहीं
 #: src/features/wiki/wiki-settings.tsx:431
 msgid "The page that users see when they first visit the wiki."
 msgstr "जब यूज़र पहली बार विकि पर आते हैं तो उन्हें दिखने वाला पेज।"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:21
+msgid "The passkey request was not answered"
+msgstr "पासकी अनुरोध का उत्तर नहीं मिला"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:66
 msgid "The requested content could not be found."
@@ -3230,6 +3281,10 @@ msgstr "वह URL जो रीडायरेक्ट किया जाए�
 #: src/features/wiki/wiki-settings.tsx:480
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "यह ऐक्शन वापस नहीं लिया जा सकता। यह विकि और इसके सभी कंटेंट को स्थायी रूप से डिलीट कर देगा।"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:17
+msgid "This app is not allowed to use your passkey. Allow it in Settings, under Permissions."
+msgstr "इस ऐप को आपकी पासकी इस्तेमाल करने की अनुमति नहीं है। सेटिंग्स में, अनुमतियाँ के अंतर्गत इसे अनुमति दें।"
 
 #: src/features/wiki/wiki-page-content.tsx:142
 #: src/routes/_authenticated/index.tsx:308
@@ -3567,7 +3622,7 @@ msgid "Video thumbnail"
 msgstr "वीडियो थंबनेल"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:326
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
 msgid "Video viewer: {0}"
 msgstr "वीडियो व्यूअर: {0}"
 
@@ -3593,6 +3648,10 @@ msgstr "केवल देखें"
 #: src/features/wiki/page-history.tsx:37
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "<0>{slug}</0> का इतिहास देख रहे हैं, वर्तमान संस्करण {currentVersion}"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:33
+msgid "Voice recording is not supported in this browser"
+msgstr "इस ब्राउज़र में वॉयस रिकॉर्डिंग समर्थित नहीं है"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:269
 #: ../../../lib/web/src/components/filter-bar.tsx:35
@@ -3710,7 +3769,7 @@ msgstr "आप <0>{slug}</0> को संस्करण <1>{version}</1> प�
 msgid "You do not have access to this section."
 msgstr "आपके पास इस अनुभाग तक पहुँच नहीं है।"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:86
+#: ../../../lib/web/src/components/restore-banner.tsx:92
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "आपका खाता {source} से यहाँ स्थानांतरित किया गया। जब तक आप वहाँ इसे हटा नहीं देते, संदेश और सूचनाएं दोनों सर्वर तक पहुँच सकती हैं, आपकी कुछ सामग्री पुराने सर्वर से परोसी जाती रहेगी, और फ़ॉलोअर्स को आपको यहाँ ढूंढने में कुछ मिनट लग सकते हैं।"
 

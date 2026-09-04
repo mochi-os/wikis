@@ -48,7 +48,7 @@ msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# резултат} other {# резултати}}"
 
 #. placeholder {0}: displayInfo.count
-#: ../../../lib/web/src/components/person-picker.tsx:257
+#: ../../../lib/web/src/components/person-picker.tsx:260
 msgid "{0, plural, one {# selected} other {# selected}}"
 msgstr "{0, plural, one {# избрано} other {# избрани}}"
 
@@ -84,19 +84,19 @@ msgstr "{0} со оваа ознака."
 msgid "{commentCount, plural, one {1 comment} other {# comments}}"
 msgstr "{commentCount, plural, one {1 коментар} other {# коментари}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:176
+#: ../../../lib/web/src/lib/locale-format.ts:191
 msgid "{count, plural, one {#d} other {#d}}"
 msgstr "{count, plural, one {#д} other {#д}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:172
+#: ../../../lib/web/src/lib/locale-format.ts:187
 msgid "{count, plural, one {#h} other {#h}}"
 msgstr "{count, plural, one {#ч} other {#ч}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:168
+#: ../../../lib/web/src/lib/locale-format.ts:183
 msgid "{count, plural, one {#m} other {#m}}"
 msgstr "{count, plural, one {#мин} other {#мин}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:180
+#: ../../../lib/web/src/lib/locale-format.ts:195
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#нед} other {#нед}}"
 
@@ -172,6 +172,10 @@ msgstr "12 часа"
 #: ../../../lib/web/src/lib/preference-utils.ts:36
 msgid "24 hours"
 msgstr "24 часа"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:35
+msgid "A recording is already in progress."
+msgstr "Веќе е во тек снимање."
 
 #: ../../../lib/web/src/lib/preference-utils.ts:46
 msgid "Absolute (date and time)"
@@ -590,6 +594,14 @@ msgstr "Прелистај страници по ознака. Кликни на
 msgid "Browser notifications"
 msgstr "Известувања во прелистувач"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:48
+msgid "Camera permission denied"
+msgstr "Дозволата за камера е одбиена"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:56
+msgid "Camera unavailable"
+msgstr "Камерата не е достапна"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:426
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
@@ -628,6 +640,12 @@ msgstr "Откажи коментар"
 #: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Cancel reply"
 msgstr "Откажи одговор"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:24
+#: ../../../lib/web/src/lib/shell-errors.ts:37
+#: ../../../lib/web/src/lib/shell-errors.ts:52
+msgid "Cancelled"
+msgstr "Откажано"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:386
 #: ../../../lib/web/src/components/attachment-composer.tsx:421
@@ -712,8 +730,8 @@ msgstr "Исчисти пребарување"
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:479
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:480
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:483
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "Затвори"
@@ -785,8 +803,8 @@ msgstr "Коментар"
 msgid "Comment actions"
 msgstr "Дејства на коментарот"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:442
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:454
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:455
 #: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/index.tsx:454
 #: src/routes/_authenticated/index.tsx:722
@@ -1109,7 +1127,7 @@ msgstr "Избриши приказ"
 msgid "Delete wiki"
 msgstr "Избриши вики"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:95
+#: ../../../lib/web/src/components/restore-banner.tsx:101
 msgid "Delete your account on the old server"
 msgstr "Избришете го профилот на старата сервер"
 
@@ -1171,7 +1189,7 @@ msgstr "Панел со детали"
 msgid "Detect from web browser"
 msgstr "Откриј од веб-прелистувач"
 
-#: ../../../lib/web/src/components/person-picker.tsx:190
+#: ../../../lib/web/src/components/person-picker.tsx:193
 msgid "Directory"
 msgstr "Именик"
 
@@ -1188,8 +1206,8 @@ msgstr "Да се отфрли нацртот?"
 msgid "Disconnected"
 msgstr "Исклучено"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:74
 #: ../../../lib/web/src/components/restore-banner.tsx:80
+#: ../../../lib/web/src/components/restore-banner.tsx:86
 msgid "Dismiss"
 msgstr "Отфрли"
 
@@ -1211,8 +1229,8 @@ msgid "Done"
 msgstr "Готово"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:243
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:473
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:464
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:474
 msgid "Download"
 msgstr "Преземи"
 
@@ -1444,7 +1462,7 @@ msgstr "Неуспешно вчитување на правила за прис�
 msgid "Failed to load history"
 msgstr "Неуспешно вчитување на историја"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:350
 msgid "Failed to load image"
 msgstr "Не успеа вчитувањето на сликата"
 
@@ -1460,7 +1478,7 @@ msgstr "Неуспешно вчитување на пренасочувања"
 msgid "Failed to load replicas"
 msgstr "Неуспешно вчитување на реплики"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:350
 msgid "Failed to load video"
 msgstr "Не успеа вчитувањето на видеото"
 
@@ -1589,7 +1607,7 @@ msgstr "Најди wiki-а"
 msgid "Fingerprint"
 msgstr "Отпечаток"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:83
+#: ../../../lib/web/src/components/restore-banner.tsx:89
 msgid "Finish moving your account"
 msgstr "Завршете го преместувањето на профилот"
 
@@ -1610,7 +1628,7 @@ msgstr "Пронајдени се {0} за „{debouncedQuery}“"
 msgid "Friday"
 msgstr "Петок"
 
-#: ../../../lib/web/src/components/person-picker.tsx:183
+#: ../../../lib/web/src/components/person-picker.tsx:186
 msgid "Friends"
 msgstr "Пријатели"
 
@@ -1701,7 +1719,7 @@ msgid "Image"
 msgstr "Слика"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:328
 msgid "Image viewer: {0}"
 msgstr "Прегледувач на слики: {0}"
 
@@ -1762,7 +1780,7 @@ msgstr "Изгледа дека страницата што ја барате <0
 msgid "Joined wiki"
 msgstr "Се приклучи на wiki"
 
-#: ../../../lib/web/src/lib/locale-format.ts:165
+#: ../../../lib/web/src/lib/locale-format.ts:180
 msgid "Just now"
 msgstr "Штотуку"
 
@@ -1893,6 +1911,10 @@ msgstr "Порака"
 msgid "Metric"
 msgstr "Metric"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:31
+msgid "Microphone permission denied"
+msgstr "Дозволата за микрофон е одбиена"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:191
 msgid "Minimum length"
 msgstr "Минимална должина"
@@ -2009,8 +2031,8 @@ msgstr "Новиот URL мора да биде различен од теков
 msgid "new-page-name"
 msgstr "new-page-name"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:536
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:541
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:537
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:542
 msgid "Next image"
 msgstr "Следна слика"
 
@@ -2154,7 +2176,7 @@ msgstr "Не се пронајдени wiki"
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
-#: ../../../lib/web/src/components/person-picker.tsx:326
+#: ../../../lib/web/src/components/person-picker.tsx:329
 #: ../../../lib/web/src/lib/preference-utils.ts:100
 msgid "None"
 msgstr "Ништо"
@@ -2339,18 +2361,23 @@ msgid "Passkey"
 msgstr "Passkey"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:195
+#: ../../../lib/web/src/lib/shell-errors.ts:26
 msgid "Passkey verification failed. Please try again."
 msgstr "Потврдата на passkey не успеа. Обидете се повторно."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:132
+#: ../../../lib/web/src/components/restore-banner.tsx:138
 msgid "Passkeys"
 msgstr "Passkey-и"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:19
+msgid "Passkeys are not available in this browser"
+msgstr "Passkey-ите не се достапни во овој прелистувач"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:213
 msgid "Pattern (regex)"
 msgstr "Шаблон (regex)"
 
-#: ../../../lib/web/src/components/person-picker.tsx:176
+#: ../../../lib/web/src/components/person-picker.tsx:179
 msgid "People"
 msgstr "Луѓе"
 
@@ -2384,8 +2411,8 @@ msgstr "Објави и коментари"
 msgid "Preview"
 msgstr "Преглед"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:520
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:521
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:526
 msgid "Previous image"
 msgstr "Претходна слика"
 
@@ -2415,11 +2442,11 @@ msgstr "Издигнато"
 msgid "Re-derive from title"
 msgstr "Изведи повторно од насловот"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:104
+#: ../../../lib/web/src/components/restore-banner.tsx:110
 msgid "Re-link your accounts on this server"
 msgstr "Повторно поврзете ги профилите на овој сервер"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:126
+#: ../../../lib/web/src/components/restore-banner.tsx:132
 msgid "Re-register your passkeys on this server"
 msgstr "Повторно регистрирајте ги вашите клучеви за пристап на овој сервер"
 
@@ -2456,6 +2483,14 @@ msgstr "Препорачани wiki"
 #: ../../../lib/web/src/lib/chat-ui.ts:21
 msgid "Reconnecting ({retries})..."
 msgstr "Повторно поврзување ({retries})..."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:43
+msgid "Recording failed. Please try again."
+msgstr "Снимањето не успеа. Обидете се повторно."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:39
+msgid "Recording produced no audio"
+msgstr "Снимката не содржи звук"
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:119
@@ -2843,7 +2878,7 @@ msgstr "Пребарувај, гледај и подредувај го овој
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:179
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
 #: ../../../lib/web/src/components/inline-entity-search.tsx:64
-#: ../../../lib/web/src/components/person-picker.tsx:300
+#: ../../../lib/web/src/components/person-picker.tsx:303
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "Пребарувај..."
@@ -3191,6 +3226,14 @@ msgstr "Не можеше да се испрати. Датотеките мож�
 msgid "That was too large to upload. Remove or shrink files and try again."
 msgstr "Премногу големо за прикачување. Отстранете или намалете датотеки и обидете се повторно."
 
+#: ../../../lib/web/src/lib/shell-errors.ts:50
+msgid "The camera is already in use"
+msgstr "Камерата веќе се користи"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:54
+msgid "The camera request was not answered"
+msgstr "Барањето за камера не доби одговор"
+
 #: src/routes/_authenticated/join.tsx:110
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "ID на ентитет на викито што сакате да го реплицирате."
@@ -3203,6 +3246,10 @@ msgstr "Постојната страница до која ќе се прена
 msgid "The existing page to redirect to (e.g., \"new-page\")"
 msgstr "Постојната страница до која ќе се пренасочува (на пр. „new-page“)"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:41
+msgid "The microphone request was not answered"
+msgstr "Барањето за микрофон не доби одговор"
+
 #: src/features/wiki/page-view.tsx:294
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "Страницата „{slug}“ сè уште не постои."
@@ -3210,6 +3257,10 @@ msgstr "Страницата „{slug}“ сè уште не постои."
 #: src/features/wiki/wiki-settings.tsx:431
 msgid "The page that users see when they first visit the wiki."
 msgstr "Страницата што корисниците ја гледаат кога првпат ќе го посетат викито."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:21
+msgid "The passkey request was not answered"
+msgstr "Барањето за passkey не доби одговор"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:66
 msgid "The requested content could not be found."
@@ -3230,6 +3281,10 @@ msgstr "URL што ќе биде пренасочен (на пр. „old-page“
 #: src/features/wiki/wiki-settings.tsx:480
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "Ова дејство не може да се поништи. Ова трајно ќе го избрише викито и сите негови содржини."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:17
+msgid "This app is not allowed to use your passkey. Allow it in Settings, under Permissions."
+msgstr "Оваа апликација нема дозвола да го користи вашиот passkey. Дозволете го во Поставки, под Дозволи."
 
 #: src/features/wiki/wiki-page-content.tsx:142
 #: src/routes/_authenticated/index.tsx:308
@@ -3567,7 +3622,7 @@ msgid "Video thumbnail"
 msgstr "Сликичка на видео"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:326
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
 msgid "Video viewer: {0}"
 msgstr "Прегледувач на видео: {0}"
 
@@ -3593,6 +3648,10 @@ msgstr "Само прикажување"
 #: src/features/wiki/page-history.tsx:37
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "Се прегледа историјата за <0>{slug}</0>, тековна верзија {currentVersion}"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:33
+msgid "Voice recording is not supported in this browser"
+msgstr "Гласовното снимање не е поддржано во овој прелистувач"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:269
 #: ../../../lib/web/src/components/filter-bar.tsx:35
@@ -3710,7 +3769,7 @@ msgstr "Ќе го вратите <0>{slug}</0> на верзија <1>{version}<
 msgid "You do not have access to this section."
 msgstr "Немате пристап до овој дел."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:86
+#: ../../../lib/web/src/components/restore-banner.tsx:92
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Вашиот профил беше преместен овде од {source}. Додека не го избришете таму, пораките и известувањата може да достигнат до двата сервера, дел од вашата содржина продолжува да се служи од старата сервер, а следбениците може да потребат неколку минути за да ве најдат овде."
 

@@ -48,7 +48,7 @@ msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# thoradh} two {# thoradh} few {# thoradh} many {# dtoradh} other {# toradh}}"
 
 #. placeholder {0}: displayInfo.count
-#: ../../../lib/web/src/components/person-picker.tsx:257
+#: ../../../lib/web/src/components/person-picker.tsx:260
 msgid "{0, plural, one {# selected} other {# selected}}"
 msgstr "{0, plural, one {# roghnaithe} two {# roghnaithe} few {# roghnaithe} many {# roghnaithe} other {# roghnaithe}}"
 
@@ -84,19 +84,19 @@ msgstr "{0} leis an gclib seo."
 msgid "{commentCount, plural, one {1 comment} other {# comments}}"
 msgstr "{commentCount, plural, one {1 nóta tráchta} two {# nóta tráchta} few {# nóta tráchta} many {# nóta tráchta} other {# nóta tráchta}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:176
+#: ../../../lib/web/src/lib/locale-format.ts:191
 msgid "{count, plural, one {#d} other {#d}}"
 msgstr "{count, plural, one {#l} other {#l}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:172
+#: ../../../lib/web/src/lib/locale-format.ts:187
 msgid "{count, plural, one {#h} other {#h}}"
 msgstr "{count, plural, one {#u} other {#u}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:168
+#: ../../../lib/web/src/lib/locale-format.ts:183
 msgid "{count, plural, one {#m} other {#m}}"
 msgstr "{count, plural, one {#nóim} other {#nóim}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:180
+#: ../../../lib/web/src/lib/locale-format.ts:195
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#sea} other {#sea}}"
 
@@ -172,6 +172,10 @@ msgstr "12 uair"
 #: ../../../lib/web/src/lib/preference-utils.ts:36
 msgid "24 hours"
 msgstr "24 uair"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:35
+msgid "A recording is already in progress."
+msgstr "Tá taifeadadh ar siúl cheana féin."
 
 #: ../../../lib/web/src/lib/preference-utils.ts:46
 msgid "Absolute (date and time)"
@@ -590,6 +594,14 @@ msgstr "Brabhsáil leathanaigh de réir clibe. Cliceáil clib chun gach leathana
 msgid "Browser notifications"
 msgstr "Fógraí brabhsálaí"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:48
+msgid "Camera permission denied"
+msgstr "Diúltaíodh cead an cheamara"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:56
+msgid "Camera unavailable"
+msgstr "Ceamara ar fáil"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:426
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
@@ -628,6 +640,12 @@ msgstr "Cealaigh nóta tráchta"
 #: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Cancel reply"
 msgstr "Cealaigh freagra"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:24
+#: ../../../lib/web/src/lib/shell-errors.ts:37
+#: ../../../lib/web/src/lib/shell-errors.ts:52
+msgid "Cancelled"
+msgstr "Cealaithe"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:386
 #: ../../../lib/web/src/components/attachment-composer.tsx:421
@@ -712,8 +730,8 @@ msgstr "Glan cuardach"
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:479
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:480
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:483
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "Dún"
@@ -785,8 +803,8 @@ msgstr "Nóta tráchta"
 msgid "Comment actions"
 msgstr "Gníomhartha tráchta"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:442
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:454
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:455
 #: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/index.tsx:454
 #: src/routes/_authenticated/index.tsx:722
@@ -1109,7 +1127,7 @@ msgstr "Scrios radharc"
 msgid "Delete wiki"
 msgstr "Scrios wiki"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:95
+#: ../../../lib/web/src/components/restore-banner.tsx:101
 msgid "Delete your account on the old server"
 msgstr "Scrios do chuntas ar an sean-fhreastalaí"
 
@@ -1171,7 +1189,7 @@ msgstr "Painéal Sonraí"
 msgid "Detect from web browser"
 msgstr "Brath ón mbrabhsálaí gréasáin"
 
-#: ../../../lib/web/src/components/person-picker.tsx:190
+#: ../../../lib/web/src/components/person-picker.tsx:193
 msgid "Directory"
 msgstr "Eolaire"
 
@@ -1188,8 +1206,8 @@ msgstr "An gcuirfear an dréacht i leataobh?"
 msgid "Disconnected"
 msgstr "Dícheangailte"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:74
 #: ../../../lib/web/src/components/restore-banner.tsx:80
+#: ../../../lib/web/src/components/restore-banner.tsx:86
 msgid "Dismiss"
 msgstr "Dífhostaigh"
 
@@ -1211,8 +1229,8 @@ msgid "Done"
 msgstr "Críochnaithe"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:243
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:473
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:464
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:474
 msgid "Download"
 msgstr "Íoslódáil"
 
@@ -1444,7 +1462,7 @@ msgstr "Theip ar luchtú rialacha rochtana"
 msgid "Failed to load history"
 msgstr "Theip ar luchtú staire"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:350
 msgid "Failed to load image"
 msgstr "Theip ar an íomhá a lódáil"
 
@@ -1460,7 +1478,7 @@ msgstr "Theip ar luchtú atreoruithe"
 msgid "Failed to load replicas"
 msgstr "Theip ar luchtú macasamhlacha"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:350
 msgid "Failed to load video"
 msgstr "Theip ar an bhfíseán a lódáil"
 
@@ -1589,7 +1607,7 @@ msgstr "Aimsigh viceaí"
 msgid "Fingerprint"
 msgstr "Méarlorg"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:83
+#: ../../../lib/web/src/components/restore-banner.tsx:89
 msgid "Finish moving your account"
 msgstr "Críochnaigh aistriú do chuntas"
 
@@ -1610,7 +1628,7 @@ msgstr "{0} aimsithe do \"{debouncedQuery}\""
 msgid "Friday"
 msgstr "Dé hAoine"
 
-#: ../../../lib/web/src/components/person-picker.tsx:183
+#: ../../../lib/web/src/components/person-picker.tsx:186
 msgid "Friends"
 msgstr "Cairde"
 
@@ -1701,7 +1719,7 @@ msgid "Image"
 msgstr "Íomhá"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:328
 msgid "Image viewer: {0}"
 msgstr "Amharcán íomhánna: {0}"
 
@@ -1762,7 +1780,7 @@ msgstr "Dealraíonn sé nach bhfuil an leathanach atá á lorg agat <0/>ann nó 
 msgid "Joined wiki"
 msgstr "Páirteach sa viceaí"
 
-#: ../../../lib/web/src/lib/locale-format.ts:165
+#: ../../../lib/web/src/lib/locale-format.ts:180
 msgid "Just now"
 msgstr "Anois beag"
 
@@ -1893,6 +1911,10 @@ msgstr "Teachtaireacht"
 msgid "Metric"
 msgstr "Méadrach"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:31
+msgid "Microphone permission denied"
+msgstr "Diúltaíodh cead an mhicreafóin"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:191
 msgid "Minimum length"
 msgstr "Fad íosta"
@@ -2009,8 +2031,8 @@ msgstr "Caithfidh an URL nua a bheith difriúil ón URL reatha"
 msgid "new-page-name"
 msgstr "ainm-leathanaigh-nua"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:536
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:541
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:537
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:542
 msgid "Next image"
 msgstr "An chéad íomhá eile"
 
@@ -2154,7 +2176,7 @@ msgstr "Níor aimsíodh aon wiki"
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
-#: ../../../lib/web/src/components/person-picker.tsx:326
+#: ../../../lib/web/src/components/person-picker.tsx:329
 #: ../../../lib/web/src/lib/preference-utils.ts:100
 msgid "None"
 msgstr "Faic"
@@ -2339,18 +2361,23 @@ msgid "Passkey"
 msgstr "Pasluiche"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:195
+#: ../../../lib/web/src/lib/shell-errors.ts:26
 msgid "Passkey verification failed. Please try again."
 msgstr "Theip ar fhíorú na heochrach rochtana. Bain triail eile as."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:132
+#: ../../../lib/web/src/components/restore-banner.tsx:138
 msgid "Passkeys"
 msgstr "Pasluichí"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:19
+msgid "Passkeys are not available in this browser"
+msgstr "Níl pasluichí ar fáil sa bhrabhsálaí seo"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:213
 msgid "Pattern (regex)"
 msgstr "Patrún (regex)"
 
-#: ../../../lib/web/src/components/person-picker.tsx:176
+#: ../../../lib/web/src/components/person-picker.tsx:179
 msgid "People"
 msgstr "Daoine"
 
@@ -2384,8 +2411,8 @@ msgstr "Postálacha agus tráchtanna"
 msgid "Preview"
 msgstr "Réamhamharc"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:520
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:521
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:526
 msgid "Previous image"
 msgstr "Íomhá roimhe seo"
 
@@ -2415,11 +2442,11 @@ msgstr "Ardaithe"
 msgid "Re-derive from title"
 msgstr "Athdhíorthaigh ón teideal"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:104
+#: ../../../lib/web/src/components/restore-banner.tsx:110
 msgid "Re-link your accounts on this server"
 msgstr "Athnasc do chuntais ar an bhfreastalaí seo"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:126
+#: ../../../lib/web/src/components/restore-banner.tsx:132
 msgid "Re-register your passkeys on this server"
 msgstr "Athchláraigh do heochracha rochtana ar an bhfreastalaí seo"
 
@@ -2456,6 +2483,14 @@ msgstr "Wikis mholta"
 #: ../../../lib/web/src/lib/chat-ui.ts:21
 msgid "Reconnecting ({retries})..."
 msgstr "Ag athcheangal ({retries})..."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:43
+msgid "Recording failed. Please try again."
+msgstr "Theip ar an taifeadadh. Bain triail eile as."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:39
+msgid "Recording produced no audio"
+msgstr "Níl aon fhuaim sa taifeadadh"
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:119
@@ -2843,7 +2878,7 @@ msgstr "Cuardaigh, déan faire agus sórtáil an t-amharc seo."
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:179
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
 #: ../../../lib/web/src/components/inline-entity-search.tsx:64
-#: ../../../lib/web/src/components/person-picker.tsx:300
+#: ../../../lib/web/src/components/person-picker.tsx:303
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "Cuardaigh..."
@@ -3191,6 +3226,14 @@ msgstr "Níorbh fhéidir é a sheoladh. Seans go bhfuil na comhaid rómhór, nó
 msgid "That was too large to upload. Remove or shrink files and try again."
 msgstr "Bhí sé rómhór le huaslódáil. Bain nó laghdaigh comhaid agus bain triail eile as."
 
+#: ../../../lib/web/src/lib/shell-errors.ts:50
+msgid "The camera is already in use"
+msgstr "Tá an ceamara in úsáid cheana féin"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:54
+msgid "The camera request was not answered"
+msgstr "Níor freagraíodh an t-iarratas ceamara"
+
 #: src/routes/_authenticated/join.tsx:110
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "Aitheantas an aonáin den wiki ar mian leat é a mhacasamhlú."
@@ -3203,6 +3246,10 @@ msgstr "An leathanach atá ann le hathsheoladh chuige"
 msgid "The existing page to redirect to (e.g., \"new-page\")"
 msgstr "An leathanach atá ann le hathsheoladh chuige (m.sh., \"leathanach-nua\")"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:41
+msgid "The microphone request was not answered"
+msgstr "Níor freagraíodh an t-iarratas micreafóin"
+
 #: src/features/wiki/page-view.tsx:294
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "Níl an leathanach \"{slug}\" ann go fóill."
@@ -3210,6 +3257,10 @@ msgstr "Níl an leathanach \"{slug}\" ann go fóill."
 #: src/features/wiki/wiki-settings.tsx:431
 msgid "The page that users see when they first visit the wiki."
 msgstr "An leathanach a fheiceann úsáideoirí nuair a thugann siad cuairt ar an wiki den chéad uair."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:21
+msgid "The passkey request was not answered"
+msgstr "Níor freagraíodh an t-iarratas pasluí"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:66
 msgid "The requested content could not be found."
@@ -3230,6 +3281,10 @@ msgstr "An URL a athsheolfar (m.sh., \"sean-leathanach\")"
 #: src/features/wiki/wiki-settings.tsx:480
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "Ní féidir an gníomh seo a chealú. Scriosfaidh sé seo an wiki agus a ábhar uile go buan."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:17
+msgid "This app is not allowed to use your passkey. Allow it in Settings, under Permissions."
+msgstr "Níl cead ag an aip seo do phasluí a úsáid. Ceadaigh é i Socruithe, faoi Ceadanna."
 
 #: src/features/wiki/wiki-page-content.tsx:142
 #: src/routes/_authenticated/index.tsx:308
@@ -3567,7 +3622,7 @@ msgid "Video thumbnail"
 msgstr "Mionsamhail físeáin"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:326
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
 msgid "Video viewer: {0}"
 msgstr "Amharcán físeán: {0}"
 
@@ -3593,6 +3648,10 @@ msgstr "Féach amháin"
 #: src/features/wiki/page-history.tsx:37
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "Stair á féachaint do <0>{slug}</0>, leagan reatha {currentVersion}"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:33
+msgid "Voice recording is not supported in this browser"
+msgstr "Ní thacaítear le taifeadadh gutha sa bhrabhsálaí seo"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:269
 #: ../../../lib/web/src/components/filter-bar.tsx:35
@@ -3710,7 +3769,7 @@ msgstr "Tá tú ar tí <0>{slug}</0> a aischur go leagan <1>{version}</1>. Cruth
 msgid "You do not have access to this section."
 msgstr "Níl rochtain agat ar an rannán seo."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:86
+#: ../../../lib/web/src/components/restore-banner.tsx:92
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Aistríodh do chuntas anseo ó {source}. Go dtí go scriosann tú é ansin, d'fhéadfadh teachtaireachtaí agus fógraí an dá fhreastalaí a bhaint amach, leanann roinnt de d'ábhar á sheirbheáil ón sean-fhreastalaí, agus d'fhéadfadh sé cúpla nóiméad a thógáil ar do lucht leanúna tú a aimsiú anseo."
 

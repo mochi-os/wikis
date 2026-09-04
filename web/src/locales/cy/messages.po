@@ -48,7 +48,7 @@ msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, zero {# canlyniad} one {# canlyniad} two {# ganlyniad} few {# chanlyniad} many {# chanlyniad} other {# canlyniad}}"
 
 #. placeholder {0}: displayInfo.count
-#: ../../../lib/web/src/components/person-picker.tsx:257
+#: ../../../lib/web/src/components/person-picker.tsx:260
 msgid "{0, plural, one {# selected} other {# selected}}"
 msgstr "{0, plural, zero {# wedi'i ddewis} one {# wedi'i ddewis} two {# wedi'u dewis} few {# wedi'u dewis} many {# wedi'u dewis} other {# wedi'u dewis}}"
 
@@ -84,19 +84,19 @@ msgstr "{0} gyda'r tag hwn."
 msgid "{commentCount, plural, one {1 comment} other {# comments}}"
 msgstr "{commentCount, plural, zero {# sylw} one {1 sylw} two {# sylw} few {# sylw} many {# sylw} other {# sylw}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:176
+#: ../../../lib/web/src/lib/locale-format.ts:191
 msgid "{count, plural, one {#d} other {#d}}"
 msgstr "{count, plural, one {#dydd} other {#dydd}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:172
+#: ../../../lib/web/src/lib/locale-format.ts:187
 msgid "{count, plural, one {#h} other {#h}}"
 msgstr "{count, plural, one {#awr} other {#awr}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:168
+#: ../../../lib/web/src/lib/locale-format.ts:183
 msgid "{count, plural, one {#m} other {#m}}"
 msgstr "{count, plural, one {#mun} other {#mun}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:180
+#: ../../../lib/web/src/lib/locale-format.ts:195
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#wyth} other {#wyth}}"
 
@@ -172,6 +172,10 @@ msgstr "12 awr"
 #: ../../../lib/web/src/lib/preference-utils.ts:36
 msgid "24 hours"
 msgstr "24 awr"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:35
+msgid "A recording is already in progress."
+msgstr "Mae recordiad eisoes ar y gweill."
 
 #: ../../../lib/web/src/lib/preference-utils.ts:46
 msgid "Absolute (date and time)"
@@ -590,6 +594,14 @@ msgstr "Porwch dudalennau yn ôl tag. Cliciwch ar dag i weld pob tudalen gyda'r 
 msgid "Browser notifications"
 msgstr "Hysbysiadau porwr"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:48
+msgid "Camera permission denied"
+msgstr "Gwrthodwyd caniatâd y camera"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:56
+msgid "Camera unavailable"
+msgstr "Camera ddim ar gael"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:426
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
@@ -628,6 +640,12 @@ msgstr "Canslo sylw"
 #: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Cancel reply"
 msgstr "Canslo ateb"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:24
+#: ../../../lib/web/src/lib/shell-errors.ts:37
+#: ../../../lib/web/src/lib/shell-errors.ts:52
+msgid "Cancelled"
+msgstr "Wedi'i ganslo"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:386
 #: ../../../lib/web/src/components/attachment-composer.tsx:421
@@ -712,8 +730,8 @@ msgstr "Clirio chwiliad"
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:479
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:480
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:483
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "Cau"
@@ -785,8 +803,8 @@ msgstr "Sylw"
 msgid "Comment actions"
 msgstr "Camau gweithredu sylw"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:442
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:454
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:455
 #: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/index.tsx:454
 #: src/routes/_authenticated/index.tsx:722
@@ -1109,7 +1127,7 @@ msgstr "Dileu golwg"
 msgid "Delete wiki"
 msgstr "Dileu wici"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:95
+#: ../../../lib/web/src/components/restore-banner.tsx:101
 msgid "Delete your account on the old server"
 msgstr "Dilëwch eich cyfrif ar yr hen weinydd"
 
@@ -1171,7 +1189,7 @@ msgstr "Panel manylion"
 msgid "Detect from web browser"
 msgstr "Adnabod o'r porwr gwe"
 
-#: ../../../lib/web/src/components/person-picker.tsx:190
+#: ../../../lib/web/src/components/person-picker.tsx:193
 msgid "Directory"
 msgstr "Cyfeiriadur"
 
@@ -1188,8 +1206,8 @@ msgstr "Hepgor y drafft?"
 msgid "Disconnected"
 msgstr "Wedi datgysylltu"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:74
 #: ../../../lib/web/src/components/restore-banner.tsx:80
+#: ../../../lib/web/src/components/restore-banner.tsx:86
 msgid "Dismiss"
 msgstr "Diystyru"
 
@@ -1211,8 +1229,8 @@ msgid "Done"
 msgstr "Wedi gorffen"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:243
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:473
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:464
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:474
 msgid "Download"
 msgstr "Lawrlwytho"
 
@@ -1444,7 +1462,7 @@ msgstr "Methwyd llwytho rheolau mynediad"
 msgid "Failed to load history"
 msgstr "Methwyd llwytho hanes"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:350
 msgid "Failed to load image"
 msgstr "Methwyd llwytho'r ddelwedd"
 
@@ -1460,7 +1478,7 @@ msgstr "Methwyd llwytho ailgyfeiriadau"
 msgid "Failed to load replicas"
 msgstr "Methwyd llwytho replicâu"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:350
 msgid "Failed to load video"
 msgstr "Methwyd llwytho'r fideo"
 
@@ -1589,7 +1607,7 @@ msgstr "Dod o hyd i wicis"
 msgid "Fingerprint"
 msgstr "Olion bysedd"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:83
+#: ../../../lib/web/src/components/restore-banner.tsx:89
 msgid "Finish moving your account"
 msgstr "Gorffennwch symud eich cyfrif"
 
@@ -1610,7 +1628,7 @@ msgstr "Daethpwyd o hyd i {0} ar gyfer \"{debouncedQuery}\""
 msgid "Friday"
 msgstr "Dydd Gwener"
 
-#: ../../../lib/web/src/components/person-picker.tsx:183
+#: ../../../lib/web/src/components/person-picker.tsx:186
 msgid "Friends"
 msgstr "Ffrindiau"
 
@@ -1701,7 +1719,7 @@ msgid "Image"
 msgstr "Delwedd"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:328
 msgid "Image viewer: {0}"
 msgstr "Gwyliwr delweddau: {0}"
 
@@ -1762,7 +1780,7 @@ msgstr "Mae'n ymddangos nad yw'r dudalen rydych yn chwilio amdani <0/>yn bodoli 
 msgid "Joined wiki"
 msgstr "Wedi ymuno â'r wici"
 
-#: ../../../lib/web/src/lib/locale-format.ts:165
+#: ../../../lib/web/src/lib/locale-format.ts:180
 msgid "Just now"
 msgstr "Nawr"
 
@@ -1893,6 +1911,10 @@ msgstr "Neges"
 msgid "Metric"
 msgstr "Metrig"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:31
+msgid "Microphone permission denied"
+msgstr "Gwrthodwyd caniatâd y meicroffon"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:191
 msgid "Minimum length"
 msgstr "Hyd lleiaf"
@@ -2009,8 +2031,8 @@ msgstr "Rhaid i'r URL newydd fod yn wahanol i'r URL cyfredol"
 msgid "new-page-name"
 msgstr "enw-tudalen-newydd"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:536
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:541
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:537
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:542
 msgid "Next image"
 msgstr "Delwedd nesaf"
 
@@ -2154,7 +2176,7 @@ msgstr "Heb ddod o hyd i wicis"
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
-#: ../../../lib/web/src/components/person-picker.tsx:326
+#: ../../../lib/web/src/components/person-picker.tsx:329
 #: ../../../lib/web/src/lib/preference-utils.ts:100
 msgid "None"
 msgstr "Dim"
@@ -2339,18 +2361,23 @@ msgid "Passkey"
 msgstr "Pasallwedd"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:195
+#: ../../../lib/web/src/lib/shell-errors.ts:26
 msgid "Passkey verification failed. Please try again."
 msgstr "Methodd dilysu'r allwedd mynediad. Rhowch gynnig arall arni."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:132
+#: ../../../lib/web/src/components/restore-banner.tsx:138
 msgid "Passkeys"
 msgstr "Pasallweddi"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:19
+msgid "Passkeys are not available in this browser"
+msgstr "Nid yw pasallweddi ar gael yn y porwr hwn"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:213
 msgid "Pattern (regex)"
 msgstr "Patrwm (regex)"
 
-#: ../../../lib/web/src/components/person-picker.tsx:176
+#: ../../../lib/web/src/components/person-picker.tsx:179
 msgid "People"
 msgstr "Pobl"
 
@@ -2384,8 +2411,8 @@ msgstr "Postiadau a sylwadau"
 msgid "Preview"
 msgstr "Rhagolwg"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:520
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:521
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:526
 msgid "Previous image"
 msgstr "Delwedd flaenorol"
 
@@ -2415,11 +2442,11 @@ msgstr "Wedi codi"
 msgid "Re-derive from title"
 msgstr "Ail-ddeillio o'r teitl"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:104
+#: ../../../lib/web/src/components/restore-banner.tsx:110
 msgid "Re-link your accounts on this server"
 msgstr "Ail-gysylltwch eich cyfrifon ar y gweinydd hwn"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:126
+#: ../../../lib/web/src/components/restore-banner.tsx:132
 msgid "Re-register your passkeys on this server"
 msgstr "Ailgofrestrwch eich allweddi mynediad ar y gweinydd hwn"
 
@@ -2456,6 +2483,14 @@ msgstr "Wicis a argymhellir"
 #: ../../../lib/web/src/lib/chat-ui.ts:21
 msgid "Reconnecting ({retries})..."
 msgstr "Ailgysylltu ({retries})..."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:43
+msgid "Recording failed. Please try again."
+msgstr "Methodd y recordiad. Rhowch gynnig arall arni."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:39
+msgid "Recording produced no audio"
+msgstr "Nid oes sain yn y recordiad"
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:119
@@ -2843,7 +2878,7 @@ msgstr "Chwilio, gwylio, a didoli'r olygfa hon."
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:179
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
 #: ../../../lib/web/src/components/inline-entity-search.tsx:64
-#: ../../../lib/web/src/components/person-picker.tsx:300
+#: ../../../lib/web/src/components/person-picker.tsx:303
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "Chwilio..."
@@ -3191,6 +3226,14 @@ msgstr "Nid oedd modd ei anfon. Efallai fod y ffeiliau'n rhy fawr, neu fe fethod
 msgid "That was too large to upload. Remove or shrink files and try again."
 msgstr "Roedd yn rhy fawr i'w lwytho i fyny. Tynnwch neu lleihewch ffeiliau a cheisiwch eto."
 
+#: ../../../lib/web/src/lib/shell-errors.ts:50
+msgid "The camera is already in use"
+msgstr "Mae'r camera eisoes yn cael ei ddefnyddio"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:54
+msgid "The camera request was not answered"
+msgstr "Ni chafodd y cais camera ei ateb"
+
 #: src/routes/_authenticated/join.tsx:110
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "ID endid yr wici rydych am ei atgynhyrchu."
@@ -3203,6 +3246,10 @@ msgstr "Y dudalen sy'n bodoli i ailgyfeirio iddi"
 msgid "The existing page to redirect to (e.g., \"new-page\")"
 msgstr "Y dudalen sy'n bodoli i ailgyfeirio iddi (e.e., \"tudalen-newydd\")"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:41
+msgid "The microphone request was not answered"
+msgstr "Ni chafodd y cais meicroffon ei ateb"
+
 #: src/features/wiki/page-view.tsx:294
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "Nid yw'r dudalen \"{slug}\" yn bodoli eto."
@@ -3210,6 +3257,10 @@ msgstr "Nid yw'r dudalen \"{slug}\" yn bodoli eto."
 #: src/features/wiki/wiki-settings.tsx:431
 msgid "The page that users see when they first visit the wiki."
 msgstr "Y dudalen y mae defnyddwyr yn ei gweld pan fyddant yn ymweld â'r wici am y tro cyntaf."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:21
+msgid "The passkey request was not answered"
+msgstr "Ni chafodd y cais pasallwedd ei ateb"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:66
 msgid "The requested content could not be found."
@@ -3230,6 +3281,10 @@ msgstr "Yr URL a fydd yn cael ei ailgyfeirio (e.e., \"hen-dudalen\")"
 #: src/features/wiki/wiki-settings.tsx:480
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "Ni ellir dadwneud y weithred hon. Bydd hyn yn dileu'r wici a'i holl gynnwys yn barhaol."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:17
+msgid "This app is not allowed to use your passkey. Allow it in Settings, under Permissions."
+msgstr "Nid yw'r ap hwn yn cael defnyddio eich pasallwedd. Caniatewch hynny yn Gosodiadau, o dan Caniatadau."
 
 #: src/features/wiki/wiki-page-content.tsx:142
 #: src/routes/_authenticated/index.tsx:308
@@ -3567,7 +3622,7 @@ msgid "Video thumbnail"
 msgstr "Bawd fideo"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:326
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
 msgid "Video viewer: {0}"
 msgstr "Gwyliwr fideo: {0}"
 
@@ -3593,6 +3648,10 @@ msgstr "Gweld yn unig"
 #: src/features/wiki/page-history.tsx:37
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "Yn gweld hanes ar gyfer <0>{slug}</0>, fersiwn cyfredol {currentVersion}"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:33
+msgid "Voice recording is not supported in this browser"
+msgstr "Nid yw recordio llais yn cael ei gefnogi yn y porwr hwn"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:269
 #: ../../../lib/web/src/components/filter-bar.tsx:35
@@ -3710,7 +3769,7 @@ msgstr "Rydych ar fin dychwelyd <0>{slug}</0> i fersiwn <1>{version}</1>. Bydd h
 msgid "You do not have access to this section."
 msgstr "Nid oes gennych fynediad i'r adran hon."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:86
+#: ../../../lib/web/src/components/restore-banner.tsx:92
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Symudwyd eich cyfrif yma o {source}. Hyd nes y byddwch yn ei ddileu yno, gall negeseuon a hysbysiadau gyrraedd y ddau weinydd, gall peth o'ch cynnwys barhau i gael ei weini o'r hen weinydd, a gall dilynwyr gymryd ychydig funudau i ddod o hyd i chi yma."
 

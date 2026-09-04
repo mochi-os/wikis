@@ -48,7 +48,7 @@ msgid "{0, plural, one {# result} other {# results}}"
 msgstr "{0, plural, one {# emaitza} other {# emaitza}}"
 
 #. placeholder {0}: displayInfo.count
-#: ../../../lib/web/src/components/person-picker.tsx:257
+#: ../../../lib/web/src/components/person-picker.tsx:260
 msgid "{0, plural, one {# selected} other {# selected}}"
 msgstr "{0, plural, one {# hautatuta} other {# hautatuta}}"
 
@@ -84,19 +84,19 @@ msgstr "Etiketa hau duen {0}."
 msgid "{commentCount, plural, one {1 comment} other {# comments}}"
 msgstr "{commentCount, plural, one {1 iruzkin} other {# iruzkin}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:176
+#: ../../../lib/web/src/lib/locale-format.ts:191
 msgid "{count, plural, one {#d} other {#d}}"
 msgstr "{count, plural, one {#eg} other {#eg}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:172
+#: ../../../lib/web/src/lib/locale-format.ts:187
 msgid "{count, plural, one {#h} other {#h}}"
 msgstr "{count, plural, one {#or} other {#or}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:168
+#: ../../../lib/web/src/lib/locale-format.ts:183
 msgid "{count, plural, one {#m} other {#m}}"
 msgstr "{count, plural, one {#min} other {#min}}"
 
-#: ../../../lib/web/src/lib/locale-format.ts:180
+#: ../../../lib/web/src/lib/locale-format.ts:195
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#ast} other {#ast}}"
 
@@ -172,6 +172,10 @@ msgstr "12 ordu"
 #: ../../../lib/web/src/lib/preference-utils.ts:36
 msgid "24 hours"
 msgstr "24 ordu"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:35
+msgid "A recording is already in progress."
+msgstr "Grabazio bat abian da dagoeneko."
 
 #: ../../../lib/web/src/lib/preference-utils.ts:46
 msgid "Absolute (date and time)"
@@ -590,6 +594,14 @@ msgstr "Arakatu orriak etiketaka. Sakatu etiketa bat etiketa hori duten orri guz
 msgid "Browser notifications"
 msgstr "Nabigatzaile jakinarazpenak"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:48
+msgid "Camera permission denied"
+msgstr "Kamera baimena ukatu da"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:56
+msgid "Camera unavailable"
+msgstr "Kamera ez dago erabilgarri"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx:426
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx:616
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx:211
@@ -628,6 +640,12 @@ msgstr "Utzi iruzkina"
 #: ../../../lib/web/src/components/comment-composer.tsx:429
 msgid "Cancel reply"
 msgstr "Utzi erantzuna"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:24
+#: ../../../lib/web/src/lib/shell-errors.ts:37
+#: ../../../lib/web/src/lib/shell-errors.ts:52
+msgid "Cancelled"
+msgstr "Bertan behera utzia"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx:386
 #: ../../../lib/web/src/components/attachment-composer.tsx:421
@@ -712,8 +730,8 @@ msgstr "Garbitu bilaketa"
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:523
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx:528
 #: ../../../lib/web/src/components/ui/dialog.tsx:78
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:479
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:482
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:480
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:483
 #: ../../../lib/web/src/components/ui/sheet.tsx:79
 msgid "Close"
 msgstr "Itxi"
@@ -785,8 +803,8 @@ msgstr "Iruzkina"
 msgid "Comment actions"
 msgstr "Iruzkinaren ekintzak"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:442
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:454
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:443
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:455
 #: src/features/wiki/wiki-page-content.tsx:347
 #: src/routes/_authenticated/index.tsx:454
 #: src/routes/_authenticated/index.tsx:722
@@ -1109,7 +1127,7 @@ msgstr "Ezabatu ikuspegia"
 msgid "Delete wiki"
 msgstr "Ezabatu wikia"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:95
+#: ../../../lib/web/src/components/restore-banner.tsx:101
 msgid "Delete your account on the old server"
 msgstr "Ezabatu zure kontua zerbitzari zaharrean"
 
@@ -1171,7 +1189,7 @@ msgstr "Xehetasun panela"
 msgid "Detect from web browser"
 msgstr "Detektatu web nabigatzailetik"
 
-#: ../../../lib/web/src/components/person-picker.tsx:190
+#: ../../../lib/web/src/components/person-picker.tsx:193
 msgid "Directory"
 msgstr "Direktorioa"
 
@@ -1188,8 +1206,8 @@ msgstr "Zirriborroa baztertu?"
 msgid "Disconnected"
 msgstr "Deskonektatuta"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:74
 #: ../../../lib/web/src/components/restore-banner.tsx:80
+#: ../../../lib/web/src/components/restore-banner.tsx:86
 msgid "Dismiss"
 msgstr "Baztertu"
 
@@ -1211,8 +1229,8 @@ msgid "Done"
 msgstr "Eginda"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx:243
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:463
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:473
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:464
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:474
 msgid "Download"
 msgstr "Deskargatu"
 
@@ -1444,7 +1462,7 @@ msgstr "Ezin izan dira sarbide-arauak kargatu"
 msgid "Failed to load history"
 msgstr "Ezin izan da historia kargatu"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:350
 msgid "Failed to load image"
 msgstr "Ezin izan da irudia kargatu"
 
@@ -1460,7 +1478,7 @@ msgstr "Ezin izan dira birbideratzeak kargatu"
 msgid "Failed to load replicas"
 msgstr "Ezin izan dira erreplikak kargatu"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:349
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:350
 msgid "Failed to load video"
 msgstr "Ezin izan da bideoa kargatu"
 
@@ -1589,7 +1607,7 @@ msgstr "Aurkitu wikiak"
 msgid "Fingerprint"
 msgstr "Hatz-marka"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:83
+#: ../../../lib/web/src/components/restore-banner.tsx:89
 msgid "Finish moving your account"
 msgstr "Amaitu kontuaren mugiketa"
 
@@ -1610,7 +1628,7 @@ msgstr "{0} aurkitu dira \"{debouncedQuery}\" bilatzean"
 msgid "Friday"
 msgstr "Ostirala"
 
-#: ../../../lib/web/src/components/person-picker.tsx:183
+#: ../../../lib/web/src/components/person-picker.tsx:186
 msgid "Friends"
 msgstr "Lagunak"
 
@@ -1701,7 +1719,7 @@ msgid "Image"
 msgstr "Irudia"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:328
 msgid "Image viewer: {0}"
 msgstr "Irudi-ikustailea: {0}"
 
@@ -1762,7 +1780,7 @@ msgstr "Bilatzen ari zaren orria <0/>ez dela existitzen edo kendu egin dela diru
 msgid "Joined wiki"
 msgstr "Wikira batuta"
 
-#: ../../../lib/web/src/lib/locale-format.ts:165
+#: ../../../lib/web/src/lib/locale-format.ts:180
 msgid "Just now"
 msgstr "Oraintxe"
 
@@ -1893,6 +1911,10 @@ msgstr "Mezua"
 msgid "Metric"
 msgstr "Metrikoa"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:31
+msgid "Microphone permission denied"
+msgstr "Mikrofonoaren baimena ukatu da"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:191
 msgid "Minimum length"
 msgstr "Gutxieneko luzera"
@@ -2009,8 +2031,8 @@ msgstr "URL berria oraingo URLaren desberdina izan behar da"
 msgid "new-page-name"
 msgstr "orri-izen-berria"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:536
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:541
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:537
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:542
 msgid "Next image"
 msgstr "Hurrengo irudia"
 
@@ -2154,7 +2176,7 @@ msgstr "Ez da wikirik aurkitu"
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:418
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:491
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx:494
-#: ../../../lib/web/src/components/person-picker.tsx:326
+#: ../../../lib/web/src/components/person-picker.tsx:329
 #: ../../../lib/web/src/lib/preference-utils.ts:100
 msgid "None"
 msgstr "Bat ere ez"
@@ -2339,18 +2361,23 @@ msgid "Passkey"
 msgstr "Passkey-a"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx:195
+#: ../../../lib/web/src/lib/shell-errors.ts:26
 msgid "Passkey verification failed. Please try again."
 msgstr "Sarbide-gakoaren egiaztapenak huts egin du. Saiatu berriro."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:132
+#: ../../../lib/web/src/components/restore-banner.tsx:138
 msgid "Passkeys"
 msgstr "Passkey-ak"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:19
+msgid "Passkeys are not available in this browser"
+msgstr "Passkey-ak ez daude erabilgarri nabigatzaile honetan"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx:213
 msgid "Pattern (regex)"
 msgstr "Eredua (regex)"
 
-#: ../../../lib/web/src/components/person-picker.tsx:176
+#: ../../../lib/web/src/components/person-picker.tsx:179
 msgid "People"
 msgstr "Jendea"
 
@@ -2384,8 +2411,8 @@ msgstr "Argitalpenak eta iruzkinak"
 msgid "Preview"
 msgstr "Aurrebista"
 
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:520
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:525
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:521
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:526
 msgid "Previous image"
 msgstr "Aurreko irudia"
 
@@ -2415,11 +2442,11 @@ msgstr "Goratua"
 msgid "Re-derive from title"
 msgstr "Eratorri berriro izenburutik"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:104
+#: ../../../lib/web/src/components/restore-banner.tsx:110
 msgid "Re-link your accounts on this server"
 msgstr "Berriro lotu zure kontuak zerbitzari honetan"
 
-#: ../../../lib/web/src/components/restore-banner.tsx:126
+#: ../../../lib/web/src/components/restore-banner.tsx:132
 msgid "Re-register your passkeys on this server"
 msgstr "Erregistratu berriro zure sarbide-gakoak zerbitzari honetan"
 
@@ -2456,6 +2483,14 @@ msgstr "Gomendatutako wikiak"
 #: ../../../lib/web/src/lib/chat-ui.ts:21
 msgid "Reconnecting ({retries})..."
 msgstr "Berriz konektatzen ({retries})..."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:43
+msgid "Recording failed. Please try again."
+msgstr "Grabazioak huts egin du. Saiatu berriro."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:39
+msgid "Recording produced no audio"
+msgstr "Grabazioak ez du audiorik"
 
 #. placeholder {0}: redirect.source
 #: src/features/wiki/redirects-page.tsx:119
@@ -2843,7 +2878,7 @@ msgstr "Bilatu, ikusi eta sailkatu ikuspegi hau."
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:179
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:255
 #: ../../../lib/web/src/components/inline-entity-search.tsx:64
-#: ../../../lib/web/src/components/person-picker.tsx:300
+#: ../../../lib/web/src/components/person-picker.tsx:303
 #: ../../../lib/web/src/components/search-entity-page.tsx:72
 msgid "Search..."
 msgstr "Bilatu..."
@@ -3191,6 +3226,14 @@ msgstr "Ezin izan da bidali. Fitxategiak handiegiak izan daitezke, edo konexioak
 msgid "That was too large to upload. Remove or shrink files and try again."
 msgstr "Handiegia zen igotzeko. Kendu edo txikitu fitxategiak eta saiatu berriro."
 
+#: ../../../lib/web/src/lib/shell-errors.ts:50
+msgid "The camera is already in use"
+msgstr "Kamera dagoeneko erabiltzen ari da"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:54
+msgid "The camera request was not answered"
+msgstr "Kamera eskaerak ez du erantzunik jaso"
+
 #: src/routes/_authenticated/join.tsx:110
 msgid "The entity ID of the wiki you want to replicate."
 msgstr "Erreplikatu nahi duzun wikiaren entitate-IDa."
@@ -3203,6 +3246,10 @@ msgstr "Birbideratu nahi duzun lehendik dagoen orria"
 msgid "The existing page to redirect to (e.g., \"new-page\")"
 msgstr "Birbideratu nahi duzun lehendik dagoen orria (adib., \"orri-berria\")"
 
+#: ../../../lib/web/src/lib/shell-errors.ts:41
+msgid "The microphone request was not answered"
+msgstr "Mikrofono eskaerak ez du erantzunik jaso"
+
 #: src/features/wiki/page-view.tsx:294
 msgid "The page \"{slug}\" does not exist yet."
 msgstr "\"{slug}\" orria oraindik ez dago."
@@ -3210,6 +3257,10 @@ msgstr "\"{slug}\" orria oraindik ez dago."
 #: src/features/wiki/wiki-settings.tsx:431
 msgid "The page that users see when they first visit the wiki."
 msgstr "Erabiltzaileek wikia lehenengo aldiz bisitatzen dutenean ikusten duten orria."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:21
+msgid "The passkey request was not answered"
+msgstr "Passkey eskaerak ez du erantzunik jaso"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx:66
 msgid "The requested content could not be found."
@@ -3230,6 +3281,10 @@ msgstr "Birbideratuko den URLa (adib., \"orri-zaharra\")"
 #: src/features/wiki/wiki-settings.tsx:480
 msgid "This action cannot be undone. This will permanently delete the wiki and all its contents."
 msgstr "Ekintza hau ezin da desegin. Honek wikia eta bere eduki guztiak betiko ezabatuko ditu."
+
+#: ../../../lib/web/src/lib/shell-errors.ts:17
+msgid "This app is not allowed to use your passkey. Allow it in Settings, under Permissions."
+msgstr "Aplikazio honek ez du baimenik zure passkey-a erabiltzeko. Baimendu Ezarpenetan, Baimenak atalean."
 
 #: src/features/wiki/wiki-page-content.tsx:142
 #: src/routes/_authenticated/index.tsx:308
@@ -3567,7 +3622,7 @@ msgid "Video thumbnail"
 msgstr "Bideoaren miniatura"
 
 #. placeholder {0}: currentMedia.name
-#: ../../../lib/web/src/components/ui/image-lightbox.tsx:326
+#: ../../../lib/web/src/components/ui/image-lightbox.tsx:327
 msgid "Video viewer: {0}"
 msgstr "Bideo-ikustailea: {0}"
 
@@ -3593,6 +3648,10 @@ msgstr "Ikusi soilik"
 #: src/features/wiki/page-history.tsx:37
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
 msgstr "<0>{slug}</0>-ren historia ikusten, egungo bertsioa {currentVersion}"
+
+#: ../../../lib/web/src/lib/shell-errors.ts:33
+msgid "Voice recording is not supported in this browser"
+msgstr "Nabigatzaile honek ez du ahots-grabazioa onartzen"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx:269
 #: ../../../lib/web/src/components/filter-bar.tsx:35
@@ -3710,7 +3769,7 @@ msgstr "<0>{slug}</0> <1>{version}</1> bertsiora itzultzeko zorian zaude. Honek 
 msgid "You do not have access to this section."
 msgstr "Ez duzu atal honetarako sarbiderik."
 
-#: ../../../lib/web/src/components/restore-banner.tsx:86
+#: ../../../lib/web/src/components/restore-banner.tsx:92
 msgid "Your account was moved here from {source}. Until you delete it there, messages and notifications may reach both servers, some of your content keeps being served from the old server, and followers may take a few minutes to find you here."
 msgstr "Zure kontua {source}-etik hona mugitu da. Han ezabatu arte, mezuak eta jakinarazpenak bi zerbitzarietara irits daitezke, zure edukiaren zati bat zerbitzari zaharretik ematen jarraitzen du, eta jarraitzaileek minutu batzuk behar izan ditzakete zu hemen aurkitzeko."
 
