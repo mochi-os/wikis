@@ -3446,8 +3446,12 @@ def event_attachment_create(e):
             attachment_id, replica, response.get("error") if response else "no response")
         return
 
-    # Stream directly to attachment storage with the original ID (no temp file needed)
-    attachment = attachment_receive(wiki, name, stream, content_type, attachment_id)
+    # Stream directly to attachment storage with the original ID (no temp file
+    # needed), bounded to and held to the size the replica declared with the
+    # row; a replica from before the size travelled declares nothing.
+    size = e.content("size")
+    attachment = attachment_receive(wiki, name, stream, content_type, attachment_id,
+                                    declared=attachment_number(size) if size != None else None)
 
     if attachment:
         mochi.log.debug("Created attachment %s from replica %s", attachment_id, replica)
