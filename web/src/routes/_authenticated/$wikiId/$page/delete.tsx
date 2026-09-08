@@ -5,21 +5,18 @@
 
 import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
 import {
   EmptyState,
   GeneralError,
   Main,
   Skeleton,
-  requestHelpers,
   usePageTitle,
 } from '@mochi/web'
 import { DeletePage } from '@/features/wiki/delete-page'
-import endpoints from '@/api/endpoints'
 import { FileX } from 'lucide-react'
-import { useWikiBaseURL } from '@/context/wiki-base-url-context'
-import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
+import { usePage } from '@/hooks/use-wiki'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/delete')({
   component: DeletePageRoute,
@@ -30,15 +27,9 @@ function DeletePageRoute() {
   const { wikiId, page: slug } = Route.useParams()
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
-  const { baseURL, wiki } = useWikiBaseURL()
+  const { wiki } = useWikiBaseURL()
 
-  // Fetch page data using the wiki's base URL
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['wiki', baseURL, 'page', slug],
-    queryFn: () =>
-      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${endpoints.wiki.page(slug)}`),
-    enabled: !!slug,
-  })
+  const { data, isLoading, error, refetch } = usePage(slug)
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(t`Delete: ${pageTitle}`)
 

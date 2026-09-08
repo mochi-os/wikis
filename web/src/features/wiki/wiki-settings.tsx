@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Check,
   CornerDownRight,
+  Loader2,
   Minus,
   Plus,
   RefreshCw,
@@ -49,7 +50,6 @@ import {
   ConfirmDialog,
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -82,6 +82,7 @@ import {
 import endpoints from '@/api/endpoints'
 import { ValueLinkChip } from '@/components/value-link-chip'
 import {
+  useEntityEndpoint,
   useWikiSettings,
   useSetWikiSetting,
   useSyncWiki,
@@ -112,15 +113,13 @@ function useTabs(): Tab[] {
 
 // Context for wiki-specific settings when accessed via /$wikiId/settings route
 interface WikiSettingsContextValue {
-  baseURL: string | null
   wiki: { id: string; name: string; home: string; fingerprint?: string; source?: string } | null
   permissions: WikiPermissions
 }
 
 const WikiSettingsContext = createContext<WikiSettingsContextValue>({
-  baseURL: null,
   wiki: null,
-  permissions: { view: false, edit: false, delete: false, manage: false },
+  permissions: { view: false, edit: false, delete: false, manage: false, owner: false },
 })
 
 function useSettingsContext() {
@@ -131,18 +130,16 @@ interface WikiSettingsProps {
   activeTab: WikiSettingsTabId
   onTabChange: (tab: WikiSettingsTabId) => void
   // Optional props for wiki-specific context (used in /$wikiId/settings route)
-  baseURL?: string
   wiki?: { id: string; name: string; home: string; fingerprint?: string; source?: string }
   permissions?: WikiPermissions
 }
 
-export function WikiSettings({ activeTab, onTabChange, baseURL, wiki, permissions }: WikiSettingsProps) {
+export function WikiSettings({ activeTab, onTabChange, wiki, permissions }: WikiSettingsProps) {
   const { t } = useLingui()
   const tabs = useTabs()
   const contextValue: WikiSettingsContextValue = {
-    baseURL: baseURL ?? null,
     wiki: wiki ?? null,
-    permissions: permissions ?? { view: false, edit: false, delete: false, manage: false },
+    permissions: permissions ?? { view: false, edit: false, delete: false, manage: false, owner: false },
   }
 
   // Hide Replicas tab for replica wikis (they don't have replicas of their own)
@@ -195,52 +192,17 @@ function SettingsTab() {
   const wikiInfo = settingsContext.wiki ?? wikiContextResult?.info?.wiki
   const fingerprint = settingsContext.wiki?.fingerprint ?? wikiContextResult?.info?.fingerprint
 
-  // These hooks are used when in entity context (no baseURL)
-  const defaultSettings = useWikiSettings()
+  const e = useEntityEndpoint()
+  // One data source. The wiki's base URL is resolved by useEntityEndpoint
+  // from the route's provider, so the hooks reach the right wiki in both
+  // routing contexts; the hand-rolled useState/useEffect fetch this file used
+  // to run alongside them existed only because the base URL was passed in as a
+  // prop, and it carried no caching, no invalidation and its own error state.
+  const { data, isLoading, error, refetch: retrySettings } = useWikiSettings()
   const setSetting = useSetWikiSetting()
   const syncWiki = useSyncWiki()
   const deleteWiki = useDeleteWiki()
-
-  // State for wiki-specific API calls when baseURL is provided
-  const [wikiSpecificData, setWikiSpecificData] = useState<{ settings?: { home?: string; source?: string } } | null>(null)
-  const [wikiSpecificLoading, setWikiSpecificLoading] = useState(false)
-  const [wikiSpecificError, setWikiSpecificError] = useState<Error | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
-  const [isSyncing, setIsSyncing] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
-
-  const loadWikiSpecificSettings = useCallback(async () => {
-    if (!settingsContext.baseURL) return
-    setWikiSpecificLoading(true)
-    setWikiSpecificError(null)
-    try {
-      const data = await requestHelpers.get<{ settings: { home?: string; source?: string } }>(
-        `${settingsContext.baseURL}settings`
-      )
-      setWikiSpecificData(data)
-    } catch (err) {
-      setWikiSpecificError(err as Error)
-    } finally {
-      setWikiSpecificLoading(false)
-    }
-  }, [settingsContext.baseURL])
-
-  // Load settings using baseURL when provided
-  useEffect(() => {
-    if (settingsContext.baseURL) {
-      void loadWikiSpecificSettings()
-    }
-  }, [settingsContext.baseURL, loadWikiSpecificSettings])
-
-  // Use the appropriate data source
-  const data = settingsContext.baseURL ? wikiSpecificData : defaultSettings.data
-  const isLoading = settingsContext.baseURL ? wikiSpecificLoading : defaultSettings.isLoading
-  const error = settingsContext.baseURL ? wikiSpecificError : defaultSettings.error
-  const retrySettings = useMemo(
-    () => (settingsContext.baseURL ? () => void loadWikiSpecificSettings() : defaultSettings.refetch),
-    [settingsContext.baseURL, loadWikiSpecificSettings, defaultSettings.refetch]
-  )
 
   const [homePage, setHomePage] = useState('')
   const [hasChanges, setHasChanges] = useState(false)
@@ -271,10 +233,7 @@ function SettingsTab() {
   }
 
   const handleRenameWiki = async (trimmedName: string) => {
-    const url = settingsContext.baseURL
-      ? `${settingsContext.baseURL}${endpoints.wiki.rename}`
-      : endpoints.wiki.rename
-    await toastAction(requestHelpers.post(url, { name: trimmedName }), {
+    await toastAction(requestHelpers.post(e(endpoints.wiki.rename), { name: trimmedName }), {
       loading: t`Saving...`,
       success: t`Wiki renamed`,
       error: (err) => getErrorMessage(err, t`Failed to rename wiki`),
@@ -289,15 +248,9 @@ function SettingsTab() {
   }
 
   const handleSave = async () => {
-    setIsSaving(true)
     try {
       await toastAction(
-        settingsContext.baseURL
-          ? requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.settingsSet}`, {
-              name: 'home',
-              value: homePage.trim() || 'home',
-            })
-          : setSetting.mutateAsync({ name: 'home', value: homePage.trim() || 'home' }),
+        setSetting.mutateAsync({ name: 'home', value: homePage.trim() || 'home' }),
         {
           loading: t`Saving...`,
           success: t`Settings saved`,
@@ -308,18 +261,13 @@ function SettingsTab() {
       void queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     } catch {
       // toast already shown
-    } finally {
-      setIsSaving(false)
     }
   }
 
   const handleSync = async () => {
-    setIsSyncing(true)
     try {
       await toastAction(
-        settingsContext.baseURL
-          ? requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.sync}`, {})
-          : syncWiki.mutateAsync(),
+        syncWiki.mutateAsync(),
         {
           loading: t`Syncing...`,
           success: t`Wiki synced`,
@@ -329,18 +277,13 @@ function SettingsTab() {
       void queryClient.invalidateQueries({ queryKey: ['wiki'] })
     } catch {
       // toast already shown
-    } finally {
-      setIsSyncing(false)
     }
   }
 
   const handleDelete = async () => {
-    setIsDeleting(true)
     try {
       await toastAction(
-        settingsContext.baseURL
-          ? requestHelpers.post(`${settingsContext.baseURL}${endpoints.wiki.delete}`, {})
-          : deleteWiki.mutateAsync(),
+        deleteWiki.mutateAsync(),
         {
           loading: t`Deleting wiki...`,
           success: t`Wiki deleted`,
@@ -351,8 +294,6 @@ function SettingsTab() {
       void navigate({ to: '/' })
     } catch {
       // toast already shown
-    } finally {
-      setIsDeleting(false)
     }
   }
 
@@ -376,10 +317,9 @@ function SettingsTab() {
     )
   }
 
-  // Use appropriate pending state
-  const savePending = settingsContext.baseURL ? isSaving : setSetting.isPending
-  const syncPending = settingsContext.baseURL ? isSyncing : syncWiki.isPending
-  const deletePending = settingsContext.baseURL ? isDeleting : deleteWiki.isPending
+  const savePending = setSetting.isPending
+  const syncPending = syncWiki.isPending
+  const deletePending = deleteWiki.isPending
 
   return (
     <div className="space-y-6">
@@ -440,9 +380,6 @@ function SettingsTab() {
               onChange={(e) => handleHomePageChange(e.target.value)}
               placeholder={t`home`}
             />
-            <p className="text-muted-foreground text-sm">
-              <Trans>Example: "home", "welcome", "index"</Trans>
-            </p>
           </div>
           <div className="flex justify-end">
             <Button onClick={() => void handleSave()} disabled={!hasChanges || savePending}>
@@ -460,9 +397,6 @@ function SettingsTab() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium"><Trans>Delete wiki</Trans></p>
-                <p className="text-sm text-muted-foreground">
-                  <Trans>Permanently delete this wiki and all its contents. This cannot be undone.</Trans>
-                </p>
               </div>
               <Button
                 variant="outline"
@@ -504,7 +438,6 @@ function AccessTab() {
   const { t } = useLingui()
   const accessLevels = useWikiAccessLevels()
   const { data: groupsData } = useGroups()
-  const settingsContext = useSettingsContext()
 
   const [rules, setRules] = useState<import('@/types/wiki').AccessRule[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -514,12 +447,7 @@ function AccessTab() {
   const [userSearchQuery, setUserSearchQuery] = useState('')
   const { data: userSearchData, isLoading: userSearchLoading } = useUserSearch(userSearchQuery)
 
-  // Helper to build API URL with optional baseURL
-  const apiUrl = useCallback(
-    (endpoint: string) =>
-      settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint,
-    [settingsContext.baseURL]
-  )
+  const apiUrl = useEntityEndpoint()
 
   const loadRules = useCallback(async () => {
     setIsLoading(true)
@@ -637,12 +565,7 @@ function ReplicasTab() {
   const [error, setError] = useState<Error | null>(null)
   const [isRemoving, setIsRemoving] = useState(false)
 
-  // Helper to build API URL with optional baseURL
-  const apiUrl = useCallback(
-    (endpoint: string) =>
-      settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint,
-    [settingsContext.baseURL]
-  )
+  const apiUrl = useEntityEndpoint()
 
   const loadReplicas = useCallback(async () => {
     setIsLoading(true)
@@ -738,7 +661,7 @@ function ReplicasTab() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead><Trans>ID</Trans></TableHead>
+                <TableHead><Trans>Name</Trans></TableHead>
                 <TableHead><Trans>Subscribed</Trans></TableHead>
                 <TableHead><Trans>Last synced</Trans></TableHead>
                 <TableHead className="w-20"><Trans>Actions</Trans></TableHead>
@@ -748,7 +671,7 @@ function ReplicasTab() {
               {replicas.map((replica) => (
                 <TableRow key={replica.id}>
                   <TableCell>
-                    <DataChip value={replica.id} />
+                    <DataChip value={replica.name || t`Unknown`} />
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatTimestamp(replica.subscribed)}
@@ -816,7 +739,6 @@ function ReplicasTab() {
 function RedirectsTab() {
   const { t } = useLingui()
   const { formatTimestamp } = useFormat()
-  const settingsContext = useSettingsContext()
 
   // Local state for wiki-specific API calls
   const [redirects, setRedirects] = useState<import('@/types/wiki').Redirect[]>([])
@@ -824,12 +746,7 @@ function RedirectsTab() {
   const [error, setError] = useState<Error | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  // Helper to build API URL with optional baseURL
-  const apiUrl = useCallback(
-    (endpoint: string) =>
-      settingsContext.baseURL ? `${settingsContext.baseURL}${endpoint}` : endpoint,
-    [settingsContext.baseURL]
-  )
+  const apiUrl = useEntityEndpoint()
 
   const loadRedirects = useCallback(async () => {
     setIsLoading(true)
@@ -878,7 +795,7 @@ function RedirectsTab() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle><Trans>Redirects</Trans></CardTitle>
-          <AddRedirectDialog baseURL={settingsContext.baseURL} onSuccess={loadRedirects} />
+          <AddRedirectDialog onSuccess={loadRedirects} />
         </div>
       </CardHeader>
       <CardContent>
@@ -970,20 +887,17 @@ function RedirectsTab() {
 }
 
 interface AddRedirectDialogProps {
-  baseURL: string | null
   onSuccess: () => void
 }
 
-function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
+function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
   const { t } = useLingui()
   const [open, setOpen] = useState(false)
   const [source, setSource] = useState('')
   const [target, setTarget] = useState('')
   const [isCreating, setIsCreating] = useState(false)
 
-  // Helper to build API URL with optional baseURL
-  const apiUrl = (endpoint: string) =>
-    baseURL ? `${baseURL}${endpoint}` : endpoint
+  const apiUrl = useEntityEndpoint()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -1029,9 +943,6 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
         <form onSubmit={(e) => void handleSubmit(e)}>
           <DialogHeader>
             <DialogTitle><Trans>Create redirect</Trans></DialogTitle>
-            <DialogDescription>
-              <Trans>Create a redirect from one URL to another.</Trans>
-            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
@@ -1042,9 +953,6 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
                 onChange={(e) => setSource(e.target.value)}
                 placeholder={t`old-page-name`}
               />
-              <p className="text-muted-foreground text-sm">
-                <Trans>The URL that will be redirected</Trans>
-              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="target"><Trans>Target URL</Trans></Label>
@@ -1054,9 +962,6 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
                 onChange={(e) => setTarget(e.target.value)}
                 placeholder={t`new-page-name`}
               />
-              <p className="text-muted-foreground text-sm">
-                <Trans>The existing page to redirect to</Trans>
-              </p>
             </div>
           </div>
           <DialogFooter>
@@ -1064,7 +969,8 @@ function AddRedirectDialog({ baseURL, onSuccess }: AddRedirectDialogProps) {
               <Trans>Cancel</Trans>
             </Button>
             <Button type="submit" disabled={isCreating}>
-              {isCreating ? t`Creating...` : <><Plus className="h-4 w-4 me-2" /><Trans>Create redirect</Trans></>}
+              {isCreating ? <Loader2 className="h-4 w-4 me-2 animate-spin" /> : <Plus className="h-4 w-4 me-2" />}
+              {isCreating ? t`Creating...` : <Trans>Create redirect</Trans>}
             </Button>
           </DialogFooter>
         </form>

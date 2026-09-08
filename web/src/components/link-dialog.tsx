@@ -17,6 +17,7 @@ import {
   toast,
 } from '@mochi/web'
 import { wikisRequest } from '@/api/request'
+import endpoints from '@/api/endpoints'
 
 // Share-link dialog for a wiki the user owns: shows the mochi://<peer>/<wiki>
 // URI with a copy button. The link conveys location only - access to a private
@@ -34,7 +35,7 @@ export function useWikiLinkDialog(wikiId: string | undefined) {
     setOpen(true)
     try {
       const response = await wikisRequest.post<{ data?: { link: string }; link?: string }>(
-        `${wikiId}/-/share`,
+        endpoints.wiki.share(wikiId),
         {}
       )
       setLink(response.data?.link ?? response.link ?? '')

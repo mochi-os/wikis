@@ -21,6 +21,7 @@ const defaultPermissions: WikiPermissions = {
   edit: false,
   delete: false,
   manage: false,
+  owner: false,
 }
 
 const WikiContext = createContext<WikiContextValue | null>(null)

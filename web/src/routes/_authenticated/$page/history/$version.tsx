@@ -21,7 +21,7 @@ function RevisionViewRoute() {
   const version = parseInt(params.version, 10)
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
-  usePageTitle(`${slug} v${version}`)
+  usePageTitle(t`${slug} version ${version}`)
 
 
   const { data, isLoading, error, refetch } = usePageRevision(slug, version)
@@ -29,7 +29,7 @@ function RevisionViewRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`${slug} version ${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <RevisionViewSkeleton />
         </Main>
@@ -40,7 +40,7 @@ function RevisionViewRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`${slug} version ${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <GeneralError error={error} minimal mode="inline" reset={refetch} />
         </Main>
@@ -51,7 +51,7 @@ function RevisionViewRoute() {
   if (data) {
     return (
       <>
-        <WikiRouteHeader title={`${slug} v${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader title={t`${slug} version ${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
         <Main>
           <RevisionView
             slug={slug}

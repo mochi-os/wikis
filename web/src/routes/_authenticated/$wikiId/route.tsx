@@ -7,16 +7,9 @@ import { useCallback } from 'react'
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
 import { t } from '@lingui/core/macro'
 import { requestHelpers, GeneralError, getErrorMessage, isDomainEntityRouting } from '@mochi/web'
-import type { WikiPermissions } from '@/types/wiki'
+import type { WikiPermissions, WikiInfo, InfoResponse } from '@/types/wiki'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
-
-interface WikiInfo {
-  id: string
-  name: string
-  home: string
-  fingerprint?: string
-  source?: string
-}
+import { wikiInfoKey } from '@/hooks/use-wiki'
 
 interface WikiRouteData {
   baseURL: string
@@ -26,15 +19,8 @@ interface WikiRouteData {
   infoError?: string
 }
 
-interface InfoResponse {
-  entity: boolean
-  wiki?: WikiInfo
-  permissions?: WikiPermissions
-  fingerprint?: string
-}
-
 export const Route = createFileRoute('/_authenticated/$wikiId')({
-  loader: async ({ params }): Promise<WikiRouteData> => {
+  loader: async ({ params, context }): Promise<WikiRouteData> => {
     const wikiId = params.wikiId
     if (!wikiId) {
       throw new Error(t`Wiki ID is required`)
@@ -61,6 +47,9 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
     let infoError: string | undefined
     try {
       info = await requestHelpers.get<InfoResponse>(`${baseURL}info`)
+      // Seed the query cache so the provider that mounts under this route
+      // reads the answer instead of asking for it a second time.
+      context.queryClient.setQueryData(wikiInfoKey(wikiId), info)
     } catch (error) {
       // Keep wiki routes usable when info is temporarily unavailable.
       infoError = getErrorMessage(error, t`Failed to load wiki info`)
@@ -70,7 +59,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
       return {
         baseURL,
         wiki: { id: wikiId, name: wikiId, home: 'home', fingerprint: wikiId },
-        permissions: { view: false, edit: false, delete: false, manage: false },
+        permissions: { view: false, edit: false, delete: false, manage: false, owner: false },
         fingerprint: wikiId,
         infoError: infoError ?? t`Wiki not found`,
       }
@@ -79,7 +68,7 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
     return {
       baseURL,
       wiki: info.wiki,
-      permissions: info.permissions ?? { view: false, edit: false, delete: false, manage: false },
+      permissions: info.permissions ?? { view: false, edit: false, delete: false, manage: false, owner: false },
       fingerprint: info.wiki.fingerprint || wikiId,
       ...(infoError ? { infoError } : {}),
     }

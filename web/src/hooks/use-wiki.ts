@@ -33,7 +33,7 @@ import type {
   AttachmentUploadResponse,
   AttachmentDeleteResponse,
   AttachmentUpdateResponse,
-  WikiPermissions,
+  InfoResponse,
 } from '@/types/wiki'
 import endpoints from '@/api/endpoints'
 import { requestHelpers, MUTATION_SKIPPED, isMutationSkipped, textUnchanged, useUploadProgress, type MutationFnResult } from '@mochi/web'
@@ -54,7 +54,7 @@ function invalidatePage(
 // (entity context like /wikis/{fingerprint}/...), prefixes the endpoint with the
 // entity base URL to form an absolute path. In class context (no provider), the
 // endpoint is returned as-is and resolved by getApiBasepath().
-function useEntityEndpoint() {
+export function useEntityEndpoint() {
   const baseURL = useWikiBaseURLOptional()?.baseURL
   return (endpoint: string) => baseURL ? `${baseURL}${endpoint}` : endpoint
 }
@@ -69,12 +69,13 @@ function useWikiScope(): string {
 
 // Wiki info
 
-export interface WikiInfoResponse {
-  entity: boolean
-  wiki?: { id: string; name: string; home: string; fingerprint?: string; source?: string }
-  wikis?: Array<{ id: string; name: string; home: string; source?: string; fingerprint?: string }>
-  permissions?: WikiPermissions
-  fingerprint?: string
+export type WikiInfoResponse = InfoResponse
+
+// The key the info answer is cached under. The route loaders seed it with the
+// answer they already fetched, so a navigation costs one request rather than
+// two: the loader's, then this query's on mount.
+export function wikiInfoKey(wikiId?: string) {
+  return ['wiki', 'info', wikiId ?? '']
 }
 
 // In class context the URL's wiki is prefixed so the wiki-scoped info action
@@ -82,11 +83,15 @@ export interface WikiInfoResponse {
 // context the plain endpoint already resolves wiki-scoped.
 export function useWikiInfo(wikiId?: string) {
   return useQuery({
-    queryKey: ['wiki', 'info', wikiId ?? ''],
+    queryKey: wikiInfoKey(wikiId),
     queryFn: () =>
       wikisRequest.get<WikiInfoResponse>(
         wikiId ? `${wikiId}/${endpoints.wiki.info}` : endpoints.wiki.info
       ),
+    // Long enough that the loader's seed is still fresh when the provider
+    // mounts; without it React Query refetches in the background on every
+    // mount and the saving is lost.
+    staleTime: 30_000,
   })
 }
 
@@ -399,10 +404,11 @@ export function useDeleteWiki() {
   return useMutation({
     mutationFn: () =>
       requestHelpers.post<DeleteWikiResponse>(e(endpoints.wiki.delete), {}),
-    onSuccess: async () => {
-      // Fetch fresh data from class-level endpoint and update cache
-      const freshData = await wikisRequest.get<WikiInfoResponse>(endpoints.wiki.info)
-      queryClient.setQueryData(['wiki', 'info'], freshData)
+    onSuccess: () => {
+      // Invalidate rather than write: useWikiInfo keys as ['wiki','info',<id>]
+      // and setQueryData is an exact-key write, so the fetched answer went to a
+      // key nothing reads and every deletion paid for a wasted request.
+      void queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },
   })
 }

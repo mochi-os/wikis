@@ -4,15 +4,7 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 import { createContext, useContext, type ReactNode } from 'react'
-import type { WikiPermissions } from '@/types/wiki'
-
-interface WikiInfo {
-  id: string
-  name: string
-  home: string
-  fingerprint?: string
-  source?: string
-}
+import type { WikiPermissions, WikiInfo } from '@/types/wiki'
 
 interface WikiBaseURLContextValue {
   baseURL: string

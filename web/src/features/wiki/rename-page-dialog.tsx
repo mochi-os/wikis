@@ -15,7 +15,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   Input,
   Label,
   Checkbox,
@@ -26,19 +25,16 @@ import { useRenamePage } from '@/hooks/use-wiki'
 
 interface RenamePageDialogProps {
   slug: string
-  title: string
   wikiId?: string
-  trigger?: React.ReactNode
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: controlledOpen, onOpenChange }: RenamePageDialogProps) {
+// Controlled only. The uncontrolled `trigger` branch was never taken - every
+// caller passes open/onOpenChange - and `title` was destructured and discarded.
+export function RenamePageDialog({ slug, wikiId, open, onOpenChange: setOpen }: RenamePageDialogProps) {
   const { t } = useLingui()
   const navigate = useNavigate()
-  const [internalOpen, setInternalOpen] = useState(false)
-  const open = controlledOpen ?? internalOpen
-  const setOpen = onOpenChange ?? setInternalOpen
   const [newSlug, setNewSlug] = useState(slug)
   const [createRedirects, setCreateRedirects] = useState(false)
   const renamePage = useRenamePage()
@@ -105,7 +101,7 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
               id="newSlug"
               value={newSlug}
               onChange={(e) => setNewSlug(e.target.value)}
-              placeholder="new-page-url"
+              placeholder={t`new-page-name`}
             />
           </div>
           <div className="flex items-center space-x-2">
@@ -136,26 +132,8 @@ export function RenamePageDialog({ slug, title: _title, wikiId, trigger, open: c
     </DialogContent>
   )
 
-  // Controlled mode - no trigger, dialog controlled externally
-  if (controlledOpen !== undefined) {
-    return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        {dialogContent}
-      </Dialog>
-    )
-  }
-
-  // Uncontrolled mode - with trigger
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="outline">
-            <Pencil className="me-2 h-4 w-4" />
-            <Trans>Rename</Trans>
-          </Button>
-        )}
-      </DialogTrigger>
       {dialogContent}
     </Dialog>
   )

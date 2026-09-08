@@ -13,16 +13,9 @@ import {
   getErrorMessage,
   getEntityFingerprint,
 } from '@mochi/web'
-import type { WikiPermissions } from '@/types/wiki'
+import type { WikiPermissions, WikiInfo, InfoResponse } from '@/types/wiki'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
-
-interface WikiInfo {
-  id: string
-  name: string
-  home: string
-  fingerprint?: string
-  source?: string
-}
+import { wikiInfoKey } from '@/hooks/use-wiki'
 
 interface WikiRouteData {
   baseURL: string
@@ -31,18 +24,11 @@ interface WikiRouteData {
   infoError?: string
 }
 
-interface InfoResponse {
-  entity: boolean
-  wiki?: WikiInfo
-  permissions?: WikiPermissions
-  fingerprint?: string
-}
-
 // Layout for the top-level $page tree: the wiki is named by the URL context
 // (domain route or direct entity routing) rather than a path segment. Mirrors
 // $wikiId/route.tsx.
 export const Route = createFileRoute('/_authenticated/$page')({
-  loader: async (): Promise<WikiRouteData> => {
+  loader: async ({ context }): Promise<WikiRouteData> => {
     // getApiBasepath resolves the entity endpoint prefix for whichever
     // context mounted us: "/-/" on a whole-domain route, "/<route>/-/" on a
     // subpath route, "/<fingerprint>/-/" on direct entity routing.
@@ -53,6 +39,9 @@ export const Route = createFileRoute('/_authenticated/$page')({
     let infoError: string | undefined
     try {
       info = await requestHelpers.get<InfoResponse>(`${baseURL}info`)
+      // Seed the query cache so the provider that mounts under this route
+      // reads the answer instead of asking for it a second time.
+      context.queryClient.setQueryData(wikiInfoKey(), info)
     } catch (error) {
       // Keep wiki routes usable when info is temporarily unavailable.
       infoError = getErrorMessage(error, t`Failed to load wiki info`)
@@ -62,7 +51,7 @@ export const Route = createFileRoute('/_authenticated/$page')({
       return {
         baseURL,
         wiki: { id: fingerprint, name: fingerprint, home: 'home', fingerprint },
-        permissions: { view: false, edit: false, delete: false, manage: false },
+        permissions: { view: false, edit: false, delete: false, manage: false, owner: false },
         infoError: infoError ?? t`Wiki not found`,
       }
     }
@@ -70,7 +59,7 @@ export const Route = createFileRoute('/_authenticated/$page')({
     return {
       baseURL,
       wiki: info.wiki,
-      permissions: info.permissions ?? { view: false, edit: false, delete: false, manage: false },
+      permissions: info.permissions ?? { view: false, edit: false, delete: false, manage: false, owner: false },
       ...(infoError ? { infoError } : {}),
     }
   },

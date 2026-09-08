@@ -8,34 +8,13 @@
 import { shellStorage } from '@mochi/web'
 
 const STORAGE_KEYS = {
-  WIKIS_LIST: 'mochi-wikis-list',
   LAST_LOCATION: 'mochi-wikis-last-location',
 } as const
-
-interface StoredWiki {
-  id: string
-  name: string
-  source?: string
-}
-
-interface WikisCache {
-  wikis: StoredWiki[]
-  timestamp: number
-}
 
 interface LastLocation {
   wikiId: string
   pageSlug?: string
   timestamp: number
-}
-
-// Cache wikis list
-export function cacheWikisList(wikis: StoredWiki[]): void {
-  const cache: WikisCache = {
-    wikis,
-    timestamp: Date.now(),
-  }
-  shellStorage.setItem(STORAGE_KEYS.WIKIS_LIST, JSON.stringify(cache))
 }
 
 // Store last visited location

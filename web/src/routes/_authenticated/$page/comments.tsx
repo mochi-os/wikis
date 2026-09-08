@@ -42,7 +42,7 @@ function CommentsRoute() {
         <PageComments
           slug={slug}
           currentUserId={identity || undefined}
-          isOwner={permissions.manage}
+          isOwner={permissions.owner}
           canComment={permissions.edit}
         />
       </Main>

@@ -5,7 +5,7 @@
 
 import { useState } from 'react'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { ArrowRight, Plus, Trash2, Link2 } from 'lucide-react'
+import { ArrowRight, Loader2, Plus, Trash2, Link2 } from 'lucide-react'
 import {
   Button,
   DataChip,
@@ -24,7 +24,6 @@ import {
   TableRow,
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -45,6 +44,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  naturalCompare,
 } from '@mochi/web'
 import { ValueLinkChip } from '@/components/value-link-chip'
 import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wiki'
@@ -97,7 +97,7 @@ export function RedirectsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.redirects.map((redirect) => (
+            {[...data.redirects].sort((a, b) => naturalCompare(a.source, b.source)).map((redirect) => (
               <RedirectRow key={redirect.source} redirect={redirect} />
             ))}
           </TableBody>
@@ -229,12 +229,6 @@ function AddRedirectDialog() {
         <form onSubmit={(e) => void handleSubmit(e)}>
           <DialogHeader>
             <DialogTitle><Trans>Create redirect</Trans></DialogTitle>
-            <DialogDescription>
-              <Trans>
-                Create a redirect from one URL to another. The source URL must not
-                be an existing page.
-              </Trans>
-            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
@@ -245,9 +239,6 @@ function AddRedirectDialog() {
                 onChange={(e) => setSource(e.target.value)}
                 placeholder={t`old-page-name`}
               />
-              <p className="text-muted-foreground text-sm">
-                <Trans>The URL that will be redirected (e.g., "old-page")</Trans>
-              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="target"><Trans>Target URL</Trans></Label>
@@ -257,9 +248,6 @@ function AddRedirectDialog() {
                 onChange={(e) => setTarget(e.target.value)}
                 placeholder={t`new-page-name`}
               />
-              <p className="text-muted-foreground text-sm">
-                <Trans>The existing page to redirect to (e.g., "new-page")</Trans>
-              </p>
             </div>
           </div>
           <DialogFooter>
@@ -271,7 +259,8 @@ function AddRedirectDialog() {
               <Trans>Cancel</Trans>
             </Button>
             <Button type="submit" disabled={setRedirect.isPending}>
-              {setRedirect.isPending ? t`Creating...` : <><Plus className="h-4 w-4 me-2" /><Trans>Create redirect</Trans></>}
+              {setRedirect.isPending ? <Loader2 className="h-4 w-4 me-2 animate-spin" /> : <Plus className="h-4 w-4 me-2" />}
+              {setRedirect.isPending ? t`Creating...` : <Trans>Create redirect</Trans>}
             </Button>
           </DialogFooter>
         </form>

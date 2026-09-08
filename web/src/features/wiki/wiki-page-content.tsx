@@ -3,49 +3,32 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { Link, Navigate, useNavigate } from '@tanstack/react-router'
+import { Navigate, useNavigate } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { plural } from '@lingui/core/macro'
 import { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   usePageTitle,
   requestHelpers,
   Main,
-  Button,
   ConfirmDialog,
   GeneralError,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-  toast,
   toastAction,
   getErrorMessage,
-  getAppPath,
-  shellClipboardWrite,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
 } from '@mochi/web'
-import { Ellipsis, FileEdit, FilePlus, History, Link as LinkIcon, LogOut, MessageSquare, Pencil, Rss, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import {
   PageView,
   PageNotFound,
   PageViewSkeleton,
 } from '@/features/wiki/page-view'
 import { PageHeader } from '@/features/wiki/page-header'
+import { PageActionsMenu, PageMissingMenu } from '@/features/wiki/page-actions-menu'
+import { useRssCopy } from '@/hooks/use-rss-copy'
 import endpoints from '@/api/endpoints'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { useWikiLinkDialog } from '@/components/link-dialog'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
-import { getRssToken } from '@/api/request'
 import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
@@ -91,7 +74,10 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
 
   // Fetch page data using the wiki's base URL
   const { data, isLoading, error: pageError, refetch } = useQuery({
-    queryKey: ['wiki', wikiId, 'page', slug, baseURL],
+    // Keyed on the base URL, which is the prefix invalidatePage invalidates.
+    // Keying on the fingerprint meant no page mutation ever matched, so tags
+    // and the comment count stayed stale until a refocus or a navigation.
+    queryKey: ['wiki', baseURL, 'page', slug],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${endpoints.wiki.page(slug)}`),
     enabled: !shouldRedirect,
@@ -133,27 +119,7 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
 
   // RSS feed handler
-  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all', regenerate = false) => {
-    try {
-      const { token, exists } = await getRssToken(wikiId, mode, regenerate)
-      // Only the hash is stored; replacing the issued URL is the user's call,
-      // since it breaks any reader polling it.
-      if (exists) {
-        toast.info(t`This feed URL was already issued and cannot be shown again.`, {
-          action: {
-            label: t`Replace`,
-            onClick: () => void handleCopyRssUrl(mode, true),
-          },
-        })
-        return
-      }
-      const url = new URL(`${getAppPath()}/${wikiId}/-/rss?token=${token}`, window.location.href).href
-      const ok = await shellClipboardWrite(url)
-      if (ok) toast.success(regenerate ? t`New RSS URL copied to clipboard` : t`RSS URL copied to clipboard`)
-    } catch (error) {
-      toast.error(getErrorMessage(error, t`Failed to get RSS token`))
-    }
-  }
+  const rss = useRssCopy(wikiId)
 
   if (shouldRedirect) {
     return <Navigate to="/$wikiId" params={{ wikiId }} />
@@ -201,48 +167,7 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
   // Check if page was not found
   if (isValidResponse && 'error' in data && data.error === 'not_found') {
     const notFoundMenu = (
-      <DropdownMenu>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t`Page actions`}
-              >
-                <Ellipsis className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent>{t`Page actions`}</TooltipContent>
-        </Tooltip>
-        <DropdownMenuContent align="end">
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
-                <FilePlus className="size-4" />
-                <Trans>Create this page</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {permissions.manage && (
-            <>
-              <DropdownMenuSeparator />
-              {/* Canonical menu tail: Link, then Settings. */}
-              <DropdownMenuItem onSelect={() => void openLinkDialog()}>
-                <LinkIcon className="size-4" />
-                <Trans>Link</Trans>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link preload={false} to="/$wikiId/settings" params={{ wikiId }}>
-                  <Settings className="size-4" />
-                  <Trans>Wiki settings</Trans>
-                </Link>
-              </DropdownMenuItem>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <PageMissingMenu slug={slug} wiki={wikiId} permissions={permissions} onLink={() => void openLinkDialog()} />
     )
 
     return (
@@ -265,126 +190,19 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
     const commentCount = isValidResponse && 'comments' in data ? (data.comments?.count ?? 0) : 0
 
     const actionsMenu = (
-      <DropdownMenu>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t`Page actions`}
-                className="size-11 md:size-9"
-              >
-                <Ellipsis className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent>{t`Page actions`}</TooltipContent>
-        </Tooltip>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel><Trans>Page</Trans></DropdownMenuLabel>
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/$wikiId/$page/edit" params={{ wikiId, page: slug }}>
-                <Pencil className="size-4" />
-                <Trans>Edit</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {permissions.edit && (
-            <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
-              <FileEdit className="size-4" />
-              <Trans>Rename</Trans>
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem asChild>
-            <Link preload={false} to="/$wikiId/$page/history" params={{ wikiId, page: slug }}>
-              <History className="size-4" />
-              <Trans>History</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to="/$wikiId/$page/comments" params={{ wikiId, page: slug }}>
-              <MessageSquare className="size-4" />
-              {plural(commentCount, { one: '1 comment', other: '# comments' })}
-            </Link>
-          </DropdownMenuItem>
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
-                <Trash2 className="size-4" />
-                <Trans>Delete</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel><Trans>Wiki</Trans></DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to="/$wikiId/search" params={{ wikiId }}>
-              <Search className="size-4" />
-              <Trans>Search</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to="/$wikiId/tags" params={{ wikiId }}>
-              <Tags className="size-4" />
-              <Trans>Tags</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to="/$wikiId/changes" params={{ wikiId }}>
-              <History className="size-4" />
-              <Trans>Recent changes</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <Rss className="me-2 size-4" />
-              <Trans>RSS feed</Trans>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>
-              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('changes')}><Trans>Changes</Trans></DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('comments')}><Trans>Comments</Trans></DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}><Trans>Changes and comments</Trans></DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/$wikiId/new" params={{ wikiId }}>
-                <FilePlus className="size-4" />
-                <Trans>New page</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {/* Canonical menu tail: Link, Design (n/a here), Settings, Unsubscribe. */}
-          {permissions.manage && (
-            <DropdownMenuItem onSelect={() => void openLinkDialog()}>
-              <LinkIcon className="size-4" />
-              <Trans>Link</Trans>
-            </DropdownMenuItem>
-          )}
-          {permissions.manage && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/$wikiId/settings" params={{ wikiId }}>
-                <Settings className="size-4" />
-                <Trans>Settings</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {canUnsubscribe && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={() => setUnsubscribeConfirmOpen(true)}
-                disabled={isUnsubscribing}
-              >
-                <LogOut className="size-4" />
-                {isUnsubscribing ? t`Unsubscribing...` : t`Unsubscribe`}
-              </DropdownMenuItem>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <PageActionsMenu
+        slug={slug}
+        wiki={wikiId}
+        permissions={permissions}
+        comments={commentCount}
+        unsubscribable={canUnsubscribe}
+        unsubscribing={isUnsubscribing}
+        onRename={() => setRenameDialogOpen(true)}
+        onLink={() => void openLinkDialog()}
+        onUnsubscribe={() => setUnsubscribeConfirmOpen(true)}
+        onRss={(mode) => void rss.copy(mode)}
+        onRevoke={() => void rss.revoke()}
+      />
     )
 
     return (
@@ -409,7 +227,6 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
         />
         <RenamePageDialog
           slug={slug}
-          title={data.page.title}
           wikiId={wikiId}
           open={renameDialogOpen}
           onOpenChange={setRenameDialogOpen}

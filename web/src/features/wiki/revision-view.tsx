@@ -142,7 +142,7 @@ export function RevisionView({
               name={authorLabel}
               size="xs"
             />
-            <span className="font-medium" title={revision.author}>{authorLabel}</span>
+            <span className="font-medium">{authorLabel}</span>
           </span>
         </div>
 

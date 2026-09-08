@@ -19,8 +19,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -31,12 +29,9 @@ import {
   ListCard,
   getErrorMessage,
   isDomainEntityRouting,
-  getAppPath,
-  toast,
   toastAction,
   useFormat,
   usePageTitle,
-  shellClipboardWrite,
   naturalCompare,
   Tooltip,
   TooltipTrigger,
@@ -46,27 +41,18 @@ import {
   BookMarked,
   BookOpen,
   Ellipsis,
-  FileEdit,
-  FilePlus,
-  History,
   Loader2,
-  Pencil,
   Plus,
   Rss,
-  Search,
-  Settings,
-  Tags,
-  Link as LinkIcon,
 } from 'lucide-react'
 import endpoints from '@/api/endpoints'
-import { wikisRequest, getRssToken, revokeRssToken, isEntityContext } from '@/api/request'
+import { wikisRequest, isEntityContext } from '@/api/request'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { usePermissions, useWikiContext } from '@/context/wiki-context'
 import { useWikiLinkDialog } from '@/components/link-dialog'
 import { usePage, useUnsubscribeWiki, useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 import {
-  cacheWikisList,
   setLastLocation,
   getLastLocation,
   clearLastLocation,
@@ -79,32 +65,11 @@ import {
   PageViewSkeleton,
 } from '@/features/wiki/page-view'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
+import { PageActionsMenu } from '@/features/wiki/page-actions-menu'
+import { useRssCopy } from '@/hooks/use-rss-copy'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
-import type { WikiPermissions } from '@/types/wiki'
+import type { WikiInfo, InfoResponse, WikiPermissions } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
-
-interface InfoWiki {
-  id: string
-  name: string
-  home: string
-  fingerprint?: string
-  source?: string
-  pages?: number
-  updated?: number
-}
-
-interface InfoResponse {
-  entity: boolean
-  wiki?: InfoWiki
-  wikis?: Array<{
-    id: string
-    name: string
-    home: string
-    source?: string
-    fingerprint?: string
-  }>
-  permissions?: WikiPermissions
-}
 
 interface IndexRouteData extends InfoResponse {
   infoError?: string
@@ -136,13 +101,6 @@ export const Route = createFileRoute('/_authenticated/')({
         wikis: [],
         infoError: getErrorMessage(error, t`Failed to load wikis`),
       }
-    }
-
-    // Cache wikis list for sidebar
-    if (info.wikis) {
-      cacheWikisList(
-        info.wikis.map((w) => ({ id: w.id, name: w.name, source: w.source }))
-      )
     }
 
     // Only redirect on first load, not on subsequent navigations
@@ -196,6 +154,7 @@ const defaultPermissions: WikiPermissions = {
   edit: false,
   delete: false,
   manage: false,
+  owner: false,
 }
 
 function IndexPage() {
@@ -298,37 +257,7 @@ function WikiHomePage({
   const { info } = useWikiContext()
   const canUnsubscribe = !!info?.wiki?.source
 
-  // RSS feed handler
-  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all', regenerate = false) => {
-    try {
-      const { token, exists } = await getRssToken(wikiId, mode, regenerate)
-      // Only the hash is stored; replacing the issued URL is the user's call,
-      // since it breaks any reader polling it.
-      if (exists) {
-        toast.info(t`This feed URL was already issued and cannot be shown again.`, {
-          action: {
-            label: t`Replace`,
-            onClick: () => void handleCopyRssUrl(mode, true),
-          },
-        })
-        return
-      }
-      const url = new URL(`${getAppPath()}/${wikiId}/-/rss?token=${token}`, window.location.href).href
-      const ok = await shellClipboardWrite(url)
-      if (ok) toast.success(regenerate ? t`New RSS URL copied to clipboard` : t`RSS URL copied to clipboard`)
-    } catch (error) {
-      toast.error(getErrorMessage(error, t`Failed to get RSS token`))
-    }
-  }
-
-  const handleRevokeRss = async () => {
-    try {
-      await revokeRssToken(wikiId)
-      toast.success(t`RSS access revoked`)
-    } catch (error) {
-      toast.error(getErrorMessage(error, t`Failed to revoke RSS access`))
-    }
-  }
+  const rss = useRssCopy(wikiId)
 
   if (isLoading) {
     return (
@@ -379,124 +308,18 @@ function WikiHomePage({
   // Page found
   if (data && 'page' in data && typeof data.page === 'object') {
     const actionsMenu = (
-      <DropdownMenu>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                aria-label={t`Page actions`}
-                className='size-11 md:size-9'
-              >
-                <Ellipsis className='size-4' />
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent>{t`Page actions`}</TooltipContent>
-        </Tooltip>
-        <DropdownMenuContent align='end'>
-          <DropdownMenuLabel><Trans>Page</Trans></DropdownMenuLabel>
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to='/$page/edit' params={{ page: homeSlug }}>
-                <Pencil className='size-4' />
-                <Trans>Edit</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {permissions.edit && (
-            <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
-              <FileEdit className='size-4' />
-              <Trans>Rename</Trans>
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem asChild>
-            <Link preload={false} to='/$page/history' params={{ page: homeSlug }}>
-              <History className='size-4' />
-              <Trans>History</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel><Trans>Wiki</Trans></DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to='/search'>
-              <Search className='size-4' />
-              <Trans>Search</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to='/tags'>
-              <Tags className='size-4' />
-              <Trans>Tags</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to='/changes'>
-              <History className='size-4' />
-              <Trans>Recent changes</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <Rss className='me-2 size-4' />
-              <Trans>RSS feed</Trans>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>
-              <DropdownMenuItem
-                onSelect={() => void handleCopyRssUrl('changes')}
-              >
-                <Trans>Changes</Trans>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => void handleCopyRssUrl('comments')}
-              >
-                <Trans>Comments</Trans>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => void handleCopyRssUrl('all')}>
-                <Trans>Changes and comments</Trans>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => void handleRevokeRss()}>
-                <Trans>Revoke access</Trans>
-              </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to='/new'>
-                <FilePlus className='size-4' />
-                <Trans>New page</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {/* Canonical menu tail: Link, Design (n/a here), Settings, Unsubscribe. */}
-          {permissions.manage && (
-            <DropdownMenuItem onSelect={() => void openLinkDialog()}>
-              <LinkIcon className='size-4' />
-              <Trans>Link</Trans>
-            </DropdownMenuItem>
-          )}
-          {permissions.manage && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to='/settings'>
-                <Settings className='size-4' />
-                <Trans>Settings</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {canUnsubscribe && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={() => setUnsubscribeConfirmOpen(true)}
-                disabled={unsubscribeWiki.isPending}
-              >
-                {unsubscribeWiki.isPending ? t`Unsubscribing...` : t`Unsubscribe`}
-              </DropdownMenuItem>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <PageActionsMenu
+        slug={homeSlug}
+        permissions={permissions}
+        comments={data && 'comments' in data ? (data.comments?.count ?? 0) : 0}
+        unsubscribable={canUnsubscribe}
+        unsubscribing={unsubscribeWiki.isPending}
+        onRename={() => setRenameDialogOpen(true)}
+        onLink={() => void openLinkDialog()}
+        onUnsubscribe={() => setUnsubscribeConfirmOpen(true)}
+        onRss={(mode) => void rss.copy(mode)}
+        onRevoke={() => void rss.revoke()}
+      />
     )
 
     return (
@@ -528,7 +351,6 @@ function WikiHomePage({
         />
         <RenamePageDialog
           slug={homeSlug}
-          title={data.page.title}
           open={renameDialogOpen}
           onOpenChange={setRenameDialogOpen}
         />
@@ -584,38 +406,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
     },
   })
 
-  // RSS feed handler for all wikis
-  const handleCopyRssUrl = async (mode: 'changes' | 'comments' | 'all', regenerate = false) => {
-    try {
-      const { token, exists } = await getRssToken('*', mode, regenerate)
-      // Only the hash is stored, so an already-issued URL cannot be shown
-      // again. Offer to replace it rather than silently minting a new one,
-      // which would break whatever reader is polling the old URL.
-      if (exists) {
-        toast.info(t`This feed URL was already issued and cannot be shown again.`, {
-          action: {
-            label: t`Replace`,
-            onClick: () => void handleCopyRssUrl(mode, true),
-          },
-        })
-        return
-      }
-      const url = new URL(`${getAppPath()}/-/rss?token=${token}`, window.location.href).href
-      const ok = await shellClipboardWrite(url)
-      if (ok) toast.success(regenerate ? t`New RSS URL copied to clipboard` : t`RSS URL copied to clipboard`)
-    } catch (error) {
-      toast.error(getErrorMessage(error, t`Failed to get RSS token`))
-    }
-  }
-
-  const handleRevokeRss = async () => {
-    try {
-      await revokeRssToken('*')
-      toast.success(t`RSS access revoked`)
-    } catch (error) {
-      toast.error(getErrorMessage(error, t`Failed to revoke RSS access`))
-    }
-  }
+  const rss = useRssCopy('*')
 
   // Clear last location when viewing "All wikis"
   useEffect(() => {
@@ -630,8 +421,8 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
       type: (w.source ? 'subscribed' : 'owned') as WikiType,
       fingerprint: w.fingerprint,
       home: w.home,
-      pages: (w as InfoWiki).pages,
-      updated: (w as InfoWiki).updated,
+      pages: (w as WikiInfo).pages,
+      updated: (w as WikiInfo).updated,
     })),
   ].sort((a, b) => naturalCompare(a.name, b.name))
 
@@ -712,21 +503,21 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem
-                    onSelect={() => void handleCopyRssUrl('changes')}
+                    onSelect={() => void rss.copy('changes')}
                   >
                     <Trans>Changes</Trans>
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onSelect={() => void handleCopyRssUrl('comments')}
+                    onSelect={() => void rss.copy('comments')}
                   >
                     <Trans>Comments</Trans>
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onSelect={() => void handleCopyRssUrl('all')}
+                    onSelect={() => void rss.copy('all')}
                   >
                     <Trans>Changes and comments</Trans>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => void handleRevokeRss()}>
+                  <DropdownMenuItem onSelect={() => void rss.revoke()}>
                     <Trans>Revoke access</Trans>
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>

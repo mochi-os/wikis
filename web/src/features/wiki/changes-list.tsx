@@ -84,7 +84,7 @@ export function ChangesList({ changes, wikiId, total, offset = 0, onLoadMore }: 
                         name={authorLabel}
                         size="xs"
                       />
-                      <span title={change.author}>{authorLabel}</span>
+                      <span>{authorLabel}</span>
                     </span>
                   </TableCell>
                   <TableCell className="text-muted-foreground">

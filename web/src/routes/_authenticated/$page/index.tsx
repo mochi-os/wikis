@@ -3,12 +3,13 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
-import { createFileRoute, Link, Navigate, useNavigate } from '@tanstack/react-router'
-import { Trans, useLingui } from '@lingui/react/macro'
-import { plural } from '@lingui/core/macro'
+import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router'
+import { useLingui } from '@lingui/react/macro'
 import { useCallback, useEffect, useState } from 'react'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
-import { Button, ConfirmDialog, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, GeneralError, usePageTitle, toastAction, getErrorMessage, Main, Tooltip, TooltipTrigger, TooltipContent } from '@mochi/web'
+import { ConfirmDialog, GeneralError, usePageTitle, toastAction, getErrorMessage, Main } from '@mochi/web'
+import { PageActionsMenu, PageMissingMenu } from '@/features/wiki/page-actions-menu'
+import { useRssCopy } from '@/hooks/use-rss-copy'
 import {
   PageView,
   PageNotFound,
@@ -19,7 +20,6 @@ import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { useWikiContext, usePermissions } from '@/context/wiki-context'
 import { useWikiLinkDialog } from '@/components/link-dialog'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
-import { Ellipsis, FileEdit, FilePlus, History, Link as LinkIcon, MessageSquare, Pencil, Search, Settings, Tags, Trash2 } from 'lucide-react'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/')({
@@ -39,7 +39,9 @@ function WikiPageRoute() {
   const { info } = useWikiContext()
   const permissions = usePermissions()
   const unsubscribeWiki = useUnsubscribeWiki()
-  const { openLinkDialog, linkDialog } = useWikiLinkDialog(info?.wiki?.fingerprint ?? info?.wiki?.id)
+  const wikiEntity = info?.wiki?.fingerprint ?? info?.wiki?.id
+  const { openLinkDialog, linkDialog } = useWikiLinkDialog(wikiEntity)
+  const rss = useRssCopy(wikiEntity ?? '')
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(pageTitle)
 
@@ -115,52 +117,7 @@ function WikiPageRoute() {
   // Check if page was not found
   if (data && 'error' in data && data.error === 'not_found') {
     const notFoundMenu = (
-      <DropdownMenu>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t`Page actions`}
-                className="size-11 md:size-9"
-              >
-                <Ellipsis className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent>{t`Page actions`}</TooltipContent>
-        </Tooltip>
-        <DropdownMenuContent align="end">
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/$page/edit" params={{ page: slug }}>
-                <FilePlus className="size-4" />
-                <Trans>Create this page</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/new">
-                <FilePlus className="size-4" />
-                <Trans>New page</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {permissions.manage && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link preload={false} to="/settings">
-                  <Settings className="size-4" />
-                  <Trans>Wiki settings</Trans>
-                </Link>
-              </DropdownMenuItem>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <PageMissingMenu slug={slug} permissions={permissions} onLink={() => void openLinkDialog()} />
     )
 
     return (
@@ -182,107 +139,18 @@ function WikiPageRoute() {
     const commentCount = data && 'comments' in data ? (data.comments?.count ?? 0) : 0
 
     const actionsMenu = (
-      <DropdownMenu>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t`Page actions`}
-                className="size-11 md:size-9"
-              >
-                <Ellipsis className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-          </TooltipTrigger>
-          <TooltipContent>{t`Page actions`}</TooltipContent>
-        </Tooltip>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel><Trans>Page</Trans></DropdownMenuLabel>
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/$page/edit" params={{ page: slug }}>
-                <Pencil className="size-4" />
-                <Trans>Edit</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {permissions.edit && (
-            <DropdownMenuItem onSelect={() => setRenameDialogOpen(true)}>
-              <FileEdit className="size-4" />
-              <Trans>Rename</Trans>
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem asChild>
-            <Link preload={false} to="/$page/history" params={{ page: slug }}>
-              <History className="size-4" />
-              <Trans>History</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to="/$page/comments" params={{ page: slug }}>
-              <MessageSquare className="size-4" />
-              {plural(commentCount, { one: '1 comment', other: '# comments' })}
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel><Trans>Wiki</Trans></DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to="/search">
-              <Search className="size-4" />
-              <Trans>Search</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to="/tags">
-              <Tags className="size-4" />
-              <Trans>Tags</Trans>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link preload={false} to="/changes">
-              <History className="size-4" />
-              <Trans>Recent changes</Trans>
-            </Link>
-          </DropdownMenuItem>
-          {permissions.edit && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/new">
-                <FilePlus className="size-4" />
-                <Trans>New page</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {/* Canonical menu tail: Link, Design (n/a here), Settings, Unsubscribe. */}
-          {permissions.manage && (
-            <DropdownMenuItem onSelect={() => void openLinkDialog()}>
-              <LinkIcon className="size-4" />
-              <Trans>Link</Trans>
-            </DropdownMenuItem>
-          )}
-          {permissions.manage && (
-            <DropdownMenuItem asChild>
-              <Link preload={false} to="/settings">
-                <Settings className="size-4" />
-                <Trans>Settings</Trans>
-              </Link>
-            </DropdownMenuItem>
-          )}
-          {canUnsubscribe && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={() => setUnsubscribeConfirmOpen(true)}
-                disabled={unsubscribeWiki.isPending}
-              >
-                <Trash2 className="size-4" />
-                {unsubscribeWiki.isPending ? t`Unsubscribing...` : t`Unsubscribe`}
-              </DropdownMenuItem>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <PageActionsMenu
+        slug={slug}
+        permissions={permissions}
+        comments={commentCount}
+        unsubscribable={canUnsubscribe}
+        unsubscribing={unsubscribeWiki.isPending}
+        onRename={() => setRenameDialogOpen(true)}
+        onLink={() => void openLinkDialog()}
+        onUnsubscribe={() => setUnsubscribeConfirmOpen(true)}
+        onRss={(mode) => void rss.copy(mode)}
+        onRevoke={() => void rss.revoke()}
+      />
     )
 
     return (
@@ -308,7 +176,6 @@ function WikiPageRoute() {
         />
         <RenamePageDialog
           slug={slug}
-          title={data.page.title}
           open={renameDialogOpen}
           onOpenChange={setRenameDialogOpen}
         />

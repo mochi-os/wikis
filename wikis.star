@@ -181,9 +181,6 @@ def get_wiki(a):
 # never grantable here (owner only).
 ACCESS_LEVELS = ["view", "edit"]
 
-# Read a text field from a peer-supplied payload. A non-string returns
-# `fallback` so the caller's `if not x: return` rejects it; calling len() or
-# .lower() on it would abort the whole handler instead.
 # Ceiling on replicas per wiki. Generous enough that no real subscriber base
 # reaches it, low enough that the row count cannot be driven to the database's
 # page cap by an attacker minting sender entities.
@@ -279,7 +276,16 @@ def replica_can(wikirow, wiki, sender, operation):
     # proved sender == our recorded source.
     if wikirow.get("source"):
         return True
-    return check_event_access(sender, wiki, operation)
+    # The replica entity is an address, never the subject of an access rule:
+    # grants go to person identities and to the * / + wildcards. Check the
+    # identity the replica proved when it registered, exactly as broadcast_event
+    # and event_author already do - checking the entity refused every
+    # replica-originated edit to a private wiki, silently, after the replica had
+    # applied it locally. A row predating that binding falls back to the entity,
+    # which only a public wiki's wildcard satisfies.
+    row = mochi.db.row("select identity from replicas where wiki=? and id=?", wiki, sender)
+    subject = row["identity"] if row and row["identity"] else sender
+    return check_event_access(subject, wiki, operation)
 
 # error_message_timeout: core calls this when a fan-out to a replica aged out
 # undelivered. Remove them only when the directory shows no host left
@@ -628,9 +634,23 @@ def revision_comment(stored):
     if not stored or not stored.startswith("{"):
         return stored
     decoded = json.decode(stored, None)
-    if type(decoded) != "dict" or not decoded.get("key"):
+    if type(decoded) != "dict":
         return stored
-    return mochi.app.label(decoded["key"], **decoded.get("args", {}))
+    # A user comment is plain text in this same column, told apart from a system
+    # one only by the leading brace, so every shape below must hold before the
+    # label call. A non-string key, or args that are not a mapping of scalars,
+    # aborted the handler - and with it page history, the changes list and both
+    # public RSS feeds, as a 500 for every reader, until the row was edited out.
+    key = decoded.get("key")
+    if type(key) != "string" or not key.startswith("revisions."):
+        return stored
+    args = decoded.get("args", {})
+    if type(args) != "dict":
+        return stored
+    for name, value in args.items():
+        if type(name) != "string" or type(value) not in ("string", "int"):
+            return stored
+    return mochi.app.label(key, **args)
 
 def create_revision(page, title, content, author, name, version, comment):
     id = mochi.uid()
@@ -852,7 +872,7 @@ def action_join(a):
     # action_rename applies locally.
     name = dump.get("name") or ""
     if not name or not mochi.text.valid(name, "name") or len(name) > 100:
-        name = "Joined Wiki"
+        name = mochi.app.label("wiki.joined")
 
     # Create a new local entity for this wiki (private so it's not added to directory)
     entity = mochi.entity.create("wiki", name, "private", "")
@@ -1030,6 +1050,14 @@ def action_info_class(a):
     wikis = [dict(w, fingerprint=mochi.entity.fingerprint(w["id"])) for w in wikis_raw]
     return {"data": {"entity": False, "wikis": wikis}}
 
+# Append a directory entry unless an entry with the same id is already in the
+# list. Four copies of this loop used to sit inline in action_directory_search.
+def result_add(results, entry):
+    for existing in results:
+        if existing.get("id") == entry.get("id"):
+            return
+    results.append(entry)
+
 # Search directory for remote wikis
 def action_directory_search(a):
     if not a.user:
@@ -1053,13 +1081,7 @@ def action_directory_search(a):
     if mochi.text.valid(fingerprint, "fingerprint"):
         matches = mochi.directory.search("wiki", "", False, fingerprint=fingerprint)
         for entry in matches:
-            found = False
-            for r in results:
-                if r.get("id") == entry.get("id"):
-                    found = True
-                    break
-            if not found:
-                results.append(entry)
+            result_add(results, entry)
 
     # Check if search term is a URL (e.g., https://example.com/wikis/ENTITY_ID or /wikis/FINGERPRINT)
     if search.startswith("http://") or search.startswith("https://"):
@@ -1078,36 +1100,17 @@ def action_directory_search(a):
             if mochi.text.valid(wiki_id, "entity"):
                 entry = mochi.directory.get(wiki_id)
                 if entry and entry.get("class") == "wiki":
-                    found = False
-                    for r in results:
-                        if r.get("id") == entry.get("id"):
-                            found = True
-                            break
-                    if not found:
-                        results.append(entry)
+                    result_add(results, entry)
             # Try as fingerprint
             elif mochi.text.valid(wiki_id, "fingerprint"):
                 matches = mochi.directory.search("wiki", "", False, fingerprint=wiki_id.replace("-", ""))
                 for entry in matches:
-                    found = False
-                    for r in results:
-                        if r.get("id") == entry.get("id"):
-                            found = True
-                            break
-                    if not found:
-                        results.append(entry)
+                    result_add(results, entry)
 
     # Search by name
     name_results = mochi.directory.search("wiki", search, False)
     for entry in name_results:
-        # Avoid duplicates
-        found = False
-        for r in results:
-            if r.get("id") == entry.get("id"):
-                found = True
-                break
-        if not found:
-            results.append(entry)
+        result_add(results, entry)
 
     return {"data": {"results": results}}
 
@@ -1180,17 +1183,25 @@ def action_info_entity(a):
     # Re-establish with the source if this replica has gone idle.
     maybe_resubscribe(a, wiki["id"])
 
-    # Build permissions object (manage grants all permissions)
+    # Build permissions object (manage grants all permissions). `owner` is the
+    # separate question of whether the caller owns the entity, which is what
+    # comment delete authorises on - an editor, or a grantee of "manage", is not
+    # the owner, so a client that reads "manage" as ownership offers Delete on
+    # other people's comments and the server refuses every one of them.
     if a.user:
         can_manage = check_access(a, wiki["id"], "manage")
+        # access-ok: inside the "if a.user" branch - an anonymous caller
+        # takes the else branch below, which reports owner false.
+        owner = True if mochi.entity.get(wiki["id"]) else False
         permissions = {
             "view": can_manage or check_access(a, wiki["id"], "view"),
             "edit": can_manage or check_access(a, wiki["id"], "edit"),
             "delete": can_manage or check_access(a, wiki["id"], "delete"),
             "manage": can_manage,
+            "owner": owner,
         }
     else:
-        permissions = {"view": True, "edit": False, "delete": False, "manage": False}
+        permissions = {"view": True, "edit": False, "delete": False, "manage": False, "owner": False}
 
     # Get fingerprint - with hyphens for display, without for URLs
     fp_url = mochi.entity.fingerprint(wiki["id"])
@@ -1613,6 +1624,12 @@ def action_page_revert(a):
         a.error.label(400, "errors.missing_page_parameter")
         return
 
+    # Same cap action_page_edit applies. The comment is a permanent revision row
+    # and is replayed to every replica through history and RSS.
+    if len(comment) > 500:
+        a.error.label(400, "errors.comment_too_long_max_500_characters")
+        return
+
     if not version_valid(version):
         a.error.label(400, "errors.version_is_required")
         return
@@ -1653,13 +1670,22 @@ def action_page_revert(a):
         "updated": now,
         "version": newversion
     }
+    # A revert restores a soft-deleted page locally (deleted=0 above), but
+    # event_page_update's statement never clears the flag, so peers applied the
+    # content and version to a row that stayed hidden - visible on one host and
+    # gone everywhere else. page/create does clear it, which is why
+    # action_page_edit's restore path sends that instead.
+    event = "page/update"
+    if page["deleted"]:
+        event = "page/create"
+        event_data["created"] = now
     if source:
         mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/update"},
+            {"from": wiki["id"], "to": source, "service": "wikis", "event": event},
             event_data
         )
     else:
-        broadcast_event(wiki["id"], "page/update", event_data)
+        broadcast_event(wiki["id"], event, event_data)
 
     return {"data": {"slug": slug, "version": newversion, "reverted": {"from": int(version)}}}
 
@@ -1761,8 +1787,11 @@ def action_page_rename(a):
         a.error.label(404, "errors.page_not_found")
         return
 
-    # Check new slug doesn't already exist
-    existing = mochi.db.row("select 1 from pages where wiki=? and page=? and deleted=0", wiki["id"], new_slug)
+    # Check the new slug is free. pages_wiki_page is a full unique index over
+    # (wiki, page) and covers soft-deleted rows, so a tombstone still holds its
+    # slug: filtering deleted=0 here let the check pass and the update below
+    # abort on the constraint as a raw 500, with any children already renamed.
+    existing = mochi.db.row("select 1 from pages where wiki=? and page=?", wiki["id"], new_slug)
     if existing:
         a.error.label(400, "errors.a_page_with_this_slug_already_exists")
         return
@@ -1771,11 +1800,18 @@ def action_page_rename(a):
     pages_to_rename = [{"page": page, "old_slug": old_slug, "new_slug": new_slug}]
 
     if rename_children:
-        children = mochi.db.rows("select * from pages where wiki=? and page like ? and deleted=0", wiki["id"], old_slug + "/%")
+        # Escape the pattern as action_search does, and confirm the prefix in
+        # Starlark. Slugs admit "_" and uppercase, and SQLite LIKE treats "_" as
+        # a single-character wildcard and folds ASCII case, so renaming "a_b"
+        # also matched "axb/child" and "A_B/child" and moved, revised,
+        # redirected and broadcast pages the user never named.
+        escaped = old_slug.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        candidates = mochi.db.rows("select * from pages where wiki=? and page like ? escape '\\' and deleted=0", wiki["id"], escaped + "/%")
+        children = [c for c in candidates if c["page"].startswith(old_slug + "/")]
         for child in children:
             child_new_slug = new_slug + child["page"][len(old_slug):]
-            # Check child's new slug doesn't exist
-            child_existing = mochi.db.row("select 1 from pages where wiki=? and page=? and deleted=0", wiki["id"], child_new_slug)
+            # Check child's new slug doesn't exist, tombstones included
+            child_existing = mochi.db.row("select 1 from pages where wiki=? and page=?", wiki["id"], child_new_slug)
             if child_existing:
                 a.error.label(400, "errors.page_with_slug_already_exists", slug=child_new_slug)
                 return
@@ -2092,9 +2128,11 @@ def action_redirect_set(a):
         a.error.label(400, "errors.target_is_required")
         return
 
-    # Normalize slugs
-    source = source.lower().strip()
-    target = target.lower().strip()
+    # Trim only. Slugs are case-sensitive (slug_problem accepts uppercase), so
+    # lowercasing here refused a redirect to any page with an uppercase letter
+    # and left a mixed-case source uncoverable.
+    source = source.strip()
+    target = target.strip()
 
     # A redirect source resolves as a page slug (get_page consults redirects
     # first), so it takes the page slug rules, not just a length cap -
@@ -2163,7 +2201,7 @@ def action_redirect_delete(a):
         a.error.label(400, "errors.source_is_required")
         return
 
-    source = source.lower().strip()
+    source = source.strip()
     mochi.db.execute("delete from redirects where wiki=? and source=?", wiki["id"], source)
 
     # Same routing as action_redirect_set.
@@ -2345,12 +2383,19 @@ def action_replica_remove(a):
         a.error.label(400, "errors.replica_id_is_required")
         return
 
+    # Revoke on the identity the replica proved, not on the replica entity: per
+    # the schema comment the entity is never the subject of a rule, so revoking
+    # it removed nothing. The identity is what broadcast_event checks before
+    # fanning out and what event_replicate now checks before re-registering, so
+    # revoking it is what actually ends the subscription.
+    row = mochi.db.row("select identity from replicas where wiki=? and id=?", wiki["id"], replica_id)
+    subject = row["identity"] if row and row["identity"] else replica_id
+
     mochi.db.execute("delete from replicas where wiki=? and id=?", wiki["id"], replica_id)
 
-    # Revoke any access permissions for the removed replica
     resource = "wiki/" + wiki["id"]
     for op in ACCESS_LEVELS + ["*"]:
-        mochi.access.revoke(replica_id, resource, op)
+        mochi.access.revoke(subject, resource, op)
 
     return {"data": {"ok": True}}
 
@@ -2560,6 +2605,13 @@ def action_search(a):
         return {"data": {"query": "", "results": []}}
 
     query = query.strip()
+
+    # SQLite refuses a LIKE pattern over SQLITE_MAX_LIKE_PATTERN_LENGTH, which
+    # surfaced here as a raw 500 on a route anonymous callers can reach; below
+    # that the scan costs pattern x content across every page of the wiki.
+    if len(query) > 200:
+        a.error.label(400, "errors.query_too_long")
+        return
 
     # Use LIKE for simple search (SQLite FTS could be added later for better performance)
     escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
@@ -2947,10 +2999,10 @@ def event_redirect_set(e):
     if not source or not target or not created:
         return
 
-    # Same normalisation action_redirect_set applies, so a remote redirect
-    # cannot sit alongside a locally-created one differing only in case.
-    source = source.lower().strip()
-    target = target.lower().strip()
+    # Same normalisation action_redirect_set applies: trim only, because slugs
+    # are case-sensitive and the two rules have to agree.
+    source = source.strip()
+    target = target.strip()
     if not source or not target:
         return
 
@@ -3026,7 +3078,7 @@ def event_redirect_delete(e):
 
     source = content_text(e, "source")
     if source:
-        source = source.lower().strip()
+        source = source.strip()
 
     # Validate required fields
     if not source:
@@ -3095,7 +3147,12 @@ def event_tag_add(e):
 # Receive tag/remove event
 def event_tag_remove(e):
     page = e.content("page")
-    tag = e.content("tag")
+    # Same read and normalisation event_tag_add applies: a non-string aborted
+    # the handler, and add lowercases on both sides, so a remove arriving in a
+    # different case never matched and the tag stayed on the replica.
+    tag = content_text(e, "tag")
+    if tag:
+        tag = tag.lower().strip()
 
     # Validate required fields
     if not page or not tag:
@@ -3173,8 +3230,13 @@ def event_rename(e):
     if not mochi.text.valid(name, "name") or len(name) > 100:
         return
 
-    # Update subscribed wiki (source = sender)
-    wiki = mochi.db.row("select id from wikis where source=?", wiki_id)
+    # Bind to the routed entity as well as the sender. Core delivers an
+    # unclaimed frame with an empty `from`, and every wiki this user owns stores
+    # source='', so matching on source alone let any peer that knew a wiki id
+    # rename one of the recipient's own wikis.
+    if not wiki_id:
+        return
+    wiki = mochi.db.row("select id from wikis where id=? and source=?", e.header("to"), wiki_id)
     if wiki:
         # Both halves, as action_rename does: without the entity update
         # mochi.entity.name() and the directory keep serving the old name.
@@ -3247,6 +3309,22 @@ def event_replicate(e):
         if mochi.text.valid(claimed, "entity") and mochi.entity.verify(claimed, replicate_payload(replica, wiki, claimed), signature):
             identity = claimed
 
+    # Gate on the identity the registration proves. The entity is self-minted
+    # and can hold no grant, which is why this was left open; the signed
+    # identity bound above is the subject broadcast_event already checks at send
+    # time, so it is the one to check here too. Ungated, a peer could fill
+    # REPLICAS_MAXIMUM with throwaway entities and lock every real subscriber
+    # out of the wiki.
+    if identity:
+        if not check_event_access(identity, wiki, "view"):
+            return
+    elif not mochi.access.check("*", "wiki/" + wiki, "view"):
+        # Unsigned, so only a wiki that grants view to everyone. A replica
+        # predating the identity binding already receives no fan-out on a
+        # private wiki, so this refuses a registration that could never be
+        # served rather than taking anything away.
+        return
+
     # Cap NEW registrations only: sender entities are self-minted and core
     # rate-limits per peer, so the row count is otherwise unbounded. An existing
     # replica re-registering is an upsert and always allowed.
@@ -3312,18 +3390,27 @@ def event_sync(e):
     can_edit = check_event_access(requester, wiki, "edit")
 
     # Generate full dump of all wiki data
-    pages = mochi.db.rows("select * from pages where wiki=?", wiki)
+    # Live pages in full, deleted pages as tombstones. A replica needs only the
+    # id, slug and version to converge, and a later restore broadcasts the
+    # content again, so shipping a deleted page's title, body and whole history
+    # handed every view-holder - on a public wiki, any peer that can ask for a
+    # sync - exactly what the owner deleted.
+    pages = list(mochi.db.rows("select * from pages where wiki=? and deleted=0", wiki))
+    for row in mochi.db.rows("select id, page, version, deleted from pages where wiki=? and deleted!=0", wiki):
+        pages.append({"id": row["id"], "page": row["page"], "title": "", "content": "",
+                      "author": "", "created": 0, "updated": 0,
+                      "version": row["version"], "deleted": row["deleted"]})
 
-    # Get all revisions and tags for pages in this wiki using joins
+    # Revisions and tags for the live pages only, for the same reason.
     revisions = mochi.db.rows("""
         select r.* from revisions r
         join pages p on p.id = r.page
-        where p.wiki = ?
+        where p.wiki = ? and p.deleted = 0
     """, wiki)
     tags = mochi.db.rows("""
         select t.* from tags t
         join pages p on p.id = t.page
-        where p.wiki = ?
+        where p.wiki = ? and p.deleted = 0
     """, wiki)
 
     redirects = mochi.db.rows("select * from redirects where wiki=?", wiki)
@@ -3623,6 +3710,25 @@ def event_attachment_remove(e):
     notify_websocket(wiki)
 
 # Helper: Import wiki dump from sync response
+# A number from a remote dump, reduced to an int. These columns are compared
+# with > and < by should_apply_update, so a string in `updated` made every later
+# page/update for that page a Starlark type error and wedged the page for good.
+def dump_number(value, fallback=0):
+    if type(value) == "int":
+        return value
+    if type(value) == "float":
+        return int(value)
+    return fallback
+
+# True when every named field of a remote dump row is a string. Checked before
+# any len() or slug_problem call, both of which abort the whole import on a
+# non-string rather than skipping the row.
+def dump_text(row, keys):
+    for key in keys:
+        if type(row.get(key, "")) != "string":
+            return False
+    return True
+
 def import_sync_dump(wiki, dump):
     if not dump or type(dump) != "dict" or dump.get("status") != "200":
         return False
@@ -3640,6 +3746,8 @@ def import_sync_dump(wiki, dump):
         id = p.get("id")
         version = p.get("version")
         if not id or not valid_version(version):
+            continue
+        if not dump_text(p, ["page", "title", "content", "author"]):
             continue
         # The dump comes from the remote wiki verbatim, so a page whose slug
         # shadows or escapes a route would be planted here just as easily as
@@ -3660,7 +3768,8 @@ def import_sync_dump(wiki, dump):
         if existing and existing["version"] >= version:
             continue
         handle.execute("replace into pages (id, wiki, page, title, content, author, created, updated, version, deleted) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            id, wiki, p.get("page", ""), p.get("title", ""), p.get("content", ""), p.get("author", ""), p.get("created", 0), p.get("updated", 0), version, p.get("deleted", 0))
+            id, wiki, p.get("page", ""), p.get("title", ""), p.get("content", ""), p.get("author", ""),
+            dump_number(p.get("created")), dump_number(p.get("updated")), version, dump_number(p.get("deleted")))
 
     # Import revisions. The page must be one this wiki holds - the foreign key
     # alone is satisfied by ANY page in the database, so without this a dump can
@@ -3671,6 +3780,8 @@ def import_sync_dump(wiki, dump):
         id = r.get("id")
         if not id or not valid_version(r.get("version")):
             continue
+        if not dump_text(r, ["page", "title", "content", "author", "name", "comment"]):
+            continue
         if page_outside_wiki(r.get("page", ""), wiki, handle):
             continue
         # Revision ids come from the dump, so each distinct id is another
@@ -3680,7 +3791,8 @@ def import_sync_dump(wiki, dump):
         if len(r.get("name", "")) > 1000 or len(r.get("comment", "")) > 1000:
             continue
         handle.execute("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            id, r.get("page", ""), r.get("content", ""), r.get("title", ""), r.get("author", ""), r.get("name", ""), r.get("created", 0), r.get("version"), r.get("comment", ""))
+            id, r.get("page", ""), r.get("content", ""), r.get("title", ""), r.get("author", ""), r.get("name", ""),
+            dump_number(r.get("created")), r.get("version"), r.get("comment", ""))
 
     # Import tags - same rule as revisions.
     tags = dump.get("tags") or []
@@ -3695,8 +3807,10 @@ def import_sync_dump(wiki, dump):
     # Import redirects
     redirects = dump.get("redirects") or []
     for r in redirects:
-        source_slug = (r.get("source") or "").lower().strip()
-        target_slug = (r.get("target") or "").lower().strip()
+        if not dump_text(r, ["source", "target"]):
+            continue
+        source_slug = (r.get("source") or "").strip()
+        target_slug = (r.get("target") or "").strip()
         if not source_slug or not target_slug:
             continue
         # redirects is keyed (wiki, source): unbounded source means unbounded
@@ -3710,7 +3824,7 @@ def import_sync_dump(wiki, dump):
             continue
         if handle.exists("select 1 from pages where wiki=? and page=? and deleted=0", wiki, source_slug):
             continue
-        handle.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, source_slug, target_slug, r.get("created", 0))
+        handle.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki, source_slug, target_slug, dump_number(r.get("created")))
 
     # Import comments. Same rule as pages - never reassign a comment that
     # already belongs to another wiki. A cross-wiki parent is dropped rather
@@ -4068,6 +4182,14 @@ def action_comment_create(a):
         a.error.label(400, "errors.missing_page_parameter")
         return
 
+    # The source's event_comment_create drops a comment whose slug fails
+    # slug_problem, and keeps one against a page that does not exist. Applying
+    # both rules here stops a replica holding a comment nobody else receives,
+    # and stops orphan rows accumulating against slugs that are not pages.
+    if slug_problem(slug) or not mochi.db.exists("select 1 from pages where wiki=? and page=? and deleted=0", wiki["id"], slug):
+        a.error.label(404, "errors.page_not_found")
+        return
+
     body = a.input("body")
     if not body:
         a.error.label(400, "errors.comment_body_is_required")
@@ -4287,6 +4409,13 @@ def event_comment_create(e):
     if not content_is_number(created):
         return
 
+    # Same window the page events apply. created is chosen by the commenter and
+    # orders every comment list, the comment RSS feed and its lastBuildDate, so
+    # a far-future value pinned the comment to the head of all three.
+    now = mochi.time.now()
+    if created > now + 86400 or created < now - 31536000:
+        return
+
     # Same caps as action_comment_create; the id is attacker-chosen, so each
     # event is a permanent row. Run before the signature check so an oversized
     # body is dropped without hashing it.
@@ -4327,7 +4456,15 @@ def event_comment_create(e):
     attachments = e.content("attachments") or []
     source = wikirow.get("source") or sender
     if attachments:
-        attachment_store(attachments, source, id)
+        if wikirow.get("source"):
+            attachment_store(attachments, source, id)
+        else:
+            # On the source, adopt the bytes now, as feeds, forums, crm and
+            # projects do on this same path. attachment_respond answers 404 for
+            # a row whose provenance is another peer, so rebroadcasting the
+            # submitting replica's rows left every other replica with a
+            # permanent 404 until the owner happened to open the page.
+            attachment_accept(attachments, sender, id, wiki)
 
     # Re-broadcast if we are the source wiki. Every field here is repeated
     # exactly as signed, including the original parent, so downstream replicas
@@ -4641,7 +4778,10 @@ def action_attachment_delete(a):
 
     # Remove references to this attachment from all pages
     ref = "attachments/" + id
-    pages = mochi.db.rows("select id, page, title, content, version from pages where wiki=? and content like ?", wiki["id"], "%" + ref + "%")
+    # Live pages only: a deleted page picked up a new revision, a bumped version
+    # and a page/update broadcast that peers applied to their deleted row, and
+    # the restore path re-broadcasts the content anyway.
+    pages = mochi.db.rows("select id, page, title, content, version from pages where wiki=? and content like ? and deleted=0", wiki["id"], "%" + ref + "%")
     now = mochi.time.now()
     author = a.user.identity.id
     name = a.user.identity.name
@@ -4702,9 +4842,12 @@ def action_attachment_update(a):
         a.error.label(400, "errors.attachment_id_is_required")
         return
 
+    # a.input always answers a string, so the old type test was dead and the
+    # length failure was reported as "access denied" - telling the editor they
+    # lack permission rather than that the text is too long.
     caption = a.input("caption", "")
-    if type(caption) != "string" or len(caption) > 1000:
-        a.error.label(400, "errors.access_denied")
+    if len(caption) > 1000:
+        a.error.label(400, "errors.caption_too_long")
         return
 
     # Bind the attachment to this wiki before annotating, for the same reason
@@ -4896,7 +5039,7 @@ def action_rss(a):
     a.print('<channel>\n')
     a.print('<title>' + escape_xml(wiki_name) + '</title>\n')
     a.print('<link>/wikis/' + escape_xml(fingerprint) + '</link>\n')
-    a.print('<description>' + escape_xml(wiki_name) + ' wiki changes</description>\n')
+    a.print('<description>' + escape_xml(mochi.app.label("rss.wiki.description", name=wiki_name)) + '</description>\n')
 
     if mode == "all":
         rows = mochi.db.rows("""
@@ -4973,9 +5116,9 @@ def action_rss_all(a):
     a.print('<?xml version="1.0" encoding="UTF-8"?>\n')
     a.print('<rss version="2.0">\n')
     a.print('<channel>\n')
-    a.print('<title>All wikis</title>\n')
+    a.print('<title>' + escape_xml(mochi.app.label("rss.all.title")) + '</title>\n')
     a.print('<link>/wikis</link>\n')
-    a.print('<description>All wiki changes</description>\n')
+    a.print('<description>' + escape_xml(mochi.app.label("rss.all.description")) + '</description>\n')
 
     # Build wiki name lookup
     wiki_names = {}
@@ -5018,7 +5161,7 @@ def action_rss_all(a):
 
     for row in rows:
         wiki_id = row["wiki"]
-        wiki_name = wiki_names.get(wiki_id, "Wiki")
+        wiki_name = wiki_names.get(wiki_id) or mochi.app.label("rss.wiki.fallback")
         wiki_fp = wiki_fps.get(wiki_id, wiki_id)
 
         if row["type"] == "comment":

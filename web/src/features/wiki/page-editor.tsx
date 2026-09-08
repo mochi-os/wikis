@@ -25,7 +25,6 @@ import {
   Skeleton,
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   isImage,
@@ -33,7 +32,6 @@ import {
   getErrorMessage,
   authenticatedUrl,
   getAppPath,
-  extractStatus,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
@@ -51,7 +49,7 @@ import {
 import { usePermissions } from '@/context/wiki-context'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import type { WikiPage, Attachment } from '@/types/wiki'
-import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload'
+import { ATTACHMENT_ACCEPT, useAttachmentUploadMessages } from './attachment-upload'
 import { MarkdownContent } from './markdown-content'
 
 interface PageEditorProps {
@@ -75,6 +73,7 @@ function slugify(text: string): string {
 
 export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: PageEditorProps) {
   const { t } = useLingui()
+  const { validate, describe } = useAttachmentUploadMessages()
   const navigate = useNavigate()
   const editPage = useEditPage()
   const createPage = useCreatePage()
@@ -183,37 +182,6 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   }
 
   // Handle file upload from dialog
-  const getAttachmentValidationError = (files: File[]) => {
-    const unsupported = files.filter((file) => !isSupportedAttachmentFile(file))
-    if (unsupported.length === 0) {
-      return null
-    }
-
-    const names = unsupported.slice(0, 3).map((file) => file.name).join(', ')
-    return unsupported.length === 1
-      ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
-      : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
-  }
-
-  const getUploadErrorMessage = (error: unknown) => {
-    const status = extractStatus(error)
-    if (status === 413) {
-      return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.`
-    }
-
-    const message = getErrorMessage(error, t`Failed to upload files`)
-    if (message === 'Network Error') {
-      return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.`
-    }
-    if (message.toLowerCase().includes('storage limit exceeded')) {
-      return t`Upload failed because this account has reached its storage limit.`
-    }
-    if (message.toLowerCase().includes('file too large')) {
-      return t`This file is too large to upload. Try a smaller file.`
-    }
-
-    return message
-  }
 
   const handleUpload = (files: FileList | File[]) => {
     const fileArray = Array.from(files)
@@ -221,9 +189,9 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
       return
     }
 
-    const validationError = getAttachmentValidationError(fileArray)
-    if (validationError) {
-      setUploadError(validationError)
+    const refusal = validate(fileArray)
+    if (refusal) {
+      setUploadError(refusal)
       return
     }
 
@@ -235,7 +203,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
         toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' }))
       },
       onError: (error) => {
-        setUploadError(getUploadErrorMessage(error))
+        setUploadError(describe(error))
       },
     })
   }
@@ -463,12 +431,6 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                   </Tooltip>
                 )}
               </div>
-              <p className="text-muted-foreground text-sm">
-                <Trans>
-                  This will be the path for the page. Use lower case letters,
-                  numbers, and hyphens.
-                </Trans>
-              </p>
             </div>
           )}
 
@@ -505,17 +467,7 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle><Trans>Insert attachment</Trans></DialogTitle>
-            <DialogDescription>
-              <Trans>Select an attachment to insert into your page, or upload a new file.</Trans>
-            </DialogDescription>
           </DialogHeader>
-
-          <Alert>
-            <AlertTitle><Trans>Supported files</Trans></AlertTitle>
-            <AlertDescription>
-              <p><Trans>images, PDF, DOC, DOCX, TXT, and MD. Large uploads may also be limited by your server or proxy configuration.</Trans></p>
-            </AlertDescription>
-          </Alert>
 
           {/* Upload button */}
           <div className="flex items-center gap-2">

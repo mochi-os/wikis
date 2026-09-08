@@ -7,6 +7,7 @@ import {
   isValidElement,
   type ComponentPropsWithoutRef,
   type ReactNode,
+  useCallback,
   useEffect,
   useMemo,
 } from 'react'
@@ -66,12 +67,34 @@ function attachmentResourceUrl(baseURL: string, url: string): string {
   return authenticatedUrl(resolveAttachmentUrl(baseURL, url))
 }
 
-function extractImageUrls(content: string): string[] {
+// The image sources the lightbox may open, in the order they render.
+//
+// Fenced blocks are skipped and a markdown title is stripped: the old regex
+// captured everything between the parentheses, so `![a](x "Caption")` keyed the
+// map on a string no rendered `src` ever equals, and `![..](..)` inside a code
+// fence added a phantom entry that shifted every later index.
+//
+// Foreign sources are dropped through the renderer's own transform. The
+// renderer blanks them so a page author cannot log a reader's address, and
+// building the lightbox from an unfiltered regex handed that fetch straight
+// back: the lightbox preloads its neighbours and opens itself from an
+// #attachment-N hash.
+function extractImageUrls(content: string, allowed: (url: string) => boolean): string[] {
   const urls: string[] = []
-  const regex = /!\[[^\]]*\]\(([^)]+)\)/g
-  let match
-  while ((match = regex.exec(content)) !== null) {
-    urls.push(match[1])
+  const regex = /!\[[^\]]*\]\(\s*(<[^>]*>|[^\s)]+)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/g
+  let fenced = false
+  for (const line of content.split('\n')) {
+    if (/^\s*(```|~~~)/.test(line)) {
+      fenced = !fenced
+      continue
+    }
+    if (fenced) continue
+    regex.lastIndex = 0
+    let match
+    while ((match = regex.exec(line)) !== null) {
+      const url = match[1].startsWith('<') ? match[1].slice(1, -1) : match[1]
+      if (allowed(url)) urls.push(url)
+    }
   }
   return urls
 }
@@ -121,24 +144,28 @@ export function MarkdownContent({
     }
   }, [toc, onHeadingsChange, headings])
 
+  // The renderer's transform is the origin policy; asking it keeps the
+  // lightbox and the rendered <img> in step by construction.
+  const allowed = useCallback((url: string) => urlTransform(url, 'src') !== '', [])
+
   const lightboxMedia = useMemo<LightboxMedia[]>(() => {
-    const urls = extractImageUrls(content)
+    const urls = extractImageUrls(content, allowed)
     return urls.map((url, i) => ({
       id: String(i),
       name: url.split('/').pop() || t`Image`,
       url: authenticatedUrl(getFullSizeUrl(baseURL, url)),
       type: 'image' as const,
     }))
-  }, [content, baseURL, t])
+  }, [content, baseURL, t, allowed])
 
   const srcToIndex = useMemo(() => {
     const map = new Map<string, number>()
-    const urls = extractImageUrls(content)
+    const urls = extractImageUrls(content, allowed)
     urls.forEach((url, i) => {
       map.set(resolveAttachmentUrl(baseURL, url), i)
     })
     return map
-  }, [content, baseURL])
+  }, [content, baseURL, allowed])
 
   const headingFallbackCounts = new Map<string, number>()
   let headingCursor = 0
@@ -365,8 +392,11 @@ export function MarkdownContent({
                   </a>
                 )
               }
-              const isExternal = href && (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//'))
-              if (href && !isExternal) {
+              // classifyWikiLink already answers this. Recomputing it from the
+              // scheme prefix treated mailto:, xmpp: and irc: - all of which
+              // react-markdown's default transform lets through - as internal,
+              // and rendered them as router links to a not-found page.
+              if (kind !== 'external') {
                 // Relative wiki page link - convert to navigable path
                 // Domain routing (e.g., docs.mochi-os.org): pages are at root, so use absolute /page
                 // Normal routing (e.g., /wikis/abc/home): use ../page to stay within wiki context

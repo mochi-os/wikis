@@ -49,7 +49,6 @@ import {
   AttachmentCaptionDialog,
   shellClipboardWrite,
   naturalCompare,
-  extractStatus,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
@@ -63,10 +62,7 @@ import {
 } from '@/hooks/use-wiki'
 import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import type { Attachment } from '@/types/wiki'
-import { ATTACHMENT_ACCEPT, isSupportedAttachmentFile } from './attachment-upload'
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface AttachmentsPageProps {}
+import { ATTACHMENT_ACCEPT, useAttachmentUploadMessages } from './attachment-upload'
 
 type ViewMode = 'grid' | 'list'
 type FilterType = 'all' | 'images' | 'documents'
@@ -77,8 +73,9 @@ function buildAttachmentUrl(baseURL: string, id: string): string {
   return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`)
 }
 
-export function AttachmentsPage(_props: AttachmentsPageProps) {
+export function AttachmentsPage() {
   const { t } = useLingui()
+  const { validate, describe } = useAttachmentUploadMessages()
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [filterType, setFilterType] = useState<FilterType>('all')
   const [sortBy, setSortBy] = useState<SortBy>('date')
@@ -137,37 +134,6 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
     return result
   }, [attachments, searchQuery, filterType, sortBy])
 
-  const getAttachmentValidationError = (files: File[]) => {
-    const unsupported = files.filter((file) => !isSupportedAttachmentFile(file))
-    if (unsupported.length === 0) {
-      return null
-    }
-
-    const names = unsupported.slice(0, 3).map((file) => file.name).join(', ')
-    return unsupported.length === 1
-      ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
-      : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
-  }
-
-  const getUploadErrorMessage = (error: unknown) => {
-    const status = extractStatus(error)
-    if (status === 413) {
-      return t`This file is too large for the current server upload limit. Try a smaller file or increase the server or proxy upload size limit.`
-    }
-
-    const message = getErrorMessage(error, t`Failed to upload files`)
-    if (message === 'Network Error') {
-      return t`Upload failed. The file may be too large for the current server or proxy upload limit. If the file is small, check your connection and try again.`
-    }
-    if (message.toLowerCase().includes('storage limit exceeded')) {
-      return t`Upload failed because this account has reached its storage limit.`
-    }
-    if (message.toLowerCase().includes('file too large')) {
-      return t`This file is too large to upload. Try a smaller file.`
-    }
-
-    return message
-  }
 
   const handleUpload = (files: FileList | File[]) => {
     const fileArray = Array.from(files)
@@ -175,9 +141,9 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
       return
     }
 
-    const validationError = getAttachmentValidationError(fileArray)
-    if (validationError) {
-      setUploadError(validationError)
+    const refusal = validate(fileArray)
+    if (refusal) {
+      setUploadError(refusal)
       return
     }
 
@@ -189,7 +155,7 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
         toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' }))
       },
       onError: (error) => {
-        setUploadError(getUploadErrorMessage(error))
+        setUploadError(describe(error))
       },
     })
   }
@@ -226,7 +192,7 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
   const handleCopy = (attachment: Attachment) => {
     const url = `attachments/${encodeURIComponent(attachment.id)}`
     const markdown = isImage(attachment.type)
-      ? `![${attachment.name}](${url})`
+      ? `![${attachment.name}](${url}/thumbnail)`
       : `[${attachment.name}](${url})`
 
     void shellClipboardWrite(markdown).then((ok) => {
@@ -238,7 +204,6 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
         toast.error(t`Failed to copy`)
       }
     })
-    setTimeout(() => setCopiedId(null), 2000)
   }
 
   const handleDelete = (attachment: Attachment) => {
@@ -335,14 +300,6 @@ export function AttachmentsPage(_props: AttachmentsPageProps) {
       </div>
 
       <UploadProgress progress={uploadMutation.progress} />
-
-      <Alert>
-        <AlertTitle><Trans>Upload guidance</Trans></AlertTitle>
-        <AlertDescription>
-          <p><Trans>Supported files: images, PDF, DOC, DOCX, TXT, and MD.</Trans></p>
-          <p><Trans>Large uploads may be limited by your server or proxy configuration.</Trans></p>
-        </AlertDescription>
-      </Alert>
 
       {uploadError ? (
         <Alert variant="destructive">

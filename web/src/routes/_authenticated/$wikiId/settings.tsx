@@ -29,7 +29,7 @@ function WikiSettingsRoute() {
   const { tab } = Route.useSearch()
   const navigate = Route.useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
-  const { baseURL, wiki, permissions } = useWikiBaseURL()
+  const { wiki, permissions } = useWikiBaseURL()
 
   const setActiveTab = (newTab: WikiSettingsTabId) => {
     void navigate({ search: { tab: newTab }, replace: true })
@@ -45,7 +45,6 @@ function WikiSettingsRoute() {
           <WikiSettings
             activeTab={tab ?? 'settings'}
             onTabChange={setActiveTab}
-            baseURL={baseURL}
             wiki={wiki}
             permissions={permissions}
           />

@@ -97,7 +97,7 @@ export function PageHistory({
                         name={authorLabel}
                         size="xs"
                       />
-                      <span title={revision.author}>{authorLabel}</span>
+                      <span>{authorLabel}</span>
                     </span>
                   </TableCell>
                   <TableCell className="text-muted-foreground">

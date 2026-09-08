@@ -9,9 +9,34 @@ export interface WikiPermissions {
   edit: boolean
   delete: boolean
   manage: boolean
+  // Whether the caller owns the wiki entity. Distinct from `manage`, which can
+  // be granted: comment delete authorises on ownership, so `manage` is the
+  // wrong test for whether to offer it.
+  owner: boolean
 }
 
 // Wiki page
+// The wiki identity every info response carries. `pages` and `updated` are
+// sent only by the class-level list; the entity-level info omits them.
+export interface WikiInfo {
+  id: string
+  name: string
+  home: string
+  fingerprint?: string
+  source?: string
+  pages?: number
+  updated?: number
+}
+
+// The `-/info` answer, in both routing contexts.
+export interface InfoResponse {
+  entity: boolean
+  wiki?: WikiInfo
+  wikis?: WikiInfo[]
+  permissions?: WikiPermissions
+  fingerprint?: string
+}
+
 export interface WikiPage {
   id: string
   slug: string

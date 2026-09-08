@@ -5,13 +5,10 @@
 
 import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { GeneralError, Main, requestHelpers, useAuthStore, usePageTitle } from '@mochi/web'
-import endpoints from '@/api/endpoints'
+import { GeneralError, Main, useAuthStore, usePageTitle } from '@mochi/web'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
-import { useWikiBaseURL } from '@/context/wiki-base-url-context'
-import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
+import { usePage } from '@/hooks/use-wiki'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/edit')({
   beforeLoad: () => {
@@ -31,15 +28,8 @@ function WikiPageEditRoute() {
   const { wikiId, page: slug } = Route.useParams()
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
-  const { baseURL } = useWikiBaseURL()
 
-  // Fetch page data using the wiki's base URL (same as view page)
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['wiki', baseURL, 'page', slug],
-    queryFn: () =>
-      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${endpoints.wiki.page(slug)}`),
-    enabled: !!slug,
-  })
+  const { data, isLoading, error, refetch } = usePage(slug)
   const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
   usePageTitle(t`Edit: ${pageTitle}`)
 

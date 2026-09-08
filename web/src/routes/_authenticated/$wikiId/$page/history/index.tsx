@@ -6,14 +6,12 @@
 import { useState } from 'react'
 import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { usePageHistory } from '@/hooks/use-wiki'
-import endpoints from '@/api/endpoints'
-import { GeneralError, Main, requestHelpers, usePageTitle } from '@mochi/web'
+import { usePageHistory, usePage } from '@/hooks/use-wiki'
+import { GeneralError, Main, usePageTitle } from '@mochi/web'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
-import { useWikiBaseURL } from '@/context/wiki-base-url-context'
-import type { PageResponse, PageNotFoundResponse, Revision } from '@/types/wiki'
+import type { Revision } from '@/types/wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 
 const LIMIT = 50
 
@@ -26,15 +24,9 @@ function PageHistoryRoute() {
   const { wikiId, page: slug } = Route.useParams()
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
-  const { baseURL, wiki } = useWikiBaseURL()
+  const { wiki } = useWikiBaseURL()
 
-  // Fetch page data using the wiki's base URL
-  const { data: pageData } = useQuery({
-    queryKey: ['wiki', baseURL, 'page', slug],
-    queryFn: () =>
-      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${endpoints.wiki.page(slug)}`),
-    enabled: !!slug,
-  })
+  const { data: pageData } = usePage(slug)
   const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
   usePageTitle(t`History: ${pageTitle}`)
 

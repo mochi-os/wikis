@@ -60,8 +60,8 @@ const endpoints = {
     delete: 'delete',
     // Sync
     sync: 'sync',
-    subscribe: 'subscribe',
     unsubscribe: 'unsubscribe',
+    share: (wiki: string) => `${wiki}/-/share`,
     // Comments
     pageComments: (slug: string) => `pages/${encodeURIComponent(slug)}/comments`,
     commentCreate: (slug: string) => `pages/${encodeURIComponent(slug)}/comment/create`,

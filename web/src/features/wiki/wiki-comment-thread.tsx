@@ -269,7 +269,7 @@ export function WikiCommentThread({
           onClose={requestCloseReply}
           onFilesChange={handleReplyFilesChange}
           progress={progress}
-          placeholder={t`Reply to ${comment.name || comment.author}...`}
+          placeholder={t`Reply to ${authorName}...`}
           autoFocus
         />
       )}
