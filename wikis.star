@@ -5036,11 +5036,12 @@ def action_rss(a):
     fingerprint = mochi.entity.fingerprint(wiki["id"])
 
     a.header("Content-Type", "application/rss+xml; charset=utf-8")
+    origin = a.origin
     a.print('<?xml version="1.0" encoding="UTF-8"?>\n')
     a.print('<rss version="2.0">\n')
     a.print('<channel>\n')
     a.print('<title>' + escape_xml(wiki_name) + '</title>\n')
-    a.print('<link>/wikis/' + escape_xml(fingerprint) + '</link>\n')
+    a.print('<link>' + escape_xml(origin + '/wikis/' + fingerprint) + '</link>\n')
     a.print('<description>' + escape_xml(mochi.app.label("rss.wiki.description", name=wiki_name)) + '</description>\n')
 
     if mode == "all":
@@ -5086,7 +5087,7 @@ def action_rss(a):
             # is otherwise fully translated.
             desc = revision_comment(row["description"]) if row["description"] else mochi.app.label("rss.version", version=str(row["version"]))
 
-        link = "/wikis/" + fingerprint + "/" + row["slug"]
+        link = origin + "/wikis/" + fingerprint + "/" + row["slug"]
 
         a.print('<item>\n')
         a.print('<title>' + escape_xml(title) + '</title>\n')
@@ -5115,11 +5116,12 @@ def action_rss_all(a):
         return
 
     a.header("Content-Type", "application/rss+xml; charset=utf-8")
+    origin = a.origin
     a.print('<?xml version="1.0" encoding="UTF-8"?>\n')
     a.print('<rss version="2.0">\n')
     a.print('<channel>\n')
     a.print('<title>' + escape_xml(mochi.app.label("rss.all.title")) + '</title>\n')
-    a.print('<link>/wikis</link>\n')
+    a.print('<link>' + escape_xml(origin + '/wikis') + '</link>\n')
     a.print('<description>' + escape_xml(mochi.app.label("rss.all.description")) + '</description>\n')
 
     # Build wiki name lookup
@@ -5179,7 +5181,7 @@ def action_rss_all(a):
             # is otherwise fully translated.
             desc = revision_comment(row["description"]) if row["description"] else mochi.app.label("rss.version", version=str(row["version"]))
 
-        link = "/wikis/" + wiki_fp + "/" + row["slug"]
+        link = origin + "/wikis/" + wiki_fp + "/" + row["slug"]
 
         a.print('<item>\n')
         a.print('<title>' + escape_xml(title) + '</title>\n')
