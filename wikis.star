@@ -3318,10 +3318,12 @@ def event_replicate(e):
     if identity:
         if not check_event_access(identity, wiki, "view"):
             return
-    elif not mochi.access.check("*", "wiki/" + wiki, "view"):
-        # Unsigned, so only a wiki that grants view to everyone. A replica
-        # predating the identity binding already receives no fan-out on a
-        # private wiki, so this refuses a registration that could never be
+    elif not mochi.access.check(None, "wiki/" + wiki, "view"):
+        # Unsigned, so only a wiki that grants view to everyone. None is how
+        # that subject is spelled: core refuses the literal "*" as a user id by
+        # raising, which aborted this handler instead of refusing the caller.
+        # A replica predating the identity binding already receives no fan-out
+        # on a private wiki, so this refuses a registration that could never be
         # served rather than taking anything away.
         return
 
