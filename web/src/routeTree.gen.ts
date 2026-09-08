@@ -16,7 +16,6 @@ import { Route as AuthenticatedPageRouteRouteImport } from './routes/_authentica
 import { Route as AuthenticatedWikiIdRouteRouteImport } from './routes/_authenticated/$wikiId/route'
 import { Route as AuthenticatedChangesRouteImport } from './routes/_authenticated/changes'
 import { Route as AuthenticatedFindRouteImport } from './routes/_authenticated/find'
-import { Route as AuthenticatedJoinRouteImport } from './routes/_authenticated/join'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
 import { Route as AuthenticatedRedirectsRouteImport } from './routes/_authenticated/redirects'
 import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
@@ -80,11 +79,6 @@ const AuthenticatedChangesRoute = AuthenticatedChangesRouteImport.update({
 const AuthenticatedFindRoute = AuthenticatedFindRouteImport.update({
   id: '/find',
   path: '/find',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedJoinRoute = AuthenticatedJoinRouteImport.update({
-  id: '/join',
-  path: '/join',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedNewRoute = AuthenticatedNewRouteImport.update({
@@ -257,7 +251,6 @@ export interface FileRoutesByFullPath {
   '/401': typeof errors401Route
   '/changes': typeof AuthenticatedChangesRoute
   '/find': typeof AuthenticatedFindRoute
-  '/join': typeof AuthenticatedJoinRoute
   '/new': typeof AuthenticatedNewRoute
   '/redirects': typeof AuthenticatedRedirectsRoute
   '/search': typeof AuthenticatedSearchRoute
@@ -292,7 +285,6 @@ export interface FileRoutesByTo {
   '/401': typeof errors401Route
   '/changes': typeof AuthenticatedChangesRoute
   '/find': typeof AuthenticatedFindRoute
-  '/join': typeof AuthenticatedJoinRoute
   '/new': typeof AuthenticatedNewRoute
   '/redirects': typeof AuthenticatedRedirectsRoute
   '/search': typeof AuthenticatedSearchRoute
@@ -332,7 +324,6 @@ export interface FileRoutesById {
   '/(errors)/401': typeof errors401Route
   '/_authenticated/changes': typeof AuthenticatedChangesRoute
   '/_authenticated/find': typeof AuthenticatedFindRoute
-  '/_authenticated/join': typeof AuthenticatedJoinRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
   '/_authenticated/redirects': typeof AuthenticatedRedirectsRoute
   '/_authenticated/search': typeof AuthenticatedSearchRoute
@@ -373,7 +364,6 @@ export interface FileRouteTypes {
     | '/401'
     | '/changes'
     | '/find'
-    | '/join'
     | '/new'
     | '/redirects'
     | '/search'
@@ -408,7 +398,6 @@ export interface FileRouteTypes {
     | '/401'
     | '/changes'
     | '/find'
-    | '/join'
     | '/new'
     | '/redirects'
     | '/search'
@@ -447,7 +436,6 @@ export interface FileRouteTypes {
     | '/(errors)/401'
     | '/_authenticated/changes'
     | '/_authenticated/find'
-    | '/_authenticated/join'
     | '/_authenticated/new'
     | '/_authenticated/redirects'
     | '/_authenticated/search'
@@ -534,13 +522,6 @@ declare module '@tanstack/react-router' {
       path: '/find'
       fullPath: '/find'
       preLoaderRoute: typeof AuthenticatedFindRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/join': {
-      id: '/_authenticated/join'
-      path: '/join'
-      fullPath: '/join'
-      preLoaderRoute: typeof AuthenticatedJoinRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/new': {
@@ -827,7 +808,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedWikiIdRouteRoute: typeof AuthenticatedWikiIdRouteRouteWithChildren
   AuthenticatedChangesRoute: typeof AuthenticatedChangesRoute
   AuthenticatedFindRoute: typeof AuthenticatedFindRoute
-  AuthenticatedJoinRoute: typeof AuthenticatedJoinRoute
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
   AuthenticatedRedirectsRoute: typeof AuthenticatedRedirectsRoute
   AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
@@ -842,7 +822,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedWikiIdRouteRoute: AuthenticatedWikiIdRouteRouteWithChildren,
   AuthenticatedChangesRoute: AuthenticatedChangesRoute,
   AuthenticatedFindRoute: AuthenticatedFindRoute,
-  AuthenticatedJoinRoute: AuthenticatedJoinRoute,
   AuthenticatedNewRoute: AuthenticatedNewRoute,
   AuthenticatedRedirectsRoute: AuthenticatedRedirectsRoute,
   AuthenticatedSearchRoute: AuthenticatedSearchRoute,
