@@ -353,6 +353,13 @@ def registration_send(server, headers, content):
     else:
         mochi.message.send(headers, content)
 
+# Forward a replica's change to its source. A private source is absent from
+# the directory, so the send is pinned to the peer the join stored.
+def source_send(wiki, event, content):
+    registration_send(wiki.get("server"),
+        {"from": wiki["id"], "to": wiki["source"], "service": "wikis", "event": event},
+        content)
+
 # Re-register with the source when the subscription has gone idle
 # (idle_resync_age): event_replicate is idempotent and pushes a sync dump.
 # touch() is keyed by source, so a dead source is poked once per window.
@@ -883,7 +890,7 @@ def action_join(a):
     # Register wiki in the database with source and server tracking
     now = mochi.time.now()
     mochi.db.execute("insert into wikis (id, name, home, source, server, created) values (?, ?, ?, ?, ?, ?)",
-        entity, name, dump.get("home") or "home", source, server or "", now)
+        entity, name, dump.get("home") or "home", source, server or ("p2p/" + peer if peer else ""), now)
 
     # Import the synced data into the new local wiki
     import_sync_dump(entity, dump)
@@ -1352,10 +1359,7 @@ def action_page_edit(a):
                 "version": version
             }
             if source:
-                mochi.message.send(
-                    {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/create"},
-                    event_data
-                )
+                source_send(wiki, "page/create", event_data)
             else:
                 broadcast_event(wiki["id"], "page/create", event_data)
             return {"data": {"id": existing["id"], "slug": slug, "version": version, "created": False}}
@@ -1377,10 +1381,7 @@ def action_page_edit(a):
                 "version": version
             }
             if source:
-                mochi.message.send(
-                    {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/update"},
-                    event_data
-                )
+                source_send(wiki, "page/update", event_data)
             else:
                 broadcast_event(wiki["id"], "page/update", event_data)
             return {"data": {"id": existing["id"], "slug": slug, "version": version, "created": False}}
@@ -1402,10 +1403,7 @@ def action_page_edit(a):
             "version": 1
         }
         if source:
-            mochi.message.send(
-                {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/create"},
-                event_data
-            )
+            source_send(wiki, "page/create", event_data)
         else:
             broadcast_event(wiki["id"], "page/create", event_data)
         return {"data": {"id": id, "slug": slug, "version": 1, "created": True}}
@@ -1488,10 +1486,7 @@ def action_new(a):
         "version": version
     }
     if source:
-        mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/create"},
-            event_data
-        )
+        source_send(wiki, "page/create", event_data)
     else:
         broadcast_event(wiki["id"], "page/create", event_data)
 
@@ -1680,10 +1675,7 @@ def action_page_revert(a):
         event = "page/create"
         event_data["created"] = now
     if source:
-        mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": event},
-            event_data
-        )
+        source_send(wiki, event, event_data)
     else:
         broadcast_event(wiki["id"], event, event_data)
 
@@ -1728,10 +1720,7 @@ def action_page_delete(a):
         "version": version
     }
     if source:
-        mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/delete"},
-            event_data
-        )
+        source_send(wiki, "page/delete", event_data)
     else:
         broadcast_event(wiki["id"], "page/delete", event_data)
 
@@ -1834,10 +1823,7 @@ def action_page_rename(a):
             mochi.db.execute("replace into redirects (wiki, source, target, created) values (?, ?, ?, ?)", wiki["id"], o, n, now)
             redirect_data = {"source": o, "target": n, "created": now}
             if source:
-                mochi.message.send(
-                    {"from": wiki["id"], "to": source, "service": "wikis", "event": "redirect/set"},
-                    redirect_data
-                )
+                source_send(wiki, "redirect/set", redirect_data)
             else:
                 broadcast_event(wiki["id"], "redirect/set", redirect_data)
 
@@ -1853,10 +1839,7 @@ def action_page_rename(a):
             "version": new_version
         }
         if source:
-            mochi.message.send(
-                {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/update"},
-                event_data
-            )
+            source_send(wiki, "page/update", event_data)
         else:
             broadcast_event(wiki["id"], "page/update", event_data)
 
@@ -1900,10 +1883,7 @@ def action_page_rename(a):
                     "version": new_version
                 }
                 if source:
-                    mochi.message.send(
-                        {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/update"},
-                        event_data
-                    )
+                    source_send(wiki, "page/update", event_data)
                 else:
                     broadcast_event(wiki["id"], "page/update", event_data)
 
@@ -1961,10 +1941,7 @@ def action_tag_add(a):
     event_data = {"page": page["id"], "tag": tag}
     source = wiki.get("source")
     if source:
-        mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": "tag/add"},
-            event_data
-        )
+        source_send(wiki, "tag/add", event_data)
     else:
         broadcast_event(wiki["id"], "tag/add", event_data)
 
@@ -2009,10 +1986,7 @@ def action_tag_remove(a):
     event_data = {"page": page["id"], "tag": tag}
     source = wiki.get("source")
     if source:
-        mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": "tag/remove"},
-            event_data
-        )
+        source_send(wiki, "tag/remove", event_data)
     else:
         broadcast_event(wiki["id"], "tag/remove", event_data)
 
@@ -4250,10 +4224,7 @@ def action_comment_create(a):
             "rank": att.get("rank", 0), "created": att.get("created", 0)} for att in attachments]
 
     if source:
-        mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": "comment/create"},
-            data
-        )
+        source_send(wiki, "comment/create", data)
     else:
         broadcast_event(wiki["id"], "comment/create", data)
 
@@ -4320,10 +4291,7 @@ def action_comment_edit(a):
 
     source = wiki.get("source")
     if source:
-        mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": "comment/edit"},
-            data
-        )
+        source_send(wiki, "comment/edit", data)
     else:
         broadcast_event(wiki["id"], "comment/edit", data)
 
@@ -4372,10 +4340,7 @@ def action_comment_delete(a):
 
     source = wiki.get("source")
     if source:
-        mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": "comment/delete"},
-            data
-        )
+        source_send(wiki, "comment/delete", data)
     else:
         broadcast_event(wiki["id"], "comment/delete", data)
 
@@ -4704,8 +4669,7 @@ def action_attachment_upload(a):
         # Notify source wiki asynchronously for each attachment
         # Source will fetch the file data from us via stream
         for att in attachments:
-            mochi.message.send(
-                {"from": wiki["id"], "to": source, "service": "wikis", "event": "attachment/create"},
+            source_send(wiki, "attachment/create",
                 {
                     "id": att["id"],
                     "name": att["name"],
@@ -4808,19 +4772,13 @@ def action_attachment_delete(a):
                 "version": version
             }
             if source:
-                mochi.message.send(
-                    {"from": wiki["id"], "to": source, "service": "wikis", "event": "page/update"},
-                    event_data
-                )
+                source_send(wiki, "page/update", event_data)
             else:
                 broadcast_event(wiki["id"], "page/update", event_data)
 
     # Notify source of attachment deletion (if replica)
     if source:
-        mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": "attachment/delete"},
-            {"id": id}
-        )
+        source_send(wiki, "attachment/delete", {"id": id})
 
     return {"data": {"ok": True}}
 
@@ -4877,10 +4835,7 @@ def action_attachment_update(a):
     if source:
         # Replica: applied locally above; the source applies it and restates
         # to the other replicas.
-        mochi.message.send(
-            {"from": wiki["id"], "to": source, "service": "wikis", "event": "attachment/update"},
-            {"id": id, "caption": caption}
-        )
+        source_send(wiki, "attachment/update", {"id": id, "caption": caption})
     else:
         # Source: restate the row to replicas; attachment_store treats a known
         # id as an annotation update.
