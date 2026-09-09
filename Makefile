@@ -14,9 +14,9 @@ SAFE_PNPM = $(abspath ../../claude/scripts/safe-pnpm.sh)
 
 all: vendor web/dist/index.html
 
-# Vendor the shared Starlark library as a symlink. Gitignored in this repo and
-# materialised into the release zip by zip -r. Recreated here so a fresh
-# checkout (or a deploy from the umbrella) always has it before build/release.
+# The shared Starlark library reaches the app as a symlink into lib/starlark.
+# The link is committed, so a fresh checkout has it; this recreates it if it
+# was removed. The release zip materialises it through zip -r.
 vendor:
 	mkdir -p lib
 	ln -sf ../../../lib/starlark/attachments.star lib/attachments.star
