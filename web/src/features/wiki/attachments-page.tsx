@@ -770,4 +770,3 @@ function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) {
   )
 }
 
-export { AttachmentsPageSkeleton }

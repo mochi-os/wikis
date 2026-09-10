@@ -664,7 +664,7 @@ export function useDeleteAttachment() {
 
 // User/Group search (via People app)
 
-export interface UserSearchResult {
+interface UserSearchResult {
   id: string
   name: string
 }
@@ -689,7 +689,7 @@ export function useUserSearch(query: string) {
   })
 }
 
-export interface Group {
+interface Group {
   id: string
   name: string
   description?: string

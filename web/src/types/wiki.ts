@@ -194,7 +194,7 @@ export interface SearchResponse {
 }
 
 // Settings
-export interface WikiSettings {
+interface WikiSettings {
   home: string
   [key: string]: string
 }

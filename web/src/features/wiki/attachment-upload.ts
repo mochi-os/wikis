@@ -17,7 +17,7 @@ const ATTACHMENT_EXTENSIONS = new Set([
   '.md',
 ])
 
-export function isSupportedAttachmentFile(file: File): boolean {
+function isSupportedAttachmentFile(file: File): boolean {
   if (file.type.startsWith('image/')) {
     return true
   }

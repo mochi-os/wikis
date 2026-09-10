@@ -82,6 +82,7 @@ import {
 import endpoints from '@/api/endpoints'
 import { ValueLinkChip } from '@/components/value-link-chip'
 import {
+  type Replica,
   useEntityEndpoint,
   useWikiSettings,
   useSetWikiSetting,
@@ -91,7 +92,7 @@ import {
   useGroups,
 } from '@/hooks/use-wiki'
 import { useWikiContext } from '@/context/wiki-context'
-import type { WikiPermissions } from '@/types/wiki'
+import type { AccessListResponse, AccessRule, WikiPermissions } from '@/types/wiki'
 
 export type WikiSettingsTabId = 'settings' | 'access' | 'redirects' | 'replicas'
 
@@ -439,7 +440,7 @@ function AccessTab() {
   const accessLevels = useWikiAccessLevels()
   const { data: groupsData } = useGroups()
 
-  const [rules, setRules] = useState<import('@/types/wiki').AccessRule[]>([])
+  const [rules, setRules] = useState<AccessRule[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
@@ -453,7 +454,7 @@ function AccessTab() {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await requestHelpers.get<import('@/types/wiki').AccessListResponse>(
+      const response = await requestHelpers.get<AccessListResponse>(
         apiUrl(endpoints.wiki.access)
       )
       setRules(response?.rules ?? [])
@@ -560,7 +561,7 @@ function ReplicasTab() {
   const wikiInfo = settingsContext.wiki ?? wikiContextResult?.info?.wiki
 
   // Local state for wiki-specific API calls
-  const [replicas, setReplicas] = useState<import('@/hooks/use-wiki').Replica[]>([])
+  const [replicas, setReplicas] = useState<Replica[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [isRemoving, setIsRemoving] = useState(false)
@@ -571,7 +572,7 @@ function ReplicasTab() {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await requestHelpers.get<{ replicas: import('@/hooks/use-wiki').Replica[] }>(
+      const response = await requestHelpers.get<{ replicas: Replica[] }>(
         apiUrl(endpoints.wiki.replicas)
       )
       setReplicas(response?.replicas ?? [])
