@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import {
   isValidElement,
   type ComponentPropsWithoutRef,
@@ -11,11 +10,8 @@ import {
   useEffect,
   useMemo,
 } from 'react'
-import { useLingui } from '@lingui/react/macro'
-import { ExternalLink, Hash } from 'lucide-react'
-import Markdown, { defaultUrlTransform } from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 import { Link } from '@tanstack/react-router'
+import { useLingui } from '@lingui/react/macro'
 import {
   CopyButton,
   cn,
@@ -26,6 +22,9 @@ import {
   isDomainEntityRouting,
   markdownUrlTransform,
 } from '@mochi/web'
+import { ExternalLink, Hash } from 'lucide-react'
+import Markdown, { defaultUrlTransform } from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import {
   classifyWikiLink,
@@ -79,9 +78,13 @@ function attachmentResourceUrl(baseURL: string, url: string): string {
 // building the lightbox from an unfiltered regex handed that fetch straight
 // back: the lightbox preloads its neighbours and opens itself from an
 // #attachment-N hash.
-function extractImageUrls(content: string, allowed: (url: string) => boolean): string[] {
+function extractImageUrls(
+  content: string,
+  allowed: (url: string) => boolean
+): string[] {
   const urls: string[] = []
-  const regex = /!\[[^\]]*\]\(\s*(<[^>]*>|[^\s)]+)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/g
+  const regex =
+    /!\[[^\]]*\]\(\s*(<[^>]*>|[^\s)]+)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/g
   let fenced = false
   for (const line of content.split('\n')) {
     if (/^\s*(```|~~~)/.test(line)) {
@@ -146,7 +149,10 @@ export function MarkdownContent({
 
   // The renderer's transform is the origin policy; asking it keeps the
   // lightbox and the rendered <img> in step by construction.
-  const allowed = useCallback((url: string) => urlTransform(url, 'src') !== '', [])
+  const allowed = useCallback(
+    (url: string) => urlTransform(url, 'src') !== '',
+    []
+  )
 
   const lightboxMedia = useMemo<LightboxMedia[]>(() => {
     const urls = extractImageUrls(content, allowed)
@@ -195,9 +201,7 @@ export function MarkdownContent({
           <span>{children}</span>
           <a
             href={
-              currentPathWithQuery
-                ? `${currentPathWithQuery}#${id}`
-                : `#${id}`
+              currentPathWithQuery ? `${currentPathWithQuery}#${id}` : `#${id}`
             }
             className='text-muted-foreground hover:text-foreground ms-2 inline-flex opacity-0 transition-opacity group-hover:opacity-100'
             aria-label={t`Link to ${headingText}`}
@@ -237,7 +241,7 @@ export function MarkdownContent({
     <>
       <div
         className={cn(
-          'max-w-none text-foreground',
+          'text-foreground max-w-none',
           '[&_p]:my-4 [&_p]:leading-7',
           '[&_h2]:scroll-mt-20 [&_h2]:font-semibold [&_h2]:tracking-tight',
           '[&_h3]:scroll-mt-20 [&_h3]:font-semibold [&_h3]:tracking-tight',
@@ -245,14 +249,14 @@ export function MarkdownContent({
           '[&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-2xl',
           '[&_h3]:mt-8 [&_h3]:mb-2 [&_h3]:text-xl',
           '[&_h4]:mt-6 [&_h4]:mb-2 [&_h4]:text-lg',
-          '[&_a]:text-primary [&_a]:decoration-primary/40 [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-primary/85',
-          '[&_ul]:my-4 [&_ul]:space-y-2 [&_ul]:list-disc [&_ul]:ps-6',
-          '[&_ol]:my-4 [&_ol]:space-y-2 [&_ol]:list-decimal [&_ol]:ps-6',
+          '[&_a]:text-primary [&_a]:decoration-primary/40 [&_a:hover]:text-primary/85 [&_a]:underline [&_a]:underline-offset-2',
+          '[&_ul]:my-4 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:ps-6',
+          '[&_ol]:my-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:ps-6',
           '[&_li]:my-1',
           '[&_code]:bg-surface-2 [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.9em]',
           '[&_pre]:bg-transparent [&_pre]:p-0 [&_pre]:shadow-none',
-          '[&_table]:border [&_th]:border [&_td]:border',
-          '[&_th]:px-3 [&_th]:py-2 [&_td]:px-3 [&_td]:py-2',
+          '[&_table]:border [&_td]:border [&_th]:border',
+          '[&_td]:px-3 [&_td]:py-2 [&_th]:px-3 [&_th]:py-2',
           className
         )}
       >
@@ -294,7 +298,9 @@ export function MarkdownContent({
               const index = resolvedSrc
                 ? srcToIndex.get(resolvedSrc)
                 : undefined
-              const fetchableSrc = src ? attachmentResourceUrl(baseURL, src) : src
+              const fetchableSrc = src
+                ? attachmentResourceUrl(baseURL, src)
+                : src
 
               if (index !== undefined) {
                 return (
@@ -350,7 +356,10 @@ export function MarkdownContent({
               if (!isBlockCode) {
                 return (
                   <code
-                    className={cn('bg-surface-2 rounded px-1.5 py-0.5', className)}
+                    className={cn(
+                      'bg-surface-2 rounded px-1.5 py-0.5',
+                      className
+                    )}
                     {...props}
                   >
                     {children}
@@ -387,7 +396,12 @@ export function MarkdownContent({
               if (kind === 'attachment') {
                 const resolvedHref = attachmentResourceUrl(baseURL, href)
                 return (
-                  <a href={resolvedHref} target='_blank' rel='noopener noreferrer' {...props}>
+                  <a
+                    href={resolvedHref}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    {...props}
+                  >
                     {children}
                   </a>
                 )
@@ -400,8 +414,12 @@ export function MarkdownContent({
                 // Relative wiki page link - convert to navigable path
                 // Domain routing (e.g., docs.mochi-os.org): pages are at root, so use absolute /page
                 // Normal routing (e.g., /wikis/abc/home): use ../page to stay within wiki context
-                const siblingHref = href.startsWith('/') || href.startsWith('../') ? href
-                  : isDomainEntityRouting() ? `/${href}` : `../${href}`
+                const siblingHref =
+                  href.startsWith('/') || href.startsWith('../')
+                    ? href
+                    : isDomainEntityRouting()
+                      ? `/${href}`
+                      : `../${href}`
                 // Check if this is a link to a non-existent page (Wikipedia-style "red link")
                 const cleanHref = href.split('#')[0].split('?')[0] // Remove anchors and query strings
                 const isMissing = missingLinks.includes(cleanHref)

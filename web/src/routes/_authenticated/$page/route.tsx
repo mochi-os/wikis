@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useCallback } from 'react'
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
+import type { WikiPermissions, WikiInfo, InfoResponse } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
 import {
   requestHelpers,
@@ -13,7 +13,6 @@ import {
   getErrorMessage,
   getEntityFingerprint,
 } from '@mochi/web'
-import type { WikiPermissions, WikiInfo, InfoResponse } from '@/types/wiki'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { wikiInfoKey } from '@/hooks/use-wiki'
 
@@ -51,7 +50,13 @@ export const Route = createFileRoute('/_authenticated/$page')({
       return {
         baseURL,
         wiki: { id: fingerprint, name: fingerprint, home: 'home', fingerprint },
-        permissions: { view: false, edit: false, delete: false, manage: false, owner: false },
+        permissions: {
+          view: false,
+          edit: false,
+          delete: false,
+          manage: false,
+          owner: false,
+        },
         infoError: infoError ?? t`Wiki not found`,
       }
     }
@@ -59,7 +64,13 @@ export const Route = createFileRoute('/_authenticated/$page')({
     return {
       baseURL,
       wiki: info.wiki,
-      permissions: info.permissions ?? { view: false, edit: false, delete: false, manage: false, owner: false },
+      permissions: info.permissions ?? {
+        view: false,
+        edit: false,
+        delete: false,
+        manage: false,
+        owner: false,
+      },
       ...(infoError ? { infoError } : {}),
     }
   },
@@ -75,7 +86,11 @@ function WikiPageLayout() {
   }, [router])
 
   return (
-    <WikiBaseURLProvider baseURL={data.baseURL} wiki={data.wiki} permissions={data.permissions}>
+    <WikiBaseURLProvider
+      baseURL={data.baseURL}
+      wiki={data.wiki}
+      permissions={data.permissions}
+    >
       {data.infoError ? (
         <GeneralError
           error={data.infoError}

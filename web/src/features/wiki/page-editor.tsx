@@ -2,12 +2,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useState, useRef, useMemo } from 'react'
+import { Link, useNavigate } from '@tanstack/react-router'
+import type { WikiPage, Attachment } from '@/types/wiki'
 import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { Link, useNavigate } from '@tanstack/react-router'
-import { Save, X, Eye, Pencil, Trash2, ImagePlus, Image, Loader2, Plus, RefreshCw } from 'lucide-react'
 import {
   toast,
   Alert,
@@ -40,16 +39,30 @@ import {
   UploadProgress,
 } from '@mochi/web'
 import {
+  Save,
+  X,
+  Eye,
+  Pencil,
+  Trash2,
+  ImagePlus,
+  Image,
+  Loader2,
+  Plus,
+  RefreshCw,
+} from 'lucide-react'
+import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
+import { usePermissions } from '@/context/wiki-context'
+import {
   useEditPage,
   useCreatePage,
   useAttachments,
   useUploadAttachment,
   useDeleteAttachment,
 } from '@/hooks/use-wiki'
-import { usePermissions } from '@/context/wiki-context'
-import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
-import type { WikiPage, Attachment } from '@/types/wiki'
-import { ATTACHMENT_ACCEPT, useAttachmentUploadMessages } from './attachment-upload'
+import {
+  ATTACHMENT_ACCEPT,
+  useAttachmentUploadMessages,
+} from './attachment-upload'
 import { MarkdownContent } from './markdown-content'
 
 interface PageEditorProps {
@@ -71,7 +84,12 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
-export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: PageEditorProps) {
+export function PageEditor({
+  page,
+  slug,
+  isNew = false,
+  wikiId: wikiIdProp,
+}: PageEditorProps) {
   const { t } = useLingui()
   const { validate, describe } = useAttachmentUploadMessages()
   const navigate = useNavigate()
@@ -84,7 +102,8 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   // 1. Explicit prop (from route params)
   // 2. Context (WikiBaseURLContext)
   // 3. URL path (class context like /wikis/$wikiId/...)
-  let wikiId = wikiIdProp ?? wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
+  let wikiId =
+    wikiIdProp ?? wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
 
   // Fall back to the URL under the app's actual prefix - "/wikis/" is app.json
   // configuration, not a constant. Under domain-entity routing getAppPath() is
@@ -200,7 +219,12 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
     uploadMutation.mutate(fileArray, {
       onSuccess: () => {
         setUploadError(null)
-        toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' }))
+        toast.success(
+          plural(fileCount, {
+            one: '# file uploaded',
+            other: '# files uploaded',
+          })
+        )
       },
       onError: (error) => {
         setUploadError(describe(error))
@@ -245,7 +269,10 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           onSuccess: (data) => {
             toast.success(t`Page created`)
             if (wikiId) {
-              navigate({ to: '/$wikiId/$page', params: { wikiId, page: data.slug } })
+              navigate({
+                to: '/$wikiId/$page',
+                params: { wikiId, page: data.slug },
+              })
             } else {
               navigate({ to: '/$page', params: { page: data.slug } })
             }
@@ -259,9 +286,18 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
       if (!pageDirty) {
         return
       }
-      const original = { title: page?.title ?? '', content: page?.content ?? '' }
+      const original = {
+        title: page?.title ?? '',
+        content: page?.content ?? '',
+      }
       editPage.mutate(
-        { slug, title: title.trim(), content, comment: comment.trim(), original },
+        {
+          slug,
+          title: title.trim(),
+          content,
+          comment: comment.trim(),
+          original,
+        },
         {
           onSuccess: (result) => {
             if (isMutationSkipped(result)) return
@@ -296,83 +332,107 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Action toolbar */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className='flex flex-wrap items-center gap-2'>
         <Button
-          variant="outline"
-          size="sm"
+          variant='outline'
+          size='sm'
           onClick={() => setShowPreview(!showPreview)}
         >
           {showPreview ? (
             <>
-              <Pencil className="me-2 h-4 w-4" />
+              <Pencil className='me-2 h-4 w-4' />
               <Trans>Edit</Trans>
             </>
           ) : (
             <>
-              <Eye className="me-2 h-4 w-4" />
+              <Eye className='me-2 h-4 w-4' />
               <Trans>Preview</Trans>
             </>
           )}
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleOpenInsertDialog}
-        >
-          <ImagePlus className="me-2 h-4 w-4" />
+        <Button variant='outline' size='sm' onClick={handleOpenInsertDialog}>
+          <ImagePlus className='me-2 h-4 w-4' />
           <Trans>Insert</Trans>
         </Button>
         {attachmentPageSlug ? (
-          <Button variant="outline" size="sm" asChild>
+          <Button variant='outline' size='sm' asChild>
             {wikiId ? (
-              <Link preload={false} to="/$wikiId/$page/attachments" params={{ wikiId, page: attachmentPageSlug }}>
-                <Image className="me-2 h-4 w-4" />
+              <Link
+                preload={false}
+                to='/$wikiId/$page/attachments'
+                params={{ wikiId, page: attachmentPageSlug }}
+              >
+                <Image className='me-2 h-4 w-4' />
                 <Trans>Attachments</Trans>
               </Link>
             ) : (
-              <Link preload={false} to="/$page/attachments" params={{ page: attachmentPageSlug }}>
-                <Image className="me-2 h-4 w-4" />
+              <Link
+                preload={false}
+                to='/$page/attachments'
+                params={{ page: attachmentPageSlug }}
+              >
+                <Image className='me-2 h-4 w-4' />
                 <Trans>Attachments</Trans>
               </Link>
             )}
           </Button>
         ) : (
-          <Button variant="outline" size="sm" disabled>
-            <Image className="me-2 h-4 w-4" />
+          <Button variant='outline' size='sm' disabled>
+            <Image className='me-2 h-4 w-4' />
             <Trans>Attachments</Trans>
           </Button>
         )}
-        <div className="ms-auto flex items-center gap-2">
+        <div className='ms-auto flex items-center gap-2'>
           {!isNew && permissions.delete && (
-            <Button variant="outline" size="sm" asChild>
+            <Button variant='outline' size='sm' asChild>
               {wikiId ? (
-                <Link preload={false} to="/$wikiId/$page/delete" params={{ wikiId, page: slug }}>
-                  <Trash2 className="me-2 h-4 w-4" />
+                <Link
+                  preload={false}
+                  to='/$wikiId/$page/delete'
+                  params={{ wikiId, page: slug }}
+                >
+                  <Trash2 className='me-2 h-4 w-4' />
                   <Trans>Delete page</Trans>
                 </Link>
               ) : (
-                <Link preload={false} to="/$page/delete" params={{ page: slug }}>
-                  <Trash2 className="me-2 h-4 w-4" />
+                <Link
+                  preload={false}
+                  to='/$page/delete'
+                  params={{ page: slug }}
+                >
+                  <Trash2 className='me-2 h-4 w-4' />
                   <Trans>Delete page</Trans>
                 </Link>
               )}
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={handleCancel}>
-            <X className="me-2 h-4 w-4" />
+          <Button variant='outline' size='sm' onClick={handleCancel}>
+            <X className='me-2 h-4 w-4' />
             <Trans>Cancel</Trans>
           </Button>
-          <Button size="sm" onClick={handleSave} disabled={isPending || (!isNew && !pageDirty)}>
+          <Button
+            size='sm'
+            onClick={handleSave}
+            disabled={isPending || (!isNew && !pageDirty)}
+          >
             {isNew ? (
               <>
-                {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Plus className="me-2 h-4 w-4" />}
+                {isPending ? (
+                  <Loader2 className='me-2 h-4 w-4 animate-spin' />
+                ) : (
+                  <Plus className='me-2 h-4 w-4' />
+                )}
                 {isPending ? t`Creating...` : t`Create page`}
               </>
             ) : (
               <>
-                {isPending ? <Loader2 className="me-2 h-4 w-4 animate-spin" /> : <Save className="me-2 h-4 w-4" />}
+                {isPending ? (
+                  <Loader2 className='me-2 h-4 w-4 animate-spin' />
+                ) : (
+                  <Save className='me-2 h-4 w-4' />
+                )}
                 {isPending ? t`Saving...` : t`Save`}
               </>
             )}
@@ -384,18 +444,20 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
       {showPreview ? (
         /* Preview mode */
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">{title || t`Untitled`}</h2>
+        <div className='space-y-4'>
+          <h2 className='text-xl font-semibold'>{title || t`Untitled`}</h2>
           <MarkdownContent content={content || t`*No content*`} />
         </div>
       ) : (
         /* Edit mode */
-        <div className="space-y-4">
+        <div className='space-y-4'>
           {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title"><Trans>Title</Trans></Label>
+          <div className='space-y-2'>
+            <Label htmlFor='title'>
+              <Trans>Title</Trans>
+            </Label>
             <Input
-              id="title"
+              id='title'
               value={title}
               onChange={handleTitleChange}
               placeholder={t`Page title`}
@@ -404,27 +466,29 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
           {/* Slug (only for new pages, shown below title) */}
           {isNew && (
-            <div className="space-y-2">
-              <Label htmlFor="slug"><Trans>Page URL</Trans></Label>
-              <div className="flex items-center gap-2">
+            <div className='space-y-2'>
+              <Label htmlFor='slug'>
+                <Trans>Page URL</Trans>
+              </Label>
+              <div className='flex items-center gap-2'>
                 <Input
-                  id="slug"
+                  id='slug'
                   value={newSlug}
                   onChange={handleSlugChange}
                   placeholder={t`my-page-name`}
-                  className="flex-1"
+                  className='flex-1'
                 />
                 {slugEdited && title && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        variant="ghost"
-                        size="icon"
+                        variant='ghost'
+                        size='icon'
                         onClick={handleResetSlug}
                         aria-label={t`Re-derive from title`}
-                        className="shrink-0"
+                        className='shrink-0'
                       >
-                        <RefreshCw className="h-4 w-4" />
+                        <RefreshCw className='h-4 w-4' />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>{t`Re-derive from title`}</TooltipContent>
@@ -435,24 +499,28 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           )}
 
           {/* Content */}
-          <div className="space-y-2">
-            <Label htmlFor="content"><Trans>Content</Trans></Label>
+          <div className='space-y-2'>
+            <Label htmlFor='content'>
+              <Trans>Content</Trans>
+            </Label>
             <Textarea
               ref={textareaRef}
-              id="content"
+              id='content'
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder={t`Write your content here using Markdown...`}
-              className="min-h-[400px] font-mono"
+              className='min-h-[400px] font-mono'
             />
           </div>
 
           {/* Comment (only for edits) */}
           {!isNew && (
-            <div className="space-y-2">
-              <Label htmlFor="comment"><Trans>Edit summary (optional)</Trans></Label>
+            <div className='space-y-2'>
+              <Label htmlFor='comment'>
+                <Trans>Edit summary (optional)</Trans>
+              </Label>
               <Input
-                id="comment"
+                id='comment'
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder={t`Briefly describe your changes`}
@@ -464,34 +532,36 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
       {/* Insert attachment dialog */}
       <Dialog open={insertDialogOpen} onOpenChange={setInsertDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className='max-w-2xl'>
           <DialogHeader>
-            <DialogTitle><Trans>Insert attachment</Trans></DialogTitle>
+            <DialogTitle>
+              <Trans>Insert attachment</Trans>
+            </DialogTitle>
           </DialogHeader>
 
           {/* Upload button */}
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             <input
               ref={fileInputRef}
-              type="file"
+              type='file'
               multiple
               onChange={(e) => {
                 if (e.target.files) handleUpload(e.target.files)
                 e.target.value = ''
               }}
-              className="hidden"
+              className='hidden'
               accept={ATTACHMENT_ACCEPT}
             />
             <Button
-              variant="outline"
-              size="sm"
+              variant='outline'
+              size='sm'
               onClick={() => fileInputRef.current?.click()}
               disabled={uploadMutation.isPending}
             >
               {uploadMutation.isPending ? (
-                <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                <Loader2 className='me-2 h-4 w-4 animate-spin' />
               ) : (
-                <ImagePlus className="me-2 h-4 w-4" />
+                <ImagePlus className='me-2 h-4 w-4' />
               )}
               <Trans>Upload new</Trans>
             </Button>
@@ -500,32 +570,34 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
           <UploadProgress progress={uploadMutation.progress} />
 
           {uploadError ? (
-            <Alert variant="destructive">
-              <AlertTitle><Trans>Upload failed</Trans></AlertTitle>
+            <Alert variant='destructive'>
+              <AlertTitle>
+                <Trans>Upload failed</Trans>
+              </AlertTitle>
               <AlertDescription>{uploadError}</AlertDescription>
             </Alert>
           ) : null}
 
           {/* Attachments grid */}
           {isAttachmentsLoading ? (
-            <ListSkeleton variant="simple" height="h-16" count={4} />
+            <ListSkeleton variant='simple' height='h-16' count={4} />
           ) : attachmentsError ? (
             <GeneralError
               error={attachmentsError}
               minimal
-              mode="inline"
+              mode='inline'
               reset={refetchAttachments}
-              className="py-8"
+              className='py-8'
             />
           ) : attachments.length === 0 ? (
             <EmptyState
               icon={Image}
               title={t`No attachments yet`}
               description={t`Upload a file to get started.`}
-              className="py-8"
+              className='py-8'
             />
           ) : (
-            <div className="grid grid-cols-3 gap-3 max-h-[400px] overflow-y-auto">
+            <div className='grid max-h-[400px] grid-cols-3 gap-3 overflow-y-auto'>
               {attachments.map((attachment) => {
                 const FileIcon = getFileIcon(attachment.type)
                 const isDeleting =
@@ -534,14 +606,14 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                 return (
                   <div
                     key={attachment.id}
-                    className="group relative rounded-lg border p-2 text-start transition-colors hover:bg-hover"
+                    className='group hover:bg-hover relative rounded-lg border p-2 text-start transition-colors'
                   >
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute right-3 top-3 z-10 h-7 w-7 bg-background/90 shadow-sm"
+                          variant='ghost'
+                          size='icon'
+                          className='bg-background/90 absolute top-3 right-3 z-10 h-7 w-7 shadow-sm'
                           onClick={(e) => {
                             e.stopPropagation()
                             handleDeleteAttachment(attachment)
@@ -550,31 +622,31 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
                           aria-label={t`Delete attachment`}
                         >
                           {isDeleting ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            <Loader2 className='h-3.5 w-3.5 animate-spin' />
                           ) : (
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className='h-3.5 w-3.5' />
                           )}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>{t`Delete attachment`}</TooltipContent>
                     </Tooltip>
                     <button
-                      type="button"
+                      type='button'
                       onClick={() => insertMarkdown(attachment)}
-                      className="block w-full rounded focus:outline-none focus:ring-2 focus:ring-ring"
+                      className='focus:ring-ring block w-full rounded focus:ring-2 focus:outline-none'
                     >
-                      <div className="bg-muted mb-2 flex aspect-square items-center justify-center overflow-hidden rounded">
+                      <div className='bg-muted mb-2 flex aspect-square items-center justify-center overflow-hidden rounded'>
                         {isImage(attachment.type) ? (
                           <img
                             src={`${buildAttachmentUrl(wikiContext?.baseURL ?? '', attachment.id)}/thumbnail`}
                             alt={attachment.name}
-                            className="h-full w-full object-cover"
+                            className='h-full w-full object-cover'
                           />
                         ) : (
-                          <FileIcon className="h-8 w-8 text-muted-foreground" />
+                          <FileIcon className='text-muted-foreground h-8 w-8' />
                         )}
                       </div>
-                      <p className="text-xs truncate" title={attachment.name}>
+                      <p className='truncate text-xs' title={attachment.name}>
                         {attachment.name}
                       </p>
                     </button>
@@ -608,22 +680,22 @@ export function PageEditor({ page, slug, isNew = false, wikiId: wikiIdProp }: Pa
 
 export function PageEditorSkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Skeleton className="h-9 w-24" />
-        <Skeleton className="h-9 w-24" />
-        <Skeleton className="h-9 w-24" />
-        <Skeleton className="h-9 w-20" />
+    <div className='space-y-6'>
+      <div className='flex items-center gap-2'>
+        <Skeleton className='h-9 w-24' />
+        <Skeleton className='h-9 w-24' />
+        <Skeleton className='h-9 w-24' />
+        <Skeleton className='h-9 w-20' />
       </div>
       <Separator />
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Skeleton className="h-5 w-12" />
-          <Skeleton className="h-10 w-full" />
+      <div className='space-y-4'>
+        <div className='space-y-2'>
+          <Skeleton className='h-5 w-12' />
+          <Skeleton className='h-10 w-full' />
         </div>
-        <div className="space-y-2">
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-[400px] w-full" />
+        <div className='space-y-2'>
+          <Skeleton className='h-5 w-16' />
+          <Skeleton className='h-[400px] w-full' />
         </div>
       </div>
     </div>

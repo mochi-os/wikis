@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Trans } from '@lingui/react/macro'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   createFileRoute,
@@ -13,6 +11,9 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router'
+import type { WikiInfo, InfoResponse, WikiPermissions } from '@/types/wiki'
+import { t } from '@lingui/core/macro'
+import { Trans } from '@lingui/react/macro'
 import {
   Button,
   ConfirmDialog,
@@ -50,14 +51,21 @@ import { wikisRequest, isEntityContext } from '@/api/request'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { usePermissions, useWikiContext } from '@/context/wiki-context'
-import { useWikiLinkDialog } from '@/components/link-dialog'
-import { usePage, useUnsubscribeWiki, useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
+import { useRssCopy } from '@/hooks/use-rss-copy'
+import {
+  usePage,
+  useUnsubscribeWiki,
+  useJoinWiki,
+  joinWikiWithRetry,
+} from '@/hooks/use-wiki'
 import {
   setLastLocation,
   getLastLocation,
   clearLastLocation,
 } from '@/hooks/use-wiki-storage'
+import { useWikiLinkDialog } from '@/components/link-dialog'
 import { InlineWikiSearch } from '@/features/wiki/inline-wiki-search'
+import { PageActionsMenu } from '@/features/wiki/page-actions-menu'
 import { PageHeader } from '@/features/wiki/page-header'
 import {
   PageView,
@@ -65,11 +73,7 @@ import {
   PageViewSkeleton,
 } from '@/features/wiki/page-view'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
-import { PageActionsMenu } from '@/features/wiki/page-actions-menu'
-import { useRssCopy } from '@/hooks/use-rss-copy'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
-import type { WikiInfo, InfoResponse, WikiPermissions } from '@/types/wiki'
-import { t } from '@lingui/core/macro'
 
 interface IndexRouteData extends InfoResponse {
   infoError?: string
@@ -219,7 +223,6 @@ function WikiHomePage({
       : t`Home`
   usePageTitle(pageTitle)
 
-
   // Store last visited location
   useEffect(() => {
     setLastLocation(wikiId, homeSlug)
@@ -334,9 +337,7 @@ function WikiHomePage({
         <Main className='pt-2'>
           <PageView
             page={data.page}
-            missingLinks={
-              'links' in data ? data.links?.missing : undefined
-            }
+            missingLinks={'links' in data ? data.links?.missing : undefined}
           />
         </Main>
         <ConfirmDialog
@@ -398,7 +399,10 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
 
   const unsubscribeMutation = useMutation({
     mutationFn: (wiki: WikiItem) =>
-      wikisRequest.post(`${wiki.fingerprint ?? wiki.id}/-/${endpoints.wiki.unsubscribe}`, { wiki: wiki.id }),
+      wikisRequest.post(
+        `${wiki.fingerprint ?? wiki.id}/-/${endpoints.wiki.unsubscribe}`,
+        { wiki: wiki.id }
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
       setUnsubscribeId(null)
@@ -465,7 +469,9 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
         }
       )
       void router.invalidate()
-      void queryClient.invalidateQueries({ queryKey: ['wikis', 'recommendations'] })
+      void queryClient.invalidateQueries({
+        queryKey: ['wikis', 'recommendations'],
+      })
     } catch {
       // toast already shown
     } finally {
@@ -502,19 +508,13 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                   <Trans>RSS feed</Trans>
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem
-                    onSelect={() => void rss.copy('changes')}
-                  >
+                  <DropdownMenuItem onSelect={() => void rss.copy('changes')}>
                     <Trans>Changes</Trans>
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => void rss.copy('comments')}
-                  >
+                  <DropdownMenuItem onSelect={() => void rss.copy('comments')}>
                     <Trans>Comments</Trans>
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => void rss.copy('all')}
-                  >
+                  <DropdownMenuItem onSelect={() => void rss.copy('all')}>
                     <Trans>Changes and comments</Trans>
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => void rss.revoke()}>
@@ -602,7 +602,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                                 }
                                 disabled={isPending}
                               >
-                                    {/* button-icon-ok: Subscribe has no conventional glyph; every sibling app ships it text-only */}
+                                {/* button-icon-ok: Subscribe has no conventional glyph; every sibling app ships it text-only */}
                                 {isPending ? (
                                   <Loader2 className='h-4 w-4 animate-spin' />
                                 ) : (
@@ -721,7 +721,8 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
             await toastAction(unsubscribeMutation.mutateAsync(wiki), {
               loading: t`Unsubscribing...`,
               success: t`Unsubscribed`,
-              error: (error) => getErrorMessage(error, t`Failed to unsubscribe`),
+              error: (error) =>
+                getErrorMessage(error, t`Failed to unsubscribe`),
             })
           } catch {
             // toast already shown

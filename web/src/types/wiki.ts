@@ -209,7 +209,6 @@ export interface SettingsSetResponse {
 
 // Sync
 
-
 // Attachments
 export interface Attachment {
   id: string
@@ -287,8 +286,8 @@ export interface AccessRule {
   subject: string
   operation: string
   grant: number
-  name?: string  // Resolved name for display
-  owner?: boolean  // True if this rule is for the resource owner
+  name?: string // Resolved name for display
+  owner?: boolean // True if this rule is for the resource owner
 }
 
 export interface AccessListResponse {

@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useLingui } from '@lingui/react/macro'
 import {
   EmptyState,
   GeneralError,
@@ -12,11 +11,11 @@ import {
   Skeleton,
   usePageTitle,
 } from '@mochi/web'
-import { DeletePage } from '@/features/wiki/delete-page'
 import { FileX } from 'lucide-react'
-import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
-import { usePage } from '@/hooks/use-wiki'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
+import { usePage } from '@/hooks/use-wiki'
+import { DeletePage } from '@/features/wiki/delete-page'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/delete')({
   component: DeletePageRoute,
@@ -26,21 +25,27 @@ function DeletePageRoute() {
   const { t } = useLingui()
   const { wikiId, page: slug } = Route.useParams()
   const navigate = useNavigate()
-  const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
+  const goBackToPage = () =>
+    navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
   const { wiki } = useWikiBaseURL()
 
   const { data, isLoading, error, refetch } = usePage(slug)
-  const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
+  const pageTitle =
+    data && 'page' in data && typeof data.page === 'object' && data.page?.title
+      ? data.page.title
+      : slug
   usePageTitle(t`Delete: ${pageTitle}`)
-
 
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={t`Delete: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`Delete: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
-          <div className="flex items-center justify-center py-12">
-            <Skeleton className="h-64 w-full max-w-md" />
+          <div className='flex items-center justify-center py-12'>
+            <Skeleton className='h-64 w-full max-w-md' />
           </div>
         </Main>
       </>
@@ -50,9 +55,12 @@ function DeletePageRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={t`Delete: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`Delete: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
-          <GeneralError error={error} minimal mode="inline" reset={refetch} />
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
         </Main>
       </>
     )
@@ -62,12 +70,15 @@ function DeletePageRoute() {
   if (data && 'error' in data && data.error === 'not_found') {
     return (
       <>
-        <WikiRouteHeader title={t`Delete: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`Delete: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
           <EmptyState
             icon={FileX}
             title={t`Page "${slug}" does not exist`}
-            className="py-12"
+            className='py-12'
           />
         </Main>
       </>
@@ -78,9 +89,17 @@ function DeletePageRoute() {
   if (data && 'page' in data && typeof data.page === 'object') {
     return (
       <>
-        <WikiRouteHeader title={t`Delete: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`Delete: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
-          <DeletePage wikiId={wikiId} slug={slug} title={data.page.title} homePage={wiki.home} />
+          <DeletePage
+            wikiId={wikiId}
+            slug={slug}
+            title={data.page.title}
+            homePage={wiki.home}
+          />
         </Main>
       </>
     )

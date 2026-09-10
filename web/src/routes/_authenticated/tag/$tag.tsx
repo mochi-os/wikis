@@ -2,14 +2,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
-import { useTagPages } from '@/hooks/use-wiki'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
+import { isEntityContext } from '@/api/request'
+import { useTagPages } from '@/hooks/use-wiki'
 import { TagPages, TagPagesSkeleton } from '@/features/wiki/tag-pages'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
-import { isEntityContext } from '@/api/request'
 
 export const Route = createFileRoute('/_authenticated/tag/$tag')({
   // This route serves entity routing only ({entity}/tag/{tag}): its fetch
@@ -33,7 +32,10 @@ function TagPagesRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={t`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+        <WikiRouteHeader
+          title={t`Tag: ${tag}`}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+        />
         <Main>
           <TagPagesSkeleton />
         </Main>
@@ -44,9 +46,12 @@ function TagPagesRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={t`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+        <WikiRouteHeader
+          title={t`Tag: ${tag}`}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+        />
         <Main>
-          <GeneralError error={error} minimal mode="inline" reset={refetch} />
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
         </Main>
       </>
     )
@@ -54,7 +59,10 @@ function TagPagesRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={t`Tag: ${tag}`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+      <WikiRouteHeader
+        title={t`Tag: ${tag}`}
+        back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+      />
       <Main>
         <TagPages tag={tag} pages={data?.pages ?? []} />
       </Main>

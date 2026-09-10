@@ -2,11 +2,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useCallback, useEffect, useState } from 'react'
+import type { WikiComment } from '@/types/wiki'
 import { plural, t } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
-import { Check, Pencil, Reply, Trash2 } from 'lucide-react'
 import {
   Button,
   CommentTreeLayout,
@@ -20,7 +19,7 @@ import {
   useDiscardGuard,
   type Upload,
 } from '@mochi/web'
-import type { WikiComment } from '@/types/wiki'
+import { Check, Pencil, Reply, Trash2 } from 'lucide-react'
 import { CommentAttachments } from './comment-attachments'
 import { MarkdownContent } from './markdown-content'
 
@@ -114,7 +113,10 @@ export function WikiCommentThread({
 
   const getTotalDescendants = (c: WikiComment): number => {
     if (!c.children) return 0
-    return c.children.length + c.children.reduce((acc, child) => acc + getTotalDescendants(child), 0)
+    return (
+      c.children.length +
+      c.children.reduce((acc, child) => acc + getTotalDescendants(child), 0)
+    )
   }
   const totalDescendants = getTotalDescendants(comment)
 
@@ -133,57 +135,71 @@ export function WikiCommentThread({
       styleUrl={assetUrl('style')}
       seed={comment.author}
       name={authorName}
-      size="xs"
-      className="z-10"
+      size='xs'
+      className='z-10'
     />
   )
 
   const collapsedContent = (
-    <div className="flex h-5 items-center gap-2 py-0.5 text-xs select-none">
-      <span className="text-muted-foreground font-medium">{authorName}</span>
-      <span className="text-muted-foreground">&middot;</span>
-      <span className="text-muted-foreground">{timeAgo}</span>
+    <div className='flex h-5 items-center gap-2 py-0.5 text-xs select-none'>
+      <span className='text-muted-foreground font-medium'>{authorName}</span>
+      <span className='text-muted-foreground'>&middot;</span>
+      <span className='text-muted-foreground'>{timeAgo}</span>
       <button
         onClick={() => setCollapsed(false)}
-        className="text-primary ms-2 flex cursor-pointer items-center gap-1 hover:underline"
+        className='text-primary ms-2 flex cursor-pointer items-center gap-1 hover:underline'
       >
         {totalDescendants > 0 ? (
-          <span>{plural(totalDescendants, { one: '# reply', other: '+# more replies' })}</span>
+          <span>
+            {plural(totalDescendants, {
+              one: '# reply',
+              other: '+# more replies',
+            })}
+          </span>
         ) : (
-          <span className="text-muted-foreground italic"><Trans>(expand)</Trans></span>
+          <span className='text-muted-foreground italic'>
+            <Trans>(expand)</Trans>
+          </span>
         )}
       </button>
     </div>
   )
 
   const content = (
-    <div className="space-y-1.5">
-      <div className="group/row">
-        <div className="flex h-5 items-center gap-2 text-xs">
-          <span className="text-foreground font-medium">{authorName}</span>
-          <span className="text-muted-foreground">&middot;</span>
-          <span className="text-muted-foreground">{timeAgo}</span>
+    <div className='space-y-1.5'>
+      <div className='group/row'>
+        <div className='flex h-5 items-center gap-2 text-xs'>
+          <span className='text-foreground font-medium'>{authorName}</span>
+          <span className='text-muted-foreground'>&middot;</span>
+          <span className='text-muted-foreground'>{timeAgo}</span>
           {comment.edited > 0 && (
-            <span className="text-muted-foreground italic"><Trans>(edited)</Trans></span>
+            <span className='text-muted-foreground italic'>
+              <Trans>(edited)</Trans>
+            </span>
           )}
         </div>
 
         {editing ? (
-          <div className="space-y-2">
+          <div className='space-y-2'>
             <Textarea
               value={editBody}
               onChange={(e) => setEditBody(e.target.value)}
-              className="bg-background rounded-lg text-sm"
+              className='bg-background rounded-lg text-sm'
               rows={3}
               autoFocus
             />
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setEditing(false)}>
+            <div className='flex justify-end gap-2'>
+              <Button
+                variant='outline'
+                size='sm'
+                className='h-7 text-xs'
+                onClick={() => setEditing(false)}
+              >
                 <Trans>Cancel</Trans>
               </Button>
               <Button
-                size="sm"
-                className="h-7 text-xs"
+                size='sm'
+                className='h-7 text-xs'
                 disabled={
                   !editBody.trim() ||
                   textUnchanged(editBody.trim(), comment.body)
@@ -198,7 +214,7 @@ export function WikiCommentThread({
                   setEditing(false)
                 }}
               >
-                <Check className="size-4" />
+                <Check className='size-4' />
                 <Trans>Save</Trans>
               </Button>
             </div>
@@ -211,7 +227,7 @@ export function WikiCommentThread({
             {comment.body ? (
               <MarkdownContent
                 content={comment.body}
-                className="text-sm leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5"
+                className='text-sm leading-relaxed [&_li]:my-0.5 [&_ol]:my-2 [&_p]:my-2 [&_ul]:my-2'
               />
             ) : null}
           </>
@@ -219,40 +235,46 @@ export function WikiCommentThread({
 
         <CommentAttachments attachments={comment.attachments} />
 
-        <div className="flex min-h-[28px] items-center gap-2 pt-0.5">
+        <div className='flex min-h-[28px] items-center gap-2 pt-0.5'>
           {/* Always visible on mobile, hover/focus reveal on desktop */}
-          <div className="flex items-center gap-1 opacity-100 transition-opacity md:pointer-events-none md:opacity-0 md:group-hover/row:pointer-events-auto md:group-hover/row:opacity-100 md:group-focus-within/row:pointer-events-auto md:group-focus-within/row:opacity-100">
+          <div className='flex items-center gap-1 opacity-100 transition-opacity md:pointer-events-none md:opacity-0 md:group-focus-within/row:pointer-events-auto md:group-focus-within/row:opacity-100 md:group-hover/row:pointer-events-auto md:group-hover/row:opacity-100'>
             <button
-              type="button"
-              className="text-muted-foreground hover:bg-hover hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors"
+              type='button'
+              className='text-muted-foreground hover:bg-hover hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors'
               onClick={() => onStartReply(comment.id)}
             >
-              <Reply className="size-3" />
-              <span><Trans>Reply</Trans></span>
+              <Reply className='size-3' />
+              <span>
+                <Trans>Reply</Trans>
+              </span>
             </button>
 
             {canEdit && (
               <button
-                type="button"
-                className="text-muted-foreground hover:bg-hover hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors"
+                type='button'
+                className='text-muted-foreground hover:bg-hover hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors'
                 onClick={() => {
                   setEditing(true)
                   setEditBody(comment.body)
                 }}
               >
-                <Pencil className="size-3" />
-                <span><Trans>Edit</Trans></span>
+                <Pencil className='size-3' />
+                <span>
+                  <Trans>Edit</Trans>
+                </span>
               </button>
             )}
 
             {canDelete && (
               <button
-                type="button"
-                className="text-muted-foreground hover:bg-hover hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors"
+                type='button'
+                className='text-muted-foreground hover:bg-hover hover:text-foreground inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs transition-colors'
                 onClick={() => setDeleting(true)}
               >
-                <Trash2 className="size-3" />
-                <span><Trans>Delete</Trans></span>
+                <Trash2 className='size-3' />
+                <span>
+                  <Trans>Delete</Trans>
+                </span>
               </button>
             )}
           </div>

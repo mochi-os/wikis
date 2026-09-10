@@ -2,12 +2,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useState, useEffect } from 'react'
-import { Trans, useLingui } from '@lingui/react/macro'
-import { plural } from '@lingui/core/macro'
 import { useNavigate } from '@tanstack/react-router'
-import { Loader2, Pencil } from 'lucide-react'
+import { plural } from '@lingui/core/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import {
   Button,
   Dialog,
@@ -21,6 +19,7 @@ import {
   getErrorMessage,
   toast,
 } from '@mochi/web'
+import { Loader2, Pencil } from 'lucide-react'
 import { useRenamePage } from '@/hooks/use-wiki'
 
 interface RenamePageDialogProps {
@@ -32,7 +31,12 @@ interface RenamePageDialogProps {
 
 // Controlled only. The uncontrolled `trigger` branch was never taken - every
 // caller passes open/onOpenChange - and `title` was destructured and discarded.
-export function RenamePageDialog({ slug, wikiId, open, onOpenChange: setOpen }: RenamePageDialogProps) {
+export function RenamePageDialog({
+  slug,
+  wikiId,
+  open,
+  onOpenChange: setOpen,
+}: RenamePageDialogProps) {
   const { t } = useLingui()
   const navigate = useNavigate()
   const [newSlug, setNewSlug] = useState(slug)
@@ -67,16 +71,25 @@ export function RenamePageDialog({ slug, wikiId, open, onOpenChange: setOpen }: 
         onSuccess: (data) => {
           const renamedCount = data.renamed?.length || 1
           const linksUpdated = data.links?.updated || 0
-          let message = plural(renamedCount, { one: 'Renamed 1 page', other: 'Renamed # pages' })
+          let message = plural(renamedCount, {
+            one: 'Renamed 1 page',
+            other: 'Renamed # pages',
+          })
           if (linksUpdated > 0) {
-            message += plural(linksUpdated, { one: ', updated 1 link', other: ', updated # links' })
+            message += plural(linksUpdated, {
+              one: ', updated 1 link',
+              other: ', updated # links',
+            })
           }
           toast.success(message)
           setOpen(false)
           // Navigate to new URL
           const targetSlug = newSlug.trim()
           if (wikiId) {
-            navigate({ to: '/$wikiId/$page', params: { wikiId, page: targetSlug } })
+            navigate({
+              to: '/$wikiId/$page',
+              params: { wikiId, page: targetSlug },
+            })
           } else {
             navigate({ to: '/$page', params: { page: targetSlug } })
           }
@@ -92,39 +105,49 @@ export function RenamePageDialog({ slug, wikiId, open, onOpenChange: setOpen }: 
     <DialogContent>
       <form onSubmit={handleSubmit}>
         <DialogHeader>
-          <DialogTitle><Trans>Rename page</Trans></DialogTitle>
+          <DialogTitle>
+            <Trans>Rename page</Trans>
+          </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="newSlug"><Trans>New URL</Trans></Label>
+        <div className='grid gap-4 py-4'>
+          <div className='grid gap-2'>
+            <Label htmlFor='newSlug'>
+              <Trans>New URL</Trans>
+            </Label>
             <Input
-              id="newSlug"
+              id='newSlug'
               value={newSlug}
               onChange={(e) => setNewSlug(e.target.value)}
               placeholder={t`new-page-name`}
             />
           </div>
-          <div className="flex items-center space-x-2">
+          <div className='flex items-center space-x-2'>
             <Checkbox
-              id="createRedirects"
+              id='createRedirects'
               checked={createRedirects}
-              onCheckedChange={(checked) => setCreateRedirects(checked === true)}
+              onCheckedChange={(checked) =>
+                setCreateRedirects(checked === true)
+              }
             />
-            <Label htmlFor="createRedirects" className="font-normal">
+            <Label htmlFor='createRedirects' className='font-normal'>
               <Trans>Create redirect from old URL</Trans>
             </Label>
           </div>
         </div>
         <DialogFooter>
           <Button
-            type="button"
-            variant="outline"
+            type='button'
+            variant='outline'
             onClick={() => setOpen(false)}
           >
             <Trans>Cancel</Trans>
           </Button>
-          <Button type="submit" disabled={renamePage.isPending}>
-            {renamePage.isPending ? <Loader2 className="size-4 animate-spin" /> : <Pencil className="size-4" />}
+          <Button type='submit' disabled={renamePage.isPending}>
+            {renamePage.isPending ? (
+              <Loader2 className='size-4 animate-spin' />
+            ) : (
+              <Pencil className='size-4' />
+            )}
             {renamePage.isPending ? t`Renaming...` : t`Rename`}
           </Button>
         </DialogFooter>

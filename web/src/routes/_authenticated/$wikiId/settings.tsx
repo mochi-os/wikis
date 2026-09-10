@@ -2,24 +2,33 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { createFileRoute } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { usePageTitle, Main } from '@mochi/web'
-import { WikiSettings, type WikiSettingsTabId } from '@/features/wiki/wiki-settings'
-import { WikiProvider } from '@/context/wiki-context'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
+import { WikiProvider } from '@/context/wiki-context'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
+import {
+  WikiSettings,
+  type WikiSettingsTabId,
+} from '@/features/wiki/wiki-settings'
 
 type SettingsSearch = {
   tab?: WikiSettingsTabId
 }
 
-const validTabs: WikiSettingsTabId[] = ['settings', 'access', 'redirects', 'replicas']
+const validTabs: WikiSettingsTabId[] = [
+  'settings',
+  'access',
+  'redirects',
+  'replicas',
+]
 
 export const Route = createFileRoute('/_authenticated/$wikiId/settings')({
   validateSearch: (search: Record<string, unknown>): SettingsSearch => ({
-    tab: validTabs.includes(search.tab as WikiSettingsTabId) ? (search.tab as WikiSettingsTabId) : undefined,
+    tab: validTabs.includes(search.tab as WikiSettingsTabId)
+      ? (search.tab as WikiSettingsTabId)
+      : undefined,
   }),
   component: WikiSettingsRoute,
 })
@@ -39,7 +48,10 @@ function WikiSettingsRoute() {
   usePageTitle(t`${wikiName} settings`)
   return (
     <>
-      <WikiRouteHeader title={t`${wikiName} settings`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+      <WikiRouteHeader
+        title={t`${wikiName} settings`}
+        back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+      />
       <Main>
         <WikiProvider>
           <WikiSettings

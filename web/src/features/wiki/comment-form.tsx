@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useCallback, useState } from 'react'
 import { CommentBox, useDiscardGuard, type Upload } from '@mochi/web'
 
@@ -19,7 +18,13 @@ interface CommentFormProps {
  * Page-level comment composer. The CommentBox owns its files, so clearing it
  * means remounting it (boxKey).
  */
-export function CommentForm({ onSubmit, onCancel, placeholder, autoFocus, progress }: CommentFormProps) {
+export function CommentForm({
+  onSubmit,
+  onCancel,
+  placeholder,
+  autoFocus,
+  progress,
+}: CommentFormProps) {
   const [body, setBody] = useState('')
   const [fileCount, setFileCount] = useState(0)
   const [boxKey, setBoxKey] = useState(0)

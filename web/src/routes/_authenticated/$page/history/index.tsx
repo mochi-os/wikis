@@ -2,15 +2,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useState } from 'react'
-import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { usePage, usePageHistory } from '@/hooks/use-wiki'
+import type { Revision } from '@/types/wiki'
+import { useLingui } from '@lingui/react/macro'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
+import { usePage, usePageHistory } from '@/hooks/use-wiki'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
-import type { Revision } from '@/types/wiki'
 
 const LIMIT = 50
 
@@ -25,26 +24,45 @@ function PageHistoryRoute() {
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   const { data: pageData } = usePage(slug)
-  const pageTitle = pageData && 'page' in pageData && typeof pageData.page === 'object' && pageData.page?.title ? pageData.page.title : slug
+  const pageTitle =
+    pageData &&
+    'page' in pageData &&
+    typeof pageData.page === 'object' &&
+    pageData.page?.title
+      ? pageData.page.title
+      : slug
   usePageTitle(t`History: ${pageTitle}`)
 
   const [offset, setOffset] = useState(0)
   const [allRevisions, setAllRevisions] = useState<Revision[]>([])
-  const { data, isLoading, error, refetch } = usePageHistory(slug, { limit: LIMIT, offset })
+  const { data, isLoading, error, refetch } = usePageHistory(slug, {
+    limit: LIMIT,
+    offset,
+  })
 
   const currentPage = data?.revisions ?? []
-  const revisions = offset === 0 ? currentPage : [...allRevisions, ...currentPage.filter(r => !allRevisions.some(a => a.id === r.id))]
+  const revisions =
+    offset === 0
+      ? currentPage
+      : [
+          ...allRevisions,
+          ...currentPage.filter(
+            (r) => !allRevisions.some((a) => a.id === r.id)
+          ),
+        ]
 
   const handleLoadMore = () => {
     setAllRevisions(revisions)
     setOffset(offset + LIMIT)
   }
 
-
   if (isLoading && offset === 0) {
     return (
       <>
-        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`History: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
           <PageHistorySkeleton />
         </Main>
@@ -55,9 +73,12 @@ function PageHistoryRoute() {
   if (error && offset === 0) {
     return (
       <>
-        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`History: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
-          <GeneralError error={error} minimal mode="inline" reset={refetch} />
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
         </Main>
       </>
     )
@@ -67,7 +88,10 @@ function PageHistoryRoute() {
     const currentVersion = revisions[0]?.version ?? 1
     return (
       <>
-        <WikiRouteHeader title={t`History: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`History: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
           <PageHistory
             slug={slug}

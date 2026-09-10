@@ -2,25 +2,22 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Trans, useLingui } from '@lingui/react/macro'
-import { useNavigate } from '@tanstack/react-router'
-import { useQueryClient } from '@tanstack/react-query'
 import {
-  ArrowRight,
-  Check,
-  CornerDownRight,
-  Loader2,
-  Minus,
-  Plus,
-  RefreshCw,
-  Settings,
-  Shield,
-  Trash2,
-  Users,
-  X,
-} from 'lucide-react'
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
+import type {
+  AccessListResponse,
+  AccessRule,
+  WikiPermissions,
+} from '@/types/wiki'
+import { Trans, useLingui } from '@lingui/react/macro'
 import {
   Button,
   DataChip,
@@ -79,8 +76,22 @@ import {
   TooltipContent,
   DISALLOWED_NAME_CHARS,
 } from '@mochi/web'
+import {
+  ArrowRight,
+  Check,
+  CornerDownRight,
+  Loader2,
+  Minus,
+  Plus,
+  RefreshCw,
+  Settings,
+  Shield,
+  Trash2,
+  Users,
+  X,
+} from 'lucide-react'
 import endpoints from '@/api/endpoints'
-import { ValueLinkChip } from '@/components/value-link-chip'
+import { useWikiContext } from '@/context/wiki-context'
 import {
   type Replica,
   useEntityEndpoint,
@@ -91,8 +102,7 @@ import {
   useUserSearch,
   useGroups,
 } from '@/hooks/use-wiki'
-import { useWikiContext } from '@/context/wiki-context'
-import type { AccessListResponse, AccessRule, WikiPermissions } from '@/types/wiki'
+import { ValueLinkChip } from '@/components/value-link-chip'
 
 export type WikiSettingsTabId = 'settings' | 'access' | 'redirects' | 'replicas'
 
@@ -104,23 +114,54 @@ interface Tab {
 
 function useTabs(): Tab[] {
   const { t } = useLingui()
-  return useMemo(() => [
-    { id: 'settings' as const, label: t`Settings`, icon: <Settings className="h-4 w-4" /> },
-    { id: 'redirects' as const, label: t`Redirects`, icon: <CornerDownRight className="h-4 w-4" /> },
-    { id: 'access' as const, label: t`Access`, icon: <Shield className="h-4 w-4" /> },
-    { id: 'replicas' as const, label: t`Replicas`, icon: <Users className="h-4 w-4" /> },
-  ], [t])
+  return useMemo(
+    () => [
+      {
+        id: 'settings' as const,
+        label: t`Settings`,
+        icon: <Settings className='h-4 w-4' />,
+      },
+      {
+        id: 'redirects' as const,
+        label: t`Redirects`,
+        icon: <CornerDownRight className='h-4 w-4' />,
+      },
+      {
+        id: 'access' as const,
+        label: t`Access`,
+        icon: <Shield className='h-4 w-4' />,
+      },
+      {
+        id: 'replicas' as const,
+        label: t`Replicas`,
+        icon: <Users className='h-4 w-4' />,
+      },
+    ],
+    [t]
+  )
 }
 
 // Context for wiki-specific settings when accessed via /$wikiId/settings route
 interface WikiSettingsContextValue {
-  wiki: { id: string; name: string; home: string; fingerprint?: string; source?: string } | null
+  wiki: {
+    id: string
+    name: string
+    home: string
+    fingerprint?: string
+    source?: string
+  } | null
   permissions: WikiPermissions
 }
 
 const WikiSettingsContext = createContext<WikiSettingsContextValue>({
   wiki: null,
-  permissions: { view: false, edit: false, delete: false, manage: false, owner: false },
+  permissions: {
+    view: false,
+    edit: false,
+    delete: false,
+    manage: false,
+    owner: false,
+  },
 })
 
 function useSettingsContext() {
@@ -131,53 +172,72 @@ interface WikiSettingsProps {
   activeTab: WikiSettingsTabId
   onTabChange: (tab: WikiSettingsTabId) => void
   // Optional props for wiki-specific context (used in /$wikiId/settings route)
-  wiki?: { id: string; name: string; home: string; fingerprint?: string; source?: string }
+  wiki?: {
+    id: string
+    name: string
+    home: string
+    fingerprint?: string
+    source?: string
+  }
   permissions?: WikiPermissions
 }
 
-export function WikiSettings({ activeTab, onTabChange, wiki, permissions }: WikiSettingsProps) {
+export function WikiSettings({
+  activeTab,
+  onTabChange,
+  wiki,
+  permissions,
+}: WikiSettingsProps) {
   const { t } = useLingui()
   const tabs = useTabs()
   const contextValue: WikiSettingsContextValue = {
     wiki: wiki ?? null,
-    permissions: permissions ?? { view: false, edit: false, delete: false, manage: false, owner: false },
+    permissions: permissions ?? {
+      view: false,
+      edit: false,
+      delete: false,
+      manage: false,
+      owner: false,
+    },
   }
 
   // Hide Replicas tab for replica wikis (they don't have replicas of their own)
-  const visibleTabs = wiki?.source ? tabs.filter(tab => tab.id !== 'replicas') : tabs
+  const visibleTabs = wiki?.source
+    ? tabs.filter((tab) => tab.id !== 'replicas')
+    : tabs
 
   return (
     <WikiSettingsContext.Provider value={contextValue}>
-    <Tabs
-      variant="underline"
-      value={activeTab}
-      onValueChange={(value) => onTabChange(value as WikiSettingsTabId)}
-      className="space-y-6"
-    >
-      <TabsList aria-label={t`Wiki settings sections`}>
-        {visibleTabs.map((tab) => (
-          <TabsTrigger key={tab.id} value={tab.id} className="gap-2">
-            {tab.icon}
-            {tab.label}
-          </TabsTrigger>
-        ))}
-      </TabsList>
+      <Tabs
+        variant='underline'
+        value={activeTab}
+        onValueChange={(value) => onTabChange(value as WikiSettingsTabId)}
+        className='space-y-6'
+      >
+        <TabsList aria-label={t`Wiki settings sections`}>
+          {visibleTabs.map((tab) => (
+            <TabsTrigger key={tab.id} value={tab.id} className='gap-2'>
+              {tab.icon}
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-      <TabsContent value="settings" className="pt-2">
-        <SettingsTab />
-      </TabsContent>
-      <TabsContent value="access" className="pt-2">
-        <AccessTab />
-      </TabsContent>
-      <TabsContent value="redirects" className="pt-2">
-        <RedirectsTab />
-      </TabsContent>
-      {!wiki?.source && (
-        <TabsContent value="replicas" className="pt-2">
-          <ReplicasTab />
+        <TabsContent value='settings' className='pt-2'>
+          <SettingsTab />
         </TabsContent>
-      )}
-    </Tabs>
+        <TabsContent value='access' className='pt-2'>
+          <AccessTab />
+        </TabsContent>
+        <TabsContent value='redirects' className='pt-2'>
+          <RedirectsTab />
+        </TabsContent>
+        {!wiki?.source && (
+          <TabsContent value='replicas' className='pt-2'>
+            <ReplicasTab />
+          </TabsContent>
+        )}
+      </Tabs>
     </WikiSettingsContext.Provider>
   )
 }
@@ -191,7 +251,8 @@ function SettingsTab() {
   // Always call hooks (React rules), but use settings context values when provided
   const wikiContextResult = useWikiContext()
   const wikiInfo = settingsContext.wiki ?? wikiContextResult?.info?.wiki
-  const fingerprint = settingsContext.wiki?.fingerprint ?? wikiContextResult?.info?.fingerprint
+  const fingerprint =
+    settingsContext.wiki?.fingerprint ?? wikiContextResult?.info?.fingerprint
 
   const e = useEntityEndpoint()
   // One data source. The wiki's base URL is resolved by useEntityEndpoint
@@ -229,16 +290,20 @@ function SettingsTab() {
     const trimmed = n.trim()
     if (!trimmed) return t`Wiki name is required`
     if (trimmed.length > 100) return t`Name must be 100 characters or less`
-    if (DISALLOWED_NAME_CHARS.test(trimmed)) return t`Name cannot contain < or > characters, or line breaks`
+    if (DISALLOWED_NAME_CHARS.test(trimmed))
+      return t`Name cannot contain < or > characters, or line breaks`
     return null
   }
 
   const handleRenameWiki = async (trimmedName: string) => {
-    await toastAction(requestHelpers.post(e(endpoints.wiki.rename), { name: trimmedName }), {
-      loading: t`Saving...`,
-      success: t`Wiki renamed`,
-      error: (err) => getErrorMessage(err, t`Failed to rename wiki`),
-    })
+    await toastAction(
+      requestHelpers.post(e(endpoints.wiki.rename), { name: trimmedName }),
+      {
+        loading: t`Saving...`,
+        success: t`Wiki renamed`,
+        error: (err) => getErrorMessage(err, t`Failed to rename wiki`),
+      }
+    )
     setCurrentName(trimmedName)
     void queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
   }
@@ -251,7 +316,10 @@ function SettingsTab() {
   const handleSave = async () => {
     try {
       await toastAction(
-        setSetting.mutateAsync({ name: 'home', value: homePage.trim() || 'home' }),
+        setSetting.mutateAsync({
+          name: 'home',
+          value: homePage.trim() || 'home',
+        }),
         {
           loading: t`Saving...`,
           success: t`Settings saved`,
@@ -267,14 +335,11 @@ function SettingsTab() {
 
   const handleSync = async () => {
     try {
-      await toastAction(
-        syncWiki.mutateAsync(),
-        {
-          loading: t`Syncing...`,
-          success: t`Wiki synced`,
-          error: (err) => getErrorMessage(err, t`Failed to sync wiki`),
-        }
-      )
+      await toastAction(syncWiki.mutateAsync(), {
+        loading: t`Syncing...`,
+        success: t`Wiki synced`,
+        error: (err) => getErrorMessage(err, t`Failed to sync wiki`),
+      })
       void queryClient.invalidateQueries({ queryKey: ['wiki'] })
     } catch {
       // toast already shown
@@ -283,14 +348,11 @@ function SettingsTab() {
 
   const handleDelete = async () => {
     try {
-      await toastAction(
-        deleteWiki.mutateAsync(),
-        {
-          loading: t`Deleting wiki...`,
-          success: t`Wiki deleted`,
-          error: (err) => getErrorMessage(err, t`Failed to delete wiki`),
-        }
-      )
+      await toastAction(deleteWiki.mutateAsync(), {
+        loading: t`Deleting wiki...`,
+        success: t`Wiki deleted`,
+        error: (err) => getErrorMessage(err, t`Failed to delete wiki`),
+      })
       setDeleteConfirmOpen(false)
       void navigate({ to: '/' })
     } catch {
@@ -302,11 +364,11 @@ function SettingsTab() {
     return (
       <Card>
         <CardHeader>
-          <Skeleton className="h-6 w-32" />
-          <Skeleton className="h-4 w-96" />
+          <Skeleton className='h-6 w-32' />
+          <Skeleton className='h-4 w-96' />
         </CardHeader>
         <CardContent>
-          <ListSkeleton variant="simple" height="h-10" count={2} />
+          <ListSkeleton variant='simple' height='h-10' count={2} />
         </CardContent>
       </Card>
     )
@@ -314,7 +376,7 @@ function SettingsTab() {
 
   if (error) {
     return (
-      <GeneralError error={error} minimal mode="inline" reset={retrySettings} />
+      <GeneralError error={error} minimal mode='inline' reset={retrySettings} />
     )
   }
 
@@ -323,10 +385,10 @@ function SettingsTab() {
   const deletePending = deleteWiki.isPending
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {wikiInfo && (
         <Section title={t`Identity`}>
-          <div className="divide-y-0">
+          <div className='divide-y-0'>
             <EditableFieldRow
               label={t`Name`}
               value={currentName}
@@ -335,11 +397,11 @@ function SettingsTab() {
               emphasize
             />
             <FieldRow label={t`Entity ID`}>
-              <DataChip value={wikiInfo.id} truncate="middle" />
+              <DataChip value={wikiInfo.id} truncate='middle' />
             </FieldRow>
             {fingerprint && (
               <FieldRow label={t`Fingerprint`}>
-                <DataChip value={fingerprint} truncate="middle" />
+                <DataChip value={fingerprint} truncate='middle' />
               </FieldRow>
             )}
           </div>
@@ -351,13 +413,19 @@ function SettingsTab() {
           title={t`Subscription`}
           description={t`This wiki is subscribed to a source wiki and receives updates from it.`}
           action={
-            <Button variant="outline" onClick={() => void handleSync()} disabled={syncPending}>
-              <RefreshCw className={cn("me-2 h-4 w-4", syncPending && "animate-spin")} />
+            <Button
+              variant='outline'
+              onClick={() => void handleSync()}
+              disabled={syncPending}
+            >
+              <RefreshCw
+                className={cn('me-2 h-4 w-4', syncPending && 'animate-spin')}
+              />
               {syncPending ? t`Syncing...` : t`Sync now`}
             </Button>
           }
         >
-          <div className="divide-y-0">
+          <div className='divide-y-0'>
             <FieldRow label={t`Source`}>
               <ValueLinkChip value={data.settings.source} />
             </FieldRow>
@@ -367,24 +435,33 @@ function SettingsTab() {
 
       <Card>
         <CardHeader>
-          <CardTitle><Trans>Home page</Trans></CardTitle>
+          <CardTitle>
+            <Trans>Home page</Trans>
+          </CardTitle>
           <CardDescription>
-            <Trans>The page that users see when they first visit the wiki.</Trans>
+            <Trans>
+              The page that users see when they first visit the wiki.
+            </Trans>
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="home-page"><Trans>Use as home</Trans></Label>
+        <CardContent className='space-y-4'>
+          <div className='space-y-2'>
+            <Label htmlFor='home-page'>
+              <Trans>Use as home</Trans>
+            </Label>
             <Input
-              id="home-page"
+              id='home-page'
               value={homePage}
               onChange={(e) => handleHomePageChange(e.target.value)}
               placeholder={t`home`}
             />
           </div>
-          <div className="flex justify-end">
-            <Button onClick={() => void handleSave()} disabled={!hasChanges || savePending}>
-              <Check className="me-2 h-4 w-4" />
+          <div className='flex justify-end'>
+            <Button
+              onClick={() => void handleSave()}
+              disabled={!hasChanges || savePending}
+            >
+              <Check className='me-2 h-4 w-4' />
               {savePending ? t`Saving...` : t`Save changes`}
             </Button>
           </div>
@@ -394,17 +471,19 @@ function SettingsTab() {
       {/* Only show delete option for owned wikis (not subscribed) */}
       {!data?.settings?.source && (
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+          <CardContent className='pt-6'>
+            <div className='flex items-center justify-between'>
               <div>
-                <p className="font-medium"><Trans>Delete wiki</Trans></p>
+                <p className='font-medium'>
+                  <Trans>Delete wiki</Trans>
+                </p>
               </div>
               <Button
-                variant="outline"
+                variant='outline'
                 disabled={deletePending}
                 onClick={() => setDeleteConfirmOpen(true)}
               >
-                <Trash2 className="me-2 h-4 w-4" />
+                <Trash2 className='me-2 h-4 w-4' />
                 {deletePending ? t`Deleting...` : t`Delete wiki`}
               </Button>
             </div>
@@ -428,11 +507,14 @@ function SettingsTab() {
 // Wiki access levels (hierarchical: edit > view > none)
 function useWikiAccessLevels(): AccessLevel[] {
   const { t } = useLingui()
-  return useMemo(() => [
-    { value: 'edit', label: t`Edit and view` },
-    { value: 'view', label: t`View only` },
-    { value: 'none', label: t`No access` },
-  ], [t])
+  return useMemo(
+    () => [
+      { value: 'edit', label: t`Edit and view` },
+      { value: 'view', label: t`View only` },
+      { value: 'none', label: t`No access` },
+    ],
+    [t]
+  )
 }
 
 function AccessTab() {
@@ -446,7 +528,8 @@ function AccessTab() {
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [userSearchQuery, setUserSearchQuery] = useState('')
-  const { data: userSearchData, isLoading: userSearchLoading } = useUserSearch(userSearchQuery)
+  const { data: userSearchData, isLoading: userSearchLoading } =
+    useUserSearch(userSearchQuery)
 
   const apiUrl = useEntityEndpoint()
 
@@ -469,7 +552,11 @@ function AccessTab() {
     void loadRules()
   }, [loadRules])
 
-  const handleAdd = async (subject: string, subjectName: string, level: string) => {
+  const handleAdd = async (
+    subject: string,
+    subjectName: string,
+    level: string
+  ) => {
     await toastAction(
       requestHelpers.post(apiUrl(endpoints.wiki.accessSet), { subject, level }),
       {
@@ -484,11 +571,15 @@ function AccessTab() {
   const handleLevelChange = async (subject: string, level: string) => {
     try {
       await toastAction(
-        requestHelpers.post(apiUrl(endpoints.wiki.accessSet), { subject, level }),
+        requestHelpers.post(apiUrl(endpoints.wiki.accessSet), {
+          subject,
+          level,
+        }),
         {
           loading: t`Updating access...`,
           success: t`Access level updated`,
-          error: (err) => getErrorMessage(err, t`Failed to update access level`),
+          error: (err) =>
+            getErrorMessage(err, t`Failed to update access level`),
         }
       )
       void loadRules()
@@ -515,11 +606,11 @@ function AccessTab() {
 
   return (
     <Card>
-      <CardContent className="pt-6 space-y-4">
+      <CardContent className='space-y-4 pt-6'>
         {/* Add access button - right aligned */}
-        <div className="flex justify-end">
+        <div className='flex justify-end'>
           <Button onClick={() => setDialogOpen(true)}>
-            <Plus className="h-4 w-4 me-2" />
+            <Plus className='me-2 h-4 w-4' />
             <Trans>Add</Trans>
           </Button>
         </div>
@@ -529,7 +620,7 @@ function AccessTab() {
           onOpenChange={setDialogOpen}
           onAdd={handleAdd}
           levels={accessLevels}
-          defaultLevel="edit"
+          defaultLevel='edit'
           userSearchResults={userSearchData?.results ?? []}
           userSearchLoading={userSearchLoading}
           onUserSearch={setUserSearchQuery}
@@ -537,7 +628,12 @@ function AccessTab() {
         />
 
         {error ? (
-          <GeneralError error={error} minimal mode="inline" reset={() => void loadRules()} />
+          <GeneralError
+            error={error}
+            minimal
+            mode='inline'
+            reset={() => void loadRules()}
+          />
         ) : (
           <AccessList
             rules={rules}
@@ -592,7 +688,9 @@ function ReplicasTab() {
     const displayName = name || `${replicaId.slice(0, 12)}...`
     try {
       await toastAction(
-        requestHelpers.post(apiUrl(endpoints.wiki.replicaRemove), { replica: replicaId }),
+        requestHelpers.post(apiUrl(endpoints.wiki.replicaRemove), {
+          replica: replicaId,
+        }),
         {
           loading: t`Removing replica...`,
           success: t`Replica "${displayName}" removed`,
@@ -611,10 +709,12 @@ function ReplicasTab() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle><Trans>Replicas</Trans></CardTitle>
+          <CardTitle>
+            <Trans>Replicas</Trans>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <ListSkeleton variant="simple" height="h-10" count={2} />
+          <ListSkeleton variant='simple' height='h-10' count={2} />
         </CardContent>
       </Card>
     )
@@ -624,10 +724,17 @@ function ReplicasTab() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle><Trans>Replicas</Trans></CardTitle>
+          <CardTitle>
+            <Trans>Replicas</Trans>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <GeneralError error={error} minimal mode="inline" reset={() => void loadReplicas()} />
+          <GeneralError
+            error={error}
+            minimal
+            mode='inline'
+            reset={() => void loadReplicas()}
+          />
         </CardContent>
       </Card>
     )
@@ -638,14 +745,16 @@ function ReplicasTab() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle><Trans>Replicas</Trans></CardTitle>
+          <CardTitle>
+            <Trans>Replicas</Trans>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <EmptyState
             icon={Users}
             title={t`No replicas yet`}
             description={t`When other wikis replicate this wiki, they will appear here.`}
-            className="py-6"
+            className='py-6'
           />
         </CardContent>
       </Card>
@@ -655,17 +764,27 @@ function ReplicasTab() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle><Trans>Replicas</Trans></CardTitle>
+        <CardTitle>
+          <Trans>Replicas</Trans>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         {replicas.length > 0 ? (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead><Trans>Name</Trans></TableHead>
-                <TableHead><Trans>Subscribed</Trans></TableHead>
-                <TableHead><Trans>Last synced</Trans></TableHead>
-                <TableHead className="w-20"><Trans>Actions</Trans></TableHead>
+                <TableHead>
+                  <Trans>Name</Trans>
+                </TableHead>
+                <TableHead>
+                  <Trans>Subscribed</Trans>
+                </TableHead>
+                <TableHead>
+                  <Trans>Last synced</Trans>
+                </TableHead>
+                <TableHead className='w-20'>
+                  <Trans>Actions</Trans>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -674,10 +793,10 @@ function ReplicasTab() {
                   <TableCell>
                     <DataChip value={replica.name || t`Unknown`} />
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className='text-muted-foreground'>
                     {formatTimestamp(replica.subscribed)}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className='text-muted-foreground'>
                     {formatTimestamp(replica.synced, t`Never`)}
                   </TableCell>
                   <TableCell>
@@ -686,13 +805,13 @@ function ReplicasTab() {
                         <TooltipTrigger asChild>
                           <AlertDialogTrigger asChild>
                             <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
+                              variant='ghost'
+                              size='icon'
+                              className='h-8 w-8'
                               disabled={isRemoving}
                               aria-label={t`Remove replica ${replica.name || replica.id}`}
                             >
-                              <X className="h-4 w-4" />
+                              <X className='h-4 w-4' />
                             </Button>
                           </AlertDialogTrigger>
                         </TooltipTrigger>
@@ -700,20 +819,27 @@ function ReplicasTab() {
                       </Tooltip>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle><Trans>Remove replica?</Trans></AlertDialogTitle>
+                          <AlertDialogTitle>
+                            <Trans>Remove replica?</Trans>
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
                             <Trans>
-                              This will stop sending updates to "{replica.name || `${replica.id.slice(0, 16)}...`}".
-                              They can replicate again if they want.
+                              This will stop sending updates to "
+                              {replica.name || `${replica.id.slice(0, 16)}...`}
+                              ". They can replicate again if they want.
                             </Trans>
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
+                          <AlertDialogCancel>
+                            <Trans>Cancel</Trans>
+                          </AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => void handleRemove(replica.id, replica.name)}
+                            onClick={() =>
+                              void handleRemove(replica.id, replica.name)
+                            }
                           >
-                            <Minus className="h-4 w-4" />
+                            <Minus className='h-4 w-4' />
                             <Trans>Remove</Trans>
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -729,7 +855,7 @@ function ReplicasTab() {
             icon={Users}
             title={t`No replicas yet`}
             description={t`When other wikis replicate this wiki, they will appear here.`}
-            className="py-6"
+            className='py-6'
           />
         )}
       </CardContent>
@@ -742,7 +868,9 @@ function RedirectsTab() {
   const { formatTimestamp } = useFormat()
 
   // Local state for wiki-specific API calls
-  const [redirects, setRedirects] = useState<import('@/types/wiki').Redirect[]>([])
+  const [redirects, setRedirects] = useState<import('@/types/wiki').Redirect[]>(
+    []
+  )
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -753,13 +881,15 @@ function RedirectsTab() {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await requestHelpers.get<import('@/types/wiki').RedirectsResponse>(
-        apiUrl(endpoints.wiki.redirects)
-      )
+      const response = await requestHelpers.get<
+        import('@/types/wiki').RedirectsResponse
+      >(apiUrl(endpoints.wiki.redirects))
       // The server no longer orders by `source`: it is a user-facing slug, so
       // accents and locale belong to the consumer.
       setRedirects(
-        [...(response?.redirects ?? [])].sort((a, b) => naturalCompare(a.source, b.source))
+        [...(response?.redirects ?? [])].sort((a, b) =>
+          naturalCompare(a.source, b.source)
+        )
       )
     } catch (err) {
       setError(new Error(getErrorMessage(err, t`Failed to load redirects`)))
@@ -794,32 +924,45 @@ function RedirectsTab() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle><Trans>Redirects</Trans></CardTitle>
+        <div className='flex items-center justify-between'>
+          <CardTitle>
+            <Trans>Redirects</Trans>
+          </CardTitle>
           <AddRedirectDialog onSuccess={loadRedirects} />
         </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <ListSkeleton variant="simple" height="h-12" count={3} />
+          <ListSkeleton variant='simple' height='h-12' count={3} />
         ) : error ? (
-          <GeneralError error={error} minimal mode="inline" reset={() => void loadRedirects()} />
+          <GeneralError
+            error={error}
+            minimal
+            mode='inline'
+            reset={() => void loadRedirects()}
+          />
         ) : redirects.length === 0 ? (
           <EmptyState
             icon={CornerDownRight}
             title={t`No redirects configured`}
             description={t`Create a redirect to forward one URL to another.`}
-            className="py-6"
+            className='py-6'
           />
         ) : (
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead><Trans>Source</Trans></TableHead>
+                <TableHead>
+                  <Trans>Source</Trans>
+                </TableHead>
                 <TableHead></TableHead>
-                <TableHead><Trans>Target</Trans></TableHead>
-                <TableHead><Trans>Created</Trans></TableHead>
-                <TableHead className="w-[50px]"></TableHead>
+                <TableHead>
+                  <Trans>Target</Trans>
+                </TableHead>
+                <TableHead>
+                  <Trans>Created</Trans>
+                </TableHead>
+                <TableHead className='w-[50px]'></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -829,12 +972,12 @@ function RedirectsTab() {
                     <ValueLinkChip value={redirect.source} />
                   </TableCell>
                   <TableCell>
-                    <ArrowRight className="text-muted-foreground h-4 w-4 rtl:rotate-180" />
+                    <ArrowRight className='text-muted-foreground h-4 w-4 rtl:rotate-180' />
                   </TableCell>
                   <TableCell>
                     <ValueLinkChip value={redirect.target} />
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className='text-muted-foreground'>
                     {formatTimestamp(redirect.created)}
                   </TableCell>
                   <TableCell>
@@ -843,13 +986,13 @@ function RedirectsTab() {
                         <TooltipTrigger asChild>
                           <AlertDialogTrigger asChild>
                             <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-muted-foreground"
+                              variant='ghost'
+                              size='icon'
+                              className='text-muted-foreground'
                               disabled={isDeleting}
                               aria-label={t`Delete redirect ${redirect.source}`}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className='h-4 w-4' />
                             </Button>
                           </AlertDialogTrigger>
                         </TooltipTrigger>
@@ -857,19 +1000,23 @@ function RedirectsTab() {
                       </Tooltip>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle><Trans>Delete redirect?</Trans></AlertDialogTitle>
+                          <AlertDialogTitle>
+                            <Trans>Delete redirect?</Trans>
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
                             <Trans>
-                              This will remove the redirect from "{redirect.source}" to "
-                              {redirect.target}".
+                              This will remove the redirect from "
+                              {redirect.source}" to "{redirect.target}".
                             </Trans>
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
+                          <AlertDialogCancel>
+                            <Trans>Cancel</Trans>
+                          </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => void handleDelete(redirect.source)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
                           >
                             <Trans>Delete</Trans>
                           </AlertDialogAction>
@@ -936,29 +1083,35 @@ function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus className="me-2 h-4 w-4" />
+          <Plus className='me-2 h-4 w-4' />
           <Trans>Add redirect</Trans>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={(e) => void handleSubmit(e)}>
           <DialogHeader>
-            <DialogTitle><Trans>Create redirect</Trans></DialogTitle>
+            <DialogTitle>
+              <Trans>Create redirect</Trans>
+            </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="source"><Trans>Source URL</Trans></Label>
+          <div className='grid gap-4 py-4'>
+            <div className='space-y-2'>
+              <Label htmlFor='source'>
+                <Trans>Source URL</Trans>
+              </Label>
               <Input
-                id="source"
+                id='source'
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
                 placeholder={t`old-page-name`}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="target"><Trans>Target URL</Trans></Label>
+            <div className='space-y-2'>
+              <Label htmlFor='target'>
+                <Trans>Target URL</Trans>
+              </Label>
               <Input
-                id="target"
+                id='target'
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
                 placeholder={t`new-page-name`}
@@ -966,11 +1119,19 @@ function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => setOpen(false)}
+            >
               <Trans>Cancel</Trans>
             </Button>
-            <Button type="submit" disabled={isCreating}>
-              {isCreating ? <Loader2 className="h-4 w-4 me-2 animate-spin" /> : <Plus className="h-4 w-4 me-2" />}
+            <Button type='submit' disabled={isCreating}>
+              {isCreating ? (
+                <Loader2 className='me-2 h-4 w-4 animate-spin' />
+              ) : (
+                <Plus className='me-2 h-4 w-4' />
+              )}
               {isCreating ? t`Creating...` : <Trans>Create redirect</Trans>}
             </Button>
           </DialogFooter>
@@ -979,4 +1140,3 @@ function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
     </Dialog>
   )
 }
-

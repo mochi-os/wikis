@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { createContext, useContext, type ReactNode } from 'react'
 import { useLocation } from '@tanstack/react-router'
-import { useWikiInfo, type WikiInfoResponse } from '@/hooks/use-wiki'
-import { getEntityIdFromPath, isEntityContext } from '@/api/request'
 import type { WikiPermissions } from '@/types/wiki'
+import { getEntityIdFromPath, isEntityContext } from '@/api/request'
+import { useWikiInfo, type WikiInfoResponse } from '@/hooks/use-wiki'
+
 interface WikiContextValue {
   info: WikiInfoResponse | undefined
   permissions: WikiPermissions
@@ -39,7 +39,9 @@ export function WikiProvider({ children }: { children: ReactNode }) {
   const permissions = data?.permissions ?? defaultPermissions
 
   return (
-    <WikiContext.Provider value={{ info: data, permissions, isLoading, error, refetch }}>
+    <WikiContext.Provider
+      value={{ info: data, permissions, isLoading, error, refetch }}
+    >
       {children}
     </WikiContext.Provider>
   )

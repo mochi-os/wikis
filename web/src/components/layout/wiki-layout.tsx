@@ -2,11 +2,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useCallback, useMemo } from 'react'
-import { useLingui } from '@lingui/react/macro'
 import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from '@tanstack/react-router'
+import { useLingui } from '@lingui/react/macro'
 import {
   AuthenticatedLayout,
   toastAction,
@@ -14,25 +13,20 @@ import {
   type SidebarData,
   type NavItem,
   CreateEntityDialog,
-  type CreateEntityValues, naturalCompare,} from '@mochi/web'
-import {
-  BookOpen,
-  Plus,
-  Search,
-} from 'lucide-react'
+  type CreateEntityValues,
+  naturalCompare,
+} from '@mochi/web'
+import { BookOpen, Plus, Search } from 'lucide-react'
+import { getEntityIdFromPath } from '@/api/request'
 import { SidebarProvider, useSidebarContext } from '@/context/sidebar-context'
 import { WikiProvider, useWikiContext } from '@/context/wiki-context'
 import { useCreateWiki } from '@/hooks/use-wiki'
 import { useWikiWebsocket } from '@/hooks/use-wiki-websocket'
-import { getEntityIdFromPath } from '@/api/request'
 
 function WikiLayoutInner() {
   const { t } = useLingui()
-  const {
-    createDialogOpen,
-    openCreateDialog,
-    closeCreateDialog,
-  } = useSidebarContext()
+  const { createDialogOpen, openCreateDialog, closeCreateDialog } =
+    useSidebarContext()
   const { info } = useWikiContext()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -92,19 +86,26 @@ function WikiLayoutInner() {
         title: wiki.name,
         url: `/${wiki.fingerprint ?? wiki.id}/${wiki.home}` as const,
         icon: BookOpen,
-        isActive: wiki.id === currentWikiId || wiki.fingerprint === currentWikiId,
+        isActive:
+          wiki.id === currentWikiId || wiki.fingerprint === currentWikiId,
       }))
 
     // Build current wiki item when in entity context but not in the wikis list
-    const currentWikiInList = info?.wikis?.some(w => w.id === currentWikiId || w.fingerprint === currentWikiId)
-    const standaloneWikiUrl = info?.wiki?.fingerprint ?? info?.wiki?.id ?? urlEntityId
+    const currentWikiInList = info?.wikis?.some(
+      (w) => w.id === currentWikiId || w.fingerprint === currentWikiId
+    )
+    const standaloneWikiUrl =
+      info?.wiki?.fingerprint ?? info?.wiki?.id ?? urlEntityId
     const standaloneWikiHome = info?.wiki?.home || 'home'
-    const standaloneWikiItem: NavItem | null = isInWiki && !currentWikiInList && standaloneWikiUrl ? {
-      title: wikiName || t`Wiki`,
-      url: `/${standaloneWikiUrl}/${standaloneWikiHome}` as const,
-      icon: BookOpen,
-      isActive: true,
-    } : null
+    const standaloneWikiItem: NavItem | null =
+      isInWiki && !currentWikiInList && standaloneWikiUrl
+        ? {
+            title: wikiName || t`Wiki`,
+            url: `/${standaloneWikiUrl}/${standaloneWikiHome}` as const,
+            icon: BookOpen,
+            isActive: true,
+          }
+        : null
 
     // "All wikis" is now a simple link without submenu
     const allWikisItem = {
@@ -135,18 +136,27 @@ function WikiLayoutInner() {
     ]
 
     return { navGroups: groups }
-  }, [isInWiki, wikiName, info, urlEntityId, handleAllWikisClick, openCreateDialog, location.pathname, t])
+  }, [
+    isInWiki,
+    wikiName,
+    info,
+    urlEntityId,
+    handleAllWikisClick,
+    openCreateDialog,
+    location.pathname,
+    t,
+  ])
 
   return (
     <>
-      <AuthenticatedLayout
-        sidebarData={sidebarData}
-      />
+      <AuthenticatedLayout sidebarData={sidebarData} />
 
       {/* Create wiki dialog */}
       <CreateEntityDialog
         open={createDialogOpen}
-        onOpenChange={(open) => { if (!open) closeCreateDialog() }}
+        onOpenChange={(open) => {
+          if (!open) closeCreateDialog()
+        }}
         icon={BookOpen}
         title={t`Create wiki`}
         entityLabel={t`wiki`}

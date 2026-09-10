@@ -2,25 +2,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useState, useRef, useMemo } from 'react'
+import type { Attachment } from '@/types/wiki'
 import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
-import {
-  Upload,
-  Trash2,
-  Copy,
-  Captions,
-  Check,
-  Loader2,
-  Search,
-  Grid3X3,
-  List,
-  ArrowUpDown,
-  X,
-  Image,
-  ExternalLink,
-} from 'lucide-react'
 import {
   toast,
   Alert,
@@ -55,14 +40,34 @@ import {
   UploadProgress,
 } from '@mochi/web'
 import {
+  Upload,
+  Trash2,
+  Copy,
+  Captions,
+  Check,
+  Loader2,
+  Search,
+  Grid3X3,
+  List,
+  ArrowUpDown,
+  X,
+  Image,
+  ExternalLink,
+} from 'lucide-react'
+import {
+  useWikiBaseURL,
+  useWikiBaseURLOptional,
+} from '@/context/wiki-base-url-context'
+import {
   useAttachments,
   useUploadAttachment,
   useUpdateAttachment,
   useDeleteAttachment,
 } from '@/hooks/use-wiki'
-import { useWikiBaseURL, useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
-import type { Attachment } from '@/types/wiki'
-import { ATTACHMENT_ACCEPT, useAttachmentUploadMessages } from './attachment-upload'
+import {
+  ATTACHMENT_ACCEPT,
+  useAttachmentUploadMessages,
+} from './attachment-upload'
 
 type ViewMode = 'grid' | 'list'
 type FilterType = 'all' | 'images' | 'documents'
@@ -134,7 +139,6 @@ export function AttachmentsPage() {
     return result
   }, [attachments, searchQuery, filterType, sortBy])
 
-
   const handleUpload = (files: FileList | File[]) => {
     const fileArray = Array.from(files)
     if (fileArray.length === 0) {
@@ -152,7 +156,12 @@ export function AttachmentsPage() {
     uploadMutation.mutate(fileArray, {
       onSuccess: () => {
         setUploadError(null)
-        toast.success(plural(fileCount, { one: '# file uploaded', other: '# files uploaded' }))
+        toast.success(
+          plural(fileCount, {
+            one: '# file uploaded',
+            other: '# files uploaded',
+          })
+        )
       },
       onError: (error) => {
         setUploadError(describe(error))
@@ -251,8 +260,13 @@ export function AttachmentsPage() {
     caption: a.caption,
   }))
 
-  const { open: lightboxOpen, currentIndex, openLightbox, closeLightbox, setCurrentIndex } =
-    useLightboxHash(lightboxMedia)
+  const {
+    open: lightboxOpen,
+    currentIndex,
+    openLightbox,
+    closeLightbox,
+    setCurrentIndex,
+  } = useLightboxHash(lightboxMedia)
 
   // Map image attachment ID to lightbox index for click handling
   const imageLightboxIndex = new Map(imageAttachments.map((a, i) => [a.id, i]))
@@ -268,21 +282,24 @@ export function AttachmentsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Upload + stats */}
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-muted-foreground text-sm">
+      <div className='flex items-center justify-between gap-4'>
+        <p className='text-muted-foreground text-sm'>
           <Trans>
-            {plural(attachments.length, { one: '# file', other: '# files' })} ({plural(imageCount, { one: '# image', other: '# images' })}, {plural(documentCount, { one: '# document', other: '# documents' })})
+            {plural(attachments.length, { one: '# file', other: '# files' })} (
+            {plural(imageCount, { one: '# image', other: '# images' })},{' '}
+            {plural(documentCount, { one: '# document', other: '# documents' })}
+            )
           </Trans>
         </p>
         <div>
           <input
             ref={fileInputRef}
-            type="file"
+            type='file'
             multiple
             onChange={handleFileInput}
-            className="hidden"
+            className='hidden'
             accept={ATTACHMENT_ACCEPT}
           />
           <Button
@@ -290,9 +307,9 @@ export function AttachmentsPage() {
             disabled={uploadMutation.isPending}
           >
             {uploadMutation.isPending ? (
-              <Loader2 className="me-2 h-4 w-4 animate-spin" />
+              <Loader2 className='me-2 h-4 w-4 animate-spin' />
             ) : (
-              <Upload className="me-2 h-4 w-4" />
+              <Upload className='me-2 h-4 w-4' />
             )}
             <Trans>Upload files</Trans>
           </Button>
@@ -302,8 +319,10 @@ export function AttachmentsPage() {
       <UploadProgress progress={uploadMutation.progress} />
 
       {uploadError ? (
-        <Alert variant="destructive">
-          <AlertTitle><Trans>Upload failed</Trans></AlertTitle>
+        <Alert variant='destructive'>
+          <AlertTitle>
+            <Trans>Upload failed</Trans>
+          </AlertTitle>
           <AlertDescription>{uploadError}</AlertDescription>
         </Alert>
       ) : null}
@@ -311,27 +330,27 @@ export function AttachmentsPage() {
       <Separator />
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className='flex flex-wrap items-center gap-3'>
         {/* Search */}
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+        <div className='relative min-w-[200px] flex-1'>
+          <Search className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
           <Input
             placeholder={t`Search attachments...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="ps-9"
+            className='ps-9'
           />
           {searchQuery && (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
+                  variant='ghost'
+                  size='icon'
+                  className='absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2'
                   onClick={() => setSearchQuery('')}
                   aria-label={t`Clear search`}
                 >
-                  <X className="h-3 w-3" />
+                  <X className='h-3 w-3' />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>{t`Clear search`}</TooltipContent>
@@ -340,42 +359,57 @@ export function AttachmentsPage() {
         </div>
 
         {/* Filter */}
-        <Select value={filterType} onValueChange={(v) => setFilterType(v as FilterType)}>
-          <SelectTrigger className="w-[140px]">
+        <Select
+          value={filterType}
+          onValueChange={(v) => setFilterType(v as FilterType)}
+        >
+          <SelectTrigger className='w-[140px]'>
             <SelectValue placeholder={t`Filter`} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all"><Trans>All files</Trans></SelectItem>
-            <SelectItem value="images"><Trans>Images</Trans></SelectItem>
-            <SelectItem value="documents"><Trans>Documents</Trans></SelectItem>
+            <SelectItem value='all'>
+              <Trans>All files</Trans>
+            </SelectItem>
+            <SelectItem value='images'>
+              <Trans>Images</Trans>
+            </SelectItem>
+            <SelectItem value='documents'>
+              <Trans>Documents</Trans>
+            </SelectItem>
           </SelectContent>
         </Select>
 
         {/* Sort */}
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortBy)}>
-          <SelectTrigger className="w-[130px]">
-            <ArrowUpDown className="me-2 h-4 w-4" />
+          <SelectTrigger className='w-[130px]'>
+            <ArrowUpDown className='me-2 h-4 w-4' />
             <SelectValue placeholder={t`Sort`} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="date"><Trans>Date</Trans></SelectItem>
-            <SelectItem value="name"><Trans>Name</Trans></SelectItem>
-            <SelectItem value="size"><Trans>Size</Trans></SelectItem>
+            <SelectItem value='date'>
+              <Trans>Date</Trans>
+            </SelectItem>
+            <SelectItem value='name'>
+              <Trans>Name</Trans>
+            </SelectItem>
+            <SelectItem value='size'>
+              <Trans>Size</Trans>
+            </SelectItem>
           </SelectContent>
         </Select>
 
         {/* View toggle */}
-        <div className="flex rounded-md border">
+        <div className='flex rounded-md border'>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="icon"
-                className="rounded-e-none"
+                size='icon'
+                className='rounded-e-none'
                 onClick={() => setViewMode('grid')}
                 aria-label={t`Grid view`}
               >
-                <Grid3X3 className="h-4 w-4" />
+                <Grid3X3 className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>{t`Grid view`}</TooltipContent>
@@ -384,12 +418,12 @@ export function AttachmentsPage() {
             <TooltipTrigger asChild>
               <Button
                 variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="icon"
-                className="rounded-s-none"
+                size='icon'
+                className='rounded-s-none'
                 onClick={() => setViewMode('list')}
                 aria-label={t`List view`}
               >
-                <List className="h-4 w-4" />
+                <List className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>{t`List view`}</TooltipContent>
@@ -399,10 +433,9 @@ export function AttachmentsPage() {
 
       {/* Drop zone / Content */}
       <div
-        className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${isDragging
-            ? 'border-primary bg-primary/5'
-            : 'border-transparent'
-          }`}
+        className={`min-h-[400px] rounded-lg border-2 border-dashed transition-colors ${
+          isDragging ? 'border-primary bg-primary/5' : 'border-transparent'
+        }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -410,31 +443,35 @@ export function AttachmentsPage() {
         {isLoading ? (
           <AttachmentsPageSkeleton viewMode={viewMode} />
         ) : error ? (
-          <div className="px-4 py-8">
-            <GeneralError error={error} minimal mode="inline" reset={refetch} />
+          <div className='px-4 py-8'>
+            <GeneralError error={error} minimal mode='inline' reset={refetch} />
           </div>
         ) : filteredAttachments.length === 0 ? (
           <EmptyState
             icon={attachments.length === 0 ? Image : Search}
             title={
               attachments.length === 0
-                ? t`No attachments yet` : t`No attachments match your search`
+                ? t`No attachments yet`
+                : t`No attachments match your search`
             }
             description={
               attachments.length === 0
                 ? t`Drag and drop files here, or click "Upload files" to get started.`
                 : t`Try a different search term or filter.`
             }
-            className="h-[400px]"
+            className='h-[400px]'
           />
         ) : viewMode === 'grid' ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'>
             {filteredAttachments.map((attachment) => (
               <AttachmentGridItem
                 key={attachment.id}
                 attachment={attachment}
                 copiedId={copiedId}
-                isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id}
+                isDeleting={
+                  deleteMutation.isPending &&
+                  deleteMutation.variables === attachment.id
+                }
                 onCopy={handleCopy}
                 onCaption={setCaptioning}
                 onDelete={handleDelete}
@@ -443,13 +480,16 @@ export function AttachmentsPage() {
             ))}
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className='space-y-2'>
             {filteredAttachments.map((attachment) => (
               <AttachmentListItem
                 key={attachment.id}
                 attachment={attachment}
                 copiedId={copiedId}
-                isDeleting={deleteMutation.isPending && deleteMutation.variables === attachment.id}
+                isDeleting={
+                  deleteMutation.isPending &&
+                  deleteMutation.variables === attachment.id
+                }
                 onCopy={handleCopy}
                 onCaption={setCaptioning}
                 onDelete={handleDelete}
@@ -483,9 +523,15 @@ export function AttachmentsPage() {
 
       <ConfirmDialog
         open={!!pendingDelete}
-        onOpenChange={(open) => { if (!open) setPendingDelete(null) }}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null)
+        }}
         title={t`Delete attachment`}
-        desc={pendingDelete ? t`Delete "${pendingDelete.name}"? This cannot be undone.` : ''}
+        desc={
+          pendingDelete
+            ? t`Delete "${pendingDelete.name}"? This cannot be undone.`
+            : ''
+        }
         confirmText={t`Delete`}
         destructive
         isLoading={deleteMutation.isPending}
@@ -521,51 +567,57 @@ function AttachmentGridItem({
   const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id)
 
   return (
-    <div className="group bg-card hover:bg-hover relative overflow-hidden rounded-lg border transition-colors">
+    <div className='group bg-card hover:bg-hover relative overflow-hidden rounded-lg border transition-colors'>
       {/* Preview - clickable to open lightbox (images) or new tab (files) */}
       <button
-        type="button"
+        type='button'
         onClick={() => onOpen(attachment)}
-        className="bg-muted flex aspect-square w-full items-center justify-center overflow-hidden"
+        className='bg-muted flex aspect-square w-full items-center justify-center overflow-hidden'
       >
         {isImage(attachment.type) ? (
           <img
             src={`${attachmentUrl}/thumbnail`}
             alt={attachment.caption || attachment.name}
-            className="h-full w-full object-cover text-transparent"
+            className='h-full w-full object-cover text-transparent'
           />
         ) : (
-          <FileIcon className="text-muted-foreground h-12 w-12" />
+          <FileIcon className='text-muted-foreground h-12 w-12' />
         )}
       </button>
 
       {/* Info */}
-      <div className="p-3">
-        <p className="truncate text-sm font-medium" title={attachment.name}>
+      <div className='p-3'>
+        <p className='truncate text-sm font-medium' title={attachment.name}>
           {attachment.name}
         </p>
-        <p className="text-muted-foreground truncate text-xs" title={attachment.caption}>
+        <p
+          className='text-muted-foreground truncate text-xs'
+          title={attachment.caption}
+        >
           {attachment.caption || formatFileSize(attachment.size)}
         </p>
       </div>
 
       {/* Actions overlay - clicking background opens attachment, buttons stop propagation */}
       <div
-        className="absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+        className='absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100'
         onClick={() => onOpen(attachment)}
       >
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="outline"
-              size="icon"
-              onClick={(e) => { e.stopPropagation(); onCopy(attachment) }}
+              variant='outline'
+              size='icon'
+              onClick={(e) => {
+                e.stopPropagation()
+                onCopy(attachment)
+              }}
               aria-label={t`Copy embed link`}
             >
               {copiedId === attachment.id ? (
-                <Check className="h-4 w-4" />
+                <Check className='h-4 w-4' />
               ) : (
-                <Copy className="h-4 w-4" />
+                <Copy className='h-4 w-4' />
               )}
             </Button>
           </TooltipTrigger>
@@ -575,12 +627,17 @@ function AttachmentGridItem({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="outline"
-                size="icon"
-                onClick={(e) => { e.stopPropagation(); onCaption(attachment) }}
-                aria-label={attachment.caption ? t`Edit caption` : t`Add caption`}
+                variant='outline'
+                size='icon'
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onCaption(attachment)
+                }}
+                aria-label={
+                  attachment.caption ? t`Edit caption` : t`Add caption`
+                }
               >
-                <Captions className="h-4 w-4" />
+                <Captions className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -591,16 +648,19 @@ function AttachmentGridItem({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="outline"
-              size="icon"
-              onClick={(e) => { e.stopPropagation(); onDelete(attachment) }}
+              variant='outline'
+              size='icon'
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete(attachment)
+              }}
               disabled={isDeleting}
               aria-label={t`Delete attachment`}
             >
               {isDeleting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className='h-4 w-4 animate-spin' />
               ) : (
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className='h-4 w-4' />
               )}
             </Button>
           </TooltipTrigger>
@@ -627,55 +687,58 @@ function AttachmentListItem({
   const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id)
 
   return (
-    <div className="hover:bg-hover flex items-center gap-4 rounded-lg border p-3 transition-colors">
+    <div className='hover:bg-hover flex items-center gap-4 rounded-lg border p-3 transition-colors'>
       {/* Icon/Preview - clickable */}
       <button
-        type="button"
+        type='button'
         onClick={() => onOpen(attachment)}
-        className="bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded"
+        className='bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded'
       >
         {isImage(attachment.type) ? (
           <img
             src={`${attachmentUrl}/thumbnail`}
             alt={attachment.caption || ''}
-            className="h-16 w-16 rounded object-cover text-transparent"
+            className='h-16 w-16 rounded object-cover text-transparent'
           />
         ) : (
-          <FileIcon className="text-muted-foreground h-8 w-8" />
+          <FileIcon className='text-muted-foreground h-8 w-8' />
         )}
       </button>
 
       {/* Info */}
-      <div className="min-w-0 flex-1">
+      <div className='min-w-0 flex-1'>
         <button
-          type="button"
+          type='button'
           onClick={() => onOpen(attachment)}
-          className="truncate font-medium hover:underline"
+          className='truncate font-medium hover:underline'
         >
           {attachment.name}
         </button>
         {attachment.caption && (
-          <p className="text-muted-foreground truncate text-sm" title={attachment.caption}>
+          <p
+            className='text-muted-foreground truncate text-sm'
+            title={attachment.caption}
+          >
             {attachment.caption}
           </p>
         )}
-        <p className="text-muted-foreground text-sm">
+        <p className='text-muted-foreground text-sm'>
           {formatFileSize(attachment.size)} &middot;{' '}
           {formatTimestamp(attachment.created)}
         </p>
       </div>
 
       {/* Actions */}
-      <div className="flex gap-1">
+      <div className='flex gap-1'>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="ghost"
-              size="icon"
+              variant='ghost'
+              size='icon'
               onClick={() => onOpen(attachment)}
               aria-label={t`Open attachment`}
             >
-              <ExternalLink className="h-4 w-4" />
+              <ExternalLink className='h-4 w-4' />
             </Button>
           </TooltipTrigger>
           <TooltipContent>{t`Open attachment`}</TooltipContent>
@@ -683,15 +746,15 @@ function AttachmentListItem({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="ghost"
-              size="icon"
+              variant='ghost'
+              size='icon'
               onClick={() => onCopy(attachment)}
               aria-label={t`Copy embed link`}
             >
               {copiedId === attachment.id ? (
-                <Check className="h-4 w-4" />
+                <Check className='h-4 w-4' />
               ) : (
-                <Copy className="h-4 w-4" />
+                <Copy className='h-4 w-4' />
               )}
             </Button>
           </TooltipTrigger>
@@ -701,12 +764,14 @@ function AttachmentListItem({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
+                variant='ghost'
+                size='icon'
                 onClick={() => onCaption(attachment)}
-                aria-label={attachment.caption ? t`Edit caption` : t`Add caption`}
+                aria-label={
+                  attachment.caption ? t`Edit caption` : t`Add caption`
+                }
               >
-                <Captions className="h-4 w-4" />
+                <Captions className='h-4 w-4' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -717,17 +782,17 @@ function AttachmentListItem({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant="ghost"
-              size="icon"
+              variant='ghost'
+              size='icon'
               onClick={() => onDelete(attachment)}
               disabled={isDeleting}
-              className="text-muted-foreground"
+              className='text-muted-foreground'
               aria-label={t`Delete attachment`}
             >
               {isDeleting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className='h-4 w-4 animate-spin' />
               ) : (
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className='h-4 w-4' />
               )}
             </Button>
           </TooltipTrigger>
@@ -741,13 +806,13 @@ function AttachmentListItem({
 function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) {
   if (viewMode === 'grid') {
     return (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'>
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <div key={i} className="overflow-hidden rounded-lg border">
-            <Skeleton className="aspect-square w-full" />
-            <div className="p-3 space-y-2">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
+          <div key={i} className='overflow-hidden rounded-lg border'>
+            <Skeleton className='aspect-square w-full' />
+            <div className='space-y-2 p-3'>
+              <Skeleton className='h-4 w-3/4' />
+              <Skeleton className='h-3 w-1/2' />
             </div>
           </div>
         ))}
@@ -756,17 +821,16 @@ function AttachmentsPageSkeleton({ viewMode }: { viewMode: ViewMode }) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className='space-y-2'>
       {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className="flex items-center gap-4 rounded-lg border p-3">
-          <Skeleton className="h-16 w-16 shrink-0 rounded" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-5 w-48" />
-            <Skeleton className="h-4 w-32" />
+        <div key={i} className='flex items-center gap-4 rounded-lg border p-3'>
+          <Skeleton className='h-16 w-16 shrink-0 rounded' />
+          <div className='flex-1 space-y-2'>
+            <Skeleton className='h-5 w-48' />
+            <Skeleton className='h-4 w-32' />
           </div>
         </div>
       ))}
     </div>
   )
 }
-

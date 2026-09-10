@@ -2,14 +2,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
+import { z } from 'zod'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
-import { z } from 'zod'
 import { usePageTitle, Main } from '@mochi/web'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { PageEditor } from '@/features/wiki/page-editor'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
-import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 
 const searchSchema = z.object({
   slug: z.string().optional(),
@@ -27,7 +26,8 @@ function NewPageRoute() {
   const navigate = useNavigate()
   const { wiki } = useWikiBaseURL()
   const homeSlug = wiki.home ?? 'home'
-  const goBackToWiki = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: homeSlug } })
+  const goBackToWiki = () =>
+    navigate({ to: '/$wikiId/$page', params: { wikiId, page: homeSlug } })
   const { slug } = Route.useSearch()
 
   return (

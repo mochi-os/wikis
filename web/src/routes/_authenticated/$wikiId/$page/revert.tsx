@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { Trans, useLingui } from '@lingui/react/macro'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { z } from 'zod'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { usePageTitle, Main } from '@mochi/web'
 import { RevertPage } from '@/features/wiki/revert-page'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
@@ -26,16 +25,21 @@ function RevertPageRoute() {
   const { version } = Route.useSearch()
   const slug = params.page ?? ''
   const navigate = useNavigate()
-  const goBackToPage = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
+  const goBackToPage = () =>
+    navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
   usePageTitle(t`Revert: ${slug}`)
-
 
   if (!version || version < 1) {
     return (
       <>
-        <WikiRouteHeader title={t`Revert: ${slug}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`Revert: ${slug}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
-          <div className="text-destructive"><Trans>Invalid version number</Trans></div>
+          <div className='text-destructive'>
+            <Trans>Invalid version number</Trans>
+          </div>
         </Main>
       </>
     )
@@ -43,7 +47,10 @@ function RevertPageRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={t`Revert: ${slug}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+      <WikiRouteHeader
+        title={t`Revert: ${slug}`}
+        back={{ label: t`Back to page`, onFallback: goBackToPage }}
+      />
       <Main>
         <RevertPage slug={slug} version={version} wikiId={wikiId} />
       </Main>

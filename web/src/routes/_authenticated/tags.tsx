@@ -2,14 +2,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
-import { useTags } from '@/hooks/use-wiki'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
+import { isEntityContext } from '@/api/request'
+import { useTags } from '@/hooks/use-wiki'
 import { TagsList, TagsListSkeleton } from '@/features/wiki/tags-list'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
-import { isEntityContext } from '@/api/request'
 
 export const Route = createFileRoute('/_authenticated/tags')({
   // This route serves entity routing only ({entity}/tags): its fetch resolves
@@ -31,7 +30,10 @@ function TagsRoute() {
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={t`All tags`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+        <WikiRouteHeader
+          title={t`All tags`}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+        />
         <Main>
           <TagsListSkeleton />
         </Main>
@@ -42,9 +44,12 @@ function TagsRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={t`All tags`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+        <WikiRouteHeader
+          title={t`All tags`}
+          back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+        />
         <Main>
-          <GeneralError error={error} minimal mode="inline" reset={refetch} />
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
         </Main>
       </>
     )
@@ -52,7 +57,10 @@ function TagsRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={t`All tags`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+      <WikiRouteHeader
+        title={t`All tags`}
+        back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+      />
       <Main>
         <TagsList tags={data?.tags ?? []} />
       </Main>

@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { Navigate, useNavigate } from '@tanstack/react-router'
-import { Trans, useLingui } from '@lingui/react/macro'
 import { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Navigate, useNavigate } from '@tanstack/react-router'
+import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
+import { Trans, useLingui } from '@lingui/react/macro'
 import {
   usePageTitle,
   requestHelpers,
@@ -16,20 +16,22 @@ import {
   toastAction,
   getErrorMessage,
 } from '@mochi/web'
+import endpoints from '@/api/endpoints'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
+import { useRssCopy } from '@/hooks/use-rss-copy'
+import { setLastLocation } from '@/hooks/use-wiki-storage'
+import { useWikiLinkDialog } from '@/components/link-dialog'
+import {
+  PageActionsMenu,
+  PageMissingMenu,
+} from '@/features/wiki/page-actions-menu'
+import { PageHeader } from '@/features/wiki/page-header'
 import {
   PageView,
   PageNotFound,
   PageViewSkeleton,
 } from '@/features/wiki/page-view'
-import { PageHeader } from '@/features/wiki/page-header'
-import { PageActionsMenu, PageMissingMenu } from '@/features/wiki/page-actions-menu'
-import { useRssCopy } from '@/hooks/use-rss-copy'
-import endpoints from '@/api/endpoints'
 import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
-import { useWikiLinkDialog } from '@/components/link-dialog'
-import { useWikiBaseURL } from '@/context/wiki-base-url-context'
-import { setLastLocation } from '@/hooks/use-wiki-storage'
-import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 interface WikiPageContentProps {
@@ -42,13 +44,19 @@ interface WikiPageContentProps {
 
 // Shared page content component used by both the $wikiId/$page route and
 // the $wikiId index route (for domain routing where $wikiId is a page slug).
-export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) {
+export function WikiPageContent({
+  wikiId,
+  slug,
+  domain,
+}: WikiPageContentProps) {
   const { t } = useLingui()
   const navigate = useNavigate()
   const goBackToWikis = () => navigate({ to: '/' })
   const { baseURL, wiki, permissions } = useWikiBaseURL()
   const backLabel = wiki.name ?? t`Back to wikis`
-  const { openLinkDialog, linkDialog } = useWikiLinkDialog(wiki.fingerprint ?? wiki.id)
+  const { openLinkDialog, linkDialog } = useWikiLinkDialog(
+    wiki.fingerprint ?? wiki.id
+  )
 
   // Can unsubscribe if viewing a subscribed wiki (has source)
   const canUnsubscribe = !!wiki.source
@@ -73,13 +81,20 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
   const shouldRedirect = !slug
 
   // Fetch page data using the wiki's base URL
-  const { data, isLoading, error: pageError, refetch } = useQuery({
+  const {
+    data,
+    isLoading,
+    error: pageError,
+    refetch,
+  } = useQuery({
     // Keyed on the base URL, which is the prefix invalidatePage invalidates.
     // Keying on the fingerprint meant no page mutation ever matched, so tags
     // and the comment count stayed stale until a refocus or a navigation.
     queryKey: ['wiki', baseURL, 'page', slug],
     queryFn: () =>
-      requestHelpers.get<PageResponse | PageNotFoundResponse>(`${baseURL}${endpoints.wiki.page(slug)}`),
+      requestHelpers.get<PageResponse | PageNotFoundResponse>(
+        `${baseURL}${endpoints.wiki.page(slug)}`
+      ),
     enabled: !shouldRedirect,
   })
 
@@ -87,11 +102,13 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
   const isValidResponse = data && typeof data === 'object'
   const pageTitle = shouldRedirect
     ? (wiki.name ?? t`Wiki`)
-    : isValidResponse && 'page' in data && typeof data.page === 'object' && data.page?.title
+    : isValidResponse &&
+        'page' in data &&
+        typeof data.page === 'object' &&
+        data.page?.title
       ? data.page.title
       : slug
   usePageTitle(pageTitle)
-
 
   // Store last visited location (prefer fingerprint for shorter URLs)
   useEffect(() => {
@@ -109,9 +126,17 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
   useEffect(() => {
     if (shouldRedirect || !canonical || canonical === slug) return
     if (domain) {
-      void navigate({ to: '/$wikiId', params: { wikiId: canonical }, replace: true })
+      void navigate({
+        to: '/$wikiId',
+        params: { wikiId: canonical },
+        replace: true,
+      })
     } else {
-      void navigate({ to: '/$wikiId/$page', params: { wikiId, page: canonical }, replace: true })
+      void navigate({
+        to: '/$wikiId/$page',
+        params: { wikiId, page: canonical },
+        replace: true,
+      })
     }
   }, [shouldRedirect, canonical, slug, wikiId, domain, navigate])
 
@@ -122,13 +147,16 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
   const rss = useRssCopy(wikiId)
 
   if (shouldRedirect) {
-    return <Navigate to="/$wikiId" params={{ wikiId }} />
+    return <Navigate to='/$wikiId' params={{ wikiId }} />
   }
 
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: backLabel, onFallback: goBackToWikis }} />
+        <WikiRouteHeader
+          title={pageTitle}
+          back={{ label: backLabel, onFallback: goBackToWikis }}
+        />
         <Main>
           <PageViewSkeleton />
         </Main>
@@ -139,9 +167,17 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
   if (pageError) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: backLabel, onFallback: goBackToWikis }} />
+        <WikiRouteHeader
+          title={pageTitle}
+          back={{ label: backLabel, onFallback: goBackToWikis }}
+        />
         <Main>
-          <GeneralError error={pageError} minimal mode="inline" reset={refetch} />
+          <GeneralError
+            error={pageError}
+            minimal
+            mode='inline'
+            reset={refetch}
+          />
         </Main>
       </>
     )
@@ -151,12 +187,20 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
   if (data && !isValidResponse) {
     return (
       <>
-        <WikiRouteHeader title={pageTitle} back={{ label: backLabel, onFallback: goBackToWikis }} />
+        <WikiRouteHeader
+          title={pageTitle}
+          back={{ label: backLabel, onFallback: goBackToWikis }}
+        />
         <Main>
-          <div className="text-destructive">
-            <p><Trans>Error: Received invalid response from server.</Trans></p>
-            <p className="text-muted-foreground mt-2 text-sm">
-              <Trans>Request URL: {baseURL}{slug}</Trans>
+          <div className='text-destructive'>
+            <p>
+              <Trans>Error: Received invalid response from server.</Trans>
+            </p>
+            <p className='text-muted-foreground mt-2 text-sm'>
+              <Trans>
+                Request URL: {baseURL}
+                {slug}
+              </Trans>
             </p>
           </div>
         </Main>
@@ -167,7 +211,12 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
   // Check if page was not found
   if (isValidResponse && 'error' in data && data.error === 'not_found') {
     const notFoundMenu = (
-      <PageMissingMenu slug={slug} wiki={wikiId} permissions={permissions} onLink={() => void openLinkDialog()} />
+      <PageMissingMenu
+        slug={slug}
+        wiki={wikiId}
+        permissions={permissions}
+        onLink={() => void openLinkDialog()}
+      />
     )
 
     return (
@@ -187,7 +236,8 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
 
   // Page found
   if (isValidResponse && 'page' in data && typeof data.page === 'object') {
-    const commentCount = isValidResponse && 'comments' in data ? (data.comments?.count ?? 0) : 0
+    const commentCount =
+      isValidResponse && 'comments' in data ? (data.comments?.count ?? 0) : 0
 
     const actionsMenu = (
       <PageActionsMenu
@@ -212,8 +262,12 @@ export function WikiPageContent({ wikiId, slug, domain }: WikiPageContentProps) 
           menuAction={actionsMenu}
           back={{ label: backLabel, onFallback: goBackToWikis }}
         />
-        <Main className="pt-2">
-          <PageView page={data.page} missingLinks={'links' in data ? data.links?.missing : undefined} wikiId={wikiId} />
+        <Main className='pt-2'>
+          <PageView
+            page={data.page}
+            missingLinks={'links' in data ? data.links?.missing : undefined}
+            wikiId={wikiId}
+          />
         </Main>
         <ConfirmDialog
           open={unsubscribeConfirmOpen}

@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { AxiosProgressEvent } from 'axios'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type {
   PageResponse,
   PageNotFoundResponse,
@@ -35,8 +34,15 @@ import type {
   AttachmentUpdateResponse,
   InfoResponse,
 } from '@/types/wiki'
+import {
+  requestHelpers,
+  MUTATION_SKIPPED,
+  isMutationSkipped,
+  textUnchanged,
+  useUploadProgress,
+  type MutationFnResult,
+} from '@mochi/web'
 import endpoints from '@/api/endpoints'
-import { requestHelpers, MUTATION_SKIPPED, isMutationSkipped, textUnchanged, useUploadProgress, type MutationFnResult } from '@mochi/web'
 import { wikisRequest } from '@/api/request'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 
@@ -56,7 +62,7 @@ function invalidatePage(
 // endpoint is returned as-is and resolved by getApiBasepath().
 export function useEntityEndpoint() {
   const baseURL = useWikiBaseURLOptional()?.baseURL
-  return (endpoint: string) => baseURL ? `${baseURL}${endpoint}` : endpoint
+  return (endpoint: string) => (baseURL ? `${baseURL}${endpoint}` : endpoint)
 }
 
 // Every query key carries the wiki, or React Query answers a second wiki's
@@ -110,7 +116,10 @@ export function usePage(slug: string) {
   })
 }
 
-export function usePageHistory(slug: string, params?: { limit?: number; offset?: number }) {
+export function usePageHistory(
+  slug: string,
+  params?: { limit?: number; offset?: number }
+) {
   const e = useEntityEndpoint()
   const scope = useWikiScope()
   const limit = params?.limit ?? 50
@@ -125,7 +134,11 @@ export function usePageHistory(slug: string, params?: { limit?: number; offset?:
   })
 }
 
-export function usePageRevision(slug: string, version: number, opts?: { enabled?: boolean }) {
+export function usePageRevision(
+  slug: string,
+  version: number,
+  opts?: { enabled?: boolean }
+) {
   const e = useEntityEndpoint()
   const scope = useWikiScope()
   return useQuery({
@@ -216,7 +229,9 @@ export function useDeletePage() {
   const scope = useWikiScope()
   return useMutation({
     mutationFn: (slug: string) =>
-      requestHelpers.post<PageDeleteResponse>(e(endpoints.wiki.pageDelete(slug))),
+      requestHelpers.post<PageDeleteResponse>(
+        e(endpoints.wiki.pageDelete(slug))
+      ),
     onSuccess: () => {
       invalidatePage(queryClient, scope)
       queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'tags'] })
@@ -291,7 +306,6 @@ export function useChanges(params?: { limit?: number; offset?: number }) {
   })
 }
 
-
 export function useAddTag() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
@@ -364,7 +378,10 @@ export function useSetWikiSetting() {
   const scope = useWikiScope()
   return useMutation({
     mutationFn: (data: { name: string; value: string }) =>
-      requestHelpers.post<SettingsSetResponse>(e(endpoints.wiki.settingsSet), data),
+      requestHelpers.post<SettingsSetResponse>(
+        e(endpoints.wiki.settingsSet),
+        data
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'settings'] })
       // Also invalidate info since home page setting affects sidebar URLs
@@ -431,7 +448,10 @@ export function useSetRedirect() {
   const scope = useWikiScope()
   return useMutation({
     mutationFn: (data: { source: string; target: string }) =>
-      requestHelpers.post<RedirectSetResponse>(e(endpoints.wiki.redirectSet), data),
+      requestHelpers.post<RedirectSetResponse>(
+        e(endpoints.wiki.redirectSet),
+        data
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'redirects'] })
     },
@@ -444,7 +464,10 @@ export function useDeleteRedirect() {
   const scope = useWikiScope()
   return useMutation({
     mutationFn: (source: string) =>
-      requestHelpers.post<RedirectDeleteResponse>(e(endpoints.wiki.redirectDelete), { source }),
+      requestHelpers.post<RedirectDeleteResponse>(
+        e(endpoints.wiki.redirectDelete),
+        { source }
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'redirects'] })
     },
@@ -459,7 +482,9 @@ export function usePageComments(slug: string) {
   return useQuery({
     queryKey: ['wiki', scope, 'comments', slug],
     queryFn: () =>
-      requestHelpers.get<CommentsResponse>(e(endpoints.wiki.pageComments(slug))),
+      requestHelpers.get<CommentsResponse>(
+        e(endpoints.wiki.pageComments(slug))
+      ),
     enabled: !!slug,
   })
 }
@@ -470,7 +495,12 @@ export function useCreateComment() {
   const { progress, upload } = useUploadProgress()
   const scope = useWikiScope()
   const mutation = useMutation({
-    mutationFn: (data: { slug: string; body: string; parent?: string; files?: FileList | File[] }) => {
+    mutationFn: (data: {
+      slug: string
+      body: string
+      parent?: string
+      files?: FileList | File[]
+    }) => {
       const formData = new FormData()
       formData.append('body', data.body)
       if (data.parent) formData.append('parent', data.parent)
@@ -492,7 +522,9 @@ export function useCreateComment() {
         : post()
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'comments', variables.slug] })
+      queryClient.invalidateQueries({
+        queryKey: ['wiki', scope, 'comments', variables.slug],
+      })
       // Update comment count in page data
       invalidatePage(queryClient, scope)
     },
@@ -528,7 +560,9 @@ export function useEditComment() {
     },
     onSuccess: (result, variables) => {
       if (isMutationSkipped(result)) return
-      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'comments', variables.slug] })
+      queryClient.invalidateQueries({
+        queryKey: ['wiki', scope, 'comments', variables.slug],
+      })
     },
   })
 }
@@ -544,7 +578,9 @@ export function useDeleteComment() {
         { id: data.id }
       ),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'comments', variables.slug] })
+      queryClient.invalidateQueries({
+        queryKey: ['wiki', scope, 'comments', variables.slug],
+      })
       invalidatePage(queryClient, scope)
     },
   })
@@ -590,7 +626,9 @@ export function useUploadAttachment() {
       )
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'attachments'] })
+      queryClient.invalidateQueries({
+        queryKey: ['wiki', scope, 'attachments'],
+      })
     },
   })
   return { ...mutation, progress }
@@ -607,7 +645,9 @@ export function useUpdateAttachment() {
         { id, caption }
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'attachments'] })
+      queryClient.invalidateQueries({
+        queryKey: ['wiki', scope, 'attachments'],
+      })
     },
   })
 }
@@ -624,7 +664,9 @@ export function useDeleteAttachment() {
       ),
     onMutate: async (id: string) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['wiki', scope, 'attachments'] })
+      await queryClient.cancelQueries({
+        queryKey: ['wiki', scope, 'attachments'],
+      })
 
       // Snapshot the previous value
       const previous = queryClient.getQueryData<AttachmentsResponse>([
@@ -648,19 +690,21 @@ export function useDeleteAttachment() {
     onError: (_err, _id, context) => {
       // Roll back on error
       if (context?.previous) {
-        queryClient.setQueryData(['wiki', scope, 'attachments'], context.previous)
+        queryClient.setQueryData(
+          ['wiki', scope, 'attachments'],
+          context.previous
+        )
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'attachments'] })
+      queryClient.invalidateQueries({
+        queryKey: ['wiki', scope, 'attachments'],
+      })
     },
   })
 }
 
 // Access Control
-
-
-
 
 // User/Group search (via People app)
 
@@ -716,9 +760,6 @@ export interface Replica {
   synced: number
 }
 
-
-
-
 // Create a new wiki
 
 interface CreateWikiResponse {
@@ -751,7 +792,11 @@ export interface JoinWikiResponse {
 }
 
 type JoinWikiMutation = {
-  mutateAsync: (args: { target: string; server?: string; peer?: string }) => Promise<JoinWikiResponse>
+  mutateAsync: (args: {
+    target: string
+    server?: string
+    peer?: string
+  }) => Promise<JoinWikiResponse>
 }
 
 /** Join with server; on 502 retry without server (same as find page). */
@@ -759,7 +804,7 @@ export async function joinWikiWithRetry(
   joinWiki: JoinWikiMutation,
   target: string,
   server?: string,
-  peer?: string,
+  peer?: string
 ): Promise<JoinWikiResponse> {
   try {
     return await joinWiki.mutateAsync({ target, server, peer })
@@ -775,9 +820,21 @@ export async function joinWikiWithRetry(
 export function useJoinWiki() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ target, server, peer }: { target: string; server?: string; peer?: string }) =>
+    mutationFn: ({
+      target,
+      server,
+      peer,
+    }: {
+      target: string
+      server?: string
+      peer?: string
+    }) =>
       // Use wikisRequest to ensure class-level action is called even when in entity context
-      wikisRequest.post<JoinWikiResponse>(endpoints.wiki.join, { target, server, peer }),
+      wikisRequest.post<JoinWikiResponse>(endpoints.wiki.join, {
+        target,
+        server,
+        peer,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },
@@ -796,7 +853,10 @@ export function useUnsubscribeWiki() {
   const e = useEntityEndpoint()
   return useMutation({
     mutationFn: () =>
-      requestHelpers.post<UnsubscribeWikiResponse>(e(endpoints.wiki.unsubscribe), {}),
+      requestHelpers.post<UnsubscribeWikiResponse>(
+        e(endpoints.wiki.unsubscribe),
+        {}
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
     },

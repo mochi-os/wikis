@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useState } from 'react'
+import type { Redirect } from '@/types/wiki'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { ArrowRight, Loader2, Plus, Trash2, Link2 } from 'lucide-react'
 import {
   Button,
   DataChip,
@@ -46,9 +45,13 @@ import {
   TooltipContent,
   naturalCompare,
 } from '@mochi/web'
+import { ArrowRight, Loader2, Plus, Trash2, Link2 } from 'lucide-react'
+import {
+  useRedirects,
+  useSetRedirect,
+  useDeleteRedirect,
+} from '@/hooks/use-wiki'
 import { ValueLinkChip } from '@/components/value-link-chip'
-import { useRedirects, useSetRedirect, useDeleteRedirect } from '@/hooks/use-wiki'
-import type { Redirect } from '@/types/wiki'
 
 export function RedirectsPage() {
   const { t } = useLingui()
@@ -59,18 +62,18 @@ export function RedirectsPage() {
   }
 
   if (error) {
-    return (
-      <GeneralError error={error} minimal mode="inline" reset={refetch} />
-    )
+    return <GeneralError error={error} minimal mode='inline' reset={refetch} />
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Link2 className="h-6 w-6" />
-          <h1 className="text-2xl font-bold"><Trans>Redirects</Trans></h1>
+      <div className='flex items-center justify-between gap-4'>
+        <div className='flex items-center gap-3'>
+          <Link2 className='h-6 w-6' />
+          <h1 className='text-2xl font-bold'>
+            <Trans>Redirects</Trans>
+          </h1>
         </div>
         <AddRedirectDialog />
       </div>
@@ -83,23 +86,33 @@ export function RedirectsPage() {
           icon={Link2}
           title={t`No redirects configured`}
           description={t`Create a redirect to forward one URL to another.`}
-          className="py-8"
+          className='py-8'
         />
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead><Trans>Source</Trans></TableHead>
+              <TableHead>
+                <Trans>Source</Trans>
+              </TableHead>
               <TableHead></TableHead>
-              <TableHead><Trans>Target</Trans></TableHead>
-              <TableHead><Trans>Created</Trans></TableHead>
-              <TableHead className="w-20"><Trans>Actions</Trans></TableHead>
+              <TableHead>
+                <Trans>Target</Trans>
+              </TableHead>
+              <TableHead>
+                <Trans>Created</Trans>
+              </TableHead>
+              <TableHead className='w-20'>
+                <Trans>Actions</Trans>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {[...data.redirects].sort((a, b) => naturalCompare(a.source, b.source)).map((redirect) => (
-              <RedirectRow key={redirect.source} redirect={redirect} />
-            ))}
+            {[...data.redirects]
+              .sort((a, b) => naturalCompare(a.source, b.source))
+              .map((redirect) => (
+                <RedirectRow key={redirect.source} redirect={redirect} />
+              ))}
           </TableBody>
         </Table>
       )}
@@ -130,16 +143,13 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
         <ValueLinkChip value={redirect.source} />
       </TableCell>
       <TableCell>
-        <ArrowRight className="text-muted-foreground h-4 w-4 rtl:rotate-180" />
+        <ArrowRight className='text-muted-foreground h-4 w-4 rtl:rotate-180' />
       </TableCell>
       <TableCell>
         <ValueLinkChip value={redirect.target} />
       </TableCell>
-      <TableCell className="text-muted-foreground">
-        <DataChip
-          value={formatTimestamp(redirect.created)}
-          copyable={false}
-        />
+      <TableCell className='text-muted-foreground'>
+        <DataChip value={formatTimestamp(redirect.created)} copyable={false} />
       </TableCell>
       <TableCell>
         <AlertDialog>
@@ -147,12 +157,12 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
             <TooltipTrigger asChild>
               <AlertDialogTrigger asChild>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground"
+                  variant='ghost'
+                  size='icon'
+                  className='text-muted-foreground'
                   aria-label={t`Delete redirect ${redirect.source}`}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className='h-4 w-4' />
                 </Button>
               </AlertDialogTrigger>
             </TooltipTrigger>
@@ -160,20 +170,24 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
           </Tooltip>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle><Trans>Delete redirect?</Trans></AlertDialogTitle>
+              <AlertDialogTitle>
+                <Trans>Delete redirect?</Trans>
+              </AlertDialogTitle>
               <AlertDialogDescription>
                 <Trans>
                   This will remove the redirect from "{redirect.source}" to "
-                  {redirect.target}". Users visiting the source URL will no longer
-                  be redirected.
+                  {redirect.target}". Users visiting the source URL will no
+                  longer be redirected.
                 </Trans>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel><Trans>Cancel</Trans></AlertDialogCancel>
+              <AlertDialogCancel>
+                <Trans>Cancel</Trans>
+              </AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => void handleDelete()}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
               >
                 <Trans>Delete</Trans>
               </AlertDialogAction>
@@ -202,11 +216,15 @@ function AddRedirectDialog() {
 
     try {
       await toastAction(
-        setRedirect.mutateAsync({ source: source.trim(), target: target.trim() }),
+        setRedirect.mutateAsync({
+          source: source.trim(),
+          target: target.trim(),
+        }),
         {
           loading: t`Creating redirect...`,
           success: t`Redirect created`,
-          error: (error) => getErrorMessage(error, t`Failed to create redirect`),
+          error: (error) =>
+            getErrorMessage(error, t`Failed to create redirect`),
         }
       )
       setSource('')
@@ -221,29 +239,35 @@ function AddRedirectDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus className="me-2 h-4 w-4" />
+          <Plus className='me-2 h-4 w-4' />
           <Trans>Add redirect</Trans>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={(e) => void handleSubmit(e)}>
           <DialogHeader>
-            <DialogTitle><Trans>Create redirect</Trans></DialogTitle>
+            <DialogTitle>
+              <Trans>Create redirect</Trans>
+            </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="source"><Trans>Source URL</Trans></Label>
+          <div className='grid gap-4 py-4'>
+            <div className='space-y-2'>
+              <Label htmlFor='source'>
+                <Trans>Source URL</Trans>
+              </Label>
               <Input
-                id="source"
+                id='source'
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
                 placeholder={t`old-page-name`}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="target"><Trans>Target URL</Trans></Label>
+            <div className='space-y-2'>
+              <Label htmlFor='target'>
+                <Trans>Target URL</Trans>
+              </Label>
               <Input
-                id="target"
+                id='target'
                 value={target}
                 onChange={(e) => setTarget(e.target.value)}
                 placeholder={t`new-page-name`}
@@ -252,15 +276,23 @@ function AddRedirectDialog() {
           </div>
           <DialogFooter>
             <Button
-              type="button"
-              variant="outline"
+              type='button'
+              variant='outline'
               onClick={() => setOpen(false)}
             >
               <Trans>Cancel</Trans>
             </Button>
-            <Button type="submit" disabled={setRedirect.isPending}>
-              {setRedirect.isPending ? <Loader2 className="h-4 w-4 me-2 animate-spin" /> : <Plus className="h-4 w-4 me-2" />}
-              {setRedirect.isPending ? t`Creating...` : <Trans>Create redirect</Trans>}
+            <Button type='submit' disabled={setRedirect.isPending}>
+              {setRedirect.isPending ? (
+                <Loader2 className='me-2 h-4 w-4 animate-spin' />
+              ) : (
+                <Plus className='me-2 h-4 w-4' />
+              )}
+              {setRedirect.isPending ? (
+                t`Creating...`
+              ) : (
+                <Trans>Create redirect</Trans>
+              )}
             </Button>
           </DialogFooter>
         </form>
@@ -271,17 +303,17 @@ function AddRedirectDialog() {
 
 function RedirectsPageSkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-6 w-6" />
-          <Skeleton className="h-8 w-32" />
+    <div className='space-y-6'>
+      <div className='flex items-center justify-between gap-4'>
+        <div className='flex items-center gap-3'>
+          <Skeleton className='h-6 w-6' />
+          <Skeleton className='h-8 w-32' />
         </div>
-        <Skeleton className="h-9 w-32" />
+        <Skeleton className='h-9 w-32' />
       </div>
-      <Skeleton className="h-5 w-96" />
+      <Skeleton className='h-5 w-96' />
       <Separator />
-      <ListSkeleton variant="simple" height="h-12" count={3} />
+      <ListSkeleton variant='simple' height='h-12' count={3} />
     </div>
   )
 }

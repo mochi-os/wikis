@@ -2,20 +2,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useLingui } from '@lingui/react/macro'
 import { extractStatus, getErrorMessage } from '@mochi/web'
 
-export const ATTACHMENT_ACCEPT =
-  'image/*,.pdf,.doc,.docx,.txt,.md'
+export const ATTACHMENT_ACCEPT = 'image/*,.pdf,.doc,.docx,.txt,.md'
 
-const ATTACHMENT_EXTENSIONS = new Set([
-  '.pdf',
-  '.doc',
-  '.docx',
-  '.txt',
-  '.md',
-])
+const ATTACHMENT_EXTENSIONS = new Set(['.pdf', '.doc', '.docx', '.txt', '.md'])
 
 function isSupportedAttachmentFile(file: File): boolean {
   if (file.type.startsWith('image/')) {
@@ -44,7 +36,10 @@ export function useAttachmentUploadMessages() {
       return null
     }
 
-    const names = unsupported.slice(0, 3).map((file) => file.name).join(', ')
+    const names = unsupported
+      .slice(0, 3)
+      .map((file) => file.name)
+      .join(', ')
     return unsupported.length === 1
       ? t`Unsupported file type: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
       : t`Unsupported file types: ${names}. Supported files: images, PDF, DOC, DOCX, TXT, and MD.`
@@ -63,7 +58,9 @@ export function useAttachmentUploadMessages() {
     // "Network Error"; show the app's own translated fallback rather than
     // handing the reader an English string.
     const message = getErrorMessage(error, t`Failed to upload files`)
-    return !message || message === 'Network Error' ? t`Failed to upload files` : message
+    return !message || message === 'Network Error'
+      ? t`Failed to upload files`
+      : message
   }
 
   return { validate, describe }

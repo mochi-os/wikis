@@ -2,10 +2,20 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useCallback, useRef, useState } from 'react'
+import { t, plural } from '@lingui/core/macro'
+import {
+  EmptyState,
+  GeneralError,
+  Skeleton,
+  toast,
+  getErrorMessage,
+  textUnchanged,
+  findCommentTextInTree,
+  useDiscardGuard,
+  useAttachmentError,
+} from '@mochi/web'
 import { MessageSquare } from 'lucide-react'
-import { EmptyState, GeneralError, Skeleton, toast, getErrorMessage, textUnchanged, findCommentTextInTree, useDiscardGuard, useAttachmentError } from '@mochi/web'
 import {
   usePageComments,
   useCreateComment,
@@ -14,7 +24,6 @@ import {
 } from '@/hooks/use-wiki'
 import { CommentForm } from './comment-form'
 import { WikiCommentThread } from './wiki-comment-thread'
-import { t, plural } from '@lingui/core/macro'
 
 interface PageCommentsProps {
   slug: string
@@ -23,7 +32,12 @@ interface PageCommentsProps {
   canComment: boolean
 }
 
-export function PageComments({ slug, currentUserId, isOwner, canComment }: PageCommentsProps) {
+export function PageComments({
+  slug,
+  currentUserId,
+  isOwner,
+  canComment,
+}: PageCommentsProps) {
   const { data, isLoading, error, refetch } = usePageComments(slug)
   const createComment = useCreateComment()
   const editComment = useEditComment()
@@ -39,7 +53,11 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
     setReplyFileCount(0)
     const selected = window.getSelection()?.toString().trim()
     if (selected) {
-      const quoted = selected.split('\n').map((line) => `> ${line}`).join('\n') + '\n\n'
+      const quoted =
+        selected
+          .split('\n')
+          .map((line) => `> ${line}`)
+          .join('\n') + '\n\n'
       setReplyDraft(quoted)
     } else {
       setReplyDraft('')
@@ -136,15 +154,19 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
   }
 
   if (error) {
-    return <GeneralError error={error} minimal mode="inline" reset={refetch} />
+    return <GeneralError error={error} minimal mode='inline' reset={refetch} />
   }
 
   const comments = data?.comments ?? []
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       {canComment && (
-        <CommentForm onSubmit={handleCreate} placeholder={t`Write a comment...`} progress={createComment.progress} />
+        <CommentForm
+          onSubmit={handleCreate}
+          placeholder={t`Write a comment...`}
+          progress={createComment.progress}
+        />
       )}
       {comments.length === 0 ? (
         <EmptyState
@@ -153,7 +175,7 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
           description={t`Be the first to comment on this page.`}
         />
       ) : (
-        <div className="space-y-1">
+        <div className='space-y-1'>
           {comments.map((comment) => (
             <WikiCommentThread
               key={comment.id}
@@ -176,7 +198,7 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
         </div>
       )}
       {data?.truncated && (
-        <p className="text-sm text-muted-foreground">
+        <p className='text-muted-foreground text-sm'>
           {plural(comments.length, {
             one: 'Showing the first # comment.',
             other: 'Showing the first # comments.',
@@ -190,11 +212,11 @@ export function PageComments({ slug, currentUserId, isOwner, canComment }: PageC
 
 function PageCommentsSkeleton() {
   return (
-    <div className="space-y-4">
-      <Skeleton className="h-20 w-full" />
-      <div className="space-y-3">
-        <Skeleton className="h-16 w-full" />
-        <Skeleton className="h-16 w-3/4" />
+    <div className='space-y-4'>
+      <Skeleton className='h-20 w-full' />
+      <div className='space-y-3'>
+        <Skeleton className='h-16 w-full' />
+        <Skeleton className='h-16 w-3/4' />
       </div>
     </div>
   )

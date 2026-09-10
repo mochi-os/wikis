@@ -63,10 +63,14 @@ const endpoints = {
     unsubscribe: 'unsubscribe',
     share: (wiki: string) => `${wiki}/-/share`,
     // Comments
-    pageComments: (slug: string) => `pages/${encodeURIComponent(slug)}/comments`,
-    commentCreate: (slug: string) => `pages/${encodeURIComponent(slug)}/comment/create`,
-    commentEdit: (slug: string) => `pages/${encodeURIComponent(slug)}/comment/edit`,
-    commentDelete: (slug: string) => `pages/${encodeURIComponent(slug)}/comment/delete`,
+    pageComments: (slug: string) =>
+      `pages/${encodeURIComponent(slug)}/comments`,
+    commentCreate: (slug: string) =>
+      `pages/${encodeURIComponent(slug)}/comment/create`,
+    commentEdit: (slug: string) =>
+      `pages/${encodeURIComponent(slug)}/comment/edit`,
+    commentDelete: (slug: string) =>
+      `pages/${encodeURIComponent(slug)}/comment/delete`,
     // Attachments
     attachments: 'attachment/list',
     attachmentUpload: 'attachment/upload',
@@ -74,7 +78,5 @@ const endpoints = {
     attachmentDelete: 'attachment/delete',
   },
 } as const
-
-
 
 export default endpoints

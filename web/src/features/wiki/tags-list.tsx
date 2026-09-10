@@ -2,13 +2,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { Link } from '@tanstack/react-router'
-import { Trans } from '@lingui/react/macro'
-import { Tags, Tag as TagIcon } from 'lucide-react'
-import { Badge, Separator, Skeleton, EmptyState } from '@mochi/web'
 import type { Tag } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
+import { Trans } from '@lingui/react/macro'
+import { Badge, Separator, Skeleton, EmptyState } from '@mochi/web'
+import { Tags, Tag as TagIcon } from 'lucide-react'
 
 interface TagsListProps {
   tags: Tag[]
@@ -18,22 +17,26 @@ interface TagsListProps {
 
 export function TagsList({ tags, wikiId }: TagsListProps) {
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <Tags className="h-6 w-6" />
-        <h1 className="text-2xl font-bold"><Trans>All tags</Trans></h1>
+      <div className='flex items-center gap-3'>
+        <Tags className='h-6 w-6' />
+        <h1 className='text-2xl font-bold'>
+          <Trans>All tags</Trans>
+        </h1>
       </div>
 
-      <p className="text-muted-foreground">
-        <Trans>Browse pages by tag. Click a tag to see all pages with that tag.</Trans>
+      <p className='text-muted-foreground'>
+        <Trans>
+          Browse pages by tag. Click a tag to see all pages with that tag.
+        </Trans>
       </p>
 
       <Separator />
 
       {/* Tags grid */}
       {tags.length === 0 ? (
-        <div className="py-12">
+        <div className='py-12'>
           <EmptyState
             icon={Tags}
             title={t`No tags found`}
@@ -41,21 +44,22 @@ export function TagsList({ tags, wikiId }: TagsListProps) {
           />
         </div>
       ) : (
-        <div className="flex flex-wrap gap-3">
+        <div className='flex flex-wrap gap-3'>
           {tags.map((tag) => (
-            <Link preload={false}
+            <Link
+              preload={false}
               key={tag.tag}
               to={wikiId ? '/$wikiId/tag/$tag' : '/tag/$tag'}
               params={wikiId ? { wikiId, tag: tag.tag } : { tag: tag.tag }}
-              className="group"
+              className='group'
             >
               <Badge
-                variant="secondary"
-                className="cursor-pointer px-3 py-1.5 text-sm transition-colors group-hover:bg-primary group-hover:text-primary-foreground"
+                variant='secondary'
+                className='group-hover:bg-primary group-hover:text-primary-foreground cursor-pointer px-3 py-1.5 text-sm transition-colors'
               >
-                <TagIcon className="me-1.5 h-3.5 w-3.5" />
+                <TagIcon className='me-1.5 h-3.5 w-3.5' />
                 {tag.tag}
-                <span className="bg-background/20 ms-2 rounded-full px-1.5 py-0.5 text-xs">
+                <span className='bg-background/20 ms-2 rounded-full px-1.5 py-0.5 text-xs'>
                   {tag.count}
                 </span>
               </Badge>
@@ -69,16 +73,16 @@ export function TagsList({ tags, wikiId }: TagsListProps) {
 
 export function TagsListSkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Skeleton className="h-6 w-6" />
-        <Skeleton className="h-8 w-32" />
+    <div className='space-y-6'>
+      <div className='flex items-center gap-3'>
+        <Skeleton className='h-6 w-6' />
+        <Skeleton className='h-8 w-32' />
       </div>
-      <Skeleton className="h-5 w-96" />
+      <Skeleton className='h-5 w-96' />
       <Separator />
-      <div className="flex flex-wrap gap-3">
+      <div className='flex flex-wrap gap-3'>
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <Skeleton key={i} className="h-8 w-24" />
+          <Skeleton key={i} className='h-8 w-24' />
         ))}
       </div>
     </div>

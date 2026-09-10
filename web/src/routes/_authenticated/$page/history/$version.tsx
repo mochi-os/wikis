@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { usePageRevision } from '@/hooks/use-wiki'
+import { useLingui } from '@lingui/react/macro'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
-import { RevisionView, RevisionViewSkeleton } from '@/features/wiki/revision-view'
+import { usePageRevision } from '@/hooks/use-wiki'
+import {
+  RevisionView,
+  RevisionViewSkeleton,
+} from '@/features/wiki/revision-view'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/history/$version')({
@@ -23,13 +25,15 @@ function RevisionViewRoute() {
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   usePageTitle(t`${slug} version ${version}`)
 
-
   const { data, isLoading, error, refetch } = usePageRevision(slug, version)
 
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={t`${slug} version ${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`${slug} version ${version}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
           <RevisionViewSkeleton />
         </Main>
@@ -40,9 +44,12 @@ function RevisionViewRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={t`${slug} version ${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`${slug} version ${version}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
-          <GeneralError error={error} minimal mode="inline" reset={refetch} />
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
         </Main>
       </>
     )
@@ -51,7 +58,10 @@ function RevisionViewRoute() {
   if (data) {
     return (
       <>
-        <WikiRouteHeader title={t`${slug} version ${version}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`${slug} version ${version}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
           <RevisionView
             slug={slug}

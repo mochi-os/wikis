@@ -2,11 +2,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { useLingui } from '@lingui/react/macro'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { usePage } from '@/hooks/use-wiki'
+import { useLingui } from '@lingui/react/macro'
 import { GeneralError, usePageTitle, Main, useAuthStore } from '@mochi/web'
+import { usePage } from '@/hooks/use-wiki'
 import { PageEditor, PageEditorSkeleton } from '@/features/wiki/page-editor'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
@@ -30,14 +29,19 @@ function WikiPageEditRoute() {
   const navigate = useNavigate()
   const goBackToPage = () => navigate({ to: '/$page', params: { page: slug } })
   const { data, isLoading, error, refetch } = usePage(slug)
-  const pageTitle = data && 'page' in data && typeof data.page === 'object' && data.page?.title ? data.page.title : slug
+  const pageTitle =
+    data && 'page' in data && typeof data.page === 'object' && data.page?.title
+      ? data.page.title
+      : slug
   usePageTitle(t`Edit: ${pageTitle}`)
-
 
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader title={t`Edit: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`Edit: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
           <PageEditorSkeleton />
         </Main>
@@ -48,9 +52,12 @@ function WikiPageEditRoute() {
   if (error) {
     return (
       <>
-        <WikiRouteHeader title={t`Edit: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`Edit: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
-          <GeneralError error={error} minimal mode="inline" reset={refetch} />
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
         </Main>
       </>
     )
@@ -60,7 +67,10 @@ function WikiPageEditRoute() {
   if (data && 'error' in data && data.error === 'not_found') {
     return (
       <>
-        <WikiRouteHeader title={t`Edit: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`Edit: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
           <PageEditor slug={slug} isNew />
         </Main>
@@ -72,7 +82,10 @@ function WikiPageEditRoute() {
   if (data && 'page' in data && typeof data.page === 'object') {
     return (
       <>
-        <WikiRouteHeader title={t`Edit: ${pageTitle}`} back={{ label: t`Back to page`, onFallback: goBackToPage }} />
+        <WikiRouteHeader
+          title={t`Edit: ${pageTitle}`}
+          back={{ label: t`Back to page`, onFallback: goBackToPage }}
+        />
         <Main>
           <PageEditor page={data.page} slug={slug} />
         </Main>

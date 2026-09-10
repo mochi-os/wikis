@@ -2,15 +2,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
-import { useChanges } from '@/hooks/use-wiki'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
+import { useWikiBaseURL } from '@/context/wiki-base-url-context'
+import { useChanges } from '@/hooks/use-wiki'
 import { ChangesList, ChangesListSkeleton } from '@/features/wiki/changes-list'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
-import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 
 const LIMIT = 50
 
@@ -23,17 +22,32 @@ function WikiChangesRoute() {
   const navigate = Route.useNavigate()
   const { wikiId } = Route.useParams()
   const { wiki } = useWikiBaseURL()
-  const goBack = () => navigate({ to: '/$wikiId/$page', params: { wikiId, page: wiki.home ?? 'home' } })
+  const goBack = () =>
+    navigate({
+      to: '/$wikiId/$page',
+      params: { wikiId, page: wiki.home ?? 'home' },
+    })
   usePageTitle(t`Recent changes`)
 
   const [offset, setOffset] = useState(0)
-  const [allChanges, setAllChanges] = useState<import('@/types/wiki').Change[]>([])
+  const [allChanges, setAllChanges] = useState<import('@/types/wiki').Change[]>(
+    []
+  )
 
-  const { data, isLoading, error, refetch } = useChanges({ limit: LIMIT, offset })
+  const { data, isLoading, error, refetch } = useChanges({
+    limit: LIMIT,
+    offset,
+  })
 
   // Accumulate pages as user loads more
   const currentPage = data?.changes ?? []
-  const changes = offset === 0 ? currentPage : [...allChanges, ...currentPage.filter(c => !allChanges.some(a => a.id === c.id))]
+  const changes =
+    offset === 0
+      ? currentPage
+      : [
+          ...allChanges,
+          ...currentPage.filter((c) => !allChanges.some((a) => a.id === c.id)),
+        ]
 
   const handleLoadMore = () => {
     setAllChanges(changes)
@@ -43,7 +57,10 @@ function WikiChangesRoute() {
   if (isLoading && offset === 0) {
     return (
       <>
-        <WikiRouteHeader title={t`Recent changes`} back={{ label: wiki.name ?? t`Back`, onFallback: goBack }} />
+        <WikiRouteHeader
+          title={t`Recent changes`}
+          back={{ label: wiki.name ?? t`Back`, onFallback: goBack }}
+        />
         <Main>
           <ChangesListSkeleton />
         </Main>
@@ -54,9 +71,12 @@ function WikiChangesRoute() {
   if (error && offset === 0) {
     return (
       <>
-        <WikiRouteHeader title={t`Recent changes`} back={{ label: wiki.name ?? t`Back`, onFallback: goBack }} />
+        <WikiRouteHeader
+          title={t`Recent changes`}
+          back={{ label: wiki.name ?? t`Back`, onFallback: goBack }}
+        />
         <Main>
-          <GeneralError error={error} minimal mode="inline" reset={refetch} />
+          <GeneralError error={error} minimal mode='inline' reset={refetch} />
         </Main>
       </>
     )
@@ -64,7 +84,10 @@ function WikiChangesRoute() {
 
   return (
     <>
-      <WikiRouteHeader title={t`Recent changes`} back={{ label: wiki.name ?? t`Back`, onFallback: goBack }} />
+      <WikiRouteHeader
+        title={t`Recent changes`}
+        back={{ label: wiki.name ?? t`Back`, onFallback: goBack }}
+      />
       <Main>
         <ChangesList
           changes={changes}

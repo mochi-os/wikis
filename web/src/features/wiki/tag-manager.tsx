@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useState } from 'react'
-import { Trans, useLingui } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
-import { Plus, X, Tag as TagIcon } from 'lucide-react'
+import { Trans, useLingui } from '@lingui/react/macro'
 import {
   Button,
   Input,
@@ -20,8 +18,9 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@mochi/web'
-import { useAddTag, useRemoveTag } from '@/hooks/use-wiki'
+import { Plus, X, Tag as TagIcon } from 'lucide-react'
 import { usePermissions } from '@/context/wiki-context'
+import { useAddTag, useRemoveTag } from '@/hooks/use-wiki'
 
 interface TagManagerProps {
   slug: string
@@ -85,25 +84,39 @@ export function TagManager({ slug, tags, wikiId }: TagManagerProps) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <TagIcon className="text-muted-foreground h-4 w-4" />
+    <div className='flex flex-wrap items-center gap-2'>
+      <TagIcon className='text-muted-foreground h-4 w-4' />
 
       {/* Empty state for read-only users */}
       {tags.length === 0 && !canEdit && (
-        <span className="text-muted-foreground text-sm">
+        <span className='text-muted-foreground text-sm'>
           <Trans>No tags</Trans>
         </span>
       )}
 
       {/* Existing tags */}
       {tags.map((tag) => (
-        <Badge key={tag} variant="secondary" className={canEdit ? "group gap-1 pe-1" : ""}>
+        <Badge
+          key={tag}
+          variant='secondary'
+          className={canEdit ? 'group gap-1 pe-1' : ''}
+        >
           {wikiId ? (
-            <Link preload={false} to="/$wikiId/tag/$tag" params={{ wikiId, tag }} className="hover:underline">
+            <Link
+              preload={false}
+              to='/$wikiId/tag/$tag'
+              params={{ wikiId, tag }}
+              className='hover:underline'
+            >
               {tag}
             </Link>
           ) : (
-            <Link preload={false} to="/tag/$tag" params={{ tag }} className="hover:underline">
+            <Link
+              preload={false}
+              to='/tag/$tag'
+              params={{ tag }}
+              className='hover:underline'
+            >
               {tag}
             </Link>
           )}
@@ -112,11 +125,11 @@ export function TagManager({ slug, tags, wikiId }: TagManagerProps) {
               <TooltipTrigger asChild>
                 <button
                   onClick={() => handleRemoveTag(tag)}
-                  className="text-muted-foreground hover:text-foreground ms-1 rounded-full p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
+                  className='text-muted-foreground hover:text-foreground ms-1 rounded-full p-0.5 opacity-0 transition-opacity group-hover:opacity-100'
                   disabled={removeTag.isPending}
                   aria-label={t`Remove`}
                 >
-                  <X className="h-3 w-3" />
+                  <X className='h-3 w-3' />
                 </button>
               </TooltipTrigger>
               <TooltipContent>{t`Remove`}</TooltipContent>
@@ -131,15 +144,18 @@ export function TagManager({ slug, tags, wikiId }: TagManagerProps) {
           <Tooltip>
             <TooltipTrigger asChild>
               <PopoverTrigger asChild>
-                <button className="text-muted-foreground hover:text-foreground rounded p-0.5 transition-colors" aria-label={t`Add`}>
-                  <Plus className="h-4 w-4" />
+                <button
+                  className='text-muted-foreground hover:text-foreground rounded p-0.5 transition-colors'
+                  aria-label={t`Add`}
+                >
+                  <Plus className='h-4 w-4' />
                 </button>
               </PopoverTrigger>
             </TooltipTrigger>
             <TooltipContent>{t`Add`}</TooltipContent>
           </Tooltip>
-          <PopoverContent className="w-64 p-3" align="start">
-            <div className="space-y-2">
+          <PopoverContent className='w-64 p-3' align='start'>
+            <div className='space-y-2'>
               <Input
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
@@ -147,20 +163,20 @@ export function TagManager({ slug, tags, wikiId }: TagManagerProps) {
                 placeholder={t`Enter tag name`}
                 autoFocus
               />
-              <div className="flex justify-end gap-2">
+              <div className='flex justify-end gap-2'>
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant='outline'
+                  size='sm'
                   onClick={() => setIsOpen(false)}
                 >
                   <Trans>Cancel</Trans>
                 </Button>
                 <Button
-                  size="sm"
+                  size='sm'
                   onClick={handleAddTag}
                   disabled={!newTag.trim() || addTag.isPending}
                 >
-                  <Plus className="size-3.5" />
+                  <Plus className='size-3.5' />
                   {addTag.isPending ? t`Adding...` : t`Add`}
                 </Button>
               </div>

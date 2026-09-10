@@ -2,20 +2,27 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { usePageTitle, Main } from '@mochi/web'
-import { WikiSettings, type WikiSettingsTabId } from '@/features/wiki/wiki-settings'
+import { isEntityContext } from '@/api/request'
 import { WikiProvider, useWikiContext } from '@/context/wiki-context'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
-import { isEntityContext } from '@/api/request'
+import {
+  WikiSettings,
+  type WikiSettingsTabId,
+} from '@/features/wiki/wiki-settings'
 
 type SettingsSearch = {
   tab?: WikiSettingsTabId
 }
 
-const validTabs: WikiSettingsTabId[] = ['settings', 'access', 'redirects', 'replicas']
+const validTabs: WikiSettingsTabId[] = [
+  'settings',
+  'access',
+  'redirects',
+  'replicas',
+]
 
 export const Route = createFileRoute('/_authenticated/settings')({
   // Entity routing only ({entity}/settings): there is no class-level action,
@@ -25,7 +32,9 @@ export const Route = createFileRoute('/_authenticated/settings')({
     if (!isEntityContext()) throw redirect({ to: '/' })
   },
   validateSearch: (search: Record<string, unknown>): SettingsSearch => ({
-    tab: validTabs.includes(search.tab as WikiSettingsTabId) ? (search.tab as WikiSettingsTabId) : undefined,
+    tab: validTabs.includes(search.tab as WikiSettingsTabId)
+      ? (search.tab as WikiSettingsTabId)
+      : undefined,
   }),
   component: WikiSettingsRoute,
 })
@@ -45,10 +54,16 @@ function WikiSettingsRoute() {
   usePageTitle(t`${wikiName} settings`)
   return (
     <>
-      <WikiRouteHeader title={t`${wikiName} settings`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+      <WikiRouteHeader
+        title={t`${wikiName} settings`}
+        back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+      />
       <Main>
         <WikiProvider>
-          <WikiSettings activeTab={tab ?? 'settings'} onTabChange={setActiveTab} />
+          <WikiSettings
+            activeTab={tab ?? 'settings'}
+            onTabChange={setActiveTab}
+          />
         </WikiProvider>
       </Main>
     </>

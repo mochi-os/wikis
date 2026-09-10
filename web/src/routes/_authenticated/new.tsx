@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { createFileRoute } from '@tanstack/react-router'
-import { useLingui } from '@lingui/react/macro'
 import { z } from 'zod'
+import { createFileRoute } from '@tanstack/react-router'
+import type { WikiPermissions, WikiInfo, InfoResponse } from '@/types/wiki'
+import { useLingui } from '@lingui/react/macro'
 import {
   usePageTitle,
   Main,
@@ -13,11 +13,10 @@ import {
   getApiBasepath,
   getEntityFingerprint,
 } from '@mochi/web'
-import { PageEditor } from '@/features/wiki/page-editor'
-import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { wikiInfoKey } from '@/hooks/use-wiki'
-import type { WikiPermissions, WikiInfo, InfoResponse } from '@/types/wiki'
+import { PageEditor } from '@/features/wiki/page-editor'
+import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 const searchSchema = z.object({
   slug: z.string().optional(),
@@ -38,8 +37,19 @@ export const Route = createFileRoute('/_authenticated/new')({
   loader: async ({ context }): Promise<NewRouteData> => {
     const baseURL = getApiBasepath()
     const fingerprint = getEntityFingerprint() ?? ''
-    const fallback: WikiInfo = { id: fingerprint, name: fingerprint, home: 'home', fingerprint }
-    const none: WikiPermissions = { view: false, edit: false, delete: false, manage: false, owner: false }
+    const fallback: WikiInfo = {
+      id: fingerprint,
+      name: fingerprint,
+      home: 'home',
+      fingerprint,
+    }
+    const none: WikiPermissions = {
+      view: false,
+      edit: false,
+      delete: false,
+      manage: false,
+      owner: false,
+    }
 
     try {
       const info = await requestHelpers.get<InfoResponse>(`${baseURL}info`)
@@ -67,8 +77,15 @@ function NewPageRoute() {
   const data = Route.useLoaderData()
 
   return (
-    <WikiBaseURLProvider baseURL={data.baseURL} wiki={data.wiki} permissions={data.permissions}>
-      <WikiRouteHeader title={t`New page`} back={{ label: t`Back to wikis`, onFallback: goBackToWikis }} />
+    <WikiBaseURLProvider
+      baseURL={data.baseURL}
+      wiki={data.wiki}
+      permissions={data.permissions}
+    >
+      <WikiRouteHeader
+        title={t`New page`}
+        back={{ label: t`Back to wikis`, onFallback: goBackToWikis }}
+      />
       <Main>
         <PageEditor slug={slug ?? ''} isNew />
       </Main>

@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
-import { Trash2, ArrowLeft } from 'lucide-react'
-import { Trans, useLingui } from '@lingui/react/macro'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { Trans, useLingui } from '@lingui/react/macro'
 import {
   Button,
   Separator,
@@ -17,6 +15,7 @@ import {
   getErrorMessage,
   toast,
 } from '@mochi/web'
+import { Trash2, ArrowLeft } from 'lucide-react'
 import { useDeletePage } from '@/hooks/use-wiki'
 
 interface DeletePageProps {
@@ -26,7 +25,12 @@ interface DeletePageProps {
   homePage?: string
 }
 
-export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePageProps) {
+export function DeletePage({
+  wikiId,
+  slug,
+  title,
+  homePage = 'home',
+}: DeletePageProps) {
   const { t } = useLingui()
   const deletePage = useDeletePage()
   const navigate = useNavigate()
@@ -48,41 +52,45 @@ export function DeletePage({ wikiId, slug, title, homePage = 'home' }: DeletePag
   }
 
   return (
-    <div className="flex items-center justify-center py-12">
-      <Card className="w-full max-w-md">
+    <div className='flex items-center justify-center py-12'>
+      <Card className='w-full max-w-md'>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Trash2 className="h-5 w-5" />
+          <CardTitle className='flex items-center gap-2'>
+            <Trash2 className='h-5 w-5' />
             <Trans>Delete page</Trans>
           </CardTitle>
           <CardDescription>
             <Trans>
-              You are about to delete the page <strong>"{title}"</strong> ({slug}).
-              This action can be undone by restoring from history.
+              You are about to delete the page <strong>"{title}"</strong> (
+              {slug}). This action can be undone by restoring from history.
             </Trans>
           </CardDescription>
         </CardHeader>
         <Separator />
-        <CardFooter className="flex justify-between pt-4">
-          <Button variant="outline" asChild>
+        <CardFooter className='flex justify-between pt-4'>
+          <Button variant='outline' asChild>
             {wikiId ? (
-              <Link preload={false} to="/$wikiId/$page" params={{ wikiId, page: slug }}>
-                <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
+              <Link
+                preload={false}
+                to='/$wikiId/$page'
+                params={{ wikiId, page: slug }}
+              >
+                <ArrowLeft className='me-2 h-4 w-4 rtl:rotate-180' />
                 <Trans>Cancel</Trans>
               </Link>
             ) : (
-              <Link preload={false} to="/$page" params={{ page: slug }}>
-                <ArrowLeft className="me-2 h-4 w-4 rtl:rotate-180" />
+              <Link preload={false} to='/$page' params={{ page: slug }}>
+                <ArrowLeft className='me-2 h-4 w-4 rtl:rotate-180' />
                 <Trans>Cancel</Trans>
               </Link>
             )}
           </Button>
           <Button
-            variant="destructive"
+            variant='destructive'
             onClick={handleDelete}
             disabled={deletePage.isPending}
           >
-            <Trash2 className="me-2 h-4 w-4" />
+            <Trash2 className='me-2 h-4 w-4' />
             {deletePage.isPending ? t`Deleting...` : t`Delete`}
           </Button>
         </CardFooter>

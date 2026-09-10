@@ -2,12 +2,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { useCallback } from 'react'
 import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
-import { t } from '@lingui/core/macro'
-import { requestHelpers, GeneralError, getErrorMessage, isDomainEntityRouting } from '@mochi/web'
 import type { WikiPermissions, WikiInfo, InfoResponse } from '@/types/wiki'
+import { t } from '@lingui/core/macro'
+import {
+  requestHelpers,
+  GeneralError,
+  getErrorMessage,
+  isDomainEntityRouting,
+} from '@mochi/web'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { wikiInfoKey } from '@/hooks/use-wiki'
 
@@ -32,15 +36,15 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
     // Check for entity ID (9-char fingerprint or 50-51 char full ID) or domain entity routing.
     // When firstSegment === wikiId and it's not an entity ID, we're on a domain-routed page
     // where the segment is a page slug mismatched as $wikiId (shell iframe has no meta tags).
-    const ENTITY_ID_RE = /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
-    const isEntityContext = isDomainEntityRouting() ||
+    const ENTITY_ID_RE =
+      /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
+    const isEntityContext =
+      isDomainEntityRouting() ||
       ENTITY_ID_RE.test(firstSegment) ||
       (firstSegment === wikiId && !ENTITY_ID_RE.test(wikiId))
 
     // In entity/domain context, use /-/ prefix; in app context, include app path
-    const baseURL = isEntityContext
-      ? `/-/`
-      : `/${firstSegment}/${wikiId}/-/`
+    const baseURL = isEntityContext ? `/-/` : `/${firstSegment}/${wikiId}/-/`
 
     // Use absolute URL path since apiClient interceptor overwrites baseURL
     let info: InfoResponse | null = null
@@ -59,7 +63,13 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
       return {
         baseURL,
         wiki: { id: wikiId, name: wikiId, home: 'home', fingerprint: wikiId },
-        permissions: { view: false, edit: false, delete: false, manage: false, owner: false },
+        permissions: {
+          view: false,
+          edit: false,
+          delete: false,
+          manage: false,
+          owner: false,
+        },
         fingerprint: wikiId,
         infoError: infoError ?? t`Wiki not found`,
       }
@@ -68,7 +78,13 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
     return {
       baseURL,
       wiki: info.wiki,
-      permissions: info.permissions ?? { view: false, edit: false, delete: false, manage: false, owner: false },
+      permissions: info.permissions ?? {
+        view: false,
+        edit: false,
+        delete: false,
+        manage: false,
+        owner: false,
+      },
       fingerprint: info.wiki.fingerprint || wikiId,
       ...(infoError ? { infoError } : {}),
     }
@@ -85,7 +101,11 @@ function WikiLayout() {
   }, [router])
 
   return (
-    <WikiBaseURLProvider baseURL={data.baseURL} wiki={data.wiki} permissions={data.permissions}>
+    <WikiBaseURLProvider
+      baseURL={data.baseURL}
+      wiki={data.wiki}
+      permissions={data.permissions}
+    >
       {data.infoError ? (
         <GeneralError
           error={data.infoError}

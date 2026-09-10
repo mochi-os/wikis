@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { createContext, useContext, type ReactNode } from 'react'
 import type { WikiPermissions, WikiInfo } from '@/types/wiki'
 
@@ -21,7 +20,12 @@ interface WikiBaseURLProviderProps {
   children: ReactNode
 }
 
-export function WikiBaseURLProvider({ baseURL, wiki, permissions, children }: WikiBaseURLProviderProps) {
+export function WikiBaseURLProvider({
+  baseURL,
+  wiki,
+  permissions,
+  children,
+}: WikiBaseURLProviderProps) {
   return (
     <WikiBaseURLContext.Provider value={{ baseURL, wiki, permissions }}>
       {children}

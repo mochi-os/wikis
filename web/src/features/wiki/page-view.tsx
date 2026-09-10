@@ -2,19 +2,26 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-
 import { type MouseEvent, useEffect, useState } from 'react'
-import { Trans } from '@lingui/react/macro'
 import { Link } from '@tanstack/react-router'
 import type { WikiPage } from '@/types/wiki'
-import { Button, EmptyState, PageUtilityBar, useFormat, Skeleton, Separator, cn } from '@mochi/web'
+import { t } from '@lingui/core/macro'
+import { Trans } from '@lingui/react/macro'
+import {
+  Button,
+  EmptyState,
+  PageUtilityBar,
+  useFormat,
+  Skeleton,
+  Separator,
+  cn,
+} from '@mochi/web'
 import { ChevronDown, Plus, FileQuestion, ListTree } from 'lucide-react'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
 import { usePermissions } from '@/context/wiki-context'
 import { MarkdownContent } from './markdown-content'
 import { extractTocHeadings, type TocHeading } from './markdown-content.utils'
 import { TagManager } from './tag-manager'
-import { t } from '@lingui/core/macro'
 
 interface PageViewProps {
   page: WikiPage
@@ -257,14 +264,11 @@ export function PageView({ page, missingLinks, wikiId }: PageViewProps) {
 
         <div className='text-muted-foreground flex items-center gap-2 text-xs'>
           <span className='bg-background text-foreground rounded border px-1.5 py-0.5 font-mono'>
-            {/* jsx-text-ok: version marker in a monospace badge, not prose */}
-            v{page.version}
+            {/* jsx-text-ok: version marker in a monospace badge, not prose */}v
+            {page.version}
           </span>
           <time dateTime={new Date(page.updated * 1000).toISOString()}>
-            <Trans>
-              Updated{' '}
-              {formatTimestamp(page.updated)}
-            </Trans>
+            <Trans>Updated {formatTimestamp(page.updated)}</Trans>
           </time>
         </div>
       </footer>
@@ -296,7 +300,11 @@ export function PageNotFound({ slug, wikiId: wikiIdProp }: PageNotFoundProps) {
       {permissions.edit && (
         <Button asChild>
           {wikiId ? (
-            <Link preload={false} to='/$wikiId/$page/edit' params={{ wikiId, page: slug }}>
+            <Link
+              preload={false}
+              to='/$wikiId/$page/edit'
+              params={{ wikiId, page: slug }}
+            >
               <Plus className='me-2 h-4 w-4' />
               <Trans>Create this page</Trans>
             </Link>
