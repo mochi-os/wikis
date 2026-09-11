@@ -39,7 +39,7 @@ import {
   UploadProgress,
 } from '@mochi/web'
 import {
-  Save,
+  Check,
   X,
   Eye,
   Pencil,
@@ -51,7 +51,6 @@ import {
   RefreshCw,
 } from 'lucide-react'
 import { useWikiBaseURLOptional } from '@/context/wiki-base-url-context'
-import { usePermissions } from '@/context/wiki-context'
 import {
   useEditPage,
   useCreatePage,
@@ -95,7 +94,6 @@ export function PageEditor({
   const navigate = useNavigate()
   const editPage = useEditPage()
   const createPage = useCreatePage()
-  const permissions = usePermissions()
   const wikiContext = useWikiBaseURLOptional()
 
   // Determine wikiId from multiple sources for robust routing:
@@ -333,7 +331,7 @@ export function PageEditor({
 
   return (
     <div className='space-y-6'>
-      {/* Action toolbar */}
+      {/* Editing tools */}
       <div className='flex flex-wrap items-center gap-2'>
         <Button
           variant='outline'
@@ -384,60 +382,6 @@ export function PageEditor({
             <Trans>Attachments</Trans>
           </Button>
         )}
-        <div className='ms-auto flex items-center gap-2'>
-          {!isNew && permissions.delete && (
-            <Button variant='outline' size='sm' asChild>
-              {wikiId ? (
-                <Link
-                  preload={false}
-                  to='/$wikiId/$page/delete'
-                  params={{ wikiId, page: slug }}
-                >
-                  <Trash2 className='me-2 h-4 w-4' />
-                  <Trans>Delete page</Trans>
-                </Link>
-              ) : (
-                <Link
-                  preload={false}
-                  to='/$page/delete'
-                  params={{ page: slug }}
-                >
-                  <Trash2 className='me-2 h-4 w-4' />
-                  <Trans>Delete page</Trans>
-                </Link>
-              )}
-            </Button>
-          )}
-          <Button variant='outline' size='sm' onClick={handleCancel}>
-            <X className='me-2 h-4 w-4' />
-            <Trans>Cancel</Trans>
-          </Button>
-          <Button
-            size='sm'
-            onClick={handleSave}
-            disabled={isPending || (!isNew && !pageDirty)}
-          >
-            {isNew ? (
-              <>
-                {isPending ? (
-                  <Loader2 className='me-2 h-4 w-4 animate-spin' />
-                ) : (
-                  <Plus className='me-2 h-4 w-4' />
-                )}
-                {isPending ? t`Creating...` : t`Create page`}
-              </>
-            ) : (
-              <>
-                {isPending ? (
-                  <Loader2 className='me-2 h-4 w-4 animate-spin' />
-                ) : (
-                  <Save className='me-2 h-4 w-4' />
-                )}
-                {isPending ? t`Saving...` : t`Save`}
-              </>
-            )}
-          </Button>
-        </div>
       </div>
 
       <Separator />
@@ -512,23 +456,52 @@ export function PageEditor({
               className='min-h-[400px] font-mono'
             />
           </div>
-
-          {/* Comment (only for edits) */}
-          {!isNew && (
-            <div className='space-y-2'>
-              <Label htmlFor='comment'>
-                <Trans>Edit summary (optional)</Trans>
-              </Label>
-              <Input
-                id='comment'
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder={t`Briefly describe your changes`}
-              />
-            </div>
-          )}
         </div>
       )}
+
+      {/* Save bar: pinned so Save stays in reach on a long page, and outside
+          the edit/preview switch so the summary shows in both */}
+      <div className='bg-background sticky bottom-0 flex flex-col gap-2 border-t py-4 sm:flex-row sm:items-center'>
+        {!isNew && (
+          <Input
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder={t`Edit summary (optional)`}
+            aria-label={t`Edit summary (optional)`}
+            className='sm:flex-1'
+          />
+        )}
+        <div className='flex items-center justify-end gap-2 sm:ms-auto'>
+          <Button variant='outline' onClick={handleCancel}>
+            <X className='me-2 h-4 w-4' />
+            <Trans>Cancel</Trans>
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={isPending || (!isNew && !pageDirty)}
+          >
+            {isNew ? (
+              <>
+                {isPending ? (
+                  <Loader2 className='me-2 h-4 w-4 animate-spin' />
+                ) : (
+                  <Plus className='me-2 h-4 w-4' />
+                )}
+                {isPending ? t`Creating...` : t`Create page`}
+              </>
+            ) : (
+              <>
+                {isPending ? (
+                  <Loader2 className='me-2 h-4 w-4 animate-spin' />
+                ) : (
+                  <Check className='me-2 h-4 w-4' />
+                )}
+                {isPending ? t`Saving...` : t`Save`}
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
 
       {/* Insert attachment dialog */}
       <Dialog open={insertDialogOpen} onOpenChange={setInsertDialogOpen}>
