@@ -34,9 +34,6 @@ import {
   useFormat,
   usePageTitle,
   naturalCompare,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
 } from '@mochi/web'
 import {
   BookMarked,
@@ -486,21 +483,16 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
         icon={<BookOpen className='size-4 md:size-5' />}
         menuAction={
           <DropdownMenu>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    aria-label={t`Wiki actions`}
-                    className='size-11 md:size-9'
-                  >
-                    <Ellipsis className='size-4' />
-                  </Button>
-                </DropdownMenuTrigger>
-              </TooltipTrigger>
-              <TooltipContent>{t`Wiki actions`}</TooltipContent>
-            </Tooltip>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant='ghost'
+                size='icon'
+                aria-label={t`Wiki actions`}
+                className='size-11 md:size-9'
+              >
+                <Ellipsis className='size-4' />
+              </Button>
+            </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
@@ -651,21 +643,16 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                   menu={
                     isSubscribed && (
                       <DropdownMenu>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant='ghost'
-                                size='icon'
-                                aria-label={t`Wiki actions`}
-                                className='size-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100'
-                              >
-                                <Ellipsis className='size-4' />
-                              </Button>
-                            </DropdownMenuTrigger>
-                          </TooltipTrigger>
-                          <TooltipContent>{t`Wiki actions`}</TooltipContent>
-                        </Tooltip>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            aria-label={t`Wiki actions`}
+                            className='size-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100'
+                          >
+                            <Ellipsis className='size-4' />
+                          </Button>
+                        </DropdownMenuTrigger>
                         <DropdownMenuContent align='end'>
                           <DropdownMenuItem
                             onSelect={() => setUnsubscribeId(wiki.id)}

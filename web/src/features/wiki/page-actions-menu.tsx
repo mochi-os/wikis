@@ -18,9 +18,6 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
 } from '@mochi/web'
 import {
   Ellipsis,
@@ -113,21 +110,16 @@ function targets(slug: string, wiki?: string): Record<string, Target> {
 function Trigger() {
   const { t } = useLingui()
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant='ghost'
-            size='icon'
-            aria-label={t`Page actions`}
-            className='size-11 md:size-9'
-          >
-            <Ellipsis className='size-4' />
-          </Button>
-        </DropdownMenuTrigger>
-      </TooltipTrigger>
-      <TooltipContent>{t`Page actions`}</TooltipContent>
-    </Tooltip>
+    <DropdownMenuTrigger asChild>
+      <Button
+        variant='ghost'
+        size='icon'
+        aria-label={t`Page actions`}
+        className='size-11 md:size-9'
+      >
+        <Ellipsis className='size-4' />
+      </Button>
+    </DropdownMenuTrigger>
   )
 }
 
