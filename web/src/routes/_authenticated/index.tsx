@@ -176,7 +176,6 @@ function IndexPage() {
         <WikiHomePage
           wikiId={data.wiki.fingerprint ?? data.wiki.id}
           homeSlug={data.wiki.home}
-          wikiName={data.wiki.name}
           infoError={data.infoError}
           onRetryInfo={retryInfo}
         />
@@ -197,19 +196,20 @@ function IndexPage() {
 function WikiHomePage({
   wikiId,
   homeSlug,
-  wikiName,
   infoError,
   onRetryInfo,
 }: {
   wikiId: string
   homeSlug: string
-  wikiName?: string
   infoError?: string
   onRetryInfo: () => void
 }) {
   const navigate = useNavigate()
-  const goBackToWikis = () => navigate({ to: '/' })
-  const backLabel = wikiName ?? t`Back to wikis`
+  // No Back button: this component only renders where the wiki itself is the
+  // root of the routing context - a domain like docs.mochi-os.org, or an
+  // entity path - so the '/' a Back would navigate to is this very route. The
+  // button sat in the header doing nothing on arrival, and once a fallback had
+  // pushed a history entry it toggled between two pages forever.
   const { data, isLoading, error, refetch } = usePage(homeSlug)
   const permissions = usePermissions()
   const unsubscribeWiki = useUnsubscribeWiki()
@@ -262,10 +262,7 @@ function WikiHomePage({
   if (isLoading) {
     return (
       <>
-        <WikiRouteHeader
-          title={pageTitle}
-          back={{ label: backLabel, onFallback: goBackToWikis }}
-        />
+        <WikiRouteHeader title={pageTitle} />
         {infoErrorBanner}
         <Main>
           <PageViewSkeleton />
@@ -277,10 +274,7 @@ function WikiHomePage({
   if (error) {
     return (
       <>
-        <WikiRouteHeader
-          title={pageTitle}
-          back={{ label: backLabel, onFallback: goBackToWikis }}
-        />
+        <WikiRouteHeader title={pageTitle} />
         {infoErrorBanner}
         <Main>
           <GeneralError error={error} minimal mode='inline' reset={refetch} />
@@ -293,10 +287,7 @@ function WikiHomePage({
   if (data && 'error' in data && data.error === 'not_found') {
     return (
       <>
-        <WikiRouteHeader
-          title={t`Page not found`}
-          back={{ label: backLabel, onFallback: goBackToWikis }}
-        />
+        <WikiRouteHeader title={t`Page not found`} />
         {infoErrorBanner}
         <Main>
           <PageNotFound slug={homeSlug} wikiId={wikiId} />
@@ -324,11 +315,7 @@ function WikiHomePage({
 
     return (
       <>
-        <PageHeader
-          page={data.page}
-          menuAction={actionsMenu}
-          back={{ label: backLabel, onFallback: goBackToWikis }}
-        />
+        <PageHeader page={data.page} menuAction={actionsMenu} />
         {linkDialog}
         {infoErrorBanner}
         <Main className='pt-2'>
