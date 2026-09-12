@@ -294,14 +294,21 @@ def replica_can(wikirow, wiki, sender, operation):
 def error_message_timeout(e):
     if e.detail.get("locations", 1) != 0:
         return
-    mochi.db.execute("delete from replicas where id=?", e.entity)
+    replica_drop(e.entity)
 
 # error_subscriber_unreachable: core suspended this replica - every delivery
 # across the whole evict window failed with no contradicting success - and
 # asks us to drop them so fan-out stops paying for a dead host. If they
 # return, they re-replicate.
 def error_subscriber_unreachable(e):
-    mochi.db.execute("delete from replicas where id=?", e.entity)
+    replica_drop(e.entity)
+
+# replica_drop removes a replica from every wiki it replicates and revokes its
+# broadcast replay record there, which deleting the row alone leaves behind.
+def replica_drop(replica):
+    for r in mochi.db.rows("select wiki from replicas where id=?", replica) or []:
+        mochi.db.execute("delete from replicas where wiki=? and id=?", r["wiki"], replica)
+        mochi.broadcast.subscriber.remove(r["wiki"], replica)
 
 # error_broadcast_gap: core calls this when an unfillable broadcast gap was
 # skipped and events were permanently lost. broadcast/resync can't replay a
@@ -389,18 +396,39 @@ def broadcast_event(wiki, event, data, exclude=None):
     replicas = mochi.db.rows("select id, identity from replicas where wiki=?", wiki)
     recipients = []
     for r in replicas:
-        # The replica entity is an address, never the subject of an access rule:
-        # grants go to person identities and to the * / + wildcards. Check the
-        # identity the replica proved when it registered; a row predating that
-        # binding falls back to the entity, which only a public wiki's wildcard
-        # can satisfy - which is exactly how private wikis lost their fan-out.
-        if not mochi.access.check(r["identity"] or r["id"], resource, "view"):
+        if not replica_allowed(r, resource):
+            # Leaving it out stops delivery, not replay - see replicas_revalidate.
+            # Revoked here as well because access also narrows without the app
+            # hearing of it (a group change), and before the send, so the event
+            # it is about to log can never be replayed to them.
+            mochi.broadcast.subscriber.remove(wiki, r["id"])
             continue
         # A replica is a private entity on the subscriber's server, not
         # directory-listed; the core per-user directory carries the route
         # (learned when the replica registered), so no app-level peer pin.
         recipients.append(r["id"])
     mochi.broadcast.send(wiki, wiki, recipients, "wikis", event, data, exclude or "")
+
+# replica_allowed reports whether a replica may receive the wiki's fan-out. The
+# replica entity is an address, never the subject of an access rule: grants go
+# to person identities and to the * / + wildcards. Check the identity the
+# replica proved when it registered; a row predating that binding falls back to
+# the entity, which only a public wiki's wildcard can satisfy - which is exactly
+# how private wikis lost their fan-out.
+def replica_allowed(replica, resource):
+    return mochi.access.check(replica["identity"] or replica["id"], resource, "view")
+
+# replicas_revalidate revokes the broadcast replay record of every replica that
+# no longer passes the view check. broadcast_event leaves such a replica out of
+# the fan-out, which stops delivery but not replay: core keeps its subscription
+# record on the log's own clock, so a revoked reader could otherwise resync the
+# edits made after their access was withdrawn. The replica row stays, so a
+# reader granted view again is recorded by the next fan-out.
+def replicas_revalidate(wiki):
+    resource = "wiki/" + wiki
+    for r in mochi.db.rows("select id, identity from replicas where wiki=?", wiki) or []:
+        if not replica_allowed(r, resource):
+            mochi.broadcast.subscriber.remove(wiki, r["id"])
 
 # Tell any open wiki UI that content changed; keyed by the wiki's fingerprint,
 # matching the web's websocket key. Distinct from notify(), which sends
@@ -2366,6 +2394,7 @@ def action_replica_remove(a):
     subject = row["identity"] if row and row["identity"] else replica_id
 
     mochi.db.execute("delete from replicas where wiki=? and id=?", wiki["id"], replica_id)
+    mochi.broadcast.subscriber.remove(wiki["id"], replica_id)
 
     resource = "wiki/" + wiki["id"]
     for op in ACCESS_LEVELS + ["*"]:
@@ -2528,6 +2557,9 @@ def action_access_set(a):
         # Store a single allow rule for the level
         mochi.access.allow(subject, resource, level, granter)
 
+    # A level of "none", or replacing a broader rule, narrows access.
+    replicas_revalidate(wiki["id"])
+
     return {"data": {"success": True}}
 
 # Revoke all access from a subject (remove from access list entirely)
@@ -2559,6 +2591,8 @@ def action_access_revoke(a):
     # Revoke all rules for this subject (including wildcard)
     for op in ACCESS_LEVELS + ["*"]:
         mochi.access.revoke(subject, resource, op)
+
+    replicas_revalidate(wiki["id"])
 
     return {"data": {"success": True}}
 
@@ -3334,8 +3368,9 @@ def event_unreplicate(e):
     if not replica:
         return
 
-    # Remove from replicas table
+    # Remove from replicas table, and from the broadcast replay record
     mochi.db.execute("delete from replicas where wiki=? and id=?", wiki, replica)
+    mochi.broadcast.subscriber.remove(wiki, replica)
 
     # Revoke all access permissions
     resource = "wiki/" + wiki
