@@ -45,7 +45,6 @@ import {
   Copy,
   Captions,
   Check,
-  Loader2,
   Search,
   Grid3X3,
   List,
@@ -304,13 +303,9 @@ export function AttachmentsPage() {
           />
           <Button
             onClick={() => fileInputRef.current?.click()}
-            disabled={uploadMutation.isPending}
+            loading={uploadMutation.isPending}
+            icon={<Upload className='me-2 h-4 w-4' />}
           >
-            {uploadMutation.isPending ? (
-              <Loader2 className='me-2 h-4 w-4 animate-spin' />
-            ) : (
-              <Upload className='me-2 h-4 w-4' />
-            )}
             <Trans>Upload files</Trans>
           </Button>
         </div>
@@ -654,14 +649,10 @@ function AttachmentGridItem({
                 e.stopPropagation()
                 onDelete(attachment)
               }}
-              disabled={isDeleting}
+              loading={isDeleting}
+              icon={<Trash2 className='h-4 w-4' />}
               aria-label={t`Delete attachment`}
             >
-              {isDeleting ? (
-                <Loader2 className='h-4 w-4 animate-spin' />
-              ) : (
-                <Trash2 className='h-4 w-4' />
-              )}
             </Button>
           </TooltipTrigger>
           <TooltipContent>{t`Delete attachment`}</TooltipContent>
@@ -785,15 +776,11 @@ function AttachmentListItem({
               variant='ghost'
               size='icon'
               onClick={() => onDelete(attachment)}
-              disabled={isDeleting}
+              loading={isDeleting}
+              icon={<Trash2 className='h-4 w-4' />}
               className='text-muted-foreground'
               aria-label={t`Delete attachment`}
             >
-              {isDeleting ? (
-                <Loader2 className='h-4 w-4 animate-spin' />
-              ) : (
-                <Trash2 className='h-4 w-4' />
-              )}
             </Button>
           </TooltipTrigger>
           <TooltipContent>{t`Delete attachment`}</TooltipContent>

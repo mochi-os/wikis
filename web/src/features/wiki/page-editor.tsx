@@ -46,7 +46,6 @@ import {
   Trash2,
   ImagePlus,
   Image,
-  Loader2,
   Plus,
   RefreshCw,
 } from 'lucide-react'
@@ -478,27 +477,11 @@ export function PageEditor({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={isPending || (!isNew && !pageDirty)}
+            loading={isPending}
+            disabled={!isNew && !pageDirty}
+            icon={isNew ? <Plus className='me-2 h-4 w-4' /> : <Check className='me-2 h-4 w-4' />}
           >
-            {isNew ? (
-              <>
-                {isPending ? (
-                  <Loader2 className='me-2 h-4 w-4 animate-spin' />
-                ) : (
-                  <Plus className='me-2 h-4 w-4' />
-                )}
-                {isPending ? t`Creating...` : t`Create page`}
-              </>
-            ) : (
-              <>
-                {isPending ? (
-                  <Loader2 className='me-2 h-4 w-4 animate-spin' />
-                ) : (
-                  <Check className='me-2 h-4 w-4' />
-                )}
-                {isPending ? t`Saving...` : t`Save`}
-              </>
-            )}
+            {isNew ? t`Create page` : t`Save`}
           </Button>
         </div>
       </div>
@@ -529,13 +512,9 @@ export function PageEditor({
               variant='outline'
               size='sm'
               onClick={() => fileInputRef.current?.click()}
-              disabled={uploadMutation.isPending}
+              loading={uploadMutation.isPending}
+              icon={<ImagePlus className='me-2 h-4 w-4' />}
             >
-              {uploadMutation.isPending ? (
-                <Loader2 className='me-2 h-4 w-4 animate-spin' />
-              ) : (
-                <ImagePlus className='me-2 h-4 w-4' />
-              )}
               <Trans>Upload new</Trans>
             </Button>
           </div>
@@ -591,14 +570,10 @@ export function PageEditor({
                             e.stopPropagation()
                             handleDeleteAttachment(attachment)
                           }}
-                          disabled={isDeleting}
+                          loading={isDeleting}
+                          icon={<Trash2 className='h-3.5 w-3.5' />}
                           aria-label={t`Delete attachment`}
                         >
-                          {isDeleting ? (
-                            <Loader2 className='h-3.5 w-3.5 animate-spin' />
-                          ) : (
-                            <Trash2 className='h-3.5 w-3.5' />
-                          )}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>{t`Delete attachment`}</TooltipContent>

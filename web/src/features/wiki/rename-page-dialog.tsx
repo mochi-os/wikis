@@ -19,7 +19,7 @@ import {
   getErrorMessage,
   toast,
 } from '@mochi/web'
-import { Loader2, Pencil } from 'lucide-react'
+import { Pencil } from 'lucide-react'
 import { useRenamePage } from '@/hooks/use-wiki'
 
 interface RenamePageDialogProps {
@@ -142,13 +142,12 @@ export function RenamePageDialog({
           >
             <Trans>Cancel</Trans>
           </Button>
-          <Button type='submit' disabled={renamePage.isPending}>
-            {renamePage.isPending ? (
-              <Loader2 className='size-4 animate-spin' />
-            ) : (
-              <Pencil className='size-4' />
-            )}
-            {renamePage.isPending ? t`Renaming...` : t`Rename`}
+          <Button
+            type='submit'
+            loading={renamePage.isPending}
+            icon={<Pencil className='size-4' />}
+          >
+            {t`Rename`}
           </Button>
         </DialogFooter>
       </form>

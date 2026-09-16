@@ -88,10 +88,10 @@ export function DeletePage({
           <Button
             variant='destructive'
             onClick={handleDelete}
-            disabled={deletePage.isPending}
+            loading={deletePage.isPending}
+            icon={<Trash2 className='me-2 h-4 w-4' />}
           >
-            <Trash2 className='me-2 h-4 w-4' />
-            {deletePage.isPending ? t`Deleting...` : t`Delete`}
+            {t`Delete`}
           </Button>
         </CardFooter>
       </Card>
