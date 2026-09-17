@@ -39,7 +39,6 @@ import {
   BookMarked,
   BookOpen,
   Ellipsis,
-  Loader2,
   Plus,
   Rss,
 } from 'lucide-react'
@@ -579,14 +578,10 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                                 onClick={() =>
                                   handleSubscribeRecommendation(rec)
                                 }
-                                disabled={isPending}
+                                loading={isPending}
                               >
                                 {/* button-icon-ok: Subscribe has no conventional glyph; every sibling app ships it text-only */}
-                                {isPending ? (
-                                  <Loader2 className='h-4 w-4 animate-spin' />
-                                ) : (
-                                  <Trans>Subscribe</Trans>
-                                )}
+                                <Trans>Subscribe</Trans>
                               </Button>
                             </div>
                           )

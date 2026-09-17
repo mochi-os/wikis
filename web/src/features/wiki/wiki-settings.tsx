@@ -57,7 +57,6 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  cn,
   Tabs,
   TabsList,
   TabsTrigger,
@@ -80,7 +79,6 @@ import {
   ArrowRight,
   Check,
   CornerDownRight,
-  Loader2,
   Minus,
   Plus,
   RefreshCw,
@@ -416,12 +414,10 @@ function SettingsTab() {
             <Button
               variant='outline'
               onClick={() => void handleSync()}
-              disabled={syncPending}
+              loading={syncPending}
+              icon={<RefreshCw className='me-2 h-4 w-4' />}
             >
-              <RefreshCw
-                className={cn('me-2 h-4 w-4', syncPending && 'animate-spin')}
-              />
-              {syncPending ? t`Syncing...` : t`Sync now`}
+              {t`Sync now`}
             </Button>
           }
         >
@@ -459,10 +455,11 @@ function SettingsTab() {
           <div className='flex justify-end'>
             <Button
               onClick={() => void handleSave()}
-              disabled={!hasChanges || savePending}
+              loading={savePending}
+              disabled={!hasChanges}
+              icon={<Check className='me-2 h-4 w-4' />}
             >
-              <Check className='me-2 h-4 w-4' />
-              {savePending ? t`Saving...` : t`Save changes`}
+              {t`Save changes`}
             </Button>
           </div>
         </CardContent>
@@ -484,7 +481,7 @@ function SettingsTab() {
                 onClick={() => setDeleteConfirmOpen(true)}
               >
                 <Trash2 className='me-2 h-4 w-4' />
-                {deletePending ? t`Deleting...` : t`Delete wiki`}
+                {t`Delete wiki`}
               </Button>
             </div>
             <ConfirmDialog
@@ -835,11 +832,12 @@ function ReplicasTab() {
                             <Trans>Cancel</Trans>
                           </AlertDialogCancel>
                           <AlertDialogAction
+                            loading={isRemoving}
+                            icon={<Minus className='h-4 w-4' />}
                             onClick={() =>
                               void handleRemove(replica.id, replica.name)
                             }
                           >
-                            <Minus className='h-4 w-4' />
                             <Trans>Remove</Trans>
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -1015,6 +1013,7 @@ function RedirectsTab() {
                             <Trans>Cancel</Trans>
                           </AlertDialogCancel>
                           <AlertDialogAction
+                            loading={isDeleting}
                             onClick={() => void handleDelete(redirect.source)}
                             className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
                           >
@@ -1126,13 +1125,12 @@ function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
             >
               <Trans>Cancel</Trans>
             </Button>
-            <Button type='submit' disabled={isCreating}>
-              {isCreating ? (
-                <Loader2 className='me-2 h-4 w-4 animate-spin' />
-              ) : (
-                <Plus className='me-2 h-4 w-4' />
-              )}
-              {isCreating ? t`Creating...` : <Trans>Create redirect</Trans>}
+            <Button
+              type='submit'
+              loading={isCreating}
+              icon={<Plus className='me-2 h-4 w-4' />}
+            >
+              <Trans>Create redirect</Trans>
             </Button>
           </DialogFooter>
         </form>

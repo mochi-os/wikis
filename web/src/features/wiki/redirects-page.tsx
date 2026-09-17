@@ -45,7 +45,7 @@ import {
   TooltipContent,
   naturalCompare,
 } from '@mochi/web'
-import { ArrowRight, Loader2, Plus, Trash2, Link2 } from 'lucide-react'
+import { ArrowRight, Plus, Trash2, Link2 } from 'lucide-react'
 import {
   useRedirects,
   useSetRedirect,
@@ -186,6 +186,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
                 <Trans>Cancel</Trans>
               </AlertDialogCancel>
               <AlertDialogAction
+                loading={deleteRedirect.isPending}
                 onClick={() => void handleDelete()}
                 className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
               >
@@ -282,17 +283,12 @@ function AddRedirectDialog() {
             >
               <Trans>Cancel</Trans>
             </Button>
-            <Button type='submit' disabled={setRedirect.isPending}>
-              {setRedirect.isPending ? (
-                <Loader2 className='me-2 h-4 w-4 animate-spin' />
-              ) : (
-                <Plus className='me-2 h-4 w-4' />
-              )}
-              {setRedirect.isPending ? (
-                t`Creating...`
-              ) : (
-                <Trans>Create redirect</Trans>
-              )}
+            <Button
+              type='submit'
+              loading={setRedirect.isPending}
+              icon={<Plus className='me-2 h-4 w-4' />}
+            >
+              <Trans>Create redirect</Trans>
             </Button>
           </DialogFooter>
         </form>

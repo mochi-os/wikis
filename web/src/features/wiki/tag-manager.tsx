@@ -174,10 +174,11 @@ export function TagManager({ slug, tags, wikiId }: TagManagerProps) {
                 <Button
                   size='sm'
                   onClick={handleAddTag}
-                  disabled={!newTag.trim() || addTag.isPending}
+                  loading={addTag.isPending}
+                  disabled={!newTag.trim()}
+                  icon={<Plus className='size-3.5' />}
                 >
-                  <Plus className='size-3.5' />
-                  {addTag.isPending ? t`Adding...` : t`Add`}
+                  {t`Add`}
                 </Button>
               </div>
             </div>

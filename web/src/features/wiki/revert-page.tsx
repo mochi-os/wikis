@@ -107,10 +107,10 @@ export function RevertPage({ slug, version, wikiId }: RevertPageProps) {
           <Button
             variant='destructive'
             onClick={handleRevert}
-            disabled={revertPage.isPending}
+            loading={revertPage.isPending}
+            icon={<RotateCcw className='me-2 h-4 w-4' />}
           >
-            <RotateCcw className='me-2 h-4 w-4' />
-            {revertPage.isPending ? t`Reverting...` : t`Revert`}
+            {t`Revert`}
           </Button>
         </CardFooter>
       </Card>
