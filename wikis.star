@@ -4956,9 +4956,9 @@ def action_rss_token(a):
     # URL is shared casually and lives in reader histories and proxy logs, so
     # it must not also authorise the app's other actions.
     if wiki_id == "*":
-        token = mochi.token.create("rss", ["rss"], 0, "-/rss", "")
+        token = mochi.token.create("rss", ["rss"], 0, "rss", "")
     else:
-        token = mochi.token.create("rss", ["rss"], 0, ":wiki/-/rss", wiki_id)
+        token = mochi.token.create("rss", ["rss"], 0, ":wiki/rss", wiki_id)
     if not token:
         a.error.label(500, "errors.failed_to_create_token")
         return

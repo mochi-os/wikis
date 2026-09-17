@@ -38,7 +38,7 @@ export function useRssCopy(wiki: string) {
         return
       }
       const path =
-        wiki === '*' ? `${getAppPath()}/-/rss` : `${getAppPath()}/${wiki}/-/rss`
+        wiki === '*' ? `${getAppPath()}/rss` : `${getAppPath()}/${wiki}/rss`
       const url = new URL(`${path}?token=${token}`, window.location.href).href
       if (await shellClipboardWrite(url)) {
         toast.success(
