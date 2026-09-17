@@ -35,13 +35,7 @@ import {
   usePageTitle,
   naturalCompare,
 } from '@mochi/web'
-import {
-  BookMarked,
-  BookOpen,
-  Ellipsis,
-  Plus,
-  Rss,
-} from 'lucide-react'
+import { BookMarked, BookOpen, Ellipsis, Plus, Rss } from 'lucide-react'
 import endpoints from '@/api/endpoints'
 import { wikisRequest, isEntityContext } from '@/api/request'
 import { useSidebarContext } from '@/context/sidebar-context'

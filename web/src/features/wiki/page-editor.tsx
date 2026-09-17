@@ -479,7 +479,13 @@ export function PageEditor({
             onClick={handleSave}
             loading={isPending}
             disabled={!isNew && !pageDirty}
-            icon={isNew ? <Plus className='me-2 h-4 w-4' /> : <Check className='me-2 h-4 w-4' />}
+            icon={
+              isNew ? (
+                <Plus className='me-2 h-4 w-4' />
+              ) : (
+                <Check className='me-2 h-4 w-4' />
+              )
+            }
           >
             {isNew ? t`Create page` : t`Save`}
           </Button>
@@ -573,8 +579,7 @@ export function PageEditor({
                           loading={isDeleting}
                           icon={<Trash2 className='h-3.5 w-3.5' />}
                           aria-label={t`Delete attachment`}
-                        >
-                        </Button>
+                        ></Button>
                       </TooltipTrigger>
                       <TooltipContent>{t`Delete attachment`}</TooltipContent>
                     </Tooltip>

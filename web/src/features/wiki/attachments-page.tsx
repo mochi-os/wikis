@@ -652,8 +652,7 @@ function AttachmentGridItem({
               loading={isDeleting}
               icon={<Trash2 className='h-4 w-4' />}
               aria-label={t`Delete attachment`}
-            >
-            </Button>
+            ></Button>
           </TooltipTrigger>
           <TooltipContent>{t`Delete attachment`}</TooltipContent>
         </Tooltip>
@@ -780,8 +779,7 @@ function AttachmentListItem({
               icon={<Trash2 className='h-4 w-4' />}
               className='text-muted-foreground'
               aria-label={t`Delete attachment`}
-            >
-            </Button>
+            ></Button>
           </TooltipTrigger>
           <TooltipContent>{t`Delete attachment`}</TooltipContent>
         </Tooltip>
