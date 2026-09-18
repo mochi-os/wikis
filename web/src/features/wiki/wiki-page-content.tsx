@@ -21,6 +21,7 @@ import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { useRssCopy } from '@/hooks/use-rss-copy'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
 import { useWikiLinkDialog } from '@/components/link-dialog'
+import { DeletePageDialog } from '@/features/wiki/delete-page'
 import {
   PageActionsMenu,
   PageMissingMenu,
@@ -142,6 +143,7 @@ export function WikiPageContent({
 
   // Rename dialog state (controlled mode so menu closes when dialog opens)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   // RSS feed handler
   const rss = useRssCopy(wikiId)
@@ -248,6 +250,7 @@ export function WikiPageContent({
         unsubscribable={canUnsubscribe}
         unsubscribing={isUnsubscribing}
         onRename={() => setRenameDialogOpen(true)}
+        onDelete={() => setDeleteDialogOpen(true)}
         onLink={() => void openLinkDialog()}
         onUnsubscribe={() => setUnsubscribeConfirmOpen(true)}
         onRss={(mode) => void rss.copy(mode)}
@@ -278,6 +281,14 @@ export function WikiPageContent({
           destructive
           isLoading={isUnsubscribing}
           handleConfirm={() => void handleUnsubscribe()}
+        />
+        <DeletePageDialog
+          slug={slug}
+          title={data.page.title}
+          wikiId={wikiId}
+          homePage={wiki.home}
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
         />
         <RenamePageDialog
           slug={slug}

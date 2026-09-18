@@ -18,6 +18,7 @@ import { useRssCopy } from '@/hooks/use-rss-copy'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
 import { useWikiLinkDialog } from '@/components/link-dialog'
+import { DeletePageDialog } from '@/features/wiki/delete-page'
 import {
   PageActionsMenu,
   PageMissingMenu,
@@ -77,6 +78,7 @@ function WikiPageRoute() {
 
   // Rename dialog state (controlled mode so menu closes when dialog opens)
   const [renameDialogOpen, setRenameDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [unsubscribeConfirmOpen, setUnsubscribeConfirmOpen] = useState(false)
 
   // Unsubscribe handler
@@ -166,6 +168,7 @@ function WikiPageRoute() {
         unsubscribable={canUnsubscribe}
         unsubscribing={unsubscribeWiki.isPending}
         onRename={() => setRenameDialogOpen(true)}
+        onDelete={() => setDeleteDialogOpen(true)}
         onLink={() => void openLinkDialog()}
         onUnsubscribe={() => setUnsubscribeConfirmOpen(true)}
         onRss={(mode) => void rss.copy(mode)}
@@ -196,6 +199,13 @@ function WikiPageRoute() {
           destructive
           isLoading={unsubscribeWiki.isPending}
           handleConfirm={handleUnsubscribe}
+        />
+        <DeletePageDialog
+          slug={slug}
+          title={data.page.title}
+          homePage={info?.wiki?.home || 'home'}
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
         />
         <RenamePageDialog
           slug={slug}

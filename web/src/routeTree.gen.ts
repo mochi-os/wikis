@@ -24,7 +24,6 @@ import { Route as AuthenticatedTagsRouteImport } from './routes/_authenticated/t
 import { Route as AuthenticatedPageIndexRouteImport } from './routes/_authenticated/$page/index'
 import { Route as AuthenticatedPageAttachmentsRouteImport } from './routes/_authenticated/$page/attachments'
 import { Route as AuthenticatedPageCommentsRouteImport } from './routes/_authenticated/$page/comments'
-import { Route as AuthenticatedPageDeleteRouteImport } from './routes/_authenticated/$page/delete'
 import { Route as AuthenticatedPageEditRouteImport } from './routes/_authenticated/$page/edit'
 import { Route as AuthenticatedPageRevertRouteImport } from './routes/_authenticated/$page/revert'
 import { Route as AuthenticatedWikiIdIndexRouteImport } from './routes/_authenticated/$wikiId/index'
@@ -39,7 +38,6 @@ import { Route as AuthenticatedPageHistoryVersionRouteImport } from './routes/_a
 import { Route as AuthenticatedWikiIdPageIndexRouteImport } from './routes/_authenticated/$wikiId/$page/index'
 import { Route as AuthenticatedWikiIdPageAttachmentsRouteImport } from './routes/_authenticated/$wikiId/$page/attachments'
 import { Route as AuthenticatedWikiIdPageCommentsRouteImport } from './routes/_authenticated/$wikiId/$page/comments'
-import { Route as AuthenticatedWikiIdPageDeleteRouteImport } from './routes/_authenticated/$wikiId/$page/delete'
 import { Route as AuthenticatedWikiIdPageEditRouteImport } from './routes/_authenticated/$wikiId/$page/edit'
 import { Route as AuthenticatedWikiIdPageRevertRouteImport } from './routes/_authenticated/$wikiId/$page/revert'
 import { Route as AuthenticatedWikiIdTagTagRouteImport } from './routes/_authenticated/$wikiId/tag/$tag'
@@ -123,11 +121,6 @@ const AuthenticatedPageCommentsRoute =
     path: '/comments',
     getParentRoute: () => AuthenticatedPageRouteRoute,
   } as any)
-const AuthenticatedPageDeleteRoute = AuthenticatedPageDeleteRouteImport.update({
-  id: '/delete',
-  path: '/delete',
-  getParentRoute: () => AuthenticatedPageRouteRoute,
-} as any)
 const AuthenticatedPageEditRoute = AuthenticatedPageEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -207,12 +200,6 @@ const AuthenticatedWikiIdPageCommentsRoute =
     path: '/$page/comments',
     getParentRoute: () => AuthenticatedWikiIdRouteRoute,
   } as any)
-const AuthenticatedWikiIdPageDeleteRoute =
-  AuthenticatedWikiIdPageDeleteRouteImport.update({
-    id: '/$page/delete',
-    path: '/$page/delete',
-    getParentRoute: () => AuthenticatedWikiIdRouteRoute,
-  } as any)
 const AuthenticatedWikiIdPageEditRoute =
   AuthenticatedWikiIdPageEditRouteImport.update({
     id: '/$page/edit',
@@ -258,7 +245,6 @@ export interface FileRoutesByFullPath {
   '/tags': typeof AuthenticatedTagsRoute
   '/$page/attachments': typeof AuthenticatedPageAttachmentsRoute
   '/$page/comments': typeof AuthenticatedPageCommentsRoute
-  '/$page/delete': typeof AuthenticatedPageDeleteRoute
   '/$page/edit': typeof AuthenticatedPageEditRoute
   '/$page/revert': typeof AuthenticatedPageRevertRoute
   '/$wikiId/changes': typeof AuthenticatedWikiIdChangesRoute
@@ -272,7 +258,6 @@ export interface FileRoutesByFullPath {
   '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
   '/$wikiId/$page/attachments': typeof AuthenticatedWikiIdPageAttachmentsRoute
   '/$wikiId/$page/comments': typeof AuthenticatedWikiIdPageCommentsRoute
-  '/$wikiId/$page/delete': typeof AuthenticatedWikiIdPageDeleteRoute
   '/$wikiId/$page/edit': typeof AuthenticatedWikiIdPageEditRoute
   '/$wikiId/$page/revert': typeof AuthenticatedWikiIdPageRevertRoute
   '/$wikiId/tag/$tag': typeof AuthenticatedWikiIdTagTagRoute
@@ -293,7 +278,6 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/$page/attachments': typeof AuthenticatedPageAttachmentsRoute
   '/$page/comments': typeof AuthenticatedPageCommentsRoute
-  '/$page/delete': typeof AuthenticatedPageDeleteRoute
   '/$page/edit': typeof AuthenticatedPageEditRoute
   '/$page/revert': typeof AuthenticatedPageRevertRoute
   '/$wikiId/changes': typeof AuthenticatedWikiIdChangesRoute
@@ -307,7 +291,6 @@ export interface FileRoutesByTo {
   '/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
   '/$wikiId/$page/attachments': typeof AuthenticatedWikiIdPageAttachmentsRoute
   '/$wikiId/$page/comments': typeof AuthenticatedWikiIdPageCommentsRoute
-  '/$wikiId/$page/delete': typeof AuthenticatedWikiIdPageDeleteRoute
   '/$wikiId/$page/edit': typeof AuthenticatedWikiIdPageEditRoute
   '/$wikiId/$page/revert': typeof AuthenticatedWikiIdPageRevertRoute
   '/$wikiId/tag/$tag': typeof AuthenticatedWikiIdTagTagRoute
@@ -332,7 +315,6 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/$page/attachments': typeof AuthenticatedPageAttachmentsRoute
   '/_authenticated/$page/comments': typeof AuthenticatedPageCommentsRoute
-  '/_authenticated/$page/delete': typeof AuthenticatedPageDeleteRoute
   '/_authenticated/$page/edit': typeof AuthenticatedPageEditRoute
   '/_authenticated/$page/revert': typeof AuthenticatedPageRevertRoute
   '/_authenticated/$wikiId/changes': typeof AuthenticatedWikiIdChangesRoute
@@ -346,7 +328,6 @@ export interface FileRoutesById {
   '/_authenticated/$page/history/$version': typeof AuthenticatedPageHistoryVersionRoute
   '/_authenticated/$wikiId/$page/attachments': typeof AuthenticatedWikiIdPageAttachmentsRoute
   '/_authenticated/$wikiId/$page/comments': typeof AuthenticatedWikiIdPageCommentsRoute
-  '/_authenticated/$wikiId/$page/delete': typeof AuthenticatedWikiIdPageDeleteRoute
   '/_authenticated/$wikiId/$page/edit': typeof AuthenticatedWikiIdPageEditRoute
   '/_authenticated/$wikiId/$page/revert': typeof AuthenticatedWikiIdPageRevertRoute
   '/_authenticated/$wikiId/tag/$tag': typeof AuthenticatedWikiIdTagTagRoute
@@ -371,7 +352,6 @@ export interface FileRouteTypes {
     | '/tags'
     | '/$page/attachments'
     | '/$page/comments'
-    | '/$page/delete'
     | '/$page/edit'
     | '/$page/revert'
     | '/$wikiId/changes'
@@ -385,7 +365,6 @@ export interface FileRouteTypes {
     | '/$page/history/$version'
     | '/$wikiId/$page/attachments'
     | '/$wikiId/$page/comments'
-    | '/$wikiId/$page/delete'
     | '/$wikiId/$page/edit'
     | '/$wikiId/$page/revert'
     | '/$wikiId/tag/$tag'
@@ -406,7 +385,6 @@ export interface FileRouteTypes {
     | '/'
     | '/$page/attachments'
     | '/$page/comments'
-    | '/$page/delete'
     | '/$page/edit'
     | '/$page/revert'
     | '/$wikiId/changes'
@@ -420,7 +398,6 @@ export interface FileRouteTypes {
     | '/$page/history/$version'
     | '/$wikiId/$page/attachments'
     | '/$wikiId/$page/comments'
-    | '/$wikiId/$page/delete'
     | '/$wikiId/$page/edit'
     | '/$wikiId/$page/revert'
     | '/$wikiId/tag/$tag'
@@ -444,7 +421,6 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/$page/attachments'
     | '/_authenticated/$page/comments'
-    | '/_authenticated/$page/delete'
     | '/_authenticated/$page/edit'
     | '/_authenticated/$page/revert'
     | '/_authenticated/$wikiId/changes'
@@ -458,7 +434,6 @@ export interface FileRouteTypes {
     | '/_authenticated/$page/history/$version'
     | '/_authenticated/$wikiId/$page/attachments'
     | '/_authenticated/$wikiId/$page/comments'
-    | '/_authenticated/$wikiId/$page/delete'
     | '/_authenticated/$wikiId/$page/edit'
     | '/_authenticated/$wikiId/$page/revert'
     | '/_authenticated/$wikiId/tag/$tag'
@@ -580,13 +555,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPageCommentsRouteImport
       parentRoute: typeof AuthenticatedPageRouteRoute
     }
-    '/_authenticated/$page/delete': {
-      id: '/_authenticated/$page/delete'
-      path: '/delete'
-      fullPath: '/$page/delete'
-      preLoaderRoute: typeof AuthenticatedPageDeleteRouteImport
-      parentRoute: typeof AuthenticatedPageRouteRoute
-    }
     '/_authenticated/$page/edit': {
       id: '/_authenticated/$page/edit'
       path: '/edit'
@@ -685,13 +653,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWikiIdPageCommentsRouteImport
       parentRoute: typeof AuthenticatedWikiIdRouteRoute
     }
-    '/_authenticated/$wikiId/$page/delete': {
-      id: '/_authenticated/$wikiId/$page/delete'
-      path: '/$page/delete'
-      fullPath: '/$wikiId/$page/delete'
-      preLoaderRoute: typeof AuthenticatedWikiIdPageDeleteRouteImport
-      parentRoute: typeof AuthenticatedWikiIdRouteRoute
-    }
     '/_authenticated/$wikiId/$page/edit': {
       id: '/_authenticated/$wikiId/$page/edit'
       path: '/$page/edit'
@@ -733,7 +694,6 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedPageRouteRouteChildren {
   AuthenticatedPageAttachmentsRoute: typeof AuthenticatedPageAttachmentsRoute
   AuthenticatedPageCommentsRoute: typeof AuthenticatedPageCommentsRoute
-  AuthenticatedPageDeleteRoute: typeof AuthenticatedPageDeleteRoute
   AuthenticatedPageEditRoute: typeof AuthenticatedPageEditRoute
   AuthenticatedPageRevertRoute: typeof AuthenticatedPageRevertRoute
   AuthenticatedPageIndexRoute: typeof AuthenticatedPageIndexRoute
@@ -745,7 +705,6 @@ const AuthenticatedPageRouteRouteChildren: AuthenticatedPageRouteRouteChildren =
   {
     AuthenticatedPageAttachmentsRoute: AuthenticatedPageAttachmentsRoute,
     AuthenticatedPageCommentsRoute: AuthenticatedPageCommentsRoute,
-    AuthenticatedPageDeleteRoute: AuthenticatedPageDeleteRoute,
     AuthenticatedPageEditRoute: AuthenticatedPageEditRoute,
     AuthenticatedPageRevertRoute: AuthenticatedPageRevertRoute,
     AuthenticatedPageIndexRoute: AuthenticatedPageIndexRoute,
@@ -767,7 +726,6 @@ interface AuthenticatedWikiIdRouteRouteChildren {
   AuthenticatedWikiIdIndexRoute: typeof AuthenticatedWikiIdIndexRoute
   AuthenticatedWikiIdPageAttachmentsRoute: typeof AuthenticatedWikiIdPageAttachmentsRoute
   AuthenticatedWikiIdPageCommentsRoute: typeof AuthenticatedWikiIdPageCommentsRoute
-  AuthenticatedWikiIdPageDeleteRoute: typeof AuthenticatedWikiIdPageDeleteRoute
   AuthenticatedWikiIdPageEditRoute: typeof AuthenticatedWikiIdPageEditRoute
   AuthenticatedWikiIdPageRevertRoute: typeof AuthenticatedWikiIdPageRevertRoute
   AuthenticatedWikiIdTagTagRoute: typeof AuthenticatedWikiIdTagTagRoute
@@ -787,7 +745,6 @@ const AuthenticatedWikiIdRouteRouteChildren: AuthenticatedWikiIdRouteRouteChildr
     AuthenticatedWikiIdPageAttachmentsRoute:
       AuthenticatedWikiIdPageAttachmentsRoute,
     AuthenticatedWikiIdPageCommentsRoute: AuthenticatedWikiIdPageCommentsRoute,
-    AuthenticatedWikiIdPageDeleteRoute: AuthenticatedWikiIdPageDeleteRoute,
     AuthenticatedWikiIdPageEditRoute: AuthenticatedWikiIdPageEditRoute,
     AuthenticatedWikiIdPageRevertRoute: AuthenticatedWikiIdPageRevertRoute,
     AuthenticatedWikiIdTagTagRoute: AuthenticatedWikiIdTagTagRoute,

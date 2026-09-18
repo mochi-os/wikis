@@ -83,10 +83,6 @@ function targets(slug: string, wiki?: string): Record<string, Target> {
         to: '/$wikiId/$page/comments',
         params: { wikiId: wiki, page: slug },
       },
-      delete: {
-        to: '/$wikiId/$page/delete',
-        params: { wikiId: wiki, page: slug },
-      },
       search: { to: '/$wikiId/search', params: { wikiId: wiki } },
       tags: { to: '/$wikiId/tags', params: { wikiId: wiki } },
       changes: { to: '/$wikiId/changes', params: { wikiId: wiki } },
@@ -98,7 +94,6 @@ function targets(slug: string, wiki?: string): Record<string, Target> {
     edit: { to: '/$page/edit', params: { page: slug } },
     history: { to: '/$page/history', params: { page: slug } },
     comments: { to: '/$page/comments', params: { page: slug } },
-    delete: { to: '/$page/delete', params: { page: slug } },
     search: { to: '/search' },
     tags: { to: '/tags' },
     changes: { to: '/changes' },
@@ -131,6 +126,7 @@ interface PageActionsMenuProps {
   unsubscribable: boolean
   unsubscribing: boolean
   onRename: () => void
+  onDelete: () => void
   onLink: () => void
   onUnsubscribe: () => void
   onRss: (mode: 'changes' | 'comments' | 'all') => void
@@ -145,6 +141,7 @@ export function PageActionsMenu({
   unsubscribable,
   unsubscribing,
   onRename,
+  onDelete,
   onLink,
   onUnsubscribe,
   onRss,
@@ -181,10 +178,10 @@ export function PageActionsMenu({
           {plural(comments, { one: '1 comment', other: '# comments' })}
         </MenuLink>
         {permissions.delete && (
-          <MenuLink target={to.delete}>
+          <DropdownMenuItem onSelect={onDelete}>
             <Trash2 className='size-4' />
             <Trans>Delete</Trans>
-          </MenuLink>
+          </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuLabel>
