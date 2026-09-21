@@ -33,18 +33,20 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
     // Use window.location.pathname since TanStack Router's location is relative to app mount
     const pathname = window.location.pathname
     const firstSegment = pathname.match(/^\/([^/]+)/)?.[1] || ''
-    // Check for entity ID (9-char fingerprint or 50-51 char full ID) or domain entity routing.
-    // When firstSegment === wikiId and it's not an entity ID, we're on a domain-routed page
-    // where the segment is a page slug mismatched as $wikiId (shell iframe has no meta tags).
+    // A 9-character fingerprint or a 50-51 character entity id.
     const ENTITY_ID_RE =
       /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
-    const isEntityContext =
-      isDomainEntityRouting() ||
-      ENTITY_ID_RE.test(firstSegment) ||
-      (firstSegment === wikiId && !ENTITY_ID_RE.test(wikiId))
 
-    // In entity/domain context, use /-/ prefix; in app context, include app path
-    const baseURL = isEntityContext ? `/-/` : `/${firstSegment}/${wikiId}/-/`
+    // On a domain route the entity is the host, so its actions sit at /-/.
+    // A direct entity URL (/<entity>/<page>) addresses them under the
+    // entity; in app context the app path comes first.
+    const baseURL =
+      isDomainEntityRouting() ||
+      (firstSegment === wikiId && !ENTITY_ID_RE.test(wikiId))
+        ? `/-/`
+        : ENTITY_ID_RE.test(firstSegment)
+          ? `/${firstSegment}/-/`
+          : `/${firstSegment}/${wikiId}/-/`
 
     // Use absolute URL path since apiClient interceptor overwrites baseURL
     let info: InfoResponse | null = null
