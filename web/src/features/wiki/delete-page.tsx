@@ -2,35 +2,30 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-import { Link, useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
-import {
-  Button,
-  Separator,
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  getErrorMessage,
-  toast,
-} from '@mochi/web'
-import { Trash2, ArrowLeft } from 'lucide-react'
+import { ConfirmDialog, getErrorMessage, toast } from '@mochi/web'
 import { useDeletePage } from '@/hooks/use-wiki'
 
-interface DeletePageProps {
+interface DeletePageDialogProps {
   wikiId?: string
   slug: string
   title: string
   homePage?: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function DeletePage({
+// Opened from the page actions menu. Delete used to be a route of its own,
+// the only page action other than revert that left the page to confirm.
+export function DeletePageDialog({
   wikiId,
   slug,
   title,
   homePage = 'home',
-}: DeletePageProps) {
+  open,
+  onOpenChange,
+}: DeletePageDialogProps) {
   const { t } = useLingui()
   const deletePage = useDeletePage()
   const navigate = useNavigate()
@@ -38,11 +33,15 @@ export function DeletePage({
   const handleDelete = () => {
     deletePage.mutate(slug, {
       onSuccess: () => {
+        onOpenChange(false)
         toast.success(t`Page "${title}" deleted`)
         if (wikiId) {
-          navigate({ to: '/$wikiId/$page', params: { wikiId, page: homePage } })
+          void navigate({
+            to: '/$wikiId/$page',
+            params: { wikiId, page: homePage },
+          })
         } else {
-          navigate({ to: '/$page', params: { page: homePage } })
+          void navigate({ to: '/$page', params: { page: homePage } })
         }
       },
       onError: (error) => {
@@ -52,49 +51,22 @@ export function DeletePage({
   }
 
   return (
-    <div className='flex items-center justify-center py-12'>
-      <Card className='w-full max-w-md'>
-        <CardHeader>
-          <CardTitle className='flex items-center gap-2'>
-            <Trash2 className='h-5 w-5' />
-            <Trans>Delete page</Trans>
-          </CardTitle>
-          <CardDescription>
-            <Trans>
-              You are about to delete the page <strong>"{title}"</strong> (
-              {slug}). This action can be undone by restoring from history.
-            </Trans>
-          </CardDescription>
-        </CardHeader>
-        <Separator />
-        <CardFooter className='flex justify-between pt-4'>
-          <Button variant='outline' asChild>
-            {wikiId ? (
-              <Link
-                preload={false}
-                to='/$wikiId/$page'
-                params={{ wikiId, page: slug }}
-              >
-                <ArrowLeft className='me-2 h-4 w-4 rtl:rotate-180' />
-                <Trans>Cancel</Trans>
-              </Link>
-            ) : (
-              <Link preload={false} to='/$page' params={{ page: slug }}>
-                <ArrowLeft className='me-2 h-4 w-4 rtl:rotate-180' />
-                <Trans>Cancel</Trans>
-              </Link>
-            )}
-          </Button>
-          <Button
-            variant='destructive'
-            onClick={handleDelete}
-            loading={deletePage.isPending}
-            icon={<Trash2 className='me-2 h-4 w-4' />}
-          >
-            {t`Delete`}
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+    <ConfirmDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t`Delete page`}
+      desc={
+        <p>
+          <Trans>
+            You are about to delete the page <strong>"{title}"</strong> ({slug}
+            ). This action can be undone by restoring from history.
+          </Trans>
+        </p>
+      }
+      confirmText={t`Delete`}
+      destructive
+      isLoading={deletePage.isPending}
+      handleConfirm={handleDelete}
+    />
   )
 }

@@ -767,7 +767,7 @@ function ReplicasTab() {
       </CardHeader>
       <CardContent>
         {replicas.length > 0 ? (
-          <Table>
+          <Table bordered={false}>
             <TableHeader>
               <TableRow>
                 <TableHead>
@@ -947,7 +947,7 @@ function RedirectsTab() {
             className='py-6'
           />
         ) : (
-          <Table>
+          <Table bordered={false}>
             <TableHeader>
               <TableRow>
                 <TableHead>
