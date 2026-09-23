@@ -8,11 +8,11 @@ import { plural } from '@lingui/core/macro'
 import { Trans, useLingui } from '@lingui/react/macro'
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
   Input,
   Label,
   Checkbox,
@@ -102,13 +102,13 @@ export function RenamePageDialog({
   }
 
   const dialogContent = (
-    <DialogContent>
+    <ResponsiveDialogContent>
       <form onSubmit={handleSubmit}>
-        <DialogHeader>
-          <DialogTitle>
+        <ResponsiveDialogHeader>
+          <ResponsiveDialogTitle>
             <Trans>Rename page</Trans>
-          </DialogTitle>
-        </DialogHeader>
+          </ResponsiveDialogTitle>
+        </ResponsiveDialogHeader>
         <div className='grid gap-4 py-4'>
           <div className='grid gap-2'>
             <Label htmlFor='newSlug'>
@@ -134,7 +134,7 @@ export function RenamePageDialog({
             </Label>
           </div>
         </div>
-        <DialogFooter>
+        <ResponsiveDialogFooter>
           <Button
             type='button'
             variant='outline'
@@ -149,14 +149,14 @@ export function RenamePageDialog({
           >
             {t`Rename`}
           </Button>
-        </DialogFooter>
+        </ResponsiveDialogFooter>
       </form>
-    </DialogContent>
+    </ResponsiveDialogContent>
   )
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <ResponsiveDialog open={open} onOpenChange={setOpen}>
       {dialogContent}
-    </Dialog>
+    </ResponsiveDialog>
   )
 }

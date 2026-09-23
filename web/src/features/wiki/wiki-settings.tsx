@@ -35,22 +35,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
   ConfirmDialog,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
   Table,
   TableBody,
   TableCell,
@@ -658,6 +649,10 @@ function ReplicasTab() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [isRemoving, setIsRemoving] = useState(false)
+  const [removeReplica, setRemoveReplica] = useState<{
+    id: string
+    name: string
+  } | null>(null)
 
   const apiUrl = useEntityEndpoint()
 
@@ -695,6 +690,7 @@ function ReplicasTab() {
         }
       )
       void loadReplicas()
+      setRemoveReplica(null)
     } catch {
       // toast already shown
     } finally {
@@ -759,105 +755,107 @@ function ReplicasTab() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <Trans>Replicas</Trans>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {replicas.length > 0 ? (
-          <Table bordered={false}>
-            <TableHeader>
-              <TableRow>
-                <TableHead>
-                  <Trans>Name</Trans>
-                </TableHead>
-                <TableHead>
-                  <Trans>Subscribed</Trans>
-                </TableHead>
-                <TableHead>
-                  <Trans>Last synced</Trans>
-                </TableHead>
-                <TableHead className='w-20'>
-                  <Trans>Actions</Trans>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {replicas.map((replica) => (
-                <TableRow key={replica.id}>
-                  <TableCell>
-                    <DataChip value={replica.name || t`Unknown`} />
-                  </TableCell>
-                  <TableCell className='text-muted-foreground'>
-                    {formatTimestamp(replica.subscribed)}
-                  </TableCell>
-                  <TableCell className='text-muted-foreground'>
-                    {formatTimestamp(replica.synced, t`Never`)}
-                  </TableCell>
-                  <TableCell>
-                    <AlertDialog>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <Trans>Replicas</Trans>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {replicas.length > 0 ? (
+            <Table bordered={false}>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>
+                    <Trans>Name</Trans>
+                  </TableHead>
+                  <TableHead>
+                    <Trans>Subscribed</Trans>
+                  </TableHead>
+                  <TableHead>
+                    <Trans>Last synced</Trans>
+                  </TableHead>
+                  <TableHead className='w-20'>
+                    <Trans>Actions</Trans>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {replicas.map((replica) => (
+                  <TableRow key={replica.id}>
+                    <TableCell>
+                      <DataChip value={replica.name || t`Unknown`} />
+                    </TableCell>
+                    <TableCell className='text-muted-foreground'>
+                      {formatTimestamp(replica.subscribed)}
+                    </TableCell>
+                    <TableCell className='text-muted-foreground'>
+                      {formatTimestamp(replica.synced, t`Never`)}
+                    </TableCell>
+                    <TableCell>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              className='h-8 w-8'
-                              disabled={isRemoving}
-                              aria-label={t`Remove replica ${replica.name || replica.id}`}
-                            >
-                              <X className='h-4 w-4' />
-                            </Button>
-                          </AlertDialogTrigger>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            className='h-8 w-8'
+                            disabled={isRemoving}
+                            aria-label={t`Remove replica ${replica.name || replica.id}`}
+                            onClick={() =>
+                              setRemoveReplica({
+                                id: replica.id,
+                                name: replica.name,
+                              })
+                            }
+                          >
+                            <X className='h-4 w-4' />
+                          </Button>
                         </TooltipTrigger>
                         <TooltipContent>{t`Remove replica ${replica.name || replica.id}`}</TooltipContent>
                       </Tooltip>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            <Trans>Remove replica?</Trans>
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            <Trans>
-                              This will stop sending updates to "
-                              {replica.name || `${replica.id.slice(0, 16)}...`}
-                              ". They can replicate again if they want.
-                            </Trans>
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>
-                            <Trans>Cancel</Trans>
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            loading={isRemoving}
-                            icon={<Minus className='h-4 w-4' />}
-                            onClick={() =>
-                              void handleRemove(replica.id, replica.name)
-                            }
-                          >
-                            <Trans>Remove</Trans>
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <EmptyState
-            icon={Users}
-            title={t`No replicas yet`}
-            description={t`When other wikis replicate this wiki, they will appear here.`}
-            className='py-6'
-          />
-        )}
-      </CardContent>
-    </Card>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <EmptyState
+              icon={Users}
+              title={t`No replicas yet`}
+              description={t`When other wikis replicate this wiki, they will appear here.`}
+              className='py-6'
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      <ConfirmDialog
+        open={removeReplica !== null}
+        onOpenChange={(v) => {
+          if (!v) setRemoveReplica(null)
+        }}
+        title={t`Remove replica?`}
+        desc={
+          <Trans>
+            This will stop sending updates to "
+            {removeReplica?.name || `${removeReplica?.id.slice(0, 16)}...`}".
+            They can replicate again if they want.
+          </Trans>
+        }
+        confirmText={
+          <>
+            <Minus className='h-4 w-4' />
+            <Trans>Remove</Trans>
+          </>
+        }
+        isLoading={isRemoving}
+        handleConfirm={() => {
+          if (removeReplica)
+            void handleRemove(removeReplica.id, removeReplica.name)
+        }}
+      />
+    </>
   )
 }
 
@@ -872,6 +870,7 @@ function RedirectsTab() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteSource, setDeleteSource] = useState<string | null>(null)
 
   const apiUrl = useEntityEndpoint()
 
@@ -912,6 +911,7 @@ function RedirectsTab() {
         }
       )
       void loadRedirects()
+      setDeleteSource(null)
     } catch {
       // toast already shown
     } finally {
@@ -919,117 +919,113 @@ function RedirectsTab() {
     }
   }
 
+  const deletingRedirect = redirects.find((r) => r.source === deleteSource)
+
   return (
-    <Card>
-      <CardHeader>
-        <div className='flex items-center justify-between'>
-          <CardTitle>
-            <Trans>Redirects</Trans>
-          </CardTitle>
-          <AddRedirectDialog onSuccess={loadRedirects} />
-        </div>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <ListSkeleton variant='simple' height='h-12' count={3} />
-        ) : error ? (
-          <GeneralError
-            error={error}
-            minimal
-            mode='inline'
-            reset={() => void loadRedirects()}
-          />
-        ) : redirects.length === 0 ? (
-          <EmptyState
-            icon={CornerDownRight}
-            title={t`No redirects configured`}
-            description={t`Create a redirect to forward one URL to another.`}
-            className='py-6'
-          />
-        ) : (
-          <Table bordered={false}>
-            <TableHeader>
-              <TableRow>
-                <TableHead>
-                  <Trans>Source</Trans>
-                </TableHead>
-                <TableHead></TableHead>
-                <TableHead>
-                  <Trans>Target</Trans>
-                </TableHead>
-                <TableHead>
-                  <Trans>Created</Trans>
-                </TableHead>
-                <TableHead className='w-[50px]'></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {redirects.map((redirect) => (
-                <TableRow key={redirect.source}>
-                  <TableCell>
-                    <ValueLinkChip value={redirect.source} />
-                  </TableCell>
-                  <TableCell>
-                    <ArrowRight className='text-muted-foreground h-4 w-4 rtl:rotate-180' />
-                  </TableCell>
-                  <TableCell>
-                    <ValueLinkChip value={redirect.target} />
-                  </TableCell>
-                  <TableCell className='text-muted-foreground'>
-                    {formatTimestamp(redirect.created)}
-                  </TableCell>
-                  <TableCell>
-                    <AlertDialog>
+    <>
+      <Card>
+        <CardHeader>
+          <div className='flex items-center justify-between'>
+            <CardTitle>
+              <Trans>Redirects</Trans>
+            </CardTitle>
+            <AddRedirectDialog onSuccess={loadRedirects} />
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <ListSkeleton variant='simple' height='h-12' count={3} />
+          ) : error ? (
+            <GeneralError
+              error={error}
+              minimal
+              mode='inline'
+              reset={() => void loadRedirects()}
+            />
+          ) : redirects.length === 0 ? (
+            <EmptyState
+              icon={CornerDownRight}
+              title={t`No redirects configured`}
+              description={t`Create a redirect to forward one URL to another.`}
+              className='py-6'
+            />
+          ) : (
+            <Table bordered={false}>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>
+                    <Trans>Source</Trans>
+                  </TableHead>
+                  <TableHead></TableHead>
+                  <TableHead>
+                    <Trans>Target</Trans>
+                  </TableHead>
+                  <TableHead>
+                    <Trans>Created</Trans>
+                  </TableHead>
+                  <TableHead className='w-[50px]'></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {redirects.map((redirect) => (
+                  <TableRow key={redirect.source}>
+                    <TableCell>
+                      <ValueLinkChip value={redirect.source} />
+                    </TableCell>
+                    <TableCell>
+                      <ArrowRight className='text-muted-foreground h-4 w-4 rtl:rotate-180' />
+                    </TableCell>
+                    <TableCell>
+                      <ValueLinkChip value={redirect.target} />
+                    </TableCell>
+                    <TableCell className='text-muted-foreground'>
+                      {formatTimestamp(redirect.created)}
+                    </TableCell>
+                    <TableCell>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              className='text-muted-foreground'
-                              disabled={isDeleting}
-                              aria-label={t`Delete redirect ${redirect.source}`}
-                            >
-                              <Trash2 className='h-4 w-4' />
-                            </Button>
-                          </AlertDialogTrigger>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            className='text-muted-foreground'
+                            disabled={isDeleting}
+                            aria-label={t`Delete redirect ${redirect.source}`}
+                            onClick={() => setDeleteSource(redirect.source)}
+                          >
+                            <Trash2 className='h-4 w-4' />
+                          </Button>
                         </TooltipTrigger>
                         <TooltipContent>{t`Delete redirect ${redirect.source}`}</TooltipContent>
                       </Tooltip>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            <Trans>Delete redirect?</Trans>
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            <Trans>
-                              This will remove the redirect from "
-                              {redirect.source}" to "{redirect.target}".
-                            </Trans>
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>
-                            <Trans>Cancel</Trans>
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            loading={isDeleting}
-                            onClick={() => void handleDelete(redirect.source)}
-                            className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
-                          >
-                            <Trans>Delete</Trans>
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
-    </Card>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      <ConfirmDialog
+        open={deleteSource !== null}
+        onOpenChange={(v) => {
+          if (!v) setDeleteSource(null)
+        }}
+        title={t`Delete redirect?`}
+        desc={
+          <Trans>
+            This will remove the redirect from "{deleteSource}" to "
+            {deletingRedirect?.target}".
+          </Trans>
+        }
+        confirmText={t`Delete`}
+        destructive
+        isLoading={isDeleting}
+        handleConfirm={() => {
+          if (deleteSource) void handleDelete(deleteSource)
+        }}
+      />
+    </>
   )
 }
 
@@ -1079,20 +1075,20 @@ function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <ResponsiveDialog open={open} onOpenChange={setOpen}>
+      <ResponsiveDialogTrigger asChild>
         <Button>
           <Plus className='me-2 h-4 w-4' />
           <Trans>Add redirect</Trans>
         </Button>
-      </DialogTrigger>
-      <DialogContent>
+      </ResponsiveDialogTrigger>
+      <ResponsiveDialogContent>
         <form onSubmit={(e) => void handleSubmit(e)}>
-          <DialogHeader>
-            <DialogTitle>
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>
               <Trans>Create redirect</Trans>
-            </DialogTitle>
-          </DialogHeader>
+            </ResponsiveDialogTitle>
+          </ResponsiveDialogHeader>
           <div className='grid gap-4 py-4'>
             <div className='space-y-2'>
               <Label htmlFor='source'>
@@ -1117,7 +1113,7 @@ function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
               />
             </div>
           </div>
-          <DialogFooter>
+          <ResponsiveDialogFooter>
             <Button
               type='button'
               variant='outline'
@@ -1132,9 +1128,9 @@ function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
             >
               <Trans>Create redirect</Trans>
             </Button>
-          </DialogFooter>
+          </ResponsiveDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   )
 }

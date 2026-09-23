@@ -22,10 +22,10 @@ import {
   ListSkeleton,
   Separator,
   Skeleton,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
   isImage,
   getFileIcon,
   getErrorMessage,
@@ -493,13 +493,16 @@ export function PageEditor({
       </div>
 
       {/* Insert attachment dialog */}
-      <Dialog open={insertDialogOpen} onOpenChange={setInsertDialogOpen}>
-        <DialogContent className='max-w-2xl'>
-          <DialogHeader>
-            <DialogTitle>
+      <ResponsiveDialog
+        open={insertDialogOpen}
+        onOpenChange={setInsertDialogOpen}
+      >
+        <ResponsiveDialogContent className='sm:max-w-2xl'>
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>
               <Trans>Insert attachment</Trans>
-            </DialogTitle>
-          </DialogHeader>
+            </ResponsiveDialogTitle>
+          </ResponsiveDialogHeader>
 
           {/* Upload button */}
           <div className='flex items-center gap-2'>
@@ -608,8 +611,8 @@ export function PageEditor({
               })}
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
 
       <ConfirmDialog
         open={!!pendingDelete}

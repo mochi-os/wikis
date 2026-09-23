@@ -21,21 +21,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogTrigger,
+  ConfirmDialog,
   toast,
   toastAction,
   getErrorMessage,
@@ -125,6 +117,8 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
   const { formatTimestamp } = useFormat()
   const deleteRedirect = useDeleteRedirect()
 
+  const [showDelete, setShowDelete] = useState(false)
+
   const handleDelete = async () => {
     try {
       await toastAction(deleteRedirect.mutateAsync(redirect.source), {
@@ -132,6 +126,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
         success: t`Redirect "${redirect.source}" deleted`,
         error: (error) => getErrorMessage(error, t`Failed to delete redirect`),
       })
+      setShowDelete(false)
     } catch {
       // toast already shown
     }
@@ -152,49 +147,36 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
         <DataChip value={formatTimestamp(redirect.created)} copyable={false} />
       </TableCell>
       <TableCell>
-        <AlertDialog>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='text-muted-foreground'
-                  aria-label={t`Delete redirect ${redirect.source}`}
-                >
-                  <Trash2 className='h-4 w-4' />
-                </Button>
-              </AlertDialogTrigger>
-            </TooltipTrigger>
-            <TooltipContent>{t`Delete redirect ${redirect.source}`}</TooltipContent>
-          </Tooltip>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                <Trans>Delete redirect?</Trans>
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                <Trans>
-                  This will remove the redirect from "{redirect.source}" to "
-                  {redirect.target}". Users visiting the source URL will no
-                  longer be redirected.
-                </Trans>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>
-                <Trans>Cancel</Trans>
-              </AlertDialogCancel>
-              <AlertDialogAction
-                loading={deleteRedirect.isPending}
-                onClick={() => void handleDelete()}
-                className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
-              >
-                <Trans>Delete</Trans>
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant='ghost'
+              size='icon'
+              className='text-muted-foreground'
+              aria-label={t`Delete redirect ${redirect.source}`}
+              onClick={() => setShowDelete(true)}
+            >
+              <Trash2 className='h-4 w-4' />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t`Delete redirect ${redirect.source}`}</TooltipContent>
+        </Tooltip>
+        <ConfirmDialog
+          open={showDelete}
+          onOpenChange={setShowDelete}
+          title={t`Delete redirect?`}
+          desc={
+            <Trans>
+              This will remove the redirect from "{redirect.source}" to "
+              {redirect.target}". Users visiting the source URL will no longer
+              be redirected.
+            </Trans>
+          }
+          confirmText={t`Delete`}
+          destructive
+          isLoading={deleteRedirect.isPending}
+          handleConfirm={() => void handleDelete()}
+        />
       </TableCell>
     </TableRow>
   )
@@ -237,20 +219,20 @@ function AddRedirectDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <ResponsiveDialog open={open} onOpenChange={setOpen}>
+      <ResponsiveDialogTrigger asChild>
         <Button>
           <Plus className='me-2 h-4 w-4' />
           <Trans>Add redirect</Trans>
         </Button>
-      </DialogTrigger>
-      <DialogContent>
+      </ResponsiveDialogTrigger>
+      <ResponsiveDialogContent>
         <form onSubmit={(e) => void handleSubmit(e)}>
-          <DialogHeader>
-            <DialogTitle>
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>
               <Trans>Create redirect</Trans>
-            </DialogTitle>
-          </DialogHeader>
+            </ResponsiveDialogTitle>
+          </ResponsiveDialogHeader>
           <div className='grid gap-4 py-4'>
             <div className='space-y-2'>
               <Label htmlFor='source'>
@@ -275,7 +257,7 @@ function AddRedirectDialog() {
               />
             </div>
           </div>
-          <DialogFooter>
+          <ResponsiveDialogFooter>
             <Button
               type='button'
               variant='outline'
@@ -290,10 +272,10 @@ function AddRedirectDialog() {
             >
               <Trans>Create redirect</Trans>
             </Button>
-          </DialogFooter>
+          </ResponsiveDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   )
 }
 
