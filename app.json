@@ -5,7 +5,7 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 {
-	"version": "3.167",
+	"version": "3.168",
 	"label": "app.name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -66,11 +66,11 @@
 		":wiki/-/attachment/upload": {"function": "action_attachment_upload"},
 		":wiki/-/attachment/update": {"function": "action_attachment_update"},
 		":wiki/-/attachment/delete": {"function": "action_attachment_delete"},
-		":wiki/-/attachments/:id": {"function": "action_attachment", "public": true},
-		":wiki/-/attachments/:id/thumbnail": {"function": "action_attachment_thumbnail", "public": true},
-		":wiki/-/attachments/:id/preview": {"function": "action_attachment_preview", "public": true},
-		":wiki/-/comment/:comment/asset/:asset": {"function": "action_comment_asset", "public": true},
-		":wiki/-/revision/:revision/asset/:asset": {"function": "action_revision_asset", "public": true},
+		":wiki/-/attachments/:id": {"function": "action_attachment", "public": true, "asset": true},
+		":wiki/-/attachments/:id/thumbnail": {"function": "action_attachment_thumbnail", "public": true, "asset": true},
+		":wiki/-/attachments/:id/preview": {"function": "action_attachment_preview", "public": true, "asset": true},
+		":wiki/-/comment/:comment/asset/:asset": {"function": "action_comment_asset", "public": true, "asset": true},
+		":wiki/-/revision/:revision/asset/:asset": {"function": "action_revision_asset", "public": true, "asset": true},
 		":wiki/assets": {"files": "web/dist/assets", "public": true},
 		":wiki/images": {"files": "web/dist/images", "public": true},
 		":wiki/:page/assets": {"files": "web/dist/assets", "public": true},

@@ -105,6 +105,11 @@ msgstr "{count, plural, one {#น} other {#น}}"
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#สัป} other {#สัป}}"
 
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "{day}, {from} to {to}"
+msgstr "{day} {from} ถึง {to}"
+
 #: src/features/wiki/attachments-page.tsx
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# เอกสาร} other {# เอกสาร}}"
@@ -117,6 +122,15 @@ msgstr "ชื่อ {entityLabel}"
 #: src/features/wiki/page-editor.tsx
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, other {อัปโหลด # ไฟล์แล้ว}}"
+
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "{from} to {to}"
+msgstr "{from} ถึง {to}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+msgid "{hidden, plural, one {+# more} other {+# more}}"
+msgstr "{hidden, plural, other {+# รายการ}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -331,6 +345,11 @@ msgstr "เพิ่มมุมมอง"
 msgid "AI"
 msgstr "AI"
 
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "All day"
+msgstr "ตลอดวัน"
+
 #: src/features/wiki/attachments-page.tsx
 msgid "All files"
 msgstr "ไฟล์ทั้งหมด"
@@ -437,6 +456,10 @@ msgstr "คุณแน่ใจหรือไม่ว่าต้องกา
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx
 msgid "Ascending"
 msgstr "จากน้อยไปมาก"
+
+#: ../../../lib/web/src/components/timezone-select.tsx
+msgid "At sea"
+msgstr "ในทะเล"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Attach comment files"
@@ -621,6 +644,10 @@ msgstr "เรียกดูหน้าตามแท็ก คลิกแ�
 msgid "Browser notifications"
 msgstr "การแจ้งเตือนของเบราว์เซอร์"
 
+#: ../../../lib/web/src/features/accounts/types.ts
+msgid "Calendar server"
+msgstr "เซิร์ฟเวอร์ปฏิทิน"
+
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Camera permission denied"
 msgstr "สิทธิ์กล้องถูกปฏิเสธ"
@@ -693,6 +720,11 @@ msgstr "เปลี่ยนแล้ว"
 msgid "Changed {field}"
 msgstr "เปลี่ยน {field}"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Changed occurrence"
+msgstr "ครั้งที่ถูกเปลี่ยนแปลง"
+
 #: src/features/wiki/page-actions-menu.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Changes"
@@ -720,6 +752,10 @@ msgstr "ช่องทำเครื่องหมาย"
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Checklist"
 msgstr "เช็คลิสต์"
+
+#: ../../../lib/web/src/components/ui/date-picker.tsx
+msgid "Choose a date"
+msgstr "เลือกวันที่"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 msgid "Choose a game from the sidebar or start a new one."
@@ -789,6 +825,7 @@ msgid "Collapse sidebar"
 msgstr "ย่อแถบด้านข้าง"
 
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 msgid "Colour"
 msgstr "สี"
 
@@ -882,6 +919,10 @@ msgstr "ดำเนินการต่อ"
 msgid "Continue with {label}"
 msgstr "ดำเนินการต่อด้วย {label}"
 
+#: ../../../lib/web/src/features/accounts/account-add.tsx
+msgid "Continue with {providerLabel}"
+msgstr "ดำเนินการต่อด้วย {providerLabel}"
+
 #: ../../../lib/web/src/lib/toast-utils.ts
 msgid "Copied"
 msgstr "คัดลอกแล้ว"
@@ -890,6 +931,10 @@ msgstr "คัดลอกแล้ว"
 msgid "Copied to clipboard"
 msgstr "คัดลอกไปยังคลิปบอร์ดแล้ว"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copy"
 msgstr "คัดลอก"
@@ -1323,6 +1368,10 @@ msgstr "รหัสอีเมล"
 #: src/features/wiki/attachments-page.tsx
 msgid "Embed link copied"
 msgstr "คัดลอกลิงก์ฝังแล้ว"
+
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Ends before it starts"
+msgstr "สิ้นสุดก่อนเริ่มต้น"
 
 #: src/features/wiki/search-page.tsx
 msgid "Enter a search term"
@@ -1888,7 +1937,7 @@ msgstr "จัดการหมวดหมู่"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 msgid "Manual"
-msgstr "คู่มือ"
+msgstr "ด้วยตนเอง"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
@@ -1943,6 +1992,10 @@ msgstr "การกลั่นกรอง"
 msgid "Monday"
 msgstr "วันจันทร์"
 
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Month"
+msgstr "เดือน"
+
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "More options"
 msgstr "ตัวเลือกเพิ่มเติม"
@@ -1954,6 +2007,13 @@ msgstr "ย้ายแล้ว"
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Moved {field}"
 msgstr "ย้าย {field}"
+
+#. placeholder {0}: dayName(current.day)
+#. placeholder {0}: dayName(dragging.day)
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Moving to {0}"
+msgstr "กำลังย้ายไปยัง {0}"
 
 #: src/features/wiki/page-editor.tsx
 msgid "my-page-name"
@@ -2044,6 +2104,14 @@ msgstr "new-page-name"
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
 msgid "Next image"
 msgstr "รูปถัดไป"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Next month"
+msgstr "เดือนถัดไป"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Next year"
+msgstr "ปีถัดไป"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
 msgid "No {parentClassNames} to add to"
@@ -2405,6 +2473,14 @@ msgstr "ดูตัวอย่าง"
 msgid "Previous image"
 msgstr "รูปก่อนหน้า"
 
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Previous month"
+msgstr "เดือนก่อนหน้า"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Previous year"
+msgstr "ปีก่อนหน้า"
+
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Privacy"
@@ -2620,6 +2696,11 @@ msgstr "เปลี่ยนชื่อหน้า"
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx
 msgid "Rename this board column"
 msgstr "เปลี่ยนชื่อคอลัมน์ของบอร์ดนี้"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Repeats"
+msgstr "ทำซ้ำ"
 
 #: src/hooks/use-rss-copy.ts
 msgid "Replace"
@@ -3665,6 +3746,10 @@ msgstr "เขียนความคิดเห็น..."
 #: src/features/wiki/page-editor.tsx
 msgid "Write your content here using Markdown..."
 msgstr "เขียนเนื้อหาของคุณที่นี่โดยใช้ Markdown..."
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Year"
+msgstr "ปี"
 
 #: src/features/wiki/delete-page.tsx
 msgid "You are about to delete the page <0>\"{title}\"</0> ({slug}). This action can be undone by restoring from history."

@@ -105,6 +105,11 @@ msgstr "{count, plural, one {#min} other {#min}}"
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#lin} other {#lin}}"
 
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "{day}, {from} to {to}"
+msgstr "{day}, {from} hanggang {to}"
+
 #: src/features/wiki/attachments-page.tsx
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# dokumento} other {# dokumento}}"
@@ -117,6 +122,15 @@ msgstr "Pangalan ng {entityLabel}"
 #: src/features/wiki/page-editor.tsx
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# file ang na-upload} other {# (na) file ang na-upload}}"
+
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "{from} to {to}"
+msgstr "{from} hanggang {to}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+msgid "{hidden, plural, one {+# more} other {+# more}}"
+msgstr "{hidden, plural, one {+# pa} other {+# pa}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -331,6 +345,11 @@ msgstr "Magdagdag ng view"
 msgid "AI"
 msgstr "AI"
 
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "All day"
+msgstr "Buong araw"
+
 #: src/features/wiki/attachments-page.tsx
 msgid "All files"
 msgstr "Lahat ng files"
@@ -437,6 +456,10 @@ msgstr "Sigurado ka bang gusto mong mag-unsubscribe sa wiki na ito?"
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx
 msgid "Ascending"
 msgstr "Pataas"
+
+#: ../../../lib/web/src/components/timezone-select.tsx
+msgid "At sea"
+msgstr "Sa dagat"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Attach comment files"
@@ -621,6 +644,10 @@ msgstr "Mag-browse ng mga page ayon sa tag. I-click ang isang tag para makita la
 msgid "Browser notifications"
 msgstr "Mga notification ng browser"
 
+#: ../../../lib/web/src/features/accounts/types.ts
+msgid "Calendar server"
+msgstr "Server ng kalendaryo"
+
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Camera permission denied"
 msgstr "Tinanggihan ang pahintulot sa camera"
@@ -693,6 +720,11 @@ msgstr "Binago"
 msgid "Changed {field}"
 msgstr "Binago ang {field}"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Changed occurrence"
+msgstr "Binagong pag-ulit"
+
 #: src/features/wiki/page-actions-menu.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Changes"
@@ -720,6 +752,10 @@ msgstr "Checkbox"
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Checklist"
 msgstr "Checklist"
+
+#: ../../../lib/web/src/components/ui/date-picker.tsx
+msgid "Choose a date"
+msgstr "Pumili ng petsa"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 msgid "Choose a game from the sidebar or start a new one."
@@ -789,6 +825,7 @@ msgid "Collapse sidebar"
 msgstr "I-collapse ang sidebar"
 
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 msgid "Colour"
 msgstr "Kulay"
 
@@ -882,6 +919,10 @@ msgstr "Magpatuloy"
 msgid "Continue with {label}"
 msgstr "Magpatuloy gamit ang {label}"
 
+#: ../../../lib/web/src/features/accounts/account-add.tsx
+msgid "Continue with {providerLabel}"
+msgstr "Magpatuloy gamit ang {providerLabel}"
+
 #: ../../../lib/web/src/lib/toast-utils.ts
 msgid "Copied"
 msgstr "Nakopya"
@@ -890,6 +931,10 @@ msgstr "Nakopya"
 msgid "Copied to clipboard"
 msgstr "Nakopya sa clipboard"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copy"
 msgstr "Kopyahin"
@@ -1323,6 +1368,10 @@ msgstr "Code ng email"
 #: src/features/wiki/attachments-page.tsx
 msgid "Embed link copied"
 msgstr "Nakopya ang embed link"
+
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Ends before it starts"
+msgstr "Nagtatapos bago magsimula"
 
 #: src/features/wiki/search-page.tsx
 msgid "Enter a search term"
@@ -1943,6 +1992,10 @@ msgstr "Moderasyon"
 msgid "Monday"
 msgstr "Lunes"
 
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Month"
+msgstr "Buwan"
+
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "More options"
 msgstr "Iba pang opsyon"
@@ -1954,6 +2007,13 @@ msgstr "Inilipat"
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Moved {field}"
 msgstr "Inilipat ang {field}"
+
+#. placeholder {0}: dayName(current.day)
+#. placeholder {0}: dayName(dragging.day)
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Moving to {0}"
+msgstr "Inililipat sa {0}"
 
 #: src/features/wiki/page-editor.tsx
 msgid "my-page-name"
@@ -2044,6 +2104,14 @@ msgstr "bagong-pangalan-ng-pahina"
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
 msgid "Next image"
 msgstr "Susunod na imahe"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Next month"
+msgstr "Susunod na buwan"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Next year"
+msgstr "Susunod na taon"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
 msgid "No {parentClassNames} to add to"
@@ -2405,6 +2473,14 @@ msgstr "Preview"
 msgid "Previous image"
 msgstr "Nakaraang imahe"
 
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Previous month"
+msgstr "Nakaraang buwan"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Previous year"
+msgstr "Nakaraang taon"
+
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Privacy"
@@ -2620,6 +2696,11 @@ msgstr "Palitan ang pangalan ng pahina"
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx
 msgid "Rename this board column"
 msgstr "Palitan ang pangalan ng board column na ito"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Repeats"
+msgstr "Paulit-ulit"
 
 #: src/hooks/use-rss-copy.ts
 msgid "Replace"
@@ -3665,6 +3746,10 @@ msgstr "Sumulat ng komento..."
 #: src/features/wiki/page-editor.tsx
 msgid "Write your content here using Markdown..."
 msgstr "Isulat ang iyong nilalaman dito gamit ang Markdown..."
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Year"
+msgstr "Taon"
 
 #: src/features/wiki/delete-page.tsx
 msgid "You are about to delete the page <0>\"{title}\"</0> ({slug}). This action can be undone by restoring from history."

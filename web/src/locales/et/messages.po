@@ -105,6 +105,11 @@ msgstr "{count, plural, one {#min} other {#min}}"
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#näd} other {#näd}}"
 
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "{day}, {from} to {to}"
+msgstr "{day}, {from} kuni {to}"
+
 #: src/features/wiki/attachments-page.tsx
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# dokument} other {# dokumenti}}"
@@ -117,6 +122,15 @@ msgstr "{entityLabel} nimi"
 #: src/features/wiki/page-editor.tsx
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# fail üles laaditud} other {# faili üles laaditud}}"
+
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "{from} to {to}"
+msgstr "{from} kuni {to}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+msgid "{hidden, plural, one {+# more} other {+# more}}"
+msgstr "{hidden, plural, one {+# veel} other {+# veel}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -331,6 +345,11 @@ msgstr "Lisa vaade"
 msgid "AI"
 msgstr "AI"
 
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "All day"
+msgstr "Kogu päev"
+
 #: src/features/wiki/attachments-page.tsx
 msgid "All files"
 msgstr "Kõik failid"
@@ -437,6 +456,10 @@ msgstr "Kas oled kindel, et soovid sellest wikist lahti tellida?"
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx
 msgid "Ascending"
 msgstr "Kasvav"
+
+#: ../../../lib/web/src/components/timezone-select.tsx
+msgid "At sea"
+msgstr "Merel"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Attach comment files"
@@ -621,6 +644,10 @@ msgstr "Sirvi lehti siltide järgi. Klõpsa sildil, et näha kõiki selle sildig
 msgid "Browser notifications"
 msgstr "Brauseri teavitused"
 
+#: ../../../lib/web/src/features/accounts/types.ts
+msgid "Calendar server"
+msgstr "Kalendriserver"
+
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Camera permission denied"
 msgstr "Kaamera luba keelati"
@@ -693,6 +720,11 @@ msgstr "Muudetud"
 msgid "Changed {field}"
 msgstr "{field} muudetud"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Changed occurrence"
+msgstr "Muudetud kordus"
+
 #: src/features/wiki/page-actions-menu.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Changes"
@@ -720,6 +752,10 @@ msgstr "Märkeruut"
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Checklist"
 msgstr "Kontrollnimekiri"
+
+#: ../../../lib/web/src/components/ui/date-picker.tsx
+msgid "Choose a date"
+msgstr "Vali kuupäev"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 msgid "Choose a game from the sidebar or start a new one."
@@ -789,6 +825,7 @@ msgid "Collapse sidebar"
 msgstr "Sulge külgriba"
 
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 msgid "Colour"
 msgstr "Värv"
 
@@ -882,6 +919,10 @@ msgstr "Jätka"
 msgid "Continue with {label}"
 msgstr "Jätka teenusega {label}"
 
+#: ../../../lib/web/src/features/accounts/account-add.tsx
+msgid "Continue with {providerLabel}"
+msgstr "Jätka teenusega {providerLabel}"
+
 #: ../../../lib/web/src/lib/toast-utils.ts
 msgid "Copied"
 msgstr "Kopeeritud"
@@ -890,6 +931,10 @@ msgstr "Kopeeritud"
 msgid "Copied to clipboard"
 msgstr "Kopeeritud lõikelauale"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copy"
 msgstr "Kopeeri"
@@ -1323,6 +1368,10 @@ msgstr "E-posti kood"
 #: src/features/wiki/attachments-page.tsx
 msgid "Embed link copied"
 msgstr "Manustamise link kopeeritud"
+
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Ends before it starts"
+msgstr "Lõpeb enne algust"
 
 #: src/features/wiki/search-page.tsx
 msgid "Enter a search term"
@@ -1943,6 +1992,10 @@ msgstr "Modereerimine"
 msgid "Monday"
 msgstr "Esmaspäev"
 
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Month"
+msgstr "Kuu"
+
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "More options"
 msgstr "Rohkem valikuid"
@@ -1954,6 +2007,13 @@ msgstr "Teisaldatud"
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Moved {field}"
 msgstr "{field} teisaldatud"
+
+#. placeholder {0}: dayName(current.day)
+#. placeholder {0}: dayName(dragging.day)
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Moving to {0}"
+msgstr "Teisaldamine kuupäevale {0}"
 
 #: src/features/wiki/page-editor.tsx
 msgid "my-page-name"
@@ -2044,6 +2104,14 @@ msgstr "uue-lehe-nimi"
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
 msgid "Next image"
 msgstr "Järgmine pilt"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Next month"
+msgstr "Järgmine kuu"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Next year"
+msgstr "Järgmine aasta"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
 msgid "No {parentClassNames} to add to"
@@ -2405,6 +2473,14 @@ msgstr "Eelvaade"
 msgid "Previous image"
 msgstr "Eelmine pilt"
 
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Previous month"
+msgstr "Eelmine kuu"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Previous year"
+msgstr "Eelmine aasta"
+
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Privacy"
@@ -2620,6 +2696,11 @@ msgstr "Nimeta leht ümber"
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx
 msgid "Rename this board column"
 msgstr "Nimeta see tahvli veerg ümber"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Repeats"
+msgstr "Kordub"
 
 #: src/hooks/use-rss-copy.ts
 msgid "Replace"
@@ -3665,6 +3746,10 @@ msgstr "Kirjuta kommentaar..."
 #: src/features/wiki/page-editor.tsx
 msgid "Write your content here using Markdown..."
 msgstr "Kirjuta oma sisu siia, kasutades Markdownit..."
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Year"
+msgstr "Aasta"
 
 #: src/features/wiki/delete-page.tsx
 msgid "You are about to delete the page <0>\"{title}\"</0> ({slug}). This action can be undone by restoring from history."

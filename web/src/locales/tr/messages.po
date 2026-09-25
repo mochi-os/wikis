@@ -105,6 +105,11 @@ msgstr "{count, plural, one {#dk} other {#dk}}"
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#hf} other {#hf}}"
 
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "{day}, {from} to {to}"
+msgstr "{day}, {from} - {to}"
+
 #: src/features/wiki/attachments-page.tsx
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# belge} other {# belge}}"
@@ -117,6 +122,15 @@ msgstr "{entityLabel} adı"
 #: src/features/wiki/page-editor.tsx
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# dosya yüklendi} other {# dosya yüklendi}}"
+
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "{from} to {to}"
+msgstr "{from} - {to}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+msgid "{hidden, plural, one {+# more} other {+# more}}"
+msgstr "{hidden, plural, one {+# daha} other {+# daha}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -331,6 +345,11 @@ msgstr "Görünüm ekle"
 msgid "AI"
 msgstr "AI"
 
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "All day"
+msgstr "Tüm gün"
+
 #: src/features/wiki/attachments-page.tsx
 msgid "All files"
 msgstr "Tüm dosyalar"
@@ -437,6 +456,10 @@ msgstr "Bu wiki aboneliğini iptal etmek istediğinizden emin misiniz?"
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx
 msgid "Ascending"
 msgstr "Artan"
+
+#: ../../../lib/web/src/components/timezone-select.tsx
+msgid "At sea"
+msgstr "Denizde"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Attach comment files"
@@ -621,6 +644,10 @@ msgstr "Sayfalara etikete göre gözatın. O etikete sahip tüm sayfaları görm
 msgid "Browser notifications"
 msgstr "Tarayıcı bildirimleri"
 
+#: ../../../lib/web/src/features/accounts/types.ts
+msgid "Calendar server"
+msgstr "Takvim sunucusu"
+
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Camera permission denied"
 msgstr "Kamera izni reddedildi"
@@ -693,6 +720,11 @@ msgstr "Değiştirildi"
 msgid "Changed {field}"
 msgstr "{field} değiştirildi"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Changed occurrence"
+msgstr "Değiştirilmiş yineleme"
+
 #: src/features/wiki/page-actions-menu.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Changes"
@@ -720,6 +752,10 @@ msgstr "Onay kutusu"
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Checklist"
 msgstr "Kontrol listesi"
+
+#: ../../../lib/web/src/components/ui/date-picker.tsx
+msgid "Choose a date"
+msgstr "Tarih seçin"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 msgid "Choose a game from the sidebar or start a new one."
@@ -789,6 +825,7 @@ msgid "Collapse sidebar"
 msgstr "Kenar çubuğunu daralt"
 
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 msgid "Colour"
 msgstr "Renk"
 
@@ -882,6 +919,10 @@ msgstr "Devam et"
 msgid "Continue with {label}"
 msgstr "{label} ile devam et"
 
+#: ../../../lib/web/src/features/accounts/account-add.tsx
+msgid "Continue with {providerLabel}"
+msgstr "{providerLabel} ile devam et"
+
 #: ../../../lib/web/src/lib/toast-utils.ts
 msgid "Copied"
 msgstr "Kopyalandı"
@@ -890,6 +931,10 @@ msgstr "Kopyalandı"
 msgid "Copied to clipboard"
 msgstr "Panoya kopyalandı"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copy"
 msgstr "Kopyala"
@@ -1323,6 +1368,10 @@ msgstr "E-posta kodu"
 #: src/features/wiki/attachments-page.tsx
 msgid "Embed link copied"
 msgstr "Yerleştirme bağlantısı kopyalandı"
+
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Ends before it starts"
+msgstr "Başlamadan önce bitiyor"
 
 #: src/features/wiki/search-page.tsx
 msgid "Enter a search term"
@@ -1943,6 +1992,10 @@ msgstr "Denetim"
 msgid "Monday"
 msgstr "Pazartesi"
 
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Month"
+msgstr "Ay"
+
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "More options"
 msgstr "Diğer seçenekler"
@@ -1954,6 +2007,13 @@ msgstr "Taşındı"
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Moved {field}"
 msgstr "{field} taşındı"
+
+#. placeholder {0}: dayName(current.day)
+#. placeholder {0}: dayName(dragging.day)
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Moving to {0}"
+msgstr "{0} tarihine taşınıyor"
 
 #: src/features/wiki/page-editor.tsx
 msgid "my-page-name"
@@ -2044,6 +2104,14 @@ msgstr "yeni-sayfa-adi"
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
 msgid "Next image"
 msgstr "Sonraki görsel"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Next month"
+msgstr "Sonraki ay"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Next year"
+msgstr "Sonraki yıl"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
 msgid "No {parentClassNames} to add to"
@@ -2405,6 +2473,14 @@ msgstr "Önizleme"
 msgid "Previous image"
 msgstr "Önceki görsel"
 
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Previous month"
+msgstr "Önceki ay"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Previous year"
+msgstr "Önceki yıl"
+
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Privacy"
@@ -2620,6 +2696,11 @@ msgstr "Sayfayı yeniden adlandır"
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx
 msgid "Rename this board column"
 msgstr "Bu pano sütununu yeniden adlandır"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Repeats"
+msgstr "Yinelenir"
 
 #: src/hooks/use-rss-copy.ts
 msgid "Replace"
@@ -3665,6 +3746,10 @@ msgstr "Bir yorum yaz..."
 #: src/features/wiki/page-editor.tsx
 msgid "Write your content here using Markdown..."
 msgstr "İçeriğini buraya Markdown kullanarak yaz..."
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Year"
+msgstr "Yıl"
 
 #: src/features/wiki/delete-page.tsx
 msgid "You are about to delete the page <0>\"{title}\"</0> ({slug}). This action can be undone by restoring from history."

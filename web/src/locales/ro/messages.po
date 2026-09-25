@@ -105,6 +105,11 @@ msgstr "{count, plural, one {#min} other {#min}}"
 msgid "{count, plural, one {#w} other {#w}}"
 msgstr "{count, plural, one {#săpt} other {#săpt}}"
 
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "{day}, {from} to {to}"
+msgstr "{day}, de la {from} la {to}"
+
 #: src/features/wiki/attachments-page.tsx
 msgid "{documentCount, plural, one {# document} other {# documents}}"
 msgstr "{documentCount, plural, one {# document} few {# documente} other {# de documente}}"
@@ -117,6 +122,15 @@ msgstr "Numele {entityLabel}"
 #: src/features/wiki/page-editor.tsx
 msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# fișier încărcat} few {# fișiere încărcate} other {# de fișiere încărcate}}"
+
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "{from} to {to}"
+msgstr "de la {from} la {to}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+msgid "{hidden, plural, one {+# more} other {+# more}}"
+msgstr "{hidden, plural, one {+# în plus} few {+# în plus} other {+# în plus}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -331,6 +345,11 @@ msgstr "Adaugă vizualizare"
 msgid "AI"
 msgstr "AI"
 
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "All day"
+msgstr "Toată ziua"
+
 #: src/features/wiki/attachments-page.tsx
 msgid "All files"
 msgstr "Toate fișierele"
@@ -437,6 +456,10 @@ msgstr "Sigur vrei să te dezabonezi de la acest wiki?"
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx
 msgid "Ascending"
 msgstr "Crescător"
+
+#: ../../../lib/web/src/components/timezone-select.tsx
+msgid "At sea"
+msgstr "Pe mare"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Attach comment files"
@@ -621,6 +644,10 @@ msgstr "Răsfoiește paginile după etichetă. Apasă pe o etichetă pentru a ve
 msgid "Browser notifications"
 msgstr "Notificări de browser"
 
+#: ../../../lib/web/src/features/accounts/types.ts
+msgid "Calendar server"
+msgstr "Server de calendar"
+
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Camera permission denied"
 msgstr "Permisiunea pentru cameră a fost refuzată"
@@ -693,6 +720,11 @@ msgstr "Modificat"
 msgid "Changed {field}"
 msgstr "Modificat {field}"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Changed occurrence"
+msgstr "Apariție modificată"
+
 #: src/features/wiki/page-actions-menu.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Changes"
@@ -720,6 +752,10 @@ msgstr "Casetă de selectare"
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Checklist"
 msgstr "Listă de verificare"
+
+#: ../../../lib/web/src/components/ui/date-picker.tsx
+msgid "Choose a date"
+msgstr "Alegeți o dată"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 msgid "Choose a game from the sidebar or start a new one."
@@ -789,6 +825,7 @@ msgid "Collapse sidebar"
 msgstr "Restrânge bara laterală"
 
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx
+#: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 msgid "Colour"
 msgstr "Culoare"
 
@@ -882,6 +919,10 @@ msgstr "Continuă"
 msgid "Continue with {label}"
 msgstr "Continuă cu {label}"
 
+#: ../../../lib/web/src/features/accounts/account-add.tsx
+msgid "Continue with {providerLabel}"
+msgstr "Continuă cu {providerLabel}"
+
 #: ../../../lib/web/src/lib/toast-utils.ts
 msgid "Copied"
 msgstr "Copiat"
@@ -890,6 +931,10 @@ msgstr "Copiat"
 msgid "Copied to clipboard"
 msgstr "Copiat în clipboard"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copy"
 msgstr "Copiază"
@@ -1323,6 +1368,10 @@ msgstr "Cod email"
 #: src/features/wiki/attachments-page.tsx
 msgid "Embed link copied"
 msgstr "Link de încorporare copiat"
+
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Ends before it starts"
+msgstr "Se termină înainte să înceapă"
 
 #: src/features/wiki/search-page.tsx
 msgid "Enter a search term"
@@ -1943,6 +1992,10 @@ msgstr "Moderare"
 msgid "Monday"
 msgstr "Luni"
 
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Month"
+msgstr "Lună"
+
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "More options"
 msgstr "Mai multe opțiuni"
@@ -1954,6 +2007,13 @@ msgstr "Mutat"
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Moved {field}"
 msgstr "Mutat {field}"
+
+#. placeholder {0}: dayName(current.day)
+#. placeholder {0}: dayName(dragging.day)
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Moving to {0}"
+msgstr "Se mută în {0}"
 
 #: src/features/wiki/page-editor.tsx
 msgid "my-page-name"
@@ -2044,6 +2104,14 @@ msgstr "nume-pagina-noua"
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
 msgid "Next image"
 msgstr "Imaginea următoare"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Next month"
+msgstr "Luna următoare"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Next year"
+msgstr "Anul următor"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
 msgid "No {parentClassNames} to add to"
@@ -2405,6 +2473,14 @@ msgstr "Previzualizare"
 msgid "Previous image"
 msgstr "Imaginea anterioară"
 
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Previous month"
+msgstr "Luna anterioară"
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Previous year"
+msgstr "Anul anterior"
+
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Privacy"
@@ -2620,6 +2696,11 @@ msgstr "Redenumește pagina"
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx
 msgid "Rename this board column"
 msgstr "Redenumește această coloană a tablei"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Repeats"
+msgstr "Se repetă"
 
 #: src/hooks/use-rss-copy.ts
 msgid "Replace"
@@ -3665,6 +3746,10 @@ msgstr "Scrie un comentariu..."
 #: src/features/wiki/page-editor.tsx
 msgid "Write your content here using Markdown..."
 msgstr "Scrie conținutul tău aici folosind Markdown..."
+
+#: ../../../lib/web/src/components/calendar/date-header.tsx
+msgid "Year"
+msgstr "An"
 
 #: src/features/wiki/delete-page.tsx
 msgid "You are about to delete the page <0>\"{title}\"</0> ({slug}). This action can be undone by restoring from history."
