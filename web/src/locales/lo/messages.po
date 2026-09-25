@@ -83,7 +83,7 @@ msgstr "{0} ໜ້າ"
 #. placeholder {0}: // Copyright © 2026 Mochisoft OÜ // SPDX-License-Identifier: AGPL-3.0-only // This file is part of Mochi, licensed under the GNU AGPL v3 with the // Mochi Application Interface Exception - see license.txt and license-exception.md. import { Link } from '@tanstack/react-router' import type { TagPage } from '@/types/wiki' import { plural, t } from '@lingui/core/macro' import { Trans } from '@lingui/react/macro' import { Badge, Button, EmptyState, useFormat, Separator, Skeleton, } from '@mochi/web' import { Tag as TagIcon, FileText, ArrowLeft } from 'lucide-react' interface TagPagesProps { tag: string pages: TagPage[] // Set in class context (/wikis/$wikiId/...) so links stay entity-scoped wikiId?: string } export function TagPages({ tag, pages, wikiId }: TagPagesProps) { const { formatTimestamp } = useFormat() return ( <div className='space-y-6'> {/* Header */} <div className='flex items-center justify-between gap-4'> <div className='flex items-center gap-3'> <TagIcon className='h-6 w-6' /> <h1 className='text-2xl font-bold'> <Trans> Pages tagged{' '} <Badge variant='secondary' className='ms-1 text-lg'> {tag} </Badge> </Trans> </h1> </div> <Button variant='outline' asChild> <Link preload={false} to={wikiId ? '/$wikiId/tags' : '/tags'} params={wikiId ? { wikiId } : {}} > <ArrowLeft className='me-2 h-4 w-4 rtl:rotate-180' /> <Trans>All tags</Trans> </Link> </Button> </div> <p className='text-muted-foreground'> <Trans> {plural(pages.length, { one: '# page', other: '# pages' })} with this tag. </Trans> </p> <Separator /> {/* Pages list */} {pages.length === 0 ? ( <EmptyState icon={TagIcon} title={t`No pages found with this tag`} description={t`Try a different tag.`} className='py-8' /> ) : ( <div className='space-y-2'> {pages.map((page) => ( <Link preload={false} key={page.page} to={wikiId ? '/$wikiId/$page' : '/$page'} params={ wikiId ? { wikiId, page: page.page } : { page: page.page } } className='hover:bg-hover group flex items-center gap-4 rounded-lg border p-4 transition-colors' > <FileText className='text-muted-foreground h-5 w-5 shrink-0' /> <div className='min-w-0 flex-1'> <h3 className='font-semibold group-hover:underline'> {page.title} </h3> <p className='text-muted-foreground text-sm'> <Trans>Updated {formatTimestamp(page.updated)}</Trans> </p> </div> </Link> ))} </div> )} </div> ) } export function TagPagesSkeleton() { return ( <div className='space-y-6'> <div className='flex items-center justify-between gap-4'> <div className='flex items-center gap-3'> <Skeleton className='h-6 w-6' /> <Skeleton className='h-8 w-48' /> </div> <Skeleton className='h-9 w-24' /> </div> <Skeleton className='h-5 w-32' /> <Separator /> <div className='space-y-2'> {[1, 2, 3, 4].map((i) => ( <div key={i} className='flex items-center gap-4 rounded-lg border p-4' > <Skeleton className='h-5 w-5' /> <div className='flex-1 space-y-2'> <Skeleton className='h-5 w-48' /> <Skeleton className='h-4 w-32' /> </div> </div> ))} </div> </div> ) } 
 #: src/features/wiki/tag-pages.tsx
 msgid "{0} with this tag."
-msgstr "{0} ກັບ tag ນີ້."
+msgstr "{0} ກັບແທັກນີ້."
 
 #: src/features/wiki/page-actions-menu.tsx
 msgid "{comments, plural, one {1 comment} other {# comments}}"
@@ -491,7 +491,7 @@ msgstr "ຜູ້ໃຊ້ທີ່ຢືນຢັນແລ້ວ"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Authenticator code"
-msgstr "ລະຫັດ authenticator"
+msgstr "ລະຫັດຢືນຢັນຕົວຕົນ"
 
 #: src/features/wiki/changes-list.tsx
 #: src/features/wiki/page-history.tsx
@@ -814,7 +814,7 @@ msgstr "ປິດແຜງ"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Close panel / cancel"
-msgstr "ປິດ panel / ຍົກເລີກ"
+msgstr "ປິດແຜງ / ຍົກເລີກ"
 
 #: ../../../lib/web/src/components/header-search.tsx
 msgid "Close search"
@@ -1399,7 +1399,7 @@ msgstr "ປ້ອນລະຫັດຈາກອີເມວຂອງທ່ານ
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Enter your authenticator code"
-msgstr "ໃສ່ລະຫັດ authenticator ຂອງທ່ານ"
+msgstr "ໃສ່ລະຫັດຢືນຢັນຕົວຕົນຂອງທ່ານ"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Entity ID"
@@ -1581,7 +1581,7 @@ msgstr "ປ່ຽນຊື່ວິກິລົ້ມເຫຼວ"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 msgid "Failed to reset prompt"
-msgstr "ຣີເຊັດ prompt ລົ້ມເຫຼວ"
+msgstr "ຣີເຊັດພຣອມທ໌ລົ້ມເຫຼວ"
 
 #: src/features/wiki/revert-page.tsx
 msgid "Failed to revert page"
@@ -1606,7 +1606,7 @@ msgstr "ບັນທຶກໜ້າລົ້ມເຫຼວ"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 msgid "Failed to save prompt"
-msgstr "ບັນທຶກ prompt ລົ້ມເຫຼວ"
+msgstr "ບັນທຶກພຣອມທ໌ລົ້ມເຫຼວ"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Failed to save settings"
@@ -1801,7 +1801,7 @@ msgstr "ຮູບພາບ"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Imperial"
-msgstr "Imperial"
+msgstr "ອິມພີຣຽລ"
 
 #: ../../../lib/web/src/features/access/types.ts
 msgid "Including anonymous users"
@@ -1978,7 +1978,7 @@ msgstr "ຂໍ້ຄວາມ"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Metric"
-msgstr "Metric"
+msgstr "ແມັດຕຣິກ"
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Microphone permission denied"
@@ -2068,9 +2068,13 @@ msgid "Never"
 msgstr "ບໍ່ເຄີຍ"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "ໃໝ່"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "ໃໝ່ລ່າສຸດ"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2292,11 +2296,15 @@ msgstr "ບໍ່ພົບຫຍັງ"
 msgid "Notifications: {0}"
 msgstr "ການແຈ້ງເຕືອນ: {0}"
 
-#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Number"
 msgstr "ຕົວເລກ"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
+msgctxt "item number"
+msgid "Number"
+msgstr "ໝາຍເລກ"
 
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
@@ -2427,12 +2435,12 @@ msgstr "ແມ່"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Passkey"
-msgstr "Passkey"
+msgstr "ກະແຈຜ່ານ"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Passkey verification failed. Please try again."
-msgstr "ການຢືນຢັນ passkey ລົ້ມເຫລວ. ກະລຸນາລອງອີກຄັ້ງ."
+msgstr "ການຢືນຢັນກະແຈຜ່ານລົ້ມເຫລວ. ກະລຸນາລອງອີກຄັ້ງ."
 
 #: ../../../lib/web/src/components/restore-banner.tsx
 msgid "Passkeys"
@@ -2440,7 +2448,7 @@ msgstr "ກະແຈຜ່ານ"
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Passkeys are not available in this browser"
-msgstr "Passkeys ບໍ່ສາມາດໃຊ້ໄດ້ໃນບຣາວເຊີນີ້"
+msgstr "ກະແຈຜ່ານບໍ່ສາມາດໃຊ້ໄດ້ໃນບຣາວເຊີນີ້"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Pattern (regex)"
@@ -2500,7 +2508,7 @@ msgstr "ກຳລັງປະມວນຜົນ…"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 msgid "Prompt saved"
-msgstr "ບັນທຶກ prompt ແລ້ວ"
+msgstr "ບັນທຶກພຣອມທ໌ແລ້ວ"
 
 #: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx
 msgid "Properties"
@@ -2508,7 +2516,7 @@ msgstr "ຄຸນສົມບັດ"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
-msgstr "ການແຈ້ງເຕືອນ push"
+msgstr "ການແຈ້ງເຕືອນແບບພຸຊ"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Raised"
@@ -2723,7 +2731,7 @@ msgstr "ລຶບສຳເນົາ \"{displayName}\" ແລ້ວ"
 #: src/features/wiki/wiki-settings.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Replicas"
-msgstr "Replicas"
+msgstr "ສຳເນົາ"
 
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx
@@ -2948,7 +2956,7 @@ msgstr "ກຳລັງຄົ້ນຫາ..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "ເລືອກ"
+msgstr "ລາຍການເລືອກ"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3053,11 +3061,11 @@ msgstr "ການຕັ້ງຄ່າຖືກບັນທຶກແລ້ວ"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"
-msgstr "ສະແດງ classes"
+msgstr "ສະແດງຄລາສ"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show fields"
-msgstr "ສະແດງ fields"
+msgstr "ສະແດງຊ່ອງ"
 
 #: src/features/wiki/revision-view.tsx
 msgid "Show page"
@@ -3141,7 +3149,7 @@ msgstr "ຢຸດການເບິ່ງ"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "ຫົວຂໍ້"
+msgstr "ຜູ້ໃຊ້ ຫຼື ກຸ່ມ"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3196,9 +3204,13 @@ msgstr "ຊິງຄ໌ດຽວນີ້"
 msgid "Syncing..."
 msgstr "ກຳລັງຊິງຄ໌..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "ລະບົບ"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "ລະບົບ"
 
@@ -3208,16 +3220,16 @@ msgstr "ສາລະບານ"
 
 #: src/features/wiki/tag-manager.tsx
 msgid "Tag \"{tag}\" added"
-msgstr "Tag \"{tag}\" ຖືກເພີ່ມແລ້ວ"
+msgstr "ແທັກ \"{tag}\" ຖືກເພີ່ມແລ້ວ"
 
 #: src/features/wiki/tag-manager.tsx
 msgid "Tag \"{tag}\" removed"
-msgstr "Tag \"{tag}\" ຖືກລົບແລ້ວ"
+msgstr "ແທັກ \"{tag}\" ຖືກລົບແລ້ວ"
 
 #: ../../../lib/web/src/components/post-tags.tsx
 #: src/features/wiki/tag-manager.tsx
 msgid "Tag already exists"
-msgstr "Tag ມີຢູ່ແລ້ວ"
+msgstr "ແທັກມີຢູ່ແລ້ວ"
 
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Tag must be 50 characters or less"
@@ -3232,7 +3244,7 @@ msgstr "ແທັກຕ້ອງມີບໍ່ເກີນ 50 ຕົວອັ�
 #: src/routes/_authenticated/tag/$tag.tsx
 #: src/routes/_authenticated/tag/$tag.tsx
 msgid "Tag: {tag}"
-msgstr "Tag: {tag}"
+msgstr "ແທັກ: {tag}"
 
 #: ../../../lib/web/src/components/post-tags.tsx
 #: ../../../lib/web/src/components/post-tags.tsx
@@ -3294,7 +3306,7 @@ msgstr "ໜ້າທີ່ຜູ້ໃຊ້ເຫັນເມື່ອພວກ
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "The passkey request was not answered"
-msgstr "ຄຳຮ້ອງຂໍ passkey ບໍ່ໄດ້ຮັບການຕອບ"
+msgstr "ຄຳຮ້ອງຂໍກະແຈຜ່ານບໍ່ໄດ້ຮັບການຕອບ"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx
 msgid "The requested content could not be found."
@@ -3310,7 +3322,7 @@ msgstr "ການກະທຳນີ້ຄືນບໍ່ໄດ້. ນີ້ຈ�
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "This app is not allowed to use your passkey. Allow it in Settings, under Permissions."
-msgstr "ແອັບນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ passkey ຂອງທ່ານ. ອະນຸຍາດໃນການຕັ້ງຄ່າ, ພາຍໃຕ້ການອະນຸຍາດ."
+msgstr "ແອັບນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ ກະແຈຜ່ານຂອງທ່ານ. ອະນຸຍາດໃນການຕັ້ງຄ່າ, ພາຍໃຕ້ການອະນຸຍາດ."
 
 #: src/hooks/use-rss-copy.ts
 msgid "This feed URL was already issued and cannot be shown again."
@@ -3391,7 +3403,7 @@ msgstr "ມີຄຳຮ້ອງຂໍຫຼາຍເກີນໄປ"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "ເທິງ"
+msgstr "ຍອດນິຍົມ"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3403,7 +3415,7 @@ msgstr "ລອງຄຳຄົ້ນຫາຫຼືຕົວກອງທີ່ແ
 
 #: src/features/wiki/tag-pages.tsx
 msgid "Try a different tag."
-msgstr "ລອງ tag ທີ່ແຕກຕ່າງກັນ."
+msgstr "ລອງແທັກທີ່ແຕກຕ່າງກັນ."
 
 #: ../../../lib/web/src/components/search-entity-page.tsx
 msgid "Try adjusting your search terms"
@@ -3580,7 +3592,7 @@ msgstr "ໃຊ້ເປັນໜ້າຫຼັກ"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Use your passkey"
-msgstr "ໃຊ້ passkey ຂອງທ່ານ"
+msgstr "ໃຊ້ກະແຈຜ່ານຂອງທ່ານ"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 #: ../../../lib/web/src/features/access/access-dialog.tsx
@@ -3744,7 +3756,7 @@ msgstr "Wiki ຖືກຊິງຄ໌"
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Wikis"
-msgstr "Wikis"
+msgstr "ວິກິ"
 
 #: src/features/wiki/page-comments.tsx
 msgid "Write a comment..."
