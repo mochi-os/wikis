@@ -673,19 +673,15 @@ msgstr "카메라를 사용할 수 없음"
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx
 #: ../../../lib/web/src/features/access/access-dialog.tsx
-#: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/accounts/account-add.tsx
 #: ../../../lib/web/src/features/accounts/account-verify.tsx
 #: src/features/wiki/page-editor.tsx
-#: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/rename-page-dialog.tsx
 #: src/features/wiki/revert-page.tsx
 #: src/features/wiki/revert-page.tsx
 #: src/features/wiki/tag-manager.tsx
 #: src/features/wiki/wiki-comment-thread.tsx
-#: src/features/wiki/wiki-settings.tsx
-#: src/features/wiki/wiki-settings.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Cancel"
 msgstr "취소"
@@ -2663,7 +2659,7 @@ msgstr "{name} 제거"
 msgid "Remove access rule"
 msgstr "접근 규칙 제거"
 
-#. placeholder {0}: formatSubject(subject, data.name)
+#. placeholder {0}: formatSubject(removeSubject ?? '', removeData?.name)
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Remove access rule for \"{0}\"?"
 msgstr "\"{0}\"의 접근 규칙을 제거할까요?"
@@ -3356,8 +3352,8 @@ msgstr "이 작업은 게임과 채팅을 영구적으로 삭제합니다. 이 �
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "이 위키는 소스 위키를 구독하고 업데이트를 받아요."
 
-#. placeholder {0}: redirect.source
-#. placeholder {1}: redirect.target
+#. placeholder {0}: deletingRedirect?.source
+#. placeholder {1}: deletingRedirect?.target
 #: src/features/wiki/wiki-settings.tsx
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "이렇게 하면 「{0}」에서 「{1}」로의 리다이렉트가 제거됩니다."
@@ -3368,7 +3364,7 @@ msgstr "이렇게 하면 「{0}」에서 「{1}」로의 리다이렉트가 제�
 msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the source URL will no longer be redirected."
 msgstr "이렇게 하면 「{0}」에서 「{1}」로의 리다이렉트가 제거됩니다. 원본 URL 방문자는 더 이상 리다이렉트되지 않습니다."
 
-#. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
+#. placeholder {0}: removeReplica?.name || `${removeReplica?.id.slice(0, 16)}...`
 #: src/features/wiki/wiki-settings.tsx
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "이렇게 하면 「{0}」(으)로 업데이트 전송이 중단됩니다. 원하는 경우 다시 복제할 수 있습니다."

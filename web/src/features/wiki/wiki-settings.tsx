@@ -1014,8 +1014,8 @@ function RedirectsTab() {
         title={t`Delete redirect?`}
         desc={
           <Trans>
-            This will remove the redirect from "{deleteSource}" to "
-            {deletingRedirect?.target}".
+            This will remove the redirect from "{deletingRedirect?.source}" to
+            "{deletingRedirect?.target}".
           </Trans>
         }
         confirmText={t`Delete`}
