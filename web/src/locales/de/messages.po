@@ -28,6 +28,11 @@ msgstr "(bearbeitet)"
 msgid "(expand)"
 msgstr "(erweitern)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Kein Titel)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(du)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# Datei hochgeladen} other {# Dateien hochgeladen}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} bis {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# weiterer} other {+# weitere}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -624,7 +626,7 @@ msgstr "Blockiert"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Board"
-msgstr "Brett"
+msgstr "Board"
 
 #: ../../../lib/web/src/components/post-tags.tsx
 #: ../../../lib/web/src/components/post-tags.tsx
@@ -701,6 +703,11 @@ msgstr "Antwort abbrechen"
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Cancelled"
 msgstr "Abgebrochen"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Cancelled"
+msgstr "Abgesagt"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -1798,7 +1805,7 @@ msgstr "Bilder"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Imperial"
-msgstr "Imperial"
+msgstr "Angloamerikanisch"
 
 #: ../../../lib/web/src/features/access/types.ts
 msgid "Including anonymous users"
@@ -1886,7 +1893,7 @@ msgstr "Link zu {headingText}"
 
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx
 msgid "Links"
-msgstr "Links"
+msgstr "Verknüpfungen"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "List"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Nie"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Neu"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Neueste"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2216,7 +2227,7 @@ msgstr "Kein Status"
 
 #: src/features/wiki/tag-manager.tsx
 msgid "No tags"
-msgstr "Keine Schlagwörter"
+msgstr "Keine Tags"
 
 #: src/features/wiki/tags-list.tsx
 msgid "No tags found"
@@ -2289,11 +2300,15 @@ msgstr "Nichts gefunden"
 msgid "Notifications: {0}"
 msgstr "Benachrichtigungen: {0}"
 
-#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Number"
 msgstr "Zahl"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
+msgctxt "item number"
+msgid "Number"
+msgstr "Nummer"
 
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
@@ -2614,6 +2629,11 @@ msgstr "Relevanz {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Relevanz {relevance}, Interesse {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Erinnerung"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -2947,7 +2967,7 @@ msgstr "Wird gesucht..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Auswählen"
+msgstr "Auswahl"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3140,7 +3160,7 @@ msgstr "Nicht mehr beobachten"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Betreff"
+msgstr "Benutzer oder Gruppe"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Jetzt synchronisieren"
 msgid "Syncing..."
 msgstr "Wird synchronisiert..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "System"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "System"
 
@@ -3248,6 +3272,11 @@ msgstr "Ziel"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "Ziel-URL"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Vorläufig"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "Zu viele Anfragen"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Oben"
+msgstr "Top"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"

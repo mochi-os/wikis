@@ -28,6 +28,11 @@ msgstr "(hatî sererast kirin)"
 msgid "(expand)"
 msgstr "(berfireh bike)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Bê sernav)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(tu)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# pel hate barkirin} other {# pel hatin barkirin}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "ji {from} heta {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# din} other {+# din}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -589,7 +591,7 @@ msgstr "Vegere wikian"
 #: ../../../lib/web/src/components/banner-section.tsx
 #: ../../../lib/web/src/components/entity-banner.tsx
 msgid "Banner"
-msgstr "Banner"
+msgstr "Pankart"
 
 #: ../../../lib/web/src/components/banner-section.tsx
 msgid "Banner removed"
@@ -624,7 +626,7 @@ msgstr "Blok"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Board"
-msgstr "Tabloya"
+msgstr "Tablo"
 
 #: ../../../lib/web/src/components/post-tags.tsx
 #: ../../../lib/web/src/components/post-tags.tsx
@@ -699,6 +701,11 @@ msgstr "Bersivê betal bike"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "Hat betalkirin"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "Hat betalkirin"
 
@@ -823,7 +830,7 @@ msgstr "Lêgerînê bigire"
 #: ../../../lib/web/src/components/tree-row.tsx
 #: ../../../lib/web/src/components/tree-row.tsx
 msgid "Collapse"
-msgstr "Berhevbike"
+msgstr "Berhev bike"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx
 msgid "Collapse sidebar"
@@ -1234,7 +1241,7 @@ msgstr "Ji geroka webê tespît bike"
 
 #: ../../../lib/web/src/components/person-picker.tsx
 msgid "Directory"
-msgstr "Peldank"
+msgstr "Rêber"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Discard"
@@ -1798,7 +1805,7 @@ msgstr "Wêne"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Imperial"
-msgstr "Imperial"
+msgstr "Împeryal"
 
 #: ../../../lib/web/src/features/access/types.ts
 msgid "Including anonymous users"
@@ -1886,7 +1893,7 @@ msgstr "Lînka {headingText}"
 
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx
 msgid "Links"
-msgstr "Lînka"
+msgstr "Girêdan"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "List"
@@ -1967,7 +1974,7 @@ msgstr "Endam"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 msgid "Menu"
-msgstr "Menu"
+msgstr "Menû"
 
 #: ../../../lib/web/src/components/game/game-chat-input.tsx
 msgid "Message"
@@ -1987,7 +1994,7 @@ msgstr "Dirêjahiya kêmtirîn"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Mochi web"
-msgstr "Mochi web"
+msgstr "Mochi di gerokê de"
 
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "Moderation"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Tu car"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Nû"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Herî nû"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2289,9 +2300,13 @@ msgstr "Tiştek nehat dîtin"
 msgid "Notifications: {0}"
 msgstr "Agahdarî: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "Hejmar"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "Hejmar"
 
@@ -2445,7 +2460,7 @@ msgstr "Şablon (regex)"
 
 #: ../../../lib/web/src/components/person-picker.tsx
 msgid "People"
-msgstr "Kes"
+msgstr "Mirov"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
@@ -2615,6 +2630,11 @@ msgstr "Peywendî {relevance}"
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Peywendî {relevance}, eleqe {weight}"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Bîranîn"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx
@@ -2722,7 +2742,7 @@ msgstr "Kopiya \"{displayName}\" hat rakirin"
 #: src/features/wiki/wiki-settings.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Replicas"
-msgstr "Replicas"
+msgstr "Replica"
 
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx
@@ -2947,7 +2967,7 @@ msgstr "Tê gerîn..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Hilbijêre"
+msgstr "Hilbijartin"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3140,7 +3160,7 @@ msgstr "Temaşekirinê rawestîne"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Mijar"
+msgstr "Bikarhêner an kom"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Niha hev demîne bike"
 msgid "Syncing..."
 msgstr "Hev demî tê kirin..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Pergal"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Pergal"
 
@@ -3237,7 +3261,7 @@ msgstr "Tag: {tag}"
 #: ../../../lib/web/src/components/post-tags.tsx
 #: src/features/wiki/page-actions-menu.tsx
 msgid "Tags"
-msgstr "Tag"
+msgstr "Nîşan"
 
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
@@ -3248,6 +3272,11 @@ msgstr "Armanc"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "URL ya armanc"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Demkî"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "Daxwazên pir zêde"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Jor"
+msgstr "Çêtirîn"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3743,7 +3772,7 @@ msgstr "Wîkî hev demî bû"
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Wikis"
-msgstr "Wîkî"
+msgstr "Wiki"
 
 #: src/features/wiki/page-comments.tsx
 msgid "Write a comment..."

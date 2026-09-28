@@ -28,6 +28,11 @@ msgstr "(tahrirlangan)"
 msgid "(expand)"
 msgstr "(yoyish)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Sarlavhasiz)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(siz)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# fayl yuklandi} other {# fayl yuklandi}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} – {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# ta} other {+# ta}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -398,7 +400,7 @@ msgstr "Kutilmagan xatolik yuz berdi"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Android push"
-msgstr "Android push"
+msgstr "Android push bildirishnomalari"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/access/types.ts
@@ -491,7 +493,7 @@ msgstr "Biriktirmalar"
 #: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/access/types.ts
 msgid "Authenticated users"
-msgstr "Autentifikatsiyadan o'tgan foydalanuvchilar"
+msgstr "Autentifikatsiyadan oʻtgan foydalanuvchilar"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Authenticator code"
@@ -699,6 +701,11 @@ msgstr "Javobni bekor qilish"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "Bekor qilindi"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "Bekor qilindi"
 
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Hech qachon"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Yangi"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Eng yangi"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2216,7 +2227,7 @@ msgstr "Holat yoʻq"
 
 #: src/features/wiki/tag-manager.tsx
 msgid "No tags"
-msgstr "Teglar yo‘q"
+msgstr "Teglar yoʻq"
 
 #: src/features/wiki/tags-list.tsx
 msgid "No tags found"
@@ -2289,9 +2300,13 @@ msgstr "Hech narsa topilmadi"
 msgid "Notifications: {0}"
 msgstr "Bildirishnomalar: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "Raqam"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "Raqam"
 
@@ -2614,6 +2629,11 @@ msgstr "Moslik {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Moslik {relevance}, qiziqish {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Eslatma"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -2947,7 +2967,7 @@ msgstr "Qidirilmoqda..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Tanlash"
+msgstr "Tanlov"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3140,7 +3160,7 @@ msgstr "Kuzatishni toʻxtatish"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Mavzu"
+msgstr "Foydalanuvchi yoki guruh"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Hozir sinxronlash"
 msgid "Syncing..."
 msgstr "Sinxronlanmoqda..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Tizim"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Tizim"
 
@@ -3248,6 +3272,11 @@ msgstr "Maqsad"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "Maqsad URL"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Taxminiy"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "Juda koʻp soʻrovlar"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Yuqori"
+msgstr "Eng yaxshi"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3743,7 +3772,7 @@ msgstr "Wiki sinxronlandi"
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Wikis"
-msgstr "Wikilar"
+msgstr "Wiki’lar"
 
 #: src/features/wiki/page-comments.tsx
 msgid "Write a comment..."

@@ -28,6 +28,11 @@ msgstr "(επεξεργάστηκε)"
 msgid "(expand)"
 msgstr "(ανάπτυξη)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Χωρίς τίτλο)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(εσείς)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# αρχείο μεταφορτώθηκε} other {# αρχεία μεταφορτώθηκαν}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} έως {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# ακόμη} other {+# ακόμη}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -398,7 +400,7 @@ msgstr "Παρουσιάστηκε απροσδόκητο σφάλμα"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Android push"
-msgstr "Push Android"
+msgstr "Ειδοποιήσεις push Android"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/access/types.ts
@@ -593,11 +595,11 @@ msgstr "Μπάνερ"
 
 #: ../../../lib/web/src/components/banner-section.tsx
 msgid "Banner removed"
-msgstr "Το banner αφαιρέθηκε"
+msgstr "Το μπάνερ αφαιρέθηκε"
 
 #: ../../../lib/web/src/components/banner-section.tsx
 msgid "Banner updated"
-msgstr "Το banner ενημερώθηκε"
+msgstr "Το μπάνερ ενημερώθηκε"
 
 #: src/features/wiki/page-comments.tsx
 msgid "Be the first to comment on this page."
@@ -699,6 +701,11 @@ msgstr "Ακύρωση απάντησης"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "Ακυρώθηκε"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "Ακυρώθηκε"
 
@@ -1987,7 +1994,7 @@ msgstr "Ελάχιστο μήκος"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Mochi web"
-msgstr "Mochi web"
+msgstr "Mochi στον ιστό"
 
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "Moderation"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Ποτέ"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Νέο"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Νεότερα"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2289,9 +2300,13 @@ msgstr "Δεν βρέθηκε τίποτα"
 msgid "Notifications: {0}"
 msgstr "Ειδοποιήσεις: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "Αριθμός"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "Αριθμός"
 
@@ -2437,7 +2452,7 @@ msgstr "Κλειδιά πρόσβασης"
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Passkeys are not available in this browser"
-msgstr "Τα passkeys δεν είναι διαθέσιμα σε αυτό το πρόγραμμα περιήγησης"
+msgstr "Τα κλειδιά πρόσβασης δεν είναι διαθέσιμα σε αυτό το πρόγραμμα περιήγησης"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Pattern (regex)"
@@ -2497,7 +2512,7 @@ msgstr "Γίνεται επεξεργασία…"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 msgid "Prompt saved"
-msgstr "Το prompt αποθηκεύτηκε"
+msgstr "Η προτροπή αποθηκεύτηκε"
 
 #: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx
 msgid "Properties"
@@ -2614,6 +2629,11 @@ msgstr "Συνάφεια {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Συνάφεια {relevance}, ενδιαφέρον {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Υπενθύμιση"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -3140,7 +3160,7 @@ msgstr "Διακοπή παρακολούθησης"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Θέμα"
+msgstr "Χρήστης ή ομάδα"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Συγχρονισμός τώρα"
 msgid "Syncing..."
 msgstr "Συγχρονισμός..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Σύστημα"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Σύστημα"
 
@@ -3249,6 +3273,11 @@ msgstr "Στόχος"
 msgid "Target URL"
 msgstr "URL στόχου"
 
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Με επιφύλαξη"
+
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Terms and conditions"
@@ -3293,7 +3322,7 @@ msgstr "Η σελίδα που βλέπουν οι χρήστες κατά τη�
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "The passkey request was not answered"
-msgstr "Το αίτημα passkey δεν απαντήθηκε"
+msgstr "Το αίτημα κλειδιού πρόσβασης δεν απαντήθηκε"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx
 msgid "The requested content could not be found."
@@ -3309,7 +3338,7 @@ msgstr "Αυτή η ενέργεια δεν μπορεί να αναιρεθεί
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "This app is not allowed to use your passkey. Allow it in Settings, under Permissions."
-msgstr "Αυτή η εφαρμογή δεν επιτρέπεται να χρησιμοποιήσει το passkey σας. Επιτρέψτε το στις Ρυθμίσεις, στην ενότητα Δικαιώματα."
+msgstr "Αυτή η εφαρμογή δεν επιτρέπεται να χρησιμοποιήσει το κλειδί πρόσβασής σας. Επιτρέψτε το στις Ρυθμίσεις, στην ενότητα Δικαιώματα."
 
 #: src/hooks/use-rss-copy.ts
 msgid "This feed URL was already issued and cannot be shown again."
@@ -3390,7 +3419,7 @@ msgstr "Πάρα πολλά αιτήματα"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Κορυφή"
+msgstr "Κορυφαία"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"

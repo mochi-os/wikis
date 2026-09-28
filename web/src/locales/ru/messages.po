@@ -28,6 +28,11 @@ msgstr "(изменено)"
 msgid "(expand)"
 msgstr "(развернуть)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Без названия)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(вы)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# файл загружен} few {# файла загружено} many {# файлов загружено} other {# файла загружено}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "с {from} до {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# ещё} few {+# ещё} many {+# ещё} other {+# ещё}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -699,6 +701,11 @@ msgstr "Отменить ответ"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "Отменено"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "Отменено"
 
@@ -1388,7 +1395,7 @@ msgstr "Введите текст баннера (поддерживается m
 
 #: src/features/wiki/tag-manager.tsx
 msgid "Enter tag name"
-msgstr "Введите имя тега"
+msgstr "Введите название тега"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Enter the code from your email"
@@ -2022,7 +2029,7 @@ msgstr "Перемещение на {0}"
 
 #: src/features/wiki/page-editor.tsx
 msgid "my-page-name"
-msgstr "имя-моей-страницы"
+msgstr "название-моей-страницы"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx
@@ -2033,27 +2040,27 @@ msgstr "имя-моей-страницы"
 #: src/features/wiki/wiki-settings.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Name"
-msgstr "Имя"
+msgstr "Название"
 
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 msgid "Name cannot contain < or > characters"
-msgstr "Имя не может содержать символы < или >"
+msgstr "Название не может содержать символы < или >"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Name cannot contain < or > characters, or line breaks"
-msgstr "Имя не может содержать символы < или >, а также переносы строк"
+msgstr "Название не может содержать символы < или >, а также переносы строк"
 
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 msgid "Name is required"
-msgstr "Требуется имя"
+msgstr "Требуется название"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Name must be 100 characters or less"
-msgstr "Имя должно быть не длиннее 100 символов"
+msgstr "Название должно быть не длиннее 100 символов"
 
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 msgid "Name must be 1000 characters or less"
-msgstr "Имя должно быть не длиннее 1000 символов"
+msgstr "Название должно быть не длиннее 1000 символов"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx
 #: ../../../lib/web/src/lib/api-response-interceptors.ts
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Никогда"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Новый"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Новые"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2103,7 +2114,7 @@ msgstr "Новый URL должен отличаться от текущего U
 #: src/features/wiki/rename-page-dialog.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "new-page-name"
-msgstr "имя-новой-страницы"
+msgstr "название-новой-страницы"
 
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
@@ -2289,16 +2300,20 @@ msgstr "Ничего не найдено"
 msgid "Notifications: {0}"
 msgstr "Уведомления: {0}"
 
-#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Number"
 msgstr "Число"
 
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
+msgctxt "item number"
+msgid "Number"
+msgstr "Номер"
+
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "old-page-name"
-msgstr "имя-старой-страницы"
+msgstr "название-старой-страницы"
 
 #: ../../../lib/web/src/components/filter-bar.tsx
 msgid "On"
@@ -2437,7 +2452,7 @@ msgstr "Ключи доступа"
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Passkeys are not available in this browser"
-msgstr "Passkeys недоступны в этом браузере"
+msgstr "Ключи доступа недоступны в этом браузере"
 
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Pattern (regex)"
@@ -2614,6 +2629,11 @@ msgstr "Релевантность {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Релевантность {relevance}, интерес {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Напоминание"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -2878,7 +2898,7 @@ msgstr "Поиск вложений..."
 
 #: src/routes/_authenticated/find.tsx
 msgid "Search by name, ID, fingerprint, or URL..."
-msgstr "Поиск по имени, ID, отпечатку или URL..."
+msgstr "Поиск по названию, ID, отпечатку или URL..."
 
 #: ../../../lib/web/src/components/ui/command.tsx
 msgid "Search for a command to run..."
@@ -2947,7 +2967,7 @@ msgstr "Поиск..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Выбрать"
+msgstr "Выбор"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3140,7 +3160,7 @@ msgstr "Прекратить отслеживание"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Тема"
+msgstr "Пользователь или группа"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Синхронизировать сейчас"
 msgid "Syncing..."
 msgstr "Синхронизация..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Система"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Система"
 
@@ -3249,6 +3273,11 @@ msgstr "Цель"
 msgid "Target URL"
 msgstr "Целевой URL"
 
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Под вопросом"
+
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Terms and conditions"
@@ -3293,7 +3322,7 @@ msgstr "Страница, которую пользователи видят п�
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "The passkey request was not answered"
-msgstr "Запрос passkey остался без ответа"
+msgstr "Запрос ключа доступа остался без ответа"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx
 msgid "The requested content could not be found."
@@ -3309,7 +3338,7 @@ msgstr "Это действие нельзя отменить. Wiki и всё е
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "This app is not allowed to use your passkey. Allow it in Settings, under Permissions."
-msgstr "Этому приложению не разрешено использовать ваш passkey. Разрешите это в Настройках, в разделе Разрешения."
+msgstr "Этому приложению не разрешено использовать ваш ключ доступа. Разрешите это в Настройках, в разделе Разрешения."
 
 #: src/hooks/use-rss-copy.ts
 msgid "This feed URL was already issued and cannot be shown again."
@@ -3390,7 +3419,7 @@ msgstr "Слишком много запросов"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Верх"
+msgstr "Лучшее"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3692,7 +3721,7 @@ msgstr "вики"
 #: src/routes/_authenticated/$wikiId/settings.tsx
 #: src/routes/_authenticated/settings.tsx
 msgid "Wiki"
-msgstr "Wiki"
+msgstr "Вики"
 
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
@@ -3743,7 +3772,7 @@ msgstr "Wiki синхронизирована"
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Wikis"
-msgstr "Wiki"
+msgstr "Вики"
 
 #: src/features/wiki/page-comments.tsx
 msgid "Write a comment..."

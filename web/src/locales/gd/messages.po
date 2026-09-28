@@ -28,6 +28,11 @@ msgstr "(deasaichte)"
 msgid "(expand)"
 msgstr "(leudaich)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Gun tiotal)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(thusa)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {chaidh # fhaidhle a luchdadh suas} two {chaidh # fhaidhle a luchdadh suas} few {chaidh # faidhlichean a luchdadh suas} other {chaidh # faidhle a luchdadh suas}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} gu {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# eile} two {+# eile} few {+# eile} other {+# eile}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -701,6 +703,11 @@ msgstr "Sguir den fhreagairt"
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Cancelled"
 msgstr "Sguirte"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Cancelled"
+msgstr "Air a chur dheth"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Chaoidh"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Ùr"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "As ùire"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2289,9 +2300,13 @@ msgstr "Cha deach dad a lorg"
 msgid "Notifications: {0}"
 msgstr "Brathan: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "Àireamh"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "Àireamh"
 
@@ -2614,6 +2629,11 @@ msgstr "Buntainneas {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Buntainneas {relevance}, ùidh {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Cuimhneachan"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -2947,7 +2967,7 @@ msgstr "A' lorg..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Tagh"
+msgstr "Taghadh"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3140,7 +3160,7 @@ msgstr "Sguir a' coimhead"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Cuspair"
+msgstr "Cleachdaiche no buidheann"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Sioncronaich a-nis"
 msgid "Syncing..."
 msgstr "A' sioncronachadh..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Siostam"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Siostam"
 
@@ -3248,6 +3272,11 @@ msgstr "Targaid"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "URL targaid"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Sealach"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "Cus iarrtasan"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Mullach"
+msgstr "As fheàrr"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3692,7 +3721,7 @@ msgstr "uici"
 #: src/routes/_authenticated/$wikiId/settings.tsx
 #: src/routes/_authenticated/settings.tsx
 msgid "Wiki"
-msgstr "Wiki"
+msgstr "Uicipeid"
 
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
@@ -3713,7 +3742,7 @@ msgstr "Tha ID wiki a dhìth"
 
 #: src/components/link-dialog.tsx
 msgid "Wiki link"
-msgstr "Ceangal an uicì"
+msgstr "Ceangal na h-uicipeid"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Wiki name is required"
@@ -3743,7 +3772,7 @@ msgstr "Wiki sioncronaichte"
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Wikis"
-msgstr "Wikis"
+msgstr "Uicipeidean"
 
 #: src/features/wiki/page-comments.tsx
 msgid "Write a comment..."

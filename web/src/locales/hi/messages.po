@@ -28,6 +28,11 @@ msgstr "(संपादित)"
 msgid "(expand)"
 msgstr "(विस्तार करें)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(कोई शीर्षक नहीं)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(आप)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# फ़ाइल अपलोड हुई} other {# फ़ाइलें अपलोड हुईं}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} से {to} तक"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# और} other {+# और}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -701,6 +703,11 @@ msgstr "उत्तर रद्द करें"
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Cancelled"
 msgstr "रद्द किया गया"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Cancelled"
+msgstr "रद्द"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -1275,7 +1282,7 @@ msgstr "पूर्ण"
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
 msgid "Download"
-msgstr "डाउनलोड"
+msgstr "डाउनलोड करें"
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
@@ -1847,7 +1854,7 @@ msgstr "आइटम विवरण"
 
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
-msgstr "अभी"
+msgstr "अभी-अभी"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "कभी नहीं"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "नया"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "नवीनतम"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2289,11 +2300,15 @@ msgstr "कुछ नहीं मिला"
 msgid "Notifications: {0}"
 msgstr "सूचनाएँ: {0}"
 
-#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Number"
 msgstr "संख्या"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
+msgctxt "item number"
+msgid "Number"
+msgstr "क्रमांक"
 
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
@@ -2614,6 +2629,11 @@ msgstr "प्रासंगिकता {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "प्रासंगिकता {relevance}, रुचि {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "रिमाइंडर"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -2947,7 +2967,7 @@ msgstr "खोजा जा रहा है..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "चुनें"
+msgstr "चयन"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3140,7 +3160,7 @@ msgstr "देखना बंद करें"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "विषय"
+msgstr "यूज़र या ग्रुप"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "अभी सिंक करें"
 msgid "Syncing..."
 msgstr "सिंक किया जा रहा है..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "सिस्टम"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "सिस्टम"
 
@@ -3248,6 +3272,11 @@ msgstr "टार्गेट"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "टार्गेट URL"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "अस्थायी"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3692,7 +3721,7 @@ msgstr "विकी"
 #: src/routes/_authenticated/$wikiId/settings.tsx
 #: src/routes/_authenticated/settings.tsx
 msgid "Wiki"
-msgstr "विकि"
+msgstr "विकी"
 
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
@@ -3743,7 +3772,7 @@ msgstr "विकि सिंक की गई"
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Wikis"
-msgstr "विकि"
+msgstr "विकीज़"
 
 #: src/features/wiki/page-comments.tsx
 msgid "Write a comment..."

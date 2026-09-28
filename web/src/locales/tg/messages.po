@@ -28,6 +28,11 @@ msgstr "(таҳриршуда)"
 msgid "(expand)"
 msgstr "(васеъ кардан)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Бе сарлавҳа)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(шумо)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# файл боргузорӣ шуд} other {# файл боргузорӣ шуд}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "аз {from} то {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# бештар} other {+# бештар}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -398,7 +400,7 @@ msgstr "Хатогии ғайричашмдошт рух дод"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Android push"
-msgstr "Push барои Android"
+msgstr "Огоҳиҳои пуш барои Android"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/access/types.ts
@@ -495,7 +497,7 @@ msgstr "Корбарони тасдиқшуда"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Authenticator code"
-msgstr "Коди Authenticator"
+msgstr "Коди аутентификатор"
 
 #: src/features/wiki/changes-list.tsx
 #: src/features/wiki/page-history.tsx
@@ -699,6 +701,11 @@ msgstr "Бекор кардани ҷавоб"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "Бекор карда шуд"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "Бекор карда шуд"
 
@@ -1252,7 +1259,7 @@ msgstr "Ҷудо шуда"
 #: ../../../lib/web/src/components/restore-banner.tsx
 #: ../../../lib/web/src/components/restore-banner.tsx
 msgid "Dismiss"
-msgstr "Рад кардан"
+msgstr "Пӯшидан"
 
 #: ../../../lib/web/src/components/ui/sidebar.tsx
 msgid "Displays the mobile sidebar."
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Ҳеҷ гоҳ"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Нав"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Навтарин"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2289,9 +2300,13 @@ msgstr "Чизе ёфт нашуд"
 msgid "Notifications: {0}"
 msgstr "Огоҳиномаҳо: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "Рақам"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "Рақам"
 
@@ -2445,7 +2460,7 @@ msgstr "Намуна (regex)"
 
 #: ../../../lib/web/src/components/person-picker.tsx
 msgid "People"
-msgstr "Шахсон"
+msgstr "Одамон"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
@@ -2505,7 +2520,7 @@ msgstr "Хусусиятҳо"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
-msgstr "Огоҳиномаи push"
+msgstr "Огоҳиномаи пуш"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Raised"
@@ -2614,6 +2629,11 @@ msgstr "Мувофиқат {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Мувофиқат {relevance}, таваҷҷуҳ {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Ёдоварӣ"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -2773,7 +2793,7 @@ msgstr "Бекор кардани шарҳ"
 
 #: src/features/wiki/revert-page.tsx
 msgid "Revert page"
-msgstr "Бекор кардани саҳифа"
+msgstr "Баргардондани саҳифа"
 
 #: src/features/wiki/page-history.tsx
 #: src/features/wiki/page-history.tsx
@@ -3140,7 +3160,7 @@ msgstr "Назоратро қатъ кардан"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Мавзӯъ"
+msgstr "Корбар ё гурӯҳ"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Ҳозир ҳамоҳанг кардан"
 msgid "Syncing..."
 msgstr "Ҳамоҳангсозӣ..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Система"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Система"
 
@@ -3248,6 +3272,11 @@ msgstr "Ҳадаф"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "URL-и ҳадаф"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Пешакӣ"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "Дархостҳои аз ҳад зиёд"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Боло"
+msgstr "Беҳтарин"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3692,7 +3721,7 @@ msgstr "вики"
 #: src/routes/_authenticated/$wikiId/settings.tsx
 #: src/routes/_authenticated/settings.tsx
 msgid "Wiki"
-msgstr "Wiki"
+msgstr "Вики"
 
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx

@@ -28,6 +28,11 @@ msgstr "(muudetud)"
 msgid "(expand)"
 msgstr "(laienda)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Pealkirjata)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(sina)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# fail üles laaditud} other {# faili üles laaditud}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} kuni {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# veel} other {+# veel}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -624,7 +626,7 @@ msgstr "Blokid"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Board"
-msgstr "Laud"
+msgstr "Tahvel"
 
 #: ../../../lib/web/src/components/post-tags.tsx
 #: ../../../lib/web/src/components/post-tags.tsx
@@ -699,6 +701,11 @@ msgstr "Tühista vastus"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "Tühistatud"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "Tühistatud"
 
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Mitte kunagi"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Uus"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Uusimad"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2289,9 +2300,13 @@ msgstr "Midagi ei leitud"
 msgid "Notifications: {0}"
 msgstr "Teatised: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "Number"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "Number"
 
@@ -2615,6 +2630,11 @@ msgstr "Asjakohasus {relevance}"
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Asjakohasus {relevance}, huvi {weight}"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Meeldetuletus"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx
@@ -2773,7 +2793,7 @@ msgstr "Tühista kommentaari muudatused"
 
 #: src/features/wiki/revert-page.tsx
 msgid "Revert page"
-msgstr "Tühista lehe muudatused"
+msgstr "Taasta leht"
 
 #: src/features/wiki/page-history.tsx
 #: src/features/wiki/page-history.tsx
@@ -2947,7 +2967,7 @@ msgstr "Otsimine..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Vali"
+msgstr "Valik"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3140,7 +3160,7 @@ msgstr "Lõpeta jälgimine"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Teema"
+msgstr "Kasutaja või grupp"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Sünkroniseeri kohe"
 msgid "Syncing..."
 msgstr "Sünkroniseerin..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Süsteem"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Süsteem"
 
@@ -3248,6 +3272,11 @@ msgstr "Siht"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "Sihtkoha URL"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Esialgne"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "Liiga palju päringuid"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Üles"
+msgstr "Parimad"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3692,7 +3721,7 @@ msgstr "viki"
 #: src/routes/_authenticated/$wikiId/settings.tsx
 #: src/routes/_authenticated/settings.tsx
 msgid "Wiki"
-msgstr "Wiki"
+msgstr "Viki"
 
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
@@ -3713,7 +3742,7 @@ msgstr "Wiki ID on nõutav"
 
 #: src/components/link-dialog.tsx
 msgid "Wiki link"
-msgstr "Wiki link"
+msgstr "Viki link"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Wiki name is required"
@@ -3743,7 +3772,7 @@ msgstr "Wiki sünkroniseeritud"
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Wikis"
-msgstr "Wikid"
+msgstr "Vikid"
 
 #: src/features/wiki/page-comments.tsx
 msgid "Write a comment..."

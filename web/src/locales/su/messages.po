@@ -28,6 +28,11 @@ msgstr "(diédit)"
 msgid "(expand)"
 msgstr "(buka)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Tanpa judul)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(anjeun)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, other {# berkas diunggah}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} nepi ka {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, other {+# deui}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -459,7 +461,7 @@ msgstr "Anjeun yakin hayang eureun langganan ti wiki ieu?"
 
 #: ../../../lib/web/src/components/ui/sort-direction-button.tsx
 msgid "Ascending"
-msgstr "Naek"
+msgstr "Naék"
 
 #: ../../../lib/web/src/components/timezone-select.tsx
 msgid "At sea"
@@ -699,6 +701,11 @@ msgstr "Batalkeun balesan"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "Dibatalkeun"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "Dibatalkeun"
 
@@ -1055,7 +1062,7 @@ msgstr "Lokasi ayeuna"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 #: ../../../lib/web/src/components/colour-picker.tsx
 msgid "Custom"
-msgstr "Adat"
+msgstr "Kustom"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Dark"
@@ -1252,7 +1259,7 @@ msgstr "Pegat"
 #: ../../../lib/web/src/components/restore-banner.tsx
 #: ../../../lib/web/src/components/restore-banner.tsx
 msgid "Dismiss"
-msgstr "Pasini"
+msgstr "Tutup"
 
 #: ../../../lib/web/src/components/ui/sidebar.tsx
 msgid "Displays the mobile sidebar."
@@ -1677,7 +1684,7 @@ msgstr "Téangan wiki"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Fingerprint"
-msgstr "Fingerprint"
+msgstr "Sidik ramo"
 
 #: ../../../lib/web/src/components/restore-banner.tsx
 msgid "Finish moving your account"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Tara"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Anyar"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Panganyarna"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2289,11 +2300,15 @@ msgstr "Teu manggih nanaon"
 msgid "Notifications: {0}"
 msgstr "Wawaran: {0}"
 
-#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Number"
 msgstr "Wilangan"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
+msgctxt "item number"
+msgid "Number"
+msgstr "Nomer"
 
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
@@ -2588,7 +2603,7 @@ msgstr "Ngalihkeun ka login."
 #: src/routes/_authenticated/redirects.tsx
 #: src/routes/_authenticated/redirects.tsx
 msgid "Redirects"
-msgstr "Redirects"
+msgstr "Pangalihan"
 
 #: ../../../lib/web/src/components/post-tags.tsx
 #: ../../../lib/web/src/components/post-tags.tsx
@@ -2614,6 +2629,11 @@ msgstr "Relevansi {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Relevansi {relevance}, minat {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Panginget"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -2722,7 +2742,7 @@ msgstr "Replika \"{displayName}\" dipiceun"
 #: src/features/wiki/wiki-settings.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Replicas"
-msgstr "Replicas"
+msgstr "Réplika"
 
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx
@@ -2947,7 +2967,7 @@ msgstr "Maluruh..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Pilih"
+msgstr "Pilihan"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3072,7 +3092,7 @@ msgstr "Némbongkeun {totalShown} ti {total}"
 
 #: ../../../lib/web/src/components/ui/sidebar.tsx
 msgid "Sidebar"
-msgstr "Sidebar"
+msgstr "Bar sisi"
 
 #: ../../../lib/web/src/features/errors/access-denied-error.tsx
 msgid "Sign in with an account that has access <0/> to this resource."
@@ -3140,7 +3160,7 @@ msgstr "Eureun nempo"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Subjek"
+msgstr "Pamaké atawa grup"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Sinkronisasi ayeuna"
 msgid "Syncing..."
 msgstr "Nyinkronkeun..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Sistem"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Sistem"
 
@@ -3248,6 +3272,11 @@ msgstr "Target"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "URL Target"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Samentawis"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "Seueur teuing pamundut"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Luhur"
+msgstr "Pangalusna"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3527,7 +3556,7 @@ msgstr "Tanpa judul"
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Updated"
-msgstr "Diapdet"
+msgstr "Diropéa"
 
 #. placeholder {0}: formatTimestamp(page.updated)
 #. placeholder {0}: formatTimestamp(result.updated)
@@ -3713,7 +3742,7 @@ msgstr "ID Wiki diperlukeun"
 
 #: src/components/link-dialog.tsx
 msgid "Wiki link"
-msgstr "Tumbu wiki"
+msgstr "Tautan wiki"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Wiki name is required"

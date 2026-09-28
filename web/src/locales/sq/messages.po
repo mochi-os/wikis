@@ -28,6 +28,11 @@ msgstr "(redaktuar)"
 msgid "(expand)"
 msgstr "(zgjero)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Pa titull)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(ju)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# skedar u ngarkua} other {# skedarë u ngarkuan}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "nga {from} deri në {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# më shumë} other {+# më shumë}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -701,6 +703,11 @@ msgstr "Anulo përgjigjen"
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Cancelled"
 msgstr "I anuluar"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Cancelled"
+msgstr "Anuluar"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -1987,7 +1994,7 @@ msgstr "Gjatësia minimale"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Mochi web"
-msgstr "Mochi web"
+msgstr "Mochi në shfletues"
 
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "Moderation"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Asnjëherë"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "I ri"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Më të rejat"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2216,7 +2227,7 @@ msgstr "Pa status"
 
 #: src/features/wiki/tag-manager.tsx
 msgid "No tags"
-msgstr "Pa etiketa"
+msgstr "Asnjë etiketë"
 
 #: src/features/wiki/tags-list.tsx
 msgid "No tags found"
@@ -2269,7 +2280,7 @@ msgstr "Asnjë"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Normal"
-msgstr "Normal"
+msgstr "Normale"
 
 #: ../../../lib/web/src/components/attachment-image.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
@@ -2289,9 +2300,13 @@ msgstr "S'u gjet asgjë"
 msgid "Notifications: {0}"
 msgstr "Njoftimet: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "Numri"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "Numri"
 
@@ -2445,7 +2460,7 @@ msgstr "Modeli (regex)"
 
 #: ../../../lib/web/src/components/person-picker.tsx
 msgid "People"
-msgstr "Persona"
+msgstr "Njerëz"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
@@ -2615,6 +2630,11 @@ msgstr "Përkatësia {relevance}"
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Përkatësia {relevance}, interesi {weight}"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Kujtesë"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx
@@ -2773,7 +2793,7 @@ msgstr "Kthe komentin pas"
 
 #: src/features/wiki/revert-page.tsx
 msgid "Revert page"
-msgstr "Kthe faqen pas"
+msgstr "Rikthe faqen"
 
 #: src/features/wiki/page-history.tsx
 #: src/features/wiki/page-history.tsx
@@ -2947,7 +2967,7 @@ msgstr "Duke kërkuar..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Zgjidh"
+msgstr "Përzgjedhje"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3195,9 +3215,13 @@ msgstr "Sinkronizo tani"
 msgid "Syncing..."
 msgstr "Duke u sinkronizuar..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Sistemi"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Sistemi"
 
@@ -3248,6 +3272,11 @@ msgstr "Objektivi"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "URL e objektivit"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Paraprak"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "Shumë kërkesa"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Lart"
+msgstr "Më të mirat"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"

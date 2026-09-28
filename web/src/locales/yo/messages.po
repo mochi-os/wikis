@@ -28,6 +28,11 @@ msgstr "(a tunṣe)"
 msgid "(expand)"
 msgstr "(fẹ̀ jáde)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Kò sí àkọlé)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(ìwọ)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, other {Fáìlì # ti gbéwọlé}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "láti {from} sí {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, other {+# mìíràn}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -398,7 +400,7 @@ msgstr "Àṣìṣe àìròtẹ́lẹ̀ kan wáyé"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Android push"
-msgstr "Android push"
+msgstr "Ìfitónilétí push Android"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/access/types.ts
@@ -589,7 +591,7 @@ msgstr "Padà sí àwọn wiki"
 #: ../../../lib/web/src/components/banner-section.tsx
 #: ../../../lib/web/src/components/entity-banner.tsx
 msgid "Banner"
-msgstr "Banner"
+msgstr "Àsíá"
 
 #: ../../../lib/web/src/components/banner-section.tsx
 msgid "Banner removed"
@@ -699,6 +701,11 @@ msgstr "Fagilé ìdáhùn"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "Tí a fagilé"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "Tí a fagilé"
 
@@ -1055,7 +1062,7 @@ msgstr "Ipò lọ́wọ́lọ́wọ́"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 #: ../../../lib/web/src/components/colour-picker.tsx
 msgid "Custom"
-msgstr "Àṣà"
+msgstr "Àdáni"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Dark"
@@ -1078,15 +1085,15 @@ msgstr "Kọ̀"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 msgid "Default"
-msgstr "Àìpé"
+msgstr "Àìyípadà"
 
 #: ../../../lib/web/src/features/accounts/account-add.tsx
 msgid "Default AI account"
-msgstr "Àkáǹtì AI àìpé"
+msgstr "Àkáǹtì AI àìyípadà"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Default sort"
-msgstr "Ìtò àìpé"
+msgstr "Ìtò àìyípadà"
 
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx
@@ -1280,7 +1287,7 @@ msgstr "Gbà sílẹ̀"
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx
 #: ../../../lib/web/src/components/ui/image-lightbox.tsx
 msgid "Download failed"
-msgstr "Ìgbasílẹ̀ kùnà"
+msgstr "Ìgbàsílẹ̀ kùnà"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "Drag and drop files here, or click \"Upload files\" to get started."
@@ -1415,7 +1422,7 @@ msgstr "Àṣìṣe: A gba ìdáhùn aláìdára láti server."
 #: ../../../lib/web/src/components/tree-row.tsx
 #: ../../../lib/web/src/components/tree-row.tsx
 msgid "Expand"
-msgstr "Ṣílẹ̀kùn"
+msgstr "Gbòòrò"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx
 msgid "Expand sidebar"
@@ -1798,7 +1805,7 @@ msgstr "Àwọn àwòrán"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Imperial"
-msgstr "Imperial"
+msgstr "Òṣùwọ̀n Gẹ̀ẹ́sì"
 
 #: ../../../lib/web/src/features/access/types.ts
 msgid "Including anonymous users"
@@ -2003,7 +2010,7 @@ msgstr "Oṣù"
 
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "More options"
-msgstr "Awọn aṣayan diẹ sii"
+msgstr "Àwọn àṣàyàn síwájú sí i"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Moved"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Láéláé"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Tuntun"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Tuntun jùlọ"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2289,9 +2300,13 @@ msgstr "A kò rí ohunkóhun"
 msgid "Notifications: {0}"
 msgstr "Àwọn ìfitónilétí: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "Nọ́mbà"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "Nọ́mbà"
 
@@ -2615,6 +2630,11 @@ msgstr "Ìbáramu {relevance}"
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Ìbáramu {relevance}, ìfẹ́ {weight}"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Ìránnilétí"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx
@@ -2761,7 +2781,7 @@ msgstr "Fi eré sílẹ̀?"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 msgid "Retry"
-msgstr "Gbìyànjú lẹ́ẹ̀kan si"
+msgstr "Gbìyànjú lẹ́ẹ̀kan sí i"
 
 #: src/features/wiki/revert-page.tsx
 msgid "Revert"
@@ -2947,7 +2967,7 @@ msgstr "Ń wá..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Yan"
+msgstr "Àṣàyàn"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3140,7 +3160,7 @@ msgstr "Dáwọ́ ìríran dúró"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Àkòrí"
+msgstr "Olùmúlò tàbí ẹgbẹ́"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3189,17 +3209,21 @@ msgstr "Yí padà sí ìwòye 1-9"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Sync now"
-msgstr "Sync báyìí"
+msgstr "Ṣe àmúṣiṣẹ́pọ̀ báyìí"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Syncing..."
 msgstr "Ń sync..."
 
-#: ../../../lib/web/src/components/audit-timeline.tsx
 #: ../../../lib/web/src/lib/preference-utils.ts
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "System"
-msgstr "System"
+msgstr "Sístẹ́mù"
+
+#: ../../../lib/web/src/components/audit-timeline.tsx
+msgctxt "actor"
+msgid "System"
+msgstr "Sístẹ́mù"
 
 #: src/features/wiki/page-view.tsx
 msgid "Table of contents"
@@ -3237,7 +3261,7 @@ msgstr "Àmì: {tag}"
 #: ../../../lib/web/src/components/post-tags.tsx
 #: src/features/wiki/page-actions-menu.tsx
 msgid "Tags"
-msgstr "Àwọn tag"
+msgstr "Àwọn àmì"
 
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
@@ -3248,6 +3272,11 @@ msgstr "Ibi àfojúsùn"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "URL àfojúsùn"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Fún ìgbà díẹ̀"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "Àwọn ìbéèrè ti pọ̀ jù"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Òkè"
+msgstr "Tó dára jùlọ"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3466,7 +3495,7 @@ msgstr "Àṣìṣe API tí a kò retí"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "United States"
-msgstr "United States"
+msgstr "Orílẹ̀-èdè Amẹ́ríkà"
 
 #: ../../../lib/web/src/components/audit-timeline.tsx
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
@@ -3585,7 +3614,7 @@ msgstr "Lo passkey rẹ"
 #: ../../../lib/web/src/features/access/access-dialog.tsx
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "User"
-msgstr "User"
+msgstr "Olùmúlò"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 msgid "Variables: {variables}"
@@ -3713,7 +3742,7 @@ msgstr "Wiki ID ṣe pàtàkì"
 
 #: src/components/link-dialog.tsx
 msgid "Wiki link"
-msgstr "Ọna asopọ wiki"
+msgstr "Ọ̀nà àsopọ̀ wiki"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Wiki name is required"

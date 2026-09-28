@@ -28,6 +28,11 @@ msgstr "(संपादित)"
 msgid "(expand)"
 msgstr "(विस्तार करा)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(शीर्षक नाही)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(तुम्ही)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# फाईल अपलोड केली} other {# फायली अपलोड केल्या}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} ते {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# आणखी} other {+# आणखी}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -701,6 +703,11 @@ msgstr "उत्तर रद्द करा"
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Cancelled"
 msgstr "रद्द केले"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Cancelled"
+msgstr "रद्द"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -1308,7 +1315,7 @@ msgstr "{label} संपादित करा"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Edit and view"
-msgstr "संपादित आणि पाहा"
+msgstr "संपादित करा आणि पहा"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: src/features/wiki/attachments-page.tsx
@@ -1470,7 +1477,7 @@ msgstr "हटवण्यात अयशस्वी"
 #: src/features/wiki/attachments-page.tsx
 #: src/features/wiki/page-editor.tsx
 msgid "Failed to delete attachment"
-msgstr "अटॅचमेंट हटवण्यात अयशस्वी"
+msgstr "संलग्नक हटवण्यात अयशस्वी"
 
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx
 msgid "Failed to delete comment"
@@ -1653,7 +1660,7 @@ msgstr "निरीक्षण अद्ययावत करण्यात 
 
 #: ../../../lib/web/src/components/entity/entity-object-attachments.tsx
 msgid "Failed to upload attachment"
-msgstr "अटॅचमेंट अपलोड करण्यात अयशस्वी"
+msgstr "संलग्नक अपलोड करण्यात अयशस्वी"
 
 #: src/features/wiki/attachment-upload.ts
 #: src/features/wiki/attachment-upload.ts
@@ -1818,7 +1825,7 @@ msgstr "घाला"
 
 #: src/features/wiki/page-editor.tsx
 msgid "Insert attachment"
-msgstr "अटॅचमेंट घाला"
+msgstr "संलग्नक घाला"
 
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Interest {weight}"
@@ -1967,7 +1974,7 @@ msgstr "सदस्य"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 msgid "Menu"
-msgstr "मेन्यू"
+msgstr "मेनू"
 
 #: ../../../lib/web/src/components/game/game-chat-input.tsx
 msgid "Message"
@@ -1991,7 +1998,7 @@ msgstr "Mochi वेब"
 
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "Moderation"
-msgstr "नियमन"
+msgstr "मॉडरेशन"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Monday"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "कधीही नाही"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "नवीन"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "नवीनतम"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2136,12 +2147,12 @@ msgstr "अद्याप कोणतीही अॅक्टिव्हि�
 
 #: src/features/wiki/attachments-page.tsx
 msgid "No attachments match your search"
-msgstr "तुमच्या शोधाशी जुळणारे कोणतेही जोडलेले फाइल्स नाहीत"
+msgstr "तुमच्या शोधाशी जुळणारी कोणतीही संलग्नके नाहीत"
 
 #: src/features/wiki/attachments-page.tsx
 #: src/features/wiki/page-editor.tsx
 msgid "No attachments yet"
-msgstr "अद्याप अटॅचमेंट्स नाहीत"
+msgstr "अद्याप संलग्नके नाहीत"
 
 #: src/features/wiki/changes-list.tsx
 msgid "No changes yet"
@@ -2240,7 +2251,7 @@ msgstr "वापरकर्ते सापडले नाहीत"
 
 #: ../../../lib/web/src/components/entity/entity-design-preview.tsx
 msgid "No views"
-msgstr "व्ह्यूज नाहीत"
+msgstr "दृश्ये नाहीत"
 
 #: src/features/wiki/inline-wiki-search.tsx
 #: src/routes/_authenticated/find.tsx
@@ -2289,9 +2300,13 @@ msgstr "काहीही सापडले नाही"
 msgid "Notifications: {0}"
 msgstr "सूचना: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "क्रमांक"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "क्रमांक"
 
@@ -2325,7 +2340,7 @@ msgstr "क्रिया उघडा"
 #: src/features/wiki/attachments-page.tsx
 #: src/features/wiki/attachments-page.tsx
 msgid "Open attachment"
-msgstr "अटॅचमेंट उघडा"
+msgstr "संलग्नक उघडा"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 msgid "Open menu"
@@ -2346,12 +2361,12 @@ msgstr "निवडलेले कार्ड उघडा"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Open view actions"
-msgstr "व्ह्यू क्रिया उघडा"
+msgstr "दृश्य क्रिया उघडा"
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 msgid "Open view controls"
-msgstr "व्ह्यू कंट्रोल्स उघडा"
+msgstr "दृश्य नियंत्रणे उघडा"
 
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx
@@ -2615,6 +2630,11 @@ msgstr "सुसंगतता {relevance}"
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "सुसंगतता {relevance}, स्वारस्य {weight}"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "स्मरणपत्र"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx
@@ -2773,7 +2793,7 @@ msgstr "टिप्पणी रिव्हर्ट करा"
 
 #: src/features/wiki/revert-page.tsx
 msgid "Revert page"
-msgstr "पृष्ठ रिव्हर्ट करा"
+msgstr "पृष्ठ पूर्ववत करा"
 
 #: src/features/wiki/page-history.tsx
 #: src/features/wiki/page-history.tsx
@@ -2874,7 +2894,7 @@ msgstr "शोधा"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "Search attachments..."
-msgstr "संलग्नक शोधा..."
+msgstr "संलग्नके शोधा..."
 
 #: src/routes/_authenticated/find.tsx
 msgid "Search by name, ID, fingerprint, or URL..."
@@ -2947,7 +2967,7 @@ msgstr "शोधत आहे..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "निवडा"
+msgstr "निवड"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3028,7 +3048,7 @@ msgstr "सर्व्हर नियम"
 
 #: ../../../lib/web/src/lib/api-response-interceptors.ts
 msgid "Session expired. Please log in again."
-msgstr "सत्र कालबाह्य झाले. कृपया पुन्हा लॉग इन करा."
+msgstr "सेशन कालबाह्य झाले. कृपया पुन्हा लॉग इन करा."
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Set origin and destination"
@@ -3110,16 +3130,16 @@ msgstr "क्रमवारी"
 #: src/features/wiki/wiki-settings.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Source"
-msgstr "स्त्रोत"
+msgstr "स्रोत"
 
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Source URL"
-msgstr "स्त्रोत URL"
+msgstr "स्रोत URL"
 
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "Sources"
-msgstr "स्त्रोत"
+msgstr "स्रोत"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Spacious"
@@ -3140,7 +3160,7 @@ msgstr "पाहणे थांबवा"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "विषय"
+msgstr "वापरकर्ता किंवा गट"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "आता सिंक करा"
 msgid "Syncing..."
 msgstr "सिंक करत आहे..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "सिस्टम"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "सिस्टम"
 
@@ -3248,6 +3272,11 @@ msgstr "लक्ष्य"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "लक्ष्य URL"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "तात्पुरते"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3325,7 +3354,7 @@ msgstr "यामुळे गेम आणि त्याचे चॅट क�
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
-msgstr "हा wiki एका स्त्रोत wiki ला सबस्क्राइब केला आहे आणि त्याकडून अपडेट्स प्राप्त करतो."
+msgstr "हा wiki एका स्रोत wiki ला सबस्क्राइब केला आहे आणि त्याकडून अपडेट्स प्राप्त करतो."
 
 #. placeholder {0}: redirect.source
 #. placeholder {1}: redirect.target
@@ -3390,7 +3419,7 @@ msgstr "खूप जास्त विनंत्या"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "वर"
+msgstr "सर्वोत्तम"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3640,7 +3669,7 @@ msgstr "आयटम तपशील पहा आणि संपादित �
 
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 msgid "View controls"
-msgstr "नियंत्रणे पहा"
+msgstr "दृश्य नियंत्रणे"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "View only"
@@ -3648,7 +3677,7 @@ msgstr "फक्त पहा"
 
 #: src/features/wiki/page-history.tsx
 msgid "Viewing history for <0>{slug}</0>, current version {currentVersion}"
-msgstr "<0>{slug}</0> चा इतिहास पाहत आहोत, सध्याची आवृत्ती {currentVersion}"
+msgstr "<0>{slug}</0> चा इतिहास पाहत आहात, सध्याची आवृत्ती {currentVersion}"
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Voice recording is not supported in this browser"
@@ -3692,7 +3721,7 @@ msgstr "विकी"
 #: src/routes/_authenticated/$wikiId/settings.tsx
 #: src/routes/_authenticated/settings.tsx
 msgid "Wiki"
-msgstr "Wiki"
+msgstr "विकी"
 
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
@@ -3743,7 +3772,7 @@ msgstr "Wiki सिंक केले"
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Wikis"
-msgstr "Wikis"
+msgstr "विकीज"
 
 #: src/features/wiki/page-comments.tsx
 msgid "Write a comment..."

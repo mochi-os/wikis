@@ -28,6 +28,11 @@ msgstr "(redaktirlendi)"
 msgid "(expand)"
 msgstr "(giňelt)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Atsyz)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(siz)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# faýl ýüklendi} other {# faýl ýüklendi}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} bilen {to} aralygy"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# ýene} other {+# ýene}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -398,7 +400,7 @@ msgstr "Garaşylmadyk ýalňyşlyk ýüze çykdy"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Android push"
-msgstr "Android push"
+msgstr "Android push bildirişleri"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/access/types.ts
@@ -699,6 +701,11 @@ msgstr "Jogaby ýatyrmak"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "Ýatyryldy"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "Ýatyryldy"
 
@@ -2003,7 +2010,7 @@ msgstr "Aý"
 
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "More options"
-msgstr "Köp opsiýalar"
+msgstr "Goşmaça opsiýalar"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Moved"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Hiç haçan"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Täze"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Iň täze"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2216,7 +2227,7 @@ msgstr "Ýagdaý ýok"
 
 #: src/features/wiki/tag-manager.tsx
 msgid "No tags"
-msgstr "Belgiler ýok"
+msgstr "Bellik ýok"
 
 #: src/features/wiki/tags-list.tsx
 msgid "No tags found"
@@ -2289,11 +2300,15 @@ msgstr "Hiç zat tapylmady"
 msgid "Notifications: {0}"
 msgstr "Bildirişler: {0}"
 
-#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Number"
 msgstr "San"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
+msgctxt "item number"
+msgid "Number"
+msgstr "Belgi"
 
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
@@ -2615,6 +2630,11 @@ msgstr "Degişlilik {relevance}"
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Degişlilik {relevance}, gyzyklanma {weight}"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Ýatladyş"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx
@@ -2849,7 +2869,7 @@ msgstr "Şenbe"
 #: src/features/wiki/page-editor.tsx
 #: src/features/wiki/wiki-comment-thread.tsx
 msgid "Save"
-msgstr "Saklaýyş"
+msgstr "Saklamak"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Save changes"
@@ -2947,7 +2967,7 @@ msgstr "Gözlenýär..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Saýla"
+msgstr "Saýlaw"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3019,7 +3039,7 @@ msgstr "Serif"
 #: ../../../lib/web/src/lib/api-response-interceptors.ts
 #: ../../../lib/web/src/lib/api-response-interceptors.ts
 msgid "Server error"
-msgstr "Server ýalňyşlygy"
+msgstr "Serwer ýalňyşlygy"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3140,7 +3160,7 @@ msgstr "Synlamagy bes et"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Mowzuk"
+msgstr "Ulanyjy ýa-da topar"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Indi sinhronlaşdyr"
 msgid "Syncing..."
 msgstr "Sinhronlaşdyrylýar..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Ulgam"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Ulgam"
 
@@ -3248,6 +3272,11 @@ msgstr "Maksat"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "Maksat URL"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Deslapky"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "Aşa köp haýyş"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Ýokarky"
+msgstr "Iň gowy"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"

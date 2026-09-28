@@ -28,6 +28,11 @@ msgstr "(دەستکاریکراو)"
 msgid "(expand)"
 msgstr "(فراوانکردن)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(بێ ناونیشان)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(تۆ)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# فایل بارکرا} other {# فایل بارکرا}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "لە {from} بۆ {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# زیاتر} other {+# زیاتر}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -702,6 +704,11 @@ msgstr "هەڵوەشاندنەوەی وەڵام"
 msgid "Cancelled"
 msgstr "هەڵوەشێنرایەوە"
 
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Cancelled"
+msgstr "هەڵوەشێنراوە"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
 msgid "Caption"
@@ -949,7 +956,7 @@ msgstr "کۆپیکردن"
 #: src/features/wiki/attachments-page.tsx
 #: src/features/wiki/attachments-page.tsx
 msgid "Copy embed link"
-msgstr "کۆپیکردنی بەستەری Embed"
+msgstr "کۆپیکردنی بەستەری جێگیرکراو"
 
 #: src/features/wiki/revision-view.tsx
 msgid "Could not load previous version for comparison."
@@ -1496,7 +1503,7 @@ msgstr "سڕینەوەی wiki سەرکەوتوو نەبوو"
 #: ../../../lib/web/src/components/options-menu.tsx
 #: src/hooks/use-rss-copy.ts
 msgid "Failed to get RSS token"
-msgstr "وەرگرتنی Token ـی RSS سەرکەوتوو نەبوو"
+msgstr "وەرگرتنی تۆکنی RSS سەرکەوتوو نەبوو"
 
 #: ../../../lib/web/src/hooks/use-load-more.ts
 msgid "Failed to load"
@@ -1578,7 +1585,7 @@ msgstr "گۆڕینی ناوی wiki سەرکەوتوو نەبوو"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 msgid "Failed to reset prompt"
-msgstr "ڕێکخستنەوەی Prompt سەرکەوتوو نەبوو"
+msgstr "ڕێکخستنەوەی پرۆمپت سەرکەوتوو نەبوو"
 
 #: src/features/wiki/revert-page.tsx
 msgid "Failed to revert page"
@@ -1603,7 +1610,7 @@ msgstr "پاشەکەوتکردنی پەڕە سەرکەوتوو نەبوو"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 msgid "Failed to save prompt"
-msgstr "پاشەکەوتکردنی Prompt سەرکەوتوو نەبوو"
+msgstr "پاشەکەوتکردنی پرۆمپت سەرکەوتوو نەبوو"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Failed to save settings"
@@ -1677,7 +1684,7 @@ msgstr "دۆزینەوەی wikiەکان"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Fingerprint"
-msgstr "Fingerprint"
+msgstr "پەنجەمۆر"
 
 #: ../../../lib/web/src/components/restore-banner.tsx
 msgid "Finish moving your account"
@@ -1724,7 +1731,7 @@ msgstr "گەڕانەوە"
 #: src/features/wiki/attachments-page.tsx
 #: src/features/wiki/attachments-page.tsx
 msgid "Grid view"
-msgstr "بینینی Grid"
+msgstr "بینینی تۆڕ"
 
 #: ../../../lib/web/src/features/access/access-dialog.tsx
 msgid "Group"
@@ -1847,7 +1854,7 @@ msgstr "وردەکارییەکانی بڕگە"
 
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
-msgstr "ئێستا"
+msgstr "هەر ئێستا"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -1967,7 +1974,7 @@ msgstr "ئەندامەکان"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 msgid "Menu"
-msgstr "Menu"
+msgstr "مێنیو"
 
 #: ../../../lib/web/src/components/game/game-chat-input.tsx
 msgid "Message"
@@ -1975,7 +1982,7 @@ msgstr "پەیام"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Metric"
-msgstr "Metric"
+msgstr "مەتری"
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Microphone permission denied"
@@ -2003,7 +2010,7 @@ msgstr "مانگ"
 
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "More options"
-msgstr "هەڵبژاردنی زیاتر"
+msgstr "بژاردەی زیاتر"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Moved"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "هەرگیز"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "نوێ"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "نوێترین"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2289,9 +2300,13 @@ msgstr "هیچ نەدۆزرایەوە"
 msgid "Notifications: {0}"
 msgstr "ئاگادارکردنەوەکان: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "ژمارە"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "ژمارە"
 
@@ -2445,7 +2460,7 @@ msgstr "نموونە (regex)"
 
 #: ../../../lib/web/src/components/person-picker.tsx
 msgid "People"
-msgstr "کەسەکان"
+msgstr "خەڵک"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
@@ -2614,6 +2629,11 @@ msgstr "پەیوەندیدارێتی {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "پەیوەندیدارێتی {relevance}، ئارەزوو {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "بیرخەرەوە"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -3140,7 +3160,7 @@ msgstr "وازبهێنە لە چاودێری"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "بابەت"
+msgstr "بەکارهێنەر یان گرووپ"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "ئێستا هاوکاتبکە"
 msgid "Syncing..."
 msgstr "هاوکاتکردن..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "سیستەم"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "سیستەم"
 
@@ -3248,6 +3272,11 @@ msgstr "ئامانج"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "URL-ی ئامانج"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "کاتی"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "داواکاری زۆر زیاد"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "سەرەوە"
+msgstr "باشترین"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3692,7 +3721,7 @@ msgstr "ویکی"
 #: src/routes/_authenticated/$wikiId/settings.tsx
 #: src/routes/_authenticated/settings.tsx
 msgid "Wiki"
-msgstr "Wiki"
+msgstr "ویکی"
 
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx

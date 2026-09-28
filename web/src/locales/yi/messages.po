@@ -28,6 +28,11 @@ msgstr "(רעדאַגירט)"
 msgid "(expand)"
 msgstr "(פאַרברייטערן)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(אָן קעפּל)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(דו)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# טעקע אַרויפֿגעלאָדן} other {# טעקעס אַרויפֿגעלאָדן}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} ביז {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# מער} other {+# מער}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -157,7 +159,7 @@ msgstr "{pageTitle} - קאָמענטאַרן"
 
 #: src/features/wiki/rename-page-dialog.tsx
 msgid "{renamedCount, plural, one {Renamed 1 page} other {Renamed # pages}}"
-msgstr "{renamedCount, plural, one {איבערגענומען 1 זײַטל} other {איבערגענומען # זײַטלעך}}"
+msgstr "{renamedCount, plural, one {איבערגעטויפֿט 1 זײַטל} other {איבערגעטויפֿט # זײַטלעך}}"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/ui/upload-progress.tsx
@@ -403,7 +405,7 @@ msgstr "Android פּוש"
 #: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/access/types.ts
 msgid "Anyone"
-msgstr "עמעצער"
+msgstr "ווער עס איז"
 
 #: ../../../lib/web/src/features/access/types.ts
 msgid "Anyone who is logged in"
@@ -495,7 +497,7 @@ msgstr "אױטענטיפֿיצירטע באַניצער"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Authenticator code"
-msgstr "Authenticator קאָד"
+msgstr "אויטענטיפֿיקאַטאָר־קאָד"
 
 #: src/features/wiki/changes-list.tsx
 #: src/features/wiki/page-history.tsx
@@ -620,7 +622,7 @@ msgstr "געבלאָקירט נאַוויגאַציע צו אומגעטרויט�
 
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx
 msgid "Blocks"
-msgstr "Blocks"
+msgstr "בלאָקירט"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Board"
@@ -699,6 +701,11 @@ msgstr "אָפּזאָגן ענטפֿער"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "אָפּגעזאָגט"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "אָפּגעזאָגט"
 
@@ -949,7 +956,7 @@ msgstr "קאָפּירן"
 #: src/features/wiki/attachments-page.tsx
 #: src/features/wiki/attachments-page.tsx
 msgid "Copy embed link"
-msgstr "קאָפּירן embed לינק"
+msgstr "קאָפּירן אײַנגעבעטענעם לינק"
 
 #: src/features/wiki/revision-view.tsx
 msgid "Could not load previous version for comparison."
@@ -1055,7 +1062,7 @@ msgstr "איצטיקער אָרט"
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 #: ../../../lib/web/src/components/colour-picker.tsx
 msgid "Custom"
-msgstr "מנהג"
+msgstr "אָנגעפּאַסט"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Dark"
@@ -1570,11 +1577,11 @@ msgstr "ניט געלונגען צו אַראָפּנעמען טאַג"
 
 #: src/features/wiki/rename-page-dialog.tsx
 msgid "Failed to rename page"
-msgstr "ניט געלונגען צו איבערנעמען בלאַט"
+msgstr "ניט געלונגען איבערצוטויפֿן בלאַט"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Failed to rename wiki"
-msgstr "ניט געלונגען צו איבערנעמען וויקי"
+msgstr "ניט געלונגען איבערצוטויפֿן וויקי"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 msgid "Failed to reset prompt"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "קיינמאָל"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "נײַ"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "נײַסטע"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2216,7 +2227,7 @@ msgstr "קיין סטאַטוס"
 
 #: src/features/wiki/tag-manager.tsx
 msgid "No tags"
-msgstr "קײַן טאַגן"
+msgstr "קײן צעטלעך"
 
 #: src/features/wiki/tags-list.tsx
 msgid "No tags found"
@@ -2269,7 +2280,7 @@ msgstr "קיינס"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Normal"
-msgstr "נארמאל"
+msgstr "נאָרמאַל"
 
 #: ../../../lib/web/src/components/attachment-image.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
@@ -2289,9 +2300,13 @@ msgstr "גאָרניט ניט געפֿונען"
 msgid "Notifications: {0}"
 msgstr "מעלדונגען: {0}"
 
+#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgid "Number"
+msgstr "נומער"
+
 #: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
-#: ../../../lib/web/src/hooks/use-field-type-labels.ts
+msgctxt "item number"
 msgid "Number"
 msgstr "נומער"
 
@@ -2429,7 +2444,7 @@ msgstr "פּאַסקיי"
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Passkey verification failed. Please try again."
-msgstr "די passkey פֿאַריפֿיצירונג איז דורכגעפֿאַלן. ביטע פּרוביר ווידער."
+msgstr "די פּאַסקיי־פֿאַריפֿיצירונג איז דורכגעפֿאַלן. ביטע פּרוביר ווידער."
 
 #: ../../../lib/web/src/components/restore-banner.tsx
 msgid "Passkeys"
@@ -2614,6 +2629,11 @@ msgstr "רעלעוואַנץ {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "רעלעוואַנץ {relevance}, אינטערעס {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "דערמאָנונג"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -2947,7 +2967,7 @@ msgstr "זוכן..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "קלײַב"
+msgstr "אויסוואַל"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3140,7 +3160,7 @@ msgstr "הער אויף נאָכקוקן"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "טעמע"
+msgstr "באַניצער אָדער גרופּע"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "סינכראָניזיר איצט"
 msgid "Syncing..."
 msgstr "סינכראָניזירן..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "סיסטעם"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "סיסטעם"
 
@@ -3248,6 +3272,11 @@ msgstr "ציל"
 #: src/features/wiki/wiki-settings.tsx
 msgid "Target URL"
 msgstr "ציל־URL"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "פּראָוויזאָריש"
 
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
@@ -3390,7 +3419,7 @@ msgstr "צו פֿיל בקשות"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "אויבן"
+msgstr "בעסטע"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3579,7 +3608,7 @@ msgstr "ניצט ווי היים"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Use your passkey"
-msgstr "ניצט אײַער passkey"
+msgstr "ניצט אײַער פּאַסקיי"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 #: ../../../lib/web/src/features/access/access-dialog.tsx
@@ -3692,7 +3721,7 @@ msgstr "וויקי"
 #: src/routes/_authenticated/$wikiId/settings.tsx
 #: src/routes/_authenticated/settings.tsx
 msgid "Wiki"
-msgstr "Wiki"
+msgstr "וויקי"
 
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
@@ -3726,7 +3755,7 @@ msgstr "Wiki נישט געפֿונען"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Wiki renamed"
-msgstr "Wiki איבערגענומען"
+msgstr "Wiki איבערגעטויפֿט"
 
 #: src/features/wiki/page-actions-menu.tsx
 msgid "Wiki settings"
@@ -3743,7 +3772,7 @@ msgstr "Wiki סינכראָניזירט"
 #: src/routes/_authenticated/index.tsx
 #: src/routes/_authenticated/index.tsx
 msgid "Wikis"
-msgstr "Wikis"
+msgstr "וויקיס"
 
 #: src/features/wiki/page-comments.tsx
 msgid "Write a comment..."

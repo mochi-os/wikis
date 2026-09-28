@@ -28,6 +28,11 @@ msgstr "(өңделді)"
 msgid "(expand)"
 msgstr "(жаю)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Атауы жоқ)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(сіз)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# файл жүктелді} other {# файл жүктелді}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} – {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# тағы} other {+# тағы}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -495,7 +497,7 @@ msgstr "Аутентификацияланған пайдаланушылар"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Authenticator code"
-msgstr "Authenticator коды"
+msgstr "Аутентификатор коды"
 
 #: src/features/wiki/changes-list.tsx
 #: src/features/wiki/page-history.tsx
@@ -620,7 +622,7 @@ msgstr "Сенімсіз сілтемеге өту бөгелді"
 
 #: ../../../lib/web/src/components/entity/entity-object-links.tsx
 msgid "Blocks"
-msgstr "Bloks"
+msgstr "Бөгейді"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Board"
@@ -699,6 +701,11 @@ msgstr "Жауаптан бас тарту"
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
 #: ../../../lib/web/src/lib/shell-errors.ts
+msgid "Cancelled"
+msgstr "Болдырылмады"
+
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
 msgid "Cancelled"
 msgstr "Болдырылмады"
 
@@ -853,7 +860,7 @@ msgstr "Пәрмендер палитрасы"
 #: src/features/wiki/changes-list.tsx
 #: src/features/wiki/page-history.tsx
 msgid "Comment"
-msgstr "Пікір"
+msgstr "Түсініктеме"
 
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx
 msgid "Comment actions"
@@ -1396,7 +1403,7 @@ msgstr "Электрондық поштаңыздағы кодты енгізі�
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Enter your authenticator code"
-msgstr "Authenticator кодын енгізіңіз"
+msgstr "Аутентификатор кодын енгізіңіз"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Entity ID"
@@ -1677,7 +1684,7 @@ msgstr "Уикилерді табу"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Fingerprint"
-msgstr "Саусақ ізі"
+msgstr "Қысқа идентификатор"
 
 #: ../../../lib/web/src/components/restore-banner.tsx
 msgid "Finish moving your account"
@@ -2033,7 +2040,7 @@ msgstr "my-page-name"
 #: src/features/wiki/wiki-settings.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Name"
-msgstr "Аты"
+msgstr "Атау"
 
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 msgid "Name cannot contain < or > characters"
@@ -2045,7 +2052,7 @@ msgstr "Атауда < немесе > таңбалары не жол ауыст�
 
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 msgid "Name is required"
-msgstr "Аты міндетті"
+msgstr "Атау міндетті"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Name must be 100 characters or less"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Ешқашан"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Жаңа"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Ең жаңа"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2289,11 +2300,15 @@ msgstr "Ештеңе табылмады"
 msgid "Notifications: {0}"
 msgstr "Хабарландырулар: {0}"
 
-#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Number"
 msgstr "Сан"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
+msgctxt "item number"
+msgid "Number"
+msgstr "Нөмір"
 
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
@@ -2429,7 +2444,7 @@ msgstr "Кіру кілті"
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "Passkey verification failed. Please try again."
-msgstr "Passkey тексеруі сәтсіз аяқталды. Қайталап көріңіз."
+msgstr "Кіру кілтін тексеру сәтсіз аяқталды. Қайталап көріңіз."
 
 #: ../../../lib/web/src/components/restore-banner.tsx
 msgid "Passkeys"
@@ -2614,6 +2629,11 @@ msgstr "Өзектілік {relevance}"
 #: ../../../lib/web/src/components/post-tags.tsx
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Өзектілік {relevance}, қызығушылық {weight}"
+
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Еске салғыш"
 
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
@@ -2878,7 +2898,7 @@ msgstr "Тіркемелерді іздеу..."
 
 #: src/routes/_authenticated/find.tsx
 msgid "Search by name, ID, fingerprint, or URL..."
-msgstr "Аты, ID, fingerprint немесе URL бойынша іздеу..."
+msgstr "Аты, ID, қысқа идентификатор немесе URL бойынша іздеу..."
 
 #: ../../../lib/web/src/components/ui/command.tsx
 msgid "Search for a command to run..."
@@ -3140,7 +3160,7 @@ msgstr "Қарауды тоқтату"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Тақырып"
+msgstr "Пайдаланушы немесе топ"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Қазір синхрондау"
 msgid "Syncing..."
 msgstr "Синхрондалуда..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Жүйе"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Жүйе"
 
@@ -3249,6 +3273,11 @@ msgstr "Мақсат"
 msgid "Target URL"
 msgstr "Мақсат URL"
 
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Алдын ала"
+
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Terms and conditions"
@@ -3293,7 +3322,7 @@ msgstr "Пайдаланушылар wiki-ге алғаш кіргенде кө�
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "The passkey request was not answered"
-msgstr "Passkey сұрауына жауап берілмеді"
+msgstr "Кіру кілті сұрауына жауап берілмеді"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx
 msgid "The requested content could not be found."
@@ -3309,7 +3338,7 @@ msgstr "Бұл әрекетті қайтаруға болмайды. Бұл wiki
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "This app is not allowed to use your passkey. Allow it in Settings, under Permissions."
-msgstr "Бұл қолданбаға сіздің passkey-іңізді пайдалануға рұқсат жоқ. Параметрлердегі Рұқсаттар бөлімінде рұқсат беріңіз."
+msgstr "Бұл қолданбаға сіздің кіру кілтіңізді пайдалануға рұқсат жоқ. Параметрлердегі Рұқсаттар бөлімінде рұқсат беріңіз."
 
 #: src/hooks/use-rss-copy.ts
 msgid "This feed URL was already issued and cannot be shown again."
@@ -3390,7 +3419,7 @@ msgstr "Сұраулар тым көп"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Жоғары"
+msgstr "Үздіктер"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
@@ -3579,7 +3608,7 @@ msgstr "Үй ретінде пайдалану"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Use your passkey"
-msgstr "Passkey пайдаланыңыз"
+msgstr "Кіру кілтін пайдаланыңыз"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 #: ../../../lib/web/src/features/access/access-dialog.tsx

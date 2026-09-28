@@ -28,6 +28,11 @@ msgstr "(засварласан)"
 msgid "(expand)"
 msgstr "(дэлгэх)"
 
+#: ../../../lib/web/src/components/calendar/event-title.tsx
+#: ../../../lib/web/src/components/calendar/tooltip.ts
+msgid "(No title)"
+msgstr "(Гарчиггүй)"
+
 #: ../../../lib/web/src/components/member-list.tsx
 msgid "(you)"
 msgstr "(та)"
@@ -128,13 +133,10 @@ msgid "{fileCount, plural, one {# file uploaded} other {# files uploaded}}"
 msgstr "{fileCount, plural, one {# файл байршуулсан} other {# файл байршуулсан}}"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "{from} to {to}"
 msgstr "{from} - {to}"
-
-#: ../../../lib/web/src/components/calendar/month-grid.tsx
-msgid "{hidden, plural, one {+# more} other {+# more}}"
-msgstr "{hidden, plural, one {+# илүү} other {+# илүү}}"
 
 #: src/features/wiki/attachments-page.tsx
 msgid "{imageCount, plural, one {# image} other {# images}}"
@@ -226,7 +228,7 @@ msgstr "Хандалт"
 #: ../../../lib/web/src/features/errors/access-denied-error.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
 msgid "Access denied"
-msgstr "Хандалтыг татгалзсан"
+msgstr "Хандалт хориглогдсон"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Access level"
@@ -398,7 +400,7 @@ msgstr "Гэнэтийн алдаа гарлаа"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Android push"
-msgstr "Android push мэдэгдэл"
+msgstr "Android пуш мэдэгдэл"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/access/types.ts
@@ -495,7 +497,7 @@ msgstr "Баталгаажсан хэрэглэгчид"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Authenticator code"
-msgstr "Authenticator код"
+msgstr "Баталгаажуулагчийн код"
 
 #: src/features/wiki/changes-list.tsx
 #: src/features/wiki/page-history.tsx
@@ -702,6 +704,11 @@ msgstr "Хариултыг цуцлах"
 msgid "Cancelled"
 msgstr "Цуцалсан"
 
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Cancelled"
+msgstr "Цуцалсан"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
 msgid "Caption"
@@ -827,7 +834,7 @@ msgstr "Хураах"
 
 #: ../../../lib/web/src/components/layout/app-sidebar.tsx
 msgid "Collapse sidebar"
-msgstr "Sidebar хумих"
+msgstr "Хажуугийн самбарыг хумих"
 
 #: ../../../lib/web/src/components/entity/entity-option-dialog.tsx
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
@@ -949,7 +956,7 @@ msgstr "Хуулах"
 #: src/features/wiki/attachments-page.tsx
 #: src/features/wiki/attachments-page.tsx
 msgid "Copy embed link"
-msgstr "Embed холбоосыг хуулах"
+msgstr "Шигтгээ холбоосыг хуулах"
 
 #: src/features/wiki/revision-view.tsx
 msgid "Could not load previous version for comparison."
@@ -1400,7 +1407,7 @@ msgstr "Баталгаажуулагчийн кодоо оруулна уу"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Entity ID"
-msgstr "Entity ID"
+msgstr "Нэгжийн ID"
 
 #: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx
 msgid "Error"
@@ -1496,7 +1503,7 @@ msgstr "Wiki устгаж чадсангүй"
 #: ../../../lib/web/src/components/options-menu.tsx
 #: src/hooks/use-rss-copy.ts
 msgid "Failed to get RSS token"
-msgstr "RSS token авч чадсангүй"
+msgstr "RSS токен авч чадсангүй"
 
 #: ../../../lib/web/src/hooks/use-load-more.ts
 msgid "Failed to load"
@@ -1677,7 +1684,7 @@ msgstr "Wiki хайх"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Fingerprint"
-msgstr "Fingerprint"
+msgstr "Хурууны хээ"
 
 #: ../../../lib/web/src/components/restore-banner.tsx
 msgid "Finish moving your account"
@@ -1781,7 +1788,7 @@ msgstr "ID"
 
 #: src/features/wiki/wiki-settings.tsx
 msgid "Identity"
-msgstr "Identity"
+msgstr "Танилт"
 
 #: src/features/wiki/markdown-content.tsx
 msgid "Image"
@@ -1798,7 +1805,7 @@ msgstr "Зургууд"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Imperial"
-msgstr "Imperial"
+msgstr "Империал"
 
 #: ../../../lib/web/src/features/access/types.ts
 msgid "Including anonymous users"
@@ -1991,7 +1998,7 @@ msgstr "Mochi веб"
 
 #: ../../../lib/web/src/components/options-menu.tsx
 msgid "Moderation"
-msgstr "Зохицуулалт"
+msgstr "Хяналт"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Monday"
@@ -2065,9 +2072,13 @@ msgid "Never"
 msgstr "Хэзээ ч"
 
 #: ../../../lib/web/src/components/entity/entity-create-object-dialog.tsx
-#: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "New"
 msgstr "Шинэ"
+
+#: ../../../lib/web/src/components/ui/sort-selector.tsx
+msgctxt "sort order"
+msgid "New"
+msgstr "Хамгийн шинэ"
 
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
 #: ../../../lib/web/src/components/game/game-empty-state.tsx
@@ -2085,7 +2096,7 @@ msgstr "Шинэ хуудас"
 
 #: src/hooks/use-rss-copy.ts
 msgid "New RSS URL copied to clipboard"
-msgstr "Шинэ RSS URL clipboard руу хуулагдсан"
+msgstr "Шинэ RSS URL түр санах ой руу хуулагдсан"
 
 #: src/features/wiki/rename-page-dialog.tsx
 msgid "New URL"
@@ -2174,7 +2185,7 @@ msgstr "\"{debouncedQuery}\"-д тохирох хуудас алга"
 
 #: src/features/wiki/tag-pages.tsx
 msgid "No pages found with this tag"
-msgstr "Энэ tag-тай хуудас алга"
+msgstr "Энэ шошготой хуудас алга"
 
 #: ../../../lib/web/src/components/entity/entity-field-editor.tsx
 #: ../../../lib/web/src/components/person-picker.tsx
@@ -2289,11 +2300,15 @@ msgstr "Юу ч олдсонгүй"
 msgid "Notifications: {0}"
 msgstr "Мэдэгдэл: {0}"
 
-#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
-#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Number"
 msgstr "Тоо"
+
+#: ../../../lib/web/src/components/entity/entity-view-options-bar.tsx
+#: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
+msgctxt "item number"
+msgid "Number"
+msgstr "Дугаар"
 
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/wiki-settings.tsx
@@ -2497,7 +2512,7 @@ msgstr "Боловсруулж байна…"
 
 #: ../../../lib/web/src/components/ai-prompts-editor.tsx
 msgid "Prompt saved"
-msgstr "Prompt хадгалагдсан"
+msgstr "Промпт хадгалагдсан"
 
 #: ../../../lib/web/src/components/entity/entity-object-detail-panel.tsx
 msgid "Properties"
@@ -2505,7 +2520,7 @@ msgstr "Шинж чанарууд"
 
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
-msgstr "Push мэдэгдэл"
+msgstr "Пуш мэдэгдэл"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Raised"
@@ -2615,6 +2630,11 @@ msgstr "Хамаарал {relevance}"
 msgid "Relevance {relevance}, interest {weight}"
 msgstr "Хамаарал {relevance}, сонирхол {weight}"
 
+#: ../../../lib/web/src/components/calendar/month-grid.tsx
+#: ../../../lib/web/src/components/calendar/time-grid.tsx
+msgid "Reminder"
+msgstr "Сануулга"
+
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/attachment-composer.tsx
 #: ../../../lib/web/src/components/entity/add-field-dialog.tsx
@@ -2701,7 +2721,7 @@ msgstr "Хуудас нэр өөрчлөх"
 
 #: ../../../lib/web/src/components/entity/entity-board-column.tsx
 msgid "Rename this board column"
-msgstr "Энэ board-ын баганын нэр өөрчлөх"
+msgstr "Энэ самбарын баганын нэр өөрчлөх"
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -2728,7 +2748,7 @@ msgstr "Хуулбарууд"
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx
 #: src/features/wiki/wiki-comment-thread.tsx
 msgid "Reply"
-msgstr "Хариу"
+msgstr "Хариулах"
 
 #. placeholder {0}: comment.name || comment.author
 #: ../../../lib/web/src/components/entity/entity-comment-thread.tsx
@@ -2833,7 +2853,7 @@ msgstr "RSS фид"
 #: ../../../lib/web/src/components/options-menu.tsx
 #: src/hooks/use-rss-copy.ts
 msgid "RSS URL copied to clipboard"
-msgstr "RSS URL clipboard руу хуулагдсан"
+msgstr "RSS URL түр санах ой руу хуулагдсан"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Saturday"
@@ -2878,7 +2898,7 @@ msgstr "Хавсралт хайх..."
 
 #: src/routes/_authenticated/find.tsx
 msgid "Search by name, ID, fingerprint, or URL..."
-msgstr "Нэр, ID, fingerprint, эсвэл URL-аар хайх..."
+msgstr "Нэр, ID, хурууны хээ, эсвэл URL-аар хайх..."
 
 #: ../../../lib/web/src/components/ui/command.tsx
 msgid "Search for a command to run..."
@@ -2947,7 +2967,7 @@ msgstr "Хайж байна..."
 
 #: ../../../lib/web/src/hooks/use-field-type-labels.ts
 msgid "Select"
-msgstr "Сонгох"
+msgstr "Сонголт"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Select a field"
@@ -3140,7 +3160,7 @@ msgstr "Үзэхээ зогсоох"
 
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Subject"
-msgstr "Сэдэв"
+msgstr "Хэрэглэгч эсвэл бүлэг"
 
 #: ../../../lib/web/src/components/comment-composer.tsx
 msgid "Submit comment"
@@ -3195,9 +3215,13 @@ msgstr "Одоо синк хийх"
 msgid "Syncing..."
 msgstr "Синк хийж байна..."
 
+#: ../../../lib/web/src/lib/preference-utils.ts
+#: ../../../lib/web/src/lib/preference-utils.ts
+msgid "System"
+msgstr "Систем"
+
 #: ../../../lib/web/src/components/audit-timeline.tsx
-#: ../../../lib/web/src/lib/preference-utils.ts
-#: ../../../lib/web/src/lib/preference-utils.ts
+msgctxt "actor"
 msgid "System"
 msgstr "Систем"
 
@@ -3249,6 +3273,11 @@ msgstr "Зорилт"
 msgid "Target URL"
 msgstr "Зорилтот URL"
 
+#: ../../../lib/web/src/components/calendar/status.ts
+msgctxt "event status"
+msgid "Tentative"
+msgstr "Урьдчилсан"
+
 #: ../../../lib/web/src/components/server-documents-footer.tsx
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Terms and conditions"
@@ -3293,7 +3322,7 @@ msgstr "Wiki-д анх ороход хэрэглэгчдэд харагдах х
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "The passkey request was not answered"
-msgstr "Passkey хүсэлтэд хариу ирсэнгүй"
+msgstr "Нэвтрэх түлхүүрийн хүсэлтэд хариу ирсэнгүй"
 
 #: ../../../lib/web/src/features/errors/general-error.tsx
 msgid "The requested content could not be found."
@@ -3309,7 +3338,7 @@ msgstr "Энэ үйлдлийг буцаах боломжгүй. Энэ нь wik
 
 #: ../../../lib/web/src/lib/shell-errors.ts
 msgid "This app is not allowed to use your passkey. Allow it in Settings, under Permissions."
-msgstr "Энэ аппад таны passkey-г ашиглахыг зөвшөөрөөгүй. Тохиргооны Зөвшөөрөл хэсэгт зөвшөөрнө үү."
+msgstr "Энэ аппад таны нэвтрэх түлхүүрийг ашиглахыг зөвшөөрөөгүй. Тохиргооны Зөвшөөрөл хэсэгт зөвшөөрнө үү."
 
 #: src/hooks/use-rss-copy.ts
 msgid "This feed URL was already issued and cannot be shown again."
@@ -3390,7 +3419,7 @@ msgstr "Хэт олон хүсэлт"
 
 #: ../../../lib/web/src/components/ui/sort-selector.tsx
 msgid "Top"
-msgstr "Дээд"
+msgstr "Шилдэг"
 
 #: ../../../lib/web/src/components/travelling-picker.tsx
 msgid "Travelling"
