@@ -673,19 +673,15 @@ msgstr "ಕ್ಯಾಮೆರಾ ಲಭ್ಯವಿಲ್ಲ"
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx
 #: ../../../lib/web/src/features/access/access-dialog.tsx
-#: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/accounts/account-add.tsx
 #: ../../../lib/web/src/features/accounts/account-verify.tsx
 #: src/features/wiki/page-editor.tsx
-#: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/rename-page-dialog.tsx
 #: src/features/wiki/revert-page.tsx
 #: src/features/wiki/revert-page.tsx
 #: src/features/wiki/tag-manager.tsx
 #: src/features/wiki/wiki-comment-thread.tsx
-#: src/features/wiki/wiki-settings.tsx
-#: src/features/wiki/wiki-settings.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Cancel"
 msgstr "ರದ್ದುಮಾಡಿ"
@@ -2671,7 +2667,7 @@ msgstr "{name} ತೆಗೆದುಹಾಕಿ"
 msgid "Remove access rule"
 msgstr "ಪ್ರವೇಶ ನಿಯಮವನ್ನು ತೆಗೆದುಹಾಕಿ"
 
-#. placeholder {0}: formatSubject(subject, data.name)
+#. placeholder {0}: formatSubject(removeSubject ?? '', removeData?.name)
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Remove access rule for \"{0}\"?"
 msgstr "\"{0}\" ಗಾಗಿ ಪ್ರವೇಶ ನಿಯಮವನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?"
@@ -3364,8 +3360,8 @@ msgstr "ಇದು ಆಟ ಮತ್ತು ಅದರ ಚಾಟ್ ಅನ್ನು 
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "ಈ ವಿಕಿಯು ಮೂಲ ವಿಕಿಗೆ ಚಂದಾದಾರರಾಗಿದೆ ಮತ್ತು ಅದರಿಂದ ನವೀಕರಣಗಳನ್ನು ಸ್ವೀಕರಿಸುತ್ತದೆ."
 
-#. placeholder {0}: redirect.source
-#. placeholder {1}: redirect.target
+#. placeholder {0}: deletingRedirect?.source
+#. placeholder {1}: deletingRedirect?.target
 #: src/features/wiki/wiki-settings.tsx
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "ಇದು «{0}» ನಿಂದ «{1}» ಗೆ ಮರುನಿರ್ದೇಶನವನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ."
@@ -3376,7 +3372,7 @@ msgstr "ಇದು «{0}» ನಿಂದ «{1}» ಗೆ ಮರುನಿರ್ದ�
 msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the source URL will no longer be redirected."
 msgstr "ಇದು «{0}» ನಿಂದ «{1}» ಗೆ ಮರುನಿರ್ದೇಶನವನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ. ಮೂಲ URL ಗೆ ಭೇಟಿ ನೀಡುವ ಬಳಕೆದಾರರು ಇನ್ನು ಮುಂದೆ ಮರುನಿರ್ದೇಶಿಸಲ್ಪಡುವುದಿಲ್ಲ."
 
-#. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
+#. placeholder {0}: removeReplica?.name || `${removeReplica?.id.slice(0, 16)}...`
 #: src/features/wiki/wiki-settings.tsx
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "ಇದು «{0}» ಗೆ ನವೀಕರಣಗಳನ್ನು ಕಳುಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತದೆ. ಬೇಕಾದರೆ ಅವರು ಮತ್ತೆ ನಕಲು ಮಾಡಬಹುದು."

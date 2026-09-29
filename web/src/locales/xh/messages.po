@@ -673,19 +673,15 @@ msgstr "Ikhamera ayifumaneki"
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx
 #: ../../../lib/web/src/features/access/access-dialog.tsx
-#: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/accounts/account-add.tsx
 #: ../../../lib/web/src/features/accounts/account-verify.tsx
 #: src/features/wiki/page-editor.tsx
-#: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/rename-page-dialog.tsx
 #: src/features/wiki/revert-page.tsx
 #: src/features/wiki/revert-page.tsx
 #: src/features/wiki/tag-manager.tsx
 #: src/features/wiki/wiki-comment-thread.tsx
-#: src/features/wiki/wiki-settings.tsx
-#: src/features/wiki/wiki-settings.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Cancel"
 msgstr "Rhoxisa"
@@ -2671,7 +2667,7 @@ msgstr "Susa {name}"
 msgid "Remove access rule"
 msgstr "Susa umthetho wofikelelo"
 
-#. placeholder {0}: formatSubject(subject, data.name)
+#. placeholder {0}: formatSubject(removeSubject ?? '', removeData?.name)
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Remove access rule for \"{0}\"?"
 msgstr "Susa umthetho wofikelelo we-\"{0}\"?"
@@ -3364,8 +3360,8 @@ msgstr "Oku kuza kucima umdlalo nengxoxo yawo ngokusisigxina. Esi senzo asinakug
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "Le wiki irhunyelwe kwiwiki yomthombo kwaye ifumana uhlaziyo kuyo."
 
-#. placeholder {0}: redirect.source
-#. placeholder {1}: redirect.target
+#. placeholder {0}: deletingRedirect?.source
+#. placeholder {1}: deletingRedirect?.target
 #: src/features/wiki/wiki-settings.tsx
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "Oku kuya kususa ukuthunyelwa kwakhona ukususela ku-«{0}» ukuya ku-«{1}»."
@@ -3376,7 +3372,7 @@ msgstr "Oku kuya kususa ukuthunyelwa kwakhona ukususela ku-«{0}» ukuya ku-«{1
 msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the source URL will no longer be redirected."
 msgstr "Oku kuya kususa ukuthunyelwa kwakhona ukususela ku-«{0}» ukuya ku-«{1}». Abasebenzisi abatyelele i-URL yomthombo abasayi kuthunyelwa kwakhona."
 
-#. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
+#. placeholder {0}: removeReplica?.name || `${removeReplica?.id.slice(0, 16)}...`
 #: src/features/wiki/wiki-settings.tsx
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "Oku kuya kuyeka ukuthumela uhlaziyo ku-«{0}». Banako ukuphinda nje xa befuna."

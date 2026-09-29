@@ -673,19 +673,15 @@ msgstr "ကင်မရာ မရနိုင်ပါ"
 #: ../../../lib/web/src/components/ui/create-entity-dialog.tsx
 #: ../../../lib/web/src/components/ui/editable-field-row.tsx
 #: ../../../lib/web/src/features/access/access-dialog.tsx
-#: ../../../lib/web/src/features/access/access-list.tsx
 #: ../../../lib/web/src/features/accounts/account-add.tsx
 #: ../../../lib/web/src/features/accounts/account-verify.tsx
 #: src/features/wiki/page-editor.tsx
-#: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/redirects-page.tsx
 #: src/features/wiki/rename-page-dialog.tsx
 #: src/features/wiki/revert-page.tsx
 #: src/features/wiki/revert-page.tsx
 #: src/features/wiki/tag-manager.tsx
 #: src/features/wiki/wiki-comment-thread.tsx
-#: src/features/wiki/wiki-settings.tsx
-#: src/features/wiki/wiki-settings.tsx
 #: src/features/wiki/wiki-settings.tsx
 msgid "Cancel"
 msgstr "မလုပ်တော့ပါ"
@@ -2671,7 +2667,7 @@ msgstr "{name} ဖယ်ရှား"
 msgid "Remove access rule"
 msgstr "ဝင်ရောက်ခွင့် စည်းမျဉ်း ဖယ်ရှား"
 
-#. placeholder {0}: formatSubject(subject, data.name)
+#. placeholder {0}: formatSubject(removeSubject ?? '', removeData?.name)
 #: ../../../lib/web/src/features/access/access-list.tsx
 msgid "Remove access rule for \"{0}\"?"
 msgstr "\"{0}\" အတွက် ဝင်ရောက်ခွင့်စည်းမျဉ်းကို ဖယ်ရှားမလား။"
@@ -3364,8 +3360,8 @@ msgstr "ဤလုပ်ဆောင်ချက်သည် ဂိမ်းန�
 msgid "This wiki is subscribed to a source wiki and receives updates from it."
 msgstr "ဤ wiki သည် မူရင်း wiki ကို subscribe လုပ်ထားပြီး ၎င်းမှ အပ်ဒိတ်များ ရရှိနေသည်။"
 
-#. placeholder {0}: redirect.source
-#. placeholder {1}: redirect.target
+#. placeholder {0}: deletingRedirect?.source
+#. placeholder {1}: deletingRedirect?.target
 #: src/features/wiki/wiki-settings.tsx
 msgid "This will remove the redirect from \"{0}\" to \"{1}\"."
 msgstr "၎င်းသည် \"{0}\" မှ \"{1}\" သို့ လမ်းကြောင်းလွှဲ ကို ဖယ်ရှားပါမည်။"
@@ -3376,7 +3372,7 @@ msgstr "၎င်းသည် \"{0}\" မှ \"{1}\" သို့ လမ်း�
 msgid "This will remove the redirect from \"{0}\" to \"{1}\". Users visiting the source URL will no longer be redirected."
 msgstr "၎င်းသည် \"{0}\" မှ \"{1}\" သို့ လမ်းကြောင်းလွှဲ ကို ဖယ်ရှားပါမည်။ မူရင်း URL ကို လာရောက်သော သုံးစွဲသူများကို လမ်းကြောင်းလွှဲပေးတော့မည်မဟုတ်ပါ။"
 
-#. placeholder {0}: replica.name || `${replica.id.slice(0, 16)}...`
+#. placeholder {0}: removeReplica?.name || `${removeReplica?.id.slice(0, 16)}...`
 #: src/features/wiki/wiki-settings.tsx
 msgid "This will stop sending updates to \"{0}\". They can replicate again if they want."
 msgstr "၎င်းသည် \"{0}\" သို့ အပ်ဒိတ်ပို့ခြင်းကို ရပ်ပါမည်။ သူတို့ စိတ်ပါက ပြန်ပွားယူနိုင်သည်။"
