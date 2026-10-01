@@ -248,6 +248,12 @@ export function AttachmentsPage() {
 
   const imageCount = attachments.filter((a) => isImage(a.type)).length
   const documentCount = attachments.length - imageCount
+  const files = plural(attachments.length, { one: '# file', other: '# files' })
+  const images = plural(imageCount, { one: '# image', other: '# images' })
+  const documents = plural(documentCount, {
+    one: '# document',
+    other: '# documents',
+  })
 
   // Build lightbox media from filtered image attachments
   const imageAttachments = filteredAttachments.filter((a) => isImage(a.type))
@@ -286,10 +292,7 @@ export function AttachmentsPage() {
       <div className='flex items-center justify-between gap-4'>
         <p className='text-muted-foreground text-sm'>
           <Trans>
-            {plural(attachments.length, { one: '# file', other: '# files' })} (
-            {plural(imageCount, { one: '# image', other: '# images' })},{' '}
-            {plural(documentCount, { one: '# document', other: '# documents' })}
-            )
+            {files} ({images}, {documents})
           </Trans>
         </p>
         <div>

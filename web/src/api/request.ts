@@ -37,19 +37,27 @@ export function getEntityIdFromPath(pathname: string): string | null {
   return null
 }
 
+// The path class-level requests are scoped under. On a direct entity URL
+// (/<entity>) getAppPath() is empty and only the app's own path reaches a class
+// action, as forums and feeds fall back to theirs; under domain routing it is
+// empty because the domain is the app's base.
+function classPath(): string {
+  return getAppPath() || (isDomainEntityRouting() ? '' : '/wikis')
+}
+
 // A protocol-relative URL ("//host/path") also starts with "/", and axios
 // treats it as absolute — so passing it through unchanged would send the
 // request off-origin. Scope it like any other relative URL instead.
-function toClassScopedUrl(url: string): string {
+export function toClassScopedUrl(url: string): string {
   if (url.startsWith('//')) {
-    return `${getAppPath()}/${url.replace(/^\/+/, '')}`
+    return `${classPath()}/${url.replace(/^\/+/, '')}`
   }
 
   if (url.startsWith('/') || /^https?:\/\//.test(url)) {
     return url
   }
 
-  return `${getAppPath()}/${url}`
+  return `${classPath()}/${url}`
 }
 
 export const wikisRequest = {

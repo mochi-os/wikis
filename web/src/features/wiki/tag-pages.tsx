@@ -53,10 +53,10 @@ export function TagPages({ tag, pages, wikiId }: TagPagesProps) {
       </div>
 
       <p className='text-muted-foreground'>
-        <Trans>
-          {plural(pages.length, { one: '# page', other: '# pages' })} with this
-          tag.
-        </Trans>
+        {plural(pages.length, {
+          one: '# page with this tag.',
+          other: '# pages with this tag.',
+        })}
       </p>
 
       <Separator />

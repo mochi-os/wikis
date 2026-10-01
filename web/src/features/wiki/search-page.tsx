@@ -88,11 +88,10 @@ export function SearchPage({
       ) : (
         <div className='space-y-4'>
           <p className='text-muted-foreground text-sm'>
-            <Trans>
-              Found{' '}
-              {plural(results.length, { one: '# result', other: '# results' })}{' '}
-              for "{debouncedQuery}"
-            </Trans>
+            {plural(results.length, {
+              one: `Found # result for "${debouncedQuery}"`,
+              other: `Found # results for "${debouncedQuery}"`,
+            })}
           </p>
           <div className='space-y-2'>
             {results.map((result) => (

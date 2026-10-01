@@ -175,7 +175,7 @@ export function PageActionsMenu({
         </MenuLink>
         <MenuLink target={to.comments}>
           <MessageSquare className='size-4' />
-          {plural(comments, { one: '1 comment', other: '# comments' })}
+          {plural(comments, { one: '# comment', other: '# comments' })}
         </MenuLink>
         {permissions.delete && (
           <DropdownMenuItem onSelect={onDelete}>

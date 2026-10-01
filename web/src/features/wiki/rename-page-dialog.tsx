@@ -72,12 +72,12 @@ export function RenamePageDialog({
           const renamedCount = data.renamed?.length || 1
           const linksUpdated = data.links?.updated || 0
           let message = plural(renamedCount, {
-            one: 'Renamed 1 page',
+            one: 'Renamed # page',
             other: 'Renamed # pages',
           })
           if (linksUpdated > 0) {
             message += plural(linksUpdated, {
-              one: ', updated 1 link',
+              one: ', updated # link',
               other: ', updated # links',
             })
           }
