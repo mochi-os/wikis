@@ -528,6 +528,7 @@ export function AttachmentsPage() {
             : ''
         }
         confirmText={t`Delete`}
+        icon={<Trash2 className='size-4' />}
         destructive
         isLoading={deleteMutation.isPending}
         handleConfirm={confirmDelete}

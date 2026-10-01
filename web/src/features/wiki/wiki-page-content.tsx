@@ -16,6 +16,7 @@ import {
   toastAction,
   getErrorMessage,
 } from '@mochi/web'
+import { LogOut } from 'lucide-react'
 import endpoints from '@/api/endpoints'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { useRssCopy } from '@/hooks/use-rss-copy'
@@ -278,6 +279,7 @@ export function WikiPageContent({
           title={t`Unsubscribe`}
           desc={t`Are you sure you want to unsubscribe from this wiki?`}
           confirmText={t`Unsubscribe`}
+          icon={<LogOut className='size-4' />}
           destructive
           isLoading={isUnsubscribing}
           handleConfirm={() => void handleUnsubscribe()}

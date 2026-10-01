@@ -13,6 +13,7 @@ import {
   getErrorMessage,
   Main,
 } from '@mochi/web'
+import { LogOut } from 'lucide-react'
 import { useWikiContext, usePermissions } from '@/context/wiki-context'
 import { useRssCopy } from '@/hooks/use-rss-copy'
 import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
@@ -196,6 +197,7 @@ function WikiPageRoute() {
           title={t`Unsubscribe`}
           desc={t`Are you sure you want to unsubscribe from this wiki?`}
           confirmText={t`Unsubscribe`}
+          icon={<LogOut className='size-4' />}
           destructive
           isLoading={unsubscribeWiki.isPending}
           handleConfirm={handleUnsubscribe}

@@ -626,6 +626,7 @@ export function PageEditor({
             : ''
         }
         confirmText={t`Delete`}
+        icon={<Trash2 className='size-4' />}
         destructive
         isLoading={deleteMutation.isPending}
         handleConfirm={confirmDeleteAttachment}

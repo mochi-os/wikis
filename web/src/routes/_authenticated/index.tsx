@@ -35,7 +35,7 @@ import {
   usePageTitle,
   naturalCompare,
 } from '@mochi/web'
-import { BookMarked, BookOpen, Ellipsis, Plus, Rss } from 'lucide-react'
+import { BookMarked, BookOpen, Ellipsis, LogOut, Plus, Rss } from 'lucide-react'
 import endpoints from '@/api/endpoints'
 import { wikisRequest, isEntityContext } from '@/api/request'
 import { useSidebarContext } from '@/context/sidebar-context'
@@ -326,6 +326,7 @@ function WikiHomePage({
           title={t`Unsubscribe`}
           desc={t`Are you sure you want to unsubscribe from this wiki?`}
           confirmText={t`Unsubscribe`}
+          icon={<LogOut className='size-4' />}
           destructive
           isLoading={unsubscribeWiki.isPending}
           handleConfirm={handleUnsubscribe}
@@ -685,6 +686,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
         title={t`Unsubscribe`}
         desc={t`Are you sure you want to unsubscribe from this wiki?`}
         confirmText={t`Unsubscribe`}
+        icon={<LogOut className='size-4' />}
         destructive
         isLoading={unsubscribeMutation.isPending}
         handleConfirm={async () => {

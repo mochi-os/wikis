@@ -173,6 +173,7 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
             </Trans>
           }
           confirmText={t`Delete`}
+          icon={<Trash2 className='size-4' />}
           destructive
           isLoading={deleteRedirect.isPending}
           handleConfirm={() => void handleDelete()}

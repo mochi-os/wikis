@@ -481,6 +481,7 @@ function SettingsTab() {
               title={t`Are you absolutely sure?`}
               desc={t`This action cannot be undone. This will permanently delete the wiki and all its contents.`}
               confirmText={t`Delete wiki`}
+              icon={<Trash2 className='size-4' />}
               destructive
               isLoading={deletePending}
               handleConfirm={() => void handleDelete()}
@@ -843,12 +844,8 @@ function ReplicasTab() {
             They can replicate again if they want.
           </Trans>
         }
-        confirmText={
-          <>
-            <Minus className='h-4 w-4' />
-            <Trans>Remove</Trans>
-          </>
-        }
+        confirmText={<Trans>Remove</Trans>}
+        icon={<Minus className='size-4' />}
         isLoading={isRemoving}
         handleConfirm={() => {
           if (removeReplica)
@@ -1019,6 +1016,7 @@ function RedirectsTab() {
           </Trans>
         }
         confirmText={t`Delete`}
+        icon={<Trash2 className='size-4' />}
         destructive
         isLoading={isDeleting}
         handleConfirm={() => {

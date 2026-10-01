@@ -5,6 +5,7 @@
 import { useNavigate } from '@tanstack/react-router'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { ConfirmDialog, getErrorMessage, toast } from '@mochi/web'
+import { Trash2 } from 'lucide-react'
 import { useDeletePage } from '@/hooks/use-wiki'
 
 interface DeletePageDialogProps {
@@ -64,6 +65,7 @@ export function DeletePageDialog({
         </p>
       }
       confirmText={t`Delete`}
+      icon={<Trash2 className='size-4' />}
       destructive
       isLoading={deletePage.isPending}
       handleConfirm={handleDelete}
