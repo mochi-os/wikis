@@ -37,6 +37,7 @@ import {
   textChanged,
   isMutationSkipped,
   UploadProgress,
+  useLeaveGuard,
 } from '@mochi/web'
 import {
   Check,
@@ -148,6 +149,14 @@ export function PageEditor({
     if (!page) return true
     return textChanged(title, page.title) || content !== page.content
   }, [isNew, page, title, content])
+
+  // A new page has nothing to differ from, so anything typed is unsaved. Cancel,
+  // the Attachments link and the shell's back, forward and cross-app links all
+  // leave the editor, and each asks first.
+  const unsaved = isNew
+    ? title.trim() !== '' || content.trim() !== ''
+    : pageDirty
+  const leaving = useLeaveGuard(unsaved)
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value
@@ -265,6 +274,7 @@ export function PageEditor({
         {
           onSuccess: (data) => {
             toast.success(t`Page created`)
+            leaving.release()
             if (wikiId) {
               navigate({
                 to: '/$wikiId/$page',
@@ -299,6 +309,7 @@ export function PageEditor({
           onSuccess: (result) => {
             if (isMutationSkipped(result)) return
             toast.success(t`Page saved`)
+            leaving.release()
             if (wikiId) {
               navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
             } else {
@@ -630,6 +641,19 @@ export function PageEditor({
         destructive
         isLoading={deleteMutation.isPending}
         handleConfirm={confirmDeleteAttachment}
+      />
+
+      <ConfirmDialog
+        open={leaving.asking}
+        onOpenChange={(open) => {
+          if (!open) leaving.stay()
+        }}
+        title={t`Discard changes?`}
+        desc=''
+        confirmText={t`Discard`}
+        icon={<X className='size-4' />}
+        destructive
+        handleConfirm={leaving.proceed}
       />
     </div>
   )
