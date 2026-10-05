@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
+import { useCallback } from 'react'
 import type { AxiosProgressEvent } from 'axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type {
@@ -60,9 +61,17 @@ function invalidatePage(
 // (entity context like /wikis/{fingerprint}/...), prefixes the endpoint with the
 // entity base URL to form an absolute path. In class context (no provider), the
 // endpoint is returned as-is and resolved by getApiBasepath().
+//
+// The resolver keeps its identity until the base URL changes. The settings tabs
+// name it in the dependencies of the effect that loads them, and a fresh
+// function per render made each finished request start the next one, so the
+// Access, Redirects and Replicas tabs fetched without end.
 export function useEntityEndpoint() {
   const baseURL = useWikiBaseURLOptional()?.baseURL
-  return (endpoint: string) => (baseURL ? `${baseURL}${endpoint}` : endpoint)
+  return useCallback(
+    (endpoint: string) => (baseURL ? `${baseURL}${endpoint}` : endpoint),
+    [baseURL]
+  )
 }
 
 // Every query key carries the wiki, or React Query answers a second wiki's
