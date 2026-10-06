@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { RevisionDetail } from '@/types/wiki'
 import { Trans, useLingui } from '@lingui/react/macro'
@@ -20,7 +20,6 @@ import {
   SelectValue,
   getAppPath,
 } from '@mochi/web'
-import { diffLines } from 'diff'
 import { Clock, ArrowLeft, RotateCcw, GitCompare } from 'lucide-react'
 import { usePageRevision } from '@/hooks/use-wiki'
 import { MarkdownContent } from './markdown-content'
@@ -28,6 +27,7 @@ import {
   compareOptions,
   compareOrder,
   defaultCompare,
+  diffRows,
 } from './revision-compare'
 
 interface RevisionViewProps {
@@ -44,30 +44,54 @@ function DiffView({
   oldContent: string
   newContent: string
 }) {
-  const changes = diffLines(oldContent, newContent)
+  const rows = useMemo(
+    () => diffRows(oldContent, newContent),
+    [oldContent, newContent]
+  )
   return (
     <div className='overflow-x-auto rounded-lg border font-mono text-sm'>
-      {changes.map((part, i) => {
-        const lines = part.value.replace(/\n$/, '').split('\n')
-        const bg = part.added
-          ? 'bg-success/10 dark:bg-success/15'
-          : part.removed
-            ? 'bg-destructive/10 dark:bg-destructive/15'
-            : ''
-        const prefix = part.added ? '+' : part.removed ? '-' : ' '
-        const textColor = part.added
-          ? 'text-success'
-          : part.removed
-            ? 'text-destructive'
-            : 'text-muted-foreground'
-        return lines.map((line, j) => (
-          <div key={`${i}-${j}`} className={`flex gap-2 px-3 py-0.5 ${bg}`}>
+      {rows.map((row, i) => {
+        const bg =
+          row.type === 'add'
+            ? 'bg-success/10 dark:bg-success/15'
+            : row.type === 'remove'
+              ? 'bg-destructive/10 dark:bg-destructive/15'
+              : ''
+        const prefix =
+          row.type === 'add' ? '+' : row.type === 'remove' ? '-' : ' '
+        const textColor =
+          row.type === 'add'
+            ? 'text-success'
+            : row.type === 'remove'
+              ? 'text-destructive'
+              : 'text-muted-foreground'
+        // The same tints the merge request diff in projects uses for the
+        // words that changed inside a line.
+        const mark =
+          row.type === 'add'
+            ? 'bg-success/25 dark:bg-success/40'
+            : 'bg-destructive/20 dark:bg-destructive/40'
+        const empty = row.segments.every((segment) => !segment.text)
+        return (
+          <div key={i} className={`flex gap-2 px-3 py-0.5 ${bg}`}>
             <span className={`w-4 shrink-0 select-none ${textColor}`}>
               {prefix}
             </span>
-            <span className={textColor}>{line || ' '}</span>
+            <span className={textColor}>
+              {empty
+                ? ' '
+                : row.segments.map((segment, j) =>
+                    segment.changed ? (
+                      <span key={j} className={mark}>
+                        {segment.text}
+                      </span>
+                    ) : (
+                      segment.text
+                    )
+                  )}
+            </span>
           </div>
-        ))
+        )
       })}
     </div>
   )
