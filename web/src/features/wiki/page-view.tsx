@@ -116,7 +116,10 @@ function TableOfContents({
 export function PageView({ page, missingLinks, wikiId }: PageViewProps) {
   const { formatTimestamp } = useFormat()
   const headings = extractTocHeadings(page.content)
-  const hasToc = headings.length > 0
+  // A list of one heading gives nothing to jump between, so the panel needs
+  // at least two to be worth its column. Headings keep their anchors either
+  // way.
+  const hasToc = headings.length > 1
   const currentPathWithQuery = `${window.location.pathname}${window.location.search}`
   const [activeHeadingId, setActiveHeadingId] = useState<string | undefined>(
     headings[0]?.id
