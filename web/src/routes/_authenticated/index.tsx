@@ -635,7 +635,7 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
                             variant='ghost'
                             size='icon'
                             aria-label={t`Wiki actions`}
-                            className='size-8 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100'
+                            className='size-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100 [@media(hover:none)]:opacity-100'
                           >
                             <Ellipsis className='size-4' />
                           </Button>
