@@ -5,7 +5,7 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { RevisionDetail } from '@/types/wiki'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import {
   Button,
   useFormat,
@@ -13,12 +13,22 @@ import {
   Separator,
   Skeleton,
   EntityAvatar,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   getAppPath,
 } from '@mochi/web'
 import { diffLines } from 'diff'
 import { Clock, ArrowLeft, RotateCcw, GitCompare } from 'lucide-react'
 import { usePageRevision } from '@/hooks/use-wiki'
 import { MarkdownContent } from './markdown-content'
+import {
+  compareOptions,
+  compareOrder,
+  defaultCompare,
+} from './revision-compare'
 
 interface RevisionViewProps {
   slug: string
@@ -71,15 +81,32 @@ export function RevisionView({
 }: RevisionViewProps) {
   const { formatTimestamp } = useFormat()
   const isCurrentVersion = revision.version === currentVersion
+  const { t } = useLingui()
   const [showDiff, setShowDiff] = useState(false)
-  const hasPrevious = revision.version > 1
   const authorLabel = revision.name
 
-  // Fetch the previous revision when diff mode is active
-  const { data: prevData, isLoading: prevLoading } = usePageRevision(
+  // The pick is kept with the version it was made for: the route reuses this
+  // component from one version to the next, and a pick made on another version
+  // could name the version now on screen.
+  const [picked, setPicked] = useState<{ version: number; other: number }>()
+  const other =
+    picked?.version === revision.version
+      ? picked.other
+      : defaultCompare(revision.version, currentVersion)
+  const canCompare = other > 0
+  // Read through the object below: a member access keeps a message's
+  // placeholders positional, so both messages here stay the ones the
+  // catalogs already translate.
+  const range = compareOrder(revision.version, other)
+  const options = compareOptions(revision.version, currentVersion).map(
+    (version) => ({ version })
+  )
+
+  // Fetch the other revision when diff mode is active
+  const { data: otherData, isLoading: otherLoading } = usePageRevision(
     slug,
-    revision.version - 1,
-    { enabled: showDiff && hasPrevious }
+    other,
+    { enabled: showDiff && canCompare }
   )
 
   return (
@@ -103,7 +130,7 @@ export function RevisionView({
             </h1>
           </div>
           <div className='flex flex-wrap gap-2'>
-            {hasPrevious && (
+            {canCompare && (
               <Button
                 variant='outline'
                 size='sm'
@@ -201,31 +228,60 @@ export function RevisionView({
       <Separator />
 
       {/* Content or Diff */}
-      {showDiff && hasPrevious ? (
-        prevLoading ? (
-          <div className='space-y-2'>
-            {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className='h-5 w-full' />
-            ))}
-          </div>
-        ) : prevData?.revision ? (
-          <div className='space-y-2'>
+      {showDiff && canCompare ? (
+        <div className='space-y-2'>
+          <div className='flex flex-wrap items-center justify-between gap-2'>
             <p className='text-muted-foreground text-xs'>
               <Trans>
-                Changes from version {prevData.revision.version} →{' '}
-                {revision.version}
+                Changes from version {range.from} → {range.to}
               </Trans>
             </p>
-            <DiffView
-              oldContent={prevData.revision.content}
-              newContent={revision.content}
-            />
+            <Select
+              value={String(other)}
+              onValueChange={(value) =>
+                setPicked({ version: revision.version, other: Number(value) })
+              }
+            >
+              <SelectTrigger size='sm' aria-label={t`Version`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map((option) => (
+                  <SelectItem
+                    key={option.version}
+                    value={String(option.version)}
+                  >
+                    <Trans>Version {option.version}</Trans>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        ) : (
-          <p className='text-muted-foreground text-sm'>
-            <Trans>Could not load previous version for comparison.</Trans>
-          </p>
-        )
+          {otherLoading ? (
+            <div className='space-y-2'>
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className='h-5 w-full' />
+              ))}
+            </div>
+          ) : otherData?.revision ? (
+            <DiffView
+              oldContent={
+                range.from === other
+                  ? otherData.revision.content
+                  : revision.content
+              }
+              newContent={
+                range.to === other
+                  ? otherData.revision.content
+                  : revision.content
+              }
+            />
+          ) : (
+            <p className='text-muted-foreground text-sm'>
+              <Trans>Could not load previous version for comparison.</Trans>
+            </p>
+          )}
+        </div>
       ) : (
         <MarkdownContent content={revision.content} />
       )}
