@@ -143,6 +143,39 @@ export function usePageHistory(
   })
 }
 
+// The most revisions the history action sends in one answer.
+const HISTORY_PAGE_MAXIMUM = 200
+
+// Every version of a page that has a revision, newest first. The numbers have
+// gaps, so they are read from the history rather than counted: deleting a page
+// takes a version number and saves no revision. A history longer than one
+// answer is read page by page, and `total` ends the walk even if an answer
+// came back full for ever.
+export function usePageVersions(slug: string, opts?: { enabled?: boolean }) {
+  const e = useEntityEndpoint()
+  const scope = useWikiScope()
+  return useQuery({
+    queryKey: ['wiki', scope, 'page', slug, 'history', 'versions'],
+    queryFn: async () => {
+      const versions: number[] = []
+      for (;;) {
+        const answer = await requestHelpers.get<PageHistoryResponse>(
+          `${e(endpoints.wiki.pageHistory(slug))}?limit=${HISTORY_PAGE_MAXIMUM}&offset=${versions.length}`
+        )
+        const revisions = answer.revisions ?? []
+        for (const revision of revisions) versions.push(revision.version)
+        if (
+          revisions.length < HISTORY_PAGE_MAXIMUM ||
+          versions.length >= (answer.total ?? Infinity)
+        ) {
+          return versions
+        }
+      }
+    },
+    enabled: (opts?.enabled ?? true) && !!slug,
+  })
+}
+
 export function usePageRevision(
   slug: string,
   version: number,

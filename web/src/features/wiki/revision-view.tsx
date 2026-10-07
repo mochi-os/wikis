@@ -26,7 +26,7 @@ import {
   getAppPath,
 } from '@mochi/web'
 import { Clock, ArrowLeft, RotateCcw, GitCompare } from 'lucide-react'
-import { usePageRevision } from '@/hooks/use-wiki'
+import { usePageRevision, usePageVersions } from '@/hooks/use-wiki'
 import { MarkdownContent } from './markdown-content'
 import {
   compareOptions,
@@ -97,28 +97,37 @@ export function RevisionView({
   const viewStyle = isMobile ? 'unified' : savedStyle
   const authorLabel = revision.name
 
+  // A page past its first version has an earlier one to compare with.
+  const canCompare = currentVersion > 1
+  // The versions that exist, read once the comparison is opened. They are not
+  // every number up to the current one: see usePageVersions.
+  const { data: versions = [], isLoading: versionsLoading } = usePageVersions(
+    slug,
+    { enabled: showDiff && canCompare }
+  )
+
   // The pick is kept with the version it was made for: the route reuses this
   // component from one version to the next, and a pick made on another version
   // could name the version now on screen.
   const [picked, setPicked] = useState<{ version: number; other: number }>()
+  // 0 until the versions arrive, and when the page has no other version.
   const other =
     picked?.version === revision.version
       ? picked.other
-      : defaultCompare(revision.version, currentVersion)
-  const canCompare = other > 0
+      : defaultCompare(revision.version, versions)
   // Read through the object below: a member access keeps a message's
   // placeholders positional, so both messages here stay the ones the
   // catalogs already translate.
   const range = compareOrder(revision.version, other)
-  const options = compareOptions(revision.version, currentVersion).map(
-    (version) => ({ version })
-  )
+  const options = compareOptions(revision.version, versions).map((version) => ({
+    version,
+  }))
 
-  // Fetch the other revision when diff mode is active
+  // Fetch the other revision when diff mode is active and there is one
   const { data: otherData, isLoading: otherLoading } = usePageRevision(
     slug,
     other,
-    { enabled: showDiff && canCompare }
+    { enabled: showDiff && other > 0 }
   )
 
   return (
@@ -246,40 +255,46 @@ export function RevisionView({
               the version can be changed from anywhere in the comparison. The
               offsets are the page header's height, phone and wider, as it is
               pinned above. -mt-2 with py-2 keeps the row where it was and
-              lets its background cover the lines passing beneath. */}
-          <div className='bg-background sticky top-[calc(var(--sticky-top,0px)+53px)] z-20 -mt-2 flex flex-wrap items-center justify-between gap-2 py-2 md:top-[calc(var(--sticky-top,0px)+61px)]'>
-            <p className='text-muted-foreground text-xs'>
-              <Trans>
-                Changes from version {range.from} → {range.to}
-              </Trans>
-            </p>
-            <div className='flex flex-wrap items-center gap-2'>
-              {!isMobile && (
-                <DiffViewToggle value={viewStyle} onChange={setSavedStyle} />
-              )}
-              <Select
-                value={String(other)}
-                onValueChange={(value) =>
-                  setPicked({ version: revision.version, other: Number(value) })
-                }
-              >
-                <SelectTrigger size='sm' aria-label={t`Version`}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {options.map((option) => (
-                    <SelectItem
-                      key={option.version}
-                      value={String(option.version)}
-                    >
-                      <Trans>Version {option.version}</Trans>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              lets its background cover the lines passing beneath. Left out
+              until there is a version to name. */}
+          {other > 0 && (
+            <div className='bg-background sticky top-[calc(var(--sticky-top,0px)+53px)] z-20 -mt-2 flex flex-wrap items-center justify-between gap-2 py-2 md:top-[calc(var(--sticky-top,0px)+61px)]'>
+              <p className='text-muted-foreground text-xs'>
+                <Trans>
+                  Changes from version {range.from} → {range.to}
+                </Trans>
+              </p>
+              <div className='flex flex-wrap items-center gap-2'>
+                {!isMobile && (
+                  <DiffViewToggle value={viewStyle} onChange={setSavedStyle} />
+                )}
+                <Select
+                  value={String(other)}
+                  onValueChange={(value) =>
+                    setPicked({
+                      version: revision.version,
+                      other: Number(value),
+                    })
+                  }
+                >
+                  <SelectTrigger size='sm' aria-label={t`Version`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {options.map((option) => (
+                      <SelectItem
+                        key={option.version}
+                        value={String(option.version)}
+                      >
+                        <Trans>Version {option.version}</Trans>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-          {otherLoading ? (
+          )}
+          {versionsLoading || otherLoading ? (
             <div className='space-y-2'>
               {[1, 2, 3, 4].map((i) => (
                 <Skeleton key={i} className='h-5 w-full' />
