@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-import { diffLines, diffWordsWithSpace } from 'diff'
+import { parseDiff, type DiffFile, type DiffWords } from '@mochi/web'
+import { createTwoFilesPatch, diffWordsWithSpace } from 'diff'
 
 // Every version this one can be compared with, newest first. Versions count up
 // from 1 with each save, so the current version bounds the list.
@@ -33,16 +34,20 @@ export function compareOrder(
     : { from: other, to: version }
 }
 
-// A piece of one diff row. `changed` marks the words that differ from the
-// line this one replaced or was replaced by.
-export interface DiffSegment {
-  text: string
-  changed: boolean
-}
+// The shared parser reads git's format, which opens each file with this line.
+// Every line of the page itself carries a prefix in the patch, so nothing a
+// page contains can be taken for a header.
+const FILE_HEADER = 'diff --git a/page b/page\n'
 
-export interface DiffRow {
-  type: 'add' | 'remove' | 'context'
-  segments: DiffSegment[]
+// The comparison of two versions of a page, in the shape the shared diff view
+// draws. The whole page is kept as context: a wiki page is read as one text,
+// and a few lines around each change would hide where in the page it sits.
+// Undefined when the two versions hold the same text.
+export function pageDiff(before: string, after: string): DiffFile | undefined {
+  const patch = createTwoFilesPatch('a/page', 'b/page', before, after, '', '', {
+    context: Number.MAX_SAFE_INTEGER,
+  })
+  return parseDiff(FILE_HEADER + patch).files[0]
 }
 
 // Below this share of unchanged text, two lines are different lines rather
@@ -51,75 +56,16 @@ export interface DiffRow {
 const WORD_DIFF_MINIMUM = 0.3
 
 // The changed words of a replaced line and its replacement, or undefined when
-// the two have too little in common to be read as one edited line.
-function wordSegments(
-  before: string,
-  after: string
-): { removed: DiffSegment[]; added: DiffSegment[] } | undefined {
-  const removed: DiffSegment[] = []
-  const added: DiffSegment[] = []
+// the two have too little in common to be read as one edited line. The
+// whitespace-keeping comparison: each side has to rebuild its own line
+// exactly, and a wiki line's spacing is part of its markdown.
+export const pageWords: DiffWords = (before, after) => {
+  const changes = diffWordsWithSpace(before, after)
   let common = 0
-  // The whitespace-keeping variant: each side has to rebuild its own line
-  // exactly, and a wiki line's spacing is part of its markdown.
-  for (const part of diffWordsWithSpace(before, after)) {
-    if (part.added) {
-      added.push({ text: part.value, changed: true })
-    } else if (part.removed) {
-      removed.push({ text: part.value, changed: true })
-    } else {
-      common += part.value.trim().length
-      removed.push({ text: part.value, changed: false })
-      added.push({ text: part.value, changed: false })
-    }
+  for (const change of changes) {
+    if (!change.added && !change.removed) common += change.value.trim().length
   }
   const shorter = Math.min(before.trim().length, after.trim().length)
   if (shorter === 0 || common / shorter < WORD_DIFF_MINIMUM) return undefined
-  return { removed, added }
-}
-
-const plain = (type: DiffRow['type'], line: string): DiffRow => ({
-  type,
-  segments: [{ text: line, changed: false }],
-})
-
-// The rows of a line diff between two versions of a page. A run of removed
-// lines followed by a run of added lines is an edit: its lines are paired in
-// order, and each pair carries the words that changed. Wiki lines are whole
-// paragraphs, so without this a one-word edit marks the paragraph twice and
-// leaves the reader to find the word.
-export function diffRows(before: string, after: string): DiffRow[] {
-  const rows: DiffRow[] = []
-  const parts = diffLines(before, after)
-  const lines = (value: string) => value.replace(/\n$/, '').split('\n')
-
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i]
-    const next = parts[i + 1]
-    if (part.removed && next?.added) {
-      const removed = lines(part.value)
-      const added = lines(next.value)
-      const pairs = removed.map((line, j) =>
-        j < added.length ? wordSegments(line, added[j]) : undefined
-      )
-      removed.forEach((line, j) =>
-        rows.push(
-          pairs[j]
-            ? { type: 'remove', segments: pairs[j].removed }
-            : plain('remove', line)
-        )
-      )
-      added.forEach((line, j) =>
-        rows.push(
-          pairs[j]
-            ? { type: 'add', segments: pairs[j].added }
-            : plain('add', line)
-        )
-      )
-      i++
-      continue
-    }
-    const type = part.added ? 'add' : part.removed ? 'remove' : 'context'
-    for (const line of lines(part.value)) rows.push(plain(type, line))
-  }
-  return rows
+  return changes
 }

@@ -28,6 +28,11 @@ msgstr "(แก้ไขแล้ว)"
 msgid "(expand)"
 msgstr "(ขยาย)"
 
+#. placeholder {0}: file.oldPath
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "(from {0})"
+msgstr "(จาก {0})"
+
 #: ../../../lib/web/src/components/calendar/event-title.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "(No title)"
@@ -43,6 +48,11 @@ msgstr "(คุณ)"
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx
 msgid "[not set]"
 msgstr "[ไม่ได้ตั้ง]"
+
+#. placeholder {0}: files.length
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "{0, plural, one {# file changed} other {# files changed}}"
+msgstr "{0, plural, one {เปลี่ยนแปลง # ไฟล์} other {เปลี่ยนแปลง # ไฟล์}}"
 
 #. placeholder {0}: attachments.length
 #: src/features/wiki/attachments-page.tsx
@@ -183,6 +193,10 @@ msgstr "{totalCount, plural, one {# รายการ} other {# รายกา
 #: src/features/wiki/wiki-comment-thread.tsx
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {# การตอบกลับ} other {+# การตอบกลับเพิ่มเติม}}"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "{truncated, plural, one {# more file not shown} other {# more files not shown}}"
+msgstr "{truncated, plural, one {ไม่แสดงไฟล์อีก # ไฟล์} other {ไม่แสดงไฟล์อีก # ไฟล์}}"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 msgid "{unreadCount, plural, one {Open menu (# unread notification)} other {Open menu (# unread notifications)}}"
@@ -602,6 +616,10 @@ msgstr "อัปเดตแบนเนอร์แล้ว"
 #: src/features/wiki/page-comments.tsx
 msgid "Be the first to comment on this page."
 msgstr "เป็นคนแรกที่แสดงความคิดเห็นในหน้านี้"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Binary file not shown"
+msgstr "ไม่แสดงไฟล์ไบนารี"
 
 #: ../../../lib/web/src/components/member-list.tsx
 #: ../../../lib/web/src/components/member-list.tsx
@@ -2156,6 +2174,11 @@ msgstr "ไม่มีไฟล์แนบที่ตรงกับการ
 msgid "No attachments yet"
 msgstr "ยังไม่มีไฟล์แนบ"
 
+#: ../../../lib/web/src/components/diff-viewer.tsx
+#: src/features/wiki/revision-view.tsx
+msgid "No changes to display"
+msgstr "ไม่มีการเปลี่ยนแปลงให้แสดง"
+
 #: src/features/wiki/changes-list.tsx
 msgid "No changes yet"
 msgstr "ยังไม่มีการเปลี่ยนแปลง"
@@ -2277,6 +2300,15 @@ msgstr "ไม่มี"
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Normal"
 msgstr "ปกติ"
+
+#. placeholder {0}: formatFileSize(file.limit)
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Not compared: larger than {0}"
+msgstr "ไม่ได้เปรียบเทียบ: ใหญ่กว่า {0}"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Not compared: over the size limit"
+msgstr "ไม่ได้เปรียบเทียบ: เกินขีดจำกัดขนาด"
 
 #: ../../../lib/web/src/components/attachment-image.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
@@ -3141,6 +3173,10 @@ msgstr "แหล่งที่มา"
 msgid "Spacious"
 msgstr "กว้างขวาง"
 
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Split"
+msgstr "แยก"
+
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx
 msgid "Start the discussion by adding the first comment."
 msgstr "เริ่มการสนทนาโดยเพิ่มความคิดเห็นแรก"
@@ -3487,6 +3523,10 @@ msgstr "ไม่พร้อมใช้งาน"
 #: ../../../lib/web/src/lib/request.ts
 msgid "Unexpected API error"
 msgstr "ข้อผิดพลาด API ที่ไม่คาดคิด"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Unified"
+msgstr "รวม"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "United States"

@@ -28,6 +28,11 @@ msgstr "(تم التعديل)"
 msgid "(expand)"
 msgstr "(توسيع)"
 
+#. placeholder {0}: file.oldPath
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "(from {0})"
+msgstr "(من {0})"
+
 #: ../../../lib/web/src/components/calendar/event-title.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "(No title)"
@@ -43,6 +48,11 @@ msgstr "(أنت)"
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx
 msgid "[not set]"
 msgstr "[غير محدد]"
+
+#. placeholder {0}: files.length
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "{0, plural, one {# file changed} other {# files changed}}"
+msgstr "{0, plural, zero {لم يتغير أي ملف} one {تغير ملف واحد} two {تغير ملفان} few {تغيرت # ملفات} many {تغير # ملفًا} other {تغير # ملف}}"
 
 #. placeholder {0}: attachments.length
 #: src/features/wiki/attachments-page.tsx
@@ -183,6 +193,10 @@ msgstr "{totalCount, plural, zero {لا عناصر} one {عنصر واحد} two 
 #: src/features/wiki/wiki-comment-thread.tsx
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, zero {+# رد إضافي} one {رد واحد} two {+# ردان إضافيان} few {+# ردود إضافية} many {+# ردًا إضافيًا} other {+# رد إضافي}}"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "{truncated, plural, one {# more file not shown} other {# more files not shown}}"
+msgstr "{truncated, plural, zero {لا ملفات إضافية غير معروضة} one {ملف إضافي واحد غير معروض} two {ملفان إضافيان غير معروضين} few {# ملفات إضافية غير معروضة} many {# ملفًا إضافيًا غير معروض} other {# ملف إضافي غير معروض}}"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 msgid "{unreadCount, plural, one {Open menu (# unread notification)} other {Open menu (# unread notifications)}}"
@@ -602,6 +616,10 @@ msgstr "تم تحديث البانر"
 #: src/features/wiki/page-comments.tsx
 msgid "Be the first to comment on this page."
 msgstr "كن أول من يعلق على هذه الصفحة."
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Binary file not shown"
+msgstr "الملف الثنائي غير معروض"
 
 #: ../../../lib/web/src/components/member-list.tsx
 #: ../../../lib/web/src/components/member-list.tsx
@@ -2156,6 +2174,11 @@ msgstr "لا توجد مرفقات تطابق بحثك"
 msgid "No attachments yet"
 msgstr "لا توجد مرفقات بعد"
 
+#: ../../../lib/web/src/components/diff-viewer.tsx
+#: src/features/wiki/revision-view.tsx
+msgid "No changes to display"
+msgstr "لا توجد تغييرات للعرض"
+
 #: src/features/wiki/changes-list.tsx
 msgid "No changes yet"
 msgstr "لا توجد تغييرات بعد"
@@ -2277,6 +2300,15 @@ msgstr "لا شيء"
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Normal"
 msgstr "عادي"
+
+#. placeholder {0}: formatFileSize(file.limit)
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Not compared: larger than {0}"
+msgstr "لم تتم المقارنة: أكبر من {0}"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Not compared: over the size limit"
+msgstr "لم تتم المقارنة: يتجاوز حد الحجم"
 
 #: ../../../lib/web/src/components/attachment-image.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
@@ -3141,6 +3173,10 @@ msgstr "المصادر"
 msgid "Spacious"
 msgstr "واسع"
 
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Split"
+msgstr "تقسيم"
+
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx
 msgid "Start the discussion by adding the first comment."
 msgstr "ابدأ النقاش بإضافة التعليق الأول."
@@ -3487,6 +3523,10 @@ msgstr "غير متاح"
 #: ../../../lib/web/src/lib/request.ts
 msgid "Unexpected API error"
 msgstr "خطأ غير متوقع في واجهة البرمجة"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Unified"
+msgstr "موحد"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "United States"

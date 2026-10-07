@@ -8,7 +8,12 @@ import type { RevisionDetail } from '@/types/wiki'
 import { Trans, useLingui } from '@lingui/react/macro'
 import {
   Button,
+  DiffFileView,
+  DiffViewToggle,
+  type DiffViewStyle,
   useFormat,
+  useScreenSize,
+  useShellStorage,
   Badge,
   Separator,
   Skeleton,
@@ -27,8 +32,12 @@ import {
   compareOptions,
   compareOrder,
   defaultCompare,
-  diffRows,
+  pageDiff,
+  pageWords,
 } from './revision-compare'
+
+// Where the choice between one column and two is remembered.
+const COMPARE_STYLE_KEY = 'wikis.compare'
 
 interface RevisionViewProps {
   slug: string
@@ -40,60 +49,31 @@ interface RevisionViewProps {
 function DiffView({
   oldContent,
   newContent,
+  viewStyle,
 }: {
   oldContent: string
   newContent: string
+  viewStyle: DiffViewStyle
 }) {
-  const rows = useMemo(
-    () => diffRows(oldContent, newContent),
+  const file = useMemo(
+    () => pageDiff(oldContent, newContent),
     [oldContent, newContent]
   )
+  if (!file) {
+    return (
+      <p className='text-muted-foreground text-sm'>
+        <Trans>No changes to display</Trans>
+      </p>
+    )
+  }
   return (
-    <div className='overflow-x-auto rounded-lg border font-mono text-sm'>
-      {rows.map((row, i) => {
-        const bg =
-          row.type === 'add'
-            ? 'bg-success/10 dark:bg-success/15'
-            : row.type === 'remove'
-              ? 'bg-destructive/10 dark:bg-destructive/15'
-              : ''
-        const prefix =
-          row.type === 'add' ? '+' : row.type === 'remove' ? '-' : ' '
-        const textColor =
-          row.type === 'add'
-            ? 'text-success'
-            : row.type === 'remove'
-              ? 'text-destructive'
-              : 'text-muted-foreground'
-        // The same tints the merge request diff in projects uses for the
-        // words that changed inside a line.
-        const mark =
-          row.type === 'add'
-            ? 'bg-success/25 dark:bg-success/40'
-            : 'bg-destructive/20 dark:bg-destructive/40'
-        const empty = row.segments.every((segment) => !segment.text)
-        return (
-          <div key={i} className={`flex gap-2 px-3 py-0.5 ${bg}`}>
-            <span className={`w-4 shrink-0 select-none ${textColor}`}>
-              {prefix}
-            </span>
-            <span className={textColor}>
-              {empty
-                ? ' '
-                : row.segments.map((segment, j) =>
-                    segment.changed ? (
-                      <span key={j} className={mark}>
-                        {segment.text}
-                      </span>
-                    ) : (
-                      segment.text
-                    )
-                  )}
-            </span>
-          </div>
-        )
-      })}
-    </div>
+    <DiffFileView
+      file={file}
+      viewStyle={viewStyle}
+      words={pageWords}
+      hunkHeaders={false}
+      prose
+    />
   )
 }
 
@@ -107,6 +87,14 @@ export function RevisionView({
   const isCurrentVersion = revision.version === currentVersion
   const { t } = useLingui()
   const [showDiff, setShowDiff] = useState(false)
+  // Two columns leave each side too narrow to read on a phone, so there the
+  // comparison stays in one column and the switch is not offered.
+  const { isMobile } = useScreenSize()
+  const [savedStyle, setSavedStyle] = useShellStorage<DiffViewStyle>(
+    COMPARE_STYLE_KEY,
+    'unified'
+  )
+  const viewStyle = isMobile ? 'unified' : savedStyle
   const authorLabel = revision.name
 
   // The pick is kept with the version it was made for: the route reuses this
@@ -260,26 +248,31 @@ export function RevisionView({
                 Changes from version {range.from} → {range.to}
               </Trans>
             </p>
-            <Select
-              value={String(other)}
-              onValueChange={(value) =>
-                setPicked({ version: revision.version, other: Number(value) })
-              }
-            >
-              <SelectTrigger size='sm' aria-label={t`Version`}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {options.map((option) => (
-                  <SelectItem
-                    key={option.version}
-                    value={String(option.version)}
-                  >
-                    <Trans>Version {option.version}</Trans>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className='flex flex-wrap items-center gap-2'>
+              {!isMobile && (
+                <DiffViewToggle value={viewStyle} onChange={setSavedStyle} />
+              )}
+              <Select
+                value={String(other)}
+                onValueChange={(value) =>
+                  setPicked({ version: revision.version, other: Number(value) })
+                }
+              >
+                <SelectTrigger size='sm' aria-label={t`Version`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {options.map((option) => (
+                    <SelectItem
+                      key={option.version}
+                      value={String(option.version)}
+                    >
+                      <Trans>Version {option.version}</Trans>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           {otherLoading ? (
             <div className='space-y-2'>
@@ -289,6 +282,7 @@ export function RevisionView({
             </div>
           ) : otherData?.revision ? (
             <DiffView
+              viewStyle={viewStyle}
               oldContent={
                 range.from === other
                   ? otherData.revision.content

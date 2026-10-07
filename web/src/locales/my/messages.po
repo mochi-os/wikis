@@ -28,6 +28,11 @@ msgstr "(တည်းဖြတ်ပြီး)"
 msgid "(expand)"
 msgstr "(ချဲ့ရန်)"
 
+#. placeholder {0}: file.oldPath
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "(from {0})"
+msgstr "({0} မှ)"
+
 #: ../../../lib/web/src/components/calendar/event-title.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "(No title)"
@@ -43,6 +48,11 @@ msgstr "(သင်)"
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx
 msgid "[not set]"
 msgstr "[မသတ်မှတ်ရသေး]"
+
+#. placeholder {0}: files.length
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "{0, plural, one {# file changed} other {# files changed}}"
+msgstr "{0, plural, one {ဖိုင် # ခု ပြောင်းလဲခဲ့သည်} other {ဖိုင် # ခု ပြောင်းလဲခဲ့သည်}}"
 
 #. placeholder {0}: attachments.length
 #: src/features/wiki/attachments-page.tsx
@@ -183,6 +193,10 @@ msgstr "{totalCount, plural, other {# ခု}}"
 #: src/features/wiki/wiki-comment-thread.tsx
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, other {+ ပြန်ဖြေချက် # ခု ပိုနေသေးသည်}}"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "{truncated, plural, one {# more file not shown} other {# more files not shown}}"
+msgstr "{truncated, plural, other {နောက်ထပ်ဖိုင် # ခုကို မပြပါ}}"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 msgid "{unreadCount, plural, one {Open menu (# unread notification)} other {Open menu (# unread notifications)}}"
@@ -602,6 +616,10 @@ msgstr "ပိုစတာ ပြောင်းပြီး"
 #: src/features/wiki/page-comments.tsx
 msgid "Be the first to comment on this page."
 msgstr "ဤစာမျက်နှာတွင် ပထမဆုံး မှတ်ချက်ပြုသူဖြစ်ပါစေ။"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Binary file not shown"
+msgstr "ဘိုင်နရီဖိုင်ကို မပြထားပါ"
 
 #: ../../../lib/web/src/components/member-list.tsx
 #: ../../../lib/web/src/components/member-list.tsx
@@ -2156,6 +2174,11 @@ msgstr "သင့်ရှာဖွေချက်နှင့် ကိုက�
 msgid "No attachments yet"
 msgstr "attachment များ မရှိသေးပါ"
 
+#: ../../../lib/web/src/components/diff-viewer.tsx
+#: src/features/wiki/revision-view.tsx
+msgid "No changes to display"
+msgstr "ပြသရန် ပြောင်းလဲမှုများ မရှိပါ"
+
 #: src/features/wiki/changes-list.tsx
 msgid "No changes yet"
 msgstr "ပြောင်းလဲမှုများ မရှိသေးပါ"
@@ -2277,6 +2300,15 @@ msgstr "မရှိ"
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Normal"
 msgstr "ပုံမှန်"
+
+#. placeholder {0}: formatFileSize(file.limit)
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Not compared: larger than {0}"
+msgstr "နှိုင်းယှဉ်မထားပါ - {0} ထက်ကြီးသည်"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Not compared: over the size limit"
+msgstr "နှိုင်းယှဉ်မထားပါ - အရွယ်အစားကန့်သတ်ချက်ကို ကျော်လွန်သည်"
 
 #: ../../../lib/web/src/components/attachment-image.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
@@ -3141,6 +3173,10 @@ msgstr "မူရင်းများ"
 msgid "Spacious"
 msgstr "ကျယ်ပြန့်သော"
 
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Split"
+msgstr "ခွဲခြားမည်"
+
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx
 msgid "Start the discussion by adding the first comment."
 msgstr "ပထမမှတ်ချက် ထည့်၍ ဆွေးနွေးချက် စတင်ပါ။"
@@ -3487,6 +3523,10 @@ msgstr "မရရှိနိုင်ပါ"
 #: ../../../lib/web/src/lib/request.ts
 msgid "Unexpected API error"
 msgstr "မမျှော်လင့်သော API အမှား"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Unified"
+msgstr "ပေါင်းစပ်ထား"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "United States"

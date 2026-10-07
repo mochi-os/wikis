@@ -28,6 +28,11 @@ msgstr "(편집됨)"
 msgid "(expand)"
 msgstr "(확장)"
 
+#. placeholder {0}: file.oldPath
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "(from {0})"
+msgstr "({0}에서)"
+
 #: ../../../lib/web/src/components/calendar/event-title.tsx
 #: ../../../lib/web/src/components/calendar/tooltip.ts
 msgid "(No title)"
@@ -43,6 +48,11 @@ msgstr "(나)"
 #: ../../../lib/web/src/components/entity/entity-tree-view.tsx
 msgid "[not set]"
 msgstr "[설정 안 됨]"
+
+#. placeholder {0}: files.length
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "{0, plural, one {# file changed} other {# files changed}}"
+msgstr "{0, plural, one {#개 파일 변경됨} other {#개 파일 변경됨}}"
 
 #. placeholder {0}: attachments.length
 #: src/features/wiki/attachments-page.tsx
@@ -183,6 +193,10 @@ msgstr "{totalCount, plural, one {# 개} other {# 개}}"
 #: src/features/wiki/wiki-comment-thread.tsx
 msgid "{totalDescendants, plural, one {# reply} other {+# more replies}}"
 msgstr "{totalDescendants, plural, one {답글 #개} other {답글 +#개 더}}"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "{truncated, plural, one {# more file not shown} other {# more files not shown}}"
+msgstr "{truncated, plural, one {파일 #개 더 표시되지 않음} other {파일 #개 더 표시되지 않음}}"
 
 #: ../../../lib/web/src/components/layout/mochi-menu.tsx
 msgid "{unreadCount, plural, one {Open menu (# unread notification)} other {Open menu (# unread notifications)}}"
@@ -602,6 +616,10 @@ msgstr "배너 업데이트됨"
 #: src/features/wiki/page-comments.tsx
 msgid "Be the first to comment on this page."
 msgstr "이 페이지에 첫 번째 댓글을 남겨보세요."
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Binary file not shown"
+msgstr "바이너리 파일은 표시되지 않습니다"
 
 #: ../../../lib/web/src/components/member-list.tsx
 #: ../../../lib/web/src/components/member-list.tsx
@@ -2156,6 +2174,11 @@ msgstr "검색과 일치하는 첨부 파일이 없습니다"
 msgid "No attachments yet"
 msgstr "아직 첨부파일이 없어요"
 
+#: ../../../lib/web/src/components/diff-viewer.tsx
+#: src/features/wiki/revision-view.tsx
+msgid "No changes to display"
+msgstr "표시할 변경 사항이 없어요"
+
 #: src/features/wiki/changes-list.tsx
 msgid "No changes yet"
 msgstr "아직 변경 사항이 없어요"
@@ -2277,6 +2300,15 @@ msgstr "없음"
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "Normal"
 msgstr "기본"
+
+#. placeholder {0}: formatFileSize(file.limit)
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Not compared: larger than {0}"
+msgstr "비교하지 않음: {0}보다 큼"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Not compared: over the size limit"
+msgstr "비교하지 않음: 크기 제한 초과"
 
 #: ../../../lib/web/src/components/attachment-image.tsx
 #: ../../../lib/web/src/features/errors/general-error.tsx
@@ -3141,6 +3173,10 @@ msgstr "소스"
 msgid "Spacious"
 msgstr "여유로운"
 
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Split"
+msgstr "분할"
+
 #: ../../../lib/web/src/components/entity/entity-comment-list.tsx
 msgid "Start the discussion by adding the first comment."
 msgstr "첫 번째 댓글을 추가하여 토론을 시작해 주세요."
@@ -3487,6 +3523,10 @@ msgstr "사용할 수 없음"
 #: ../../../lib/web/src/lib/request.ts
 msgid "Unexpected API error"
 msgstr "예기치 않은 API 오류"
+
+#: ../../../lib/web/src/components/diff-viewer.tsx
+msgid "Unified"
+msgstr "통합됨"
 
 #: ../../../lib/web/src/lib/preference-utils.ts
 msgid "United States"
