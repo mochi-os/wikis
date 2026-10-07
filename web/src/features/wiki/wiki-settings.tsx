@@ -354,7 +354,7 @@ function SettingsTab() {
       <Card>
         <CardHeader>
           <Skeleton className='h-6 w-32' />
-          <Skeleton className='h-4 w-96' />
+          <Skeleton className='h-4 w-full max-w-96' />
         </CardHeader>
         <CardContent>
           <ListSkeleton variant='simple' height='h-10' count={2} />

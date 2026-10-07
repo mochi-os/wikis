@@ -290,7 +290,7 @@ function RedirectsPageSkeleton() {
         </div>
         <Skeleton className='h-9 w-32' />
       </div>
-      <Skeleton className='h-5 w-96' />
+      <Skeleton className='h-5 w-full max-w-96' />
       <Separator />
       <ListSkeleton variant='simple' height='h-12' count={3} />
     </div>

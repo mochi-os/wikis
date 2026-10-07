@@ -78,7 +78,7 @@ export function TagsListSkeleton() {
         <Skeleton className='h-6 w-6' />
         <Skeleton className='h-8 w-32' />
       </div>
-      <Skeleton className='h-5 w-96' />
+      <Skeleton className='h-5 w-full max-w-96' />
       <Separator />
       <div className='flex flex-wrap gap-3'>
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (

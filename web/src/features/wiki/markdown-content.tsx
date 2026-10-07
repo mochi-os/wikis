@@ -203,7 +203,7 @@ export function MarkdownContent({
             href={
               currentPathWithQuery ? `${currentPathWithQuery}#${id}` : `#${id}`
             }
-            className='text-muted-foreground hover:text-foreground ms-2 inline-flex opacity-0 transition-opacity group-hover:opacity-100'
+            className='text-muted-foreground hover:text-foreground ms-2 inline-flex opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100'
             aria-label={t`Link to ${headingText}`}
           >
             <Hash className='size-3.5' />

@@ -125,7 +125,7 @@ export function TagManager({ slug, tags, wikiId }: TagManagerProps) {
               <TooltipTrigger asChild>
                 <button
                   onClick={() => handleRemoveTag(tag)}
-                  className='text-muted-foreground hover:text-foreground ms-1 rounded-full p-0.5 opacity-0 transition-opacity group-hover:opacity-100'
+                  className='text-muted-foreground hover:text-foreground ms-1 rounded-full p-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100'
                   disabled={removeTag.isPending}
                   aria-label={t`Remove`}
                 >

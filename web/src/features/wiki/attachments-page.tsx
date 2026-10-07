@@ -597,9 +597,11 @@ function AttachmentGridItem({
         </p>
       </div>
 
-      {/* Actions overlay - clicking background opens attachment, buttons stop propagation */}
+      {/* Actions overlay - clicking background opens attachment, buttons stop propagation.
+          A touch screen has no hover, so there the buttons always show, along the
+          top and with no dimming, so the thumbnail and its name stay readable. */}
       <div
-        className='absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100'
+        className='absolute inset-0 flex cursor-pointer items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 [@media(hover:none)]:items-start [@media(hover:none)]:bg-transparent [@media(hover:none)]:pt-2 [@media(hover:none)]:opacity-100'
         onClick={() => onOpen(attachment)}
       >
         <Tooltip>
