@@ -17,6 +17,7 @@ import {
   Badge,
   Separator,
   Skeleton,
+  StickyBar,
   EntityAvatar,
   Select,
   SelectContent,
@@ -253,12 +254,12 @@ export function RevisionView({
         <div className='space-y-2'>
           {/* Stays in view while a long page scrolls under it, so the view and
               the version can be changed from anywhere in the comparison. The
-              offsets are the page header's height, phone and wider, as it is
-              pinned above. -mt-2 with py-2 keeps the row where it was and
-              lets its background cover the lines passing beneath. Left out
-              until there is a version to name. */}
+              shared StickyBar pins it under the page header. -mt-2 with py-2
+              keeps the row where it was and lets its background cover the
+              lines passing beneath. Left out until there is a version to
+              name. */}
           {other > 0 && (
-            <div className='bg-background sticky top-[calc(var(--sticky-top,0px)+53px)] z-20 -mt-2 flex flex-wrap items-center justify-between gap-2 py-2 md:top-[calc(var(--sticky-top,0px)+61px)]'>
+            <StickyBar className='-mt-2 flex flex-wrap items-center justify-between gap-2 py-2'>
               <p className='text-muted-foreground text-xs'>
                 <Trans>
                   Changes from version {range.from} → {range.to}
@@ -292,7 +293,7 @@ export function RevisionView({
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+            </StickyBar>
           )}
           {versionsLoading || otherLoading ? (
             <div className='space-y-2'>

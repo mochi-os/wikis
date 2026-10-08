@@ -203,7 +203,7 @@ export function WikiSettings({
         onValueChange={(value) => onTabChange(value as WikiSettingsTabId)}
         className='space-y-6'
       >
-        <TabsList aria-label={t`Wiki settings sections`}>
+        <TabsList sticky aria-label={t`Wiki settings sections`}>
           {visibleTabs.map((tab) => (
             <TabsTrigger key={tab.id} value={tab.id} className='gap-2'>
               {tab.icon}
