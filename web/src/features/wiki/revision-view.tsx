@@ -10,6 +10,7 @@ import {
   Button,
   DiffFileView,
   DiffViewToggle,
+  GeneralError,
   type DiffViewStyle,
   useFormat,
   useScreenSize,
@@ -74,6 +75,7 @@ function DiffView({
       words={pageWords}
       hunkHeaders={false}
       prose
+      textSize='sm'
     />
   )
 }
@@ -102,18 +104,28 @@ export function RevisionView({
   const canCompare = currentVersion > 1
   // The versions that exist, read once the comparison is opened. They are not
   // every number up to the current one: see usePageVersions.
-  const { data: versions = [], isLoading: versionsLoading } = usePageVersions(
-    slug,
-    { enabled: showDiff && canCompare }
-  )
+  const {
+    data: versions = [],
+    isLoading: versionsLoading,
+    isError: versionsError,
+    error: versionsErrorValue,
+    refetch: retryVersions,
+  } = usePageVersions(slug, { enabled: showDiff && canCompare })
 
   // The pick is kept with the version it was made for: the route reuses this
   // component from one version to the next, and a pick made on another version
   // could name the version now on screen.
-  const [picked, setPicked] = useState<{ version: number; other: number }>()
+  const [picked, setPicked] = useState<{
+    page: string
+    version: number
+    other: number
+  }>()
+  const pageKey = `${wikiId ?? ''}\0${slug}`
   // 0 until the versions arrive, and when the page has no other version.
   const other =
-    picked?.version === revision.version
+    picked?.page === pageKey &&
+    picked.version === revision.version &&
+    versions.includes(picked.other)
       ? picked.other
       : defaultCompare(revision.version, versions)
   // Read through the object below: a member access keeps a message's
@@ -125,11 +137,13 @@ export function RevisionView({
   }))
 
   // Fetch the other revision when diff mode is active and there is one
-  const { data: otherData, isLoading: otherLoading } = usePageRevision(
-    slug,
-    other,
-    { enabled: showDiff && other > 0 }
-  )
+  const {
+    data: otherData,
+    isLoading: otherLoading,
+    isError: otherError,
+    error: otherErrorValue,
+    refetch: retryOther,
+  } = usePageRevision(slug, other, { enabled: showDiff && other > 0 })
 
   return (
     <article className='space-y-6'>
@@ -273,6 +287,7 @@ export function RevisionView({
                   value={String(other)}
                   onValueChange={(value) =>
                     setPicked({
+                      page: pageKey,
                       version: revision.version,
                       other: Number(value),
                     })
@@ -295,7 +310,14 @@ export function RevisionView({
               </div>
             </StickyBar>
           )}
-          {versionsLoading || otherLoading ? (
+          {versionsError ? (
+            <GeneralError
+              error={versionsErrorValue}
+              minimal
+              mode='inline'
+              reset={() => void retryVersions()}
+            />
+          ) : versionsLoading || otherLoading ? (
             <div className='space-y-2'>
               {[1, 2, 3, 4].map((i) => (
                 <Skeleton key={i} className='h-5 w-full' />
@@ -315,11 +337,14 @@ export function RevisionView({
                   : revision.content
               }
             />
-          ) : (
-            <p className='text-muted-foreground text-sm'>
-              <Trans>Could not load previous version for comparison.</Trans>
-            </p>
-          )}
+          ) : otherError ? (
+            <GeneralError
+              error={otherErrorValue}
+              minimal
+              mode='inline'
+              reset={() => void retryOther()}
+            />
+          ) : null}
         </div>
       ) : (
         <MarkdownContent content={revision.content} />
