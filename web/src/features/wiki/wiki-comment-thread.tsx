@@ -168,7 +168,10 @@ export function WikiCommentThread({
   const content = (
     <div className='space-y-1.5'>
       <div className='group/row'>
-        <div className='flex h-5 items-center gap-2 text-xs'>
+        <div
+          data-comment-header=''
+          className='flex h-5 items-center gap-2 text-xs'
+        >
           <span className='text-foreground font-medium'>{authorName}</span>
           <span className='text-muted-foreground'>&middot;</span>
           <span className='text-muted-foreground'>{timeAgo}</span>
