@@ -45,6 +45,15 @@ function classPath(): string {
   return getAppPath() || (isDomainEntityRouting() ? '' : '/wikis')
 }
 
+// anonymousRefusal reports whether a failed class-level request is the server
+// turning away a visitor with no account on the app's own path: nobody's wikis
+// can be listed for them, so they belong on the sign-in landing page, where
+// core sends anonymous visitors of every other app. On a domain-routed host the
+// route owner's wikis answer anonymously, so a 401 there is an error to show.
+export function anonymousRefusal(error: unknown): boolean {
+  return requestHelpers.isAuthError(error) && !isDomainEntityRouting()
+}
+
 // A protocol-relative URL ("//host/path") also starts with "/", and axios
 // treats it as absolute — so passing it through unchanged would send the
 // request off-origin. Scope it like any other relative URL instead.
