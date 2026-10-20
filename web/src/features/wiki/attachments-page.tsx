@@ -18,7 +18,7 @@ import {
   ImageLightbox,
   type LightboxMedia,
   useLightboxHash,
-  Input,
+  SearchInput,
   Skeleton,
   Separator,
   Select,
@@ -49,7 +49,6 @@ import {
   Grid3X3,
   List,
   ArrowUpDown,
-  X,
   Image,
   ExternalLink,
 } from 'lucide-react'
@@ -330,30 +329,14 @@ export function AttachmentsPage() {
       {/* Toolbar */}
       <div className='flex flex-wrap items-center gap-3'>
         {/* Search */}
-        <div className='relative min-w-[200px] flex-1'>
-          <Search className='text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
-          <Input
+        <div className='min-w-[200px] flex-1'>
+          <SearchInput
+            type='search'
+            aria-label={t`Search`}
             placeholder={t`Search attachments...`}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className='ps-9'
+            onValueChange={setSearchQuery}
           />
-          {searchQuery && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2'
-                  onClick={() => setSearchQuery('')}
-                  aria-label={t`Clear search`}
-                >
-                  <X className='h-3 w-3' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{t`Clear search`}</TooltipContent>
-            </Tooltip>
-          )}
         </div>
 
         {/* Filter */}
