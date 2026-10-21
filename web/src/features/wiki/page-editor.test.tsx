@@ -5,7 +5,7 @@
 import type { WikiPage } from '@/types/wiki'
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { PageEditor } from './page-editor'
 
@@ -30,6 +30,12 @@ const state = vi.hoisted(() => ({
   held: [] as boolean[],
   edit: vi.fn(),
   create: vi.fn(),
+  // What the editor hands the switches for a new page's accounts, or null
+  // where it shows none.
+  switches: null as null | {
+    chosen: string[] | null
+    onChange: (accounts: string[]) => void
+  },
 }))
 
 vi.mock('@tanstack/react-router', () => ({
@@ -64,6 +70,12 @@ vi.mock('@/hooks/use-wiki', () => ({
 }))
 
 vi.mock('./markdown-content', () => ({ MarkdownContent: () => null }))
+vi.mock('./publishing-section', () => ({
+  PublishSwitches: (props: NonNullable<typeof state.switches>) => {
+    state.switches = props
+    return null
+  },
+}))
 
 const page: WikiPage = {
   id: 'p1',
@@ -111,6 +123,7 @@ beforeEach(() => {
   state.held = []
   state.edit.mockReset()
   state.create.mockReset()
+  state.switches = null
 })
 
 describe('Page editor leaving', () => {
@@ -182,5 +195,31 @@ describe('Page editor leaving', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(state.reset).toHaveBeenCalledTimes(1)
     expect(state.proceed).not.toHaveBeenCalled()
+  })
+})
+
+describe('Page editor accounts', () => {
+  it("leaves a new page's accounts to the wiki's list until they are changed", () => {
+    show(true)
+    expect(state.switches?.chosen).toBeNull()
+    type('Title', 'Recipes')
+    fireEvent.click(screen.getByRole('button', { name: 'Create page' }))
+    expect(state.create.mock.lastCall?.[0].accounts).toBeUndefined()
+  })
+
+  it('sends the accounts chosen for a new page', () => {
+    show(true)
+    act(() => state.switches!.onChange(['a1']))
+    type('Title', 'Recipes')
+    fireEvent.click(screen.getByRole('button', { name: 'Create page' }))
+    expect(state.create.mock.lastCall?.[0].accounts).toBe('["a1"]')
+  })
+
+  it('offers no accounts when editing a page that is there', () => {
+    show()
+    expect(state.switches).toBeNull()
+    type('Content', 'Welcome back.')
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    expect(state.edit.mock.lastCall?.[0].accounts).toBeUndefined()
   })
 })

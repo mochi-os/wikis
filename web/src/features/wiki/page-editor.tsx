@@ -63,6 +63,7 @@ import {
   useAttachmentUploadMessages,
 } from './attachment-upload'
 import { MarkdownContent } from './markdown-content'
+import { PublishSwitches } from './publishing-section'
 
 interface PageEditorProps {
   page?: WikiPage
@@ -127,6 +128,13 @@ export function PageEditor({
   const [insertDialogOpen, setInsertDialogOpen] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [pendingDelete, setPendingDelete] = useState<Attachment | null>(null)
+  // The accounts on other networks a new page goes to, once the writer has
+  // changed them from the wiki's list.
+  const [publishing, setPublishing] = useState<string[] | null>(null)
+  // A save that makes the page: a new page, or an edit of one not there yet.
+  const making = isNew || !page
+  const accounts =
+    making && publishing !== null ? JSON.stringify(publishing) : undefined
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const cursorPositionRef = useRef<number>(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -270,7 +278,7 @@ export function PageEditor({
       }
 
       createPage.mutate(
-        { slug: newSlug.trim(), title: title.trim(), content },
+        { slug: newSlug.trim(), title: title.trim(), content, accounts },
         {
           onSuccess: (data) => {
             toast.success(t`Page created`)
@@ -304,6 +312,7 @@ export function PageEditor({
           content,
           comment: comment.trim(),
           original,
+          accounts,
         },
         {
           onSuccess: (result) => {
@@ -450,6 +459,10 @@ export function PageEditor({
                 )}
               </div>
             </div>
+          )}
+
+          {making && (
+            <PublishSwitches chosen={publishing} onChange={setPublishing} />
           )}
 
           {/* Content */}

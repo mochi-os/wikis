@@ -73,6 +73,8 @@ def database_create():
     # than in core's managed store.
     attachment_schema_create()
 
+    publish_schema_create()
+
 def database_upgrade(version):
     # Schema 2: drop replicas.peer - the core per-user directory carries the
     # route (#209, #220).
@@ -145,6 +147,11 @@ def database_upgrade(version):
                 break
         if not found:
             mochi.db.execute("alter table replicas add column identity text not null default ''")
+    # Schema 13: where each wiki publishes on other networks, the copy of each
+    # page there, and the publication each Bluesky account holds the wiki as
+    # (the federation plan, phase 30).
+    if version == 13:
+        publish_schema_create()
 
 # Has this outbound operation run within `seconds`? Records the attempt when
 # not. Core rate-limits inbound P2P and outbound HTTP but not outbound
@@ -389,9 +396,13 @@ def maybe_resubscribe(a, wiki_id):
 # broadcast log. Sequence + log + gap-detection live in core. Replicas
 # whose view access has been revoked are filtered out client-side
 # before handing the recipient list to mochi.broadcast.send.
-def broadcast_event(wiki, event, data, exclude=None):
+def broadcast_event(wiki, event, data, exclude=None, accounts=None):
     if not wiki:
         return
+    # Every change the source makes to a page, its own or a replica's, reaches
+    # its copies on other networks from here; accounts is what a new page names
+    # for itself, overriding the wiki's list.
+    publish_event(wiki, event, data, accounts)
     resource = "wiki/" + wiki
     replicas = mochi.db.rows("select id, identity from replicas where wiki=?", wiki)
     recipients = []
@@ -1014,6 +1025,9 @@ def action_delete(a):
 
     wiki_id = wiki["id"]
 
+    # Its pages' copies on other networks go first, while the pages are here.
+    publish_wiki_delete(wiki_id)
+
     # Delete all dependent data in order (respecting foreign keys)
     # 1. Delete tags (references pages)
     mochi.db.execute("""
@@ -1358,6 +1372,12 @@ def action_page_edit(a):
         a.error.label(400, "errors.comment_too_long_max_500_characters")
         return
 
+    # The accounts on other networks a new page names for itself.
+    accounts, ok = publish_ids(a.input("accounts"))
+    if not ok:
+        a.error.label(400, "errors.invalid_accounts")
+        return
+
     author = a.user.identity.id
     name = a.user.identity.name
 
@@ -1389,7 +1409,7 @@ def action_page_edit(a):
             if source:
                 source_send(wiki, "page/create", event_data)
             else:
-                broadcast_event(wiki["id"], "page/create", event_data)
+                broadcast_event(wiki["id"], "page/create", event_data, accounts=accounts)
             return {"data": {"id": existing["id"], "slug": slug, "version": version, "created": False}}
         else:
             # Update page
@@ -1433,7 +1453,7 @@ def action_page_edit(a):
         if source:
             source_send(wiki, "page/create", event_data)
         else:
-            broadcast_event(wiki["id"], "page/create", event_data)
+            broadcast_event(wiki["id"], "page/create", event_data, accounts=accounts)
         return {"data": {"id": id, "slug": slug, "version": 1, "created": True}}
 
 # Create a new page (returns page slug for redirect)
@@ -1472,6 +1492,12 @@ def action_new(a):
 
     if len(content) > 1000000:
         a.error.label(400, "errors.content_too_long_max_1mb")
+        return
+
+    # The accounts on other networks the page names for itself.
+    accounts, ok = publish_ids(a.input("accounts"))
+    if not ok:
+        a.error.label(400, "errors.invalid_accounts")
         return
 
     author = a.user.identity.id
@@ -1516,7 +1542,7 @@ def action_new(a):
     if source:
         source_send(wiki, "page/create", event_data)
     else:
-        broadcast_event(wiki["id"], "page/create", event_data)
+        broadcast_event(wiki["id"], "page/create", event_data, accounts=accounts)
 
     return {"data": {"id": id, "slug": slug}}
 
@@ -5259,3 +5285,369 @@ def opengraph_wiki(params):
                     og["description"] = desc
 
     return og
+
+# === Publishing (the federation plan, phase 30) ===
+#
+# A public wiki of the user's own publishes its pages to a list of the user's
+# accounts on other networks, empty by default, as a feed does its posts:
+# linked Mastodon and Bluesky accounts, and hosted fediverse and Bluesky ones.
+# A page is an Article on the fediverse and a status on Mastodon; on Bluesky it
+# is a long-form document in the Standard.site format, under a publication
+# record standing for the wiki, one per account. The copy's id is kept per
+# page and account, so every later change to the page - an edit, a revert, a
+# rename, a replica's edit - reaches it, and a deletion withdraws it (decision
+# 25). A new page may name its own accounts, overriding the list. Only the
+# source publishes: a replica's changes reach the network through the source,
+# whose broadcast carries them.
+
+PUBLISH_TYPES = ["mastodon", "bluesky"]
+HOSTED_TYPES = ["fediverse", "bluesky"]
+
+# What a Mastodon server takes when its limits were not read at the link, and
+# what Bluesky's post record takes, for a page published where the server has
+# no address for a document to name.
+MASTODON_CHARACTERS = 500
+BLUESKY_CHARACTERS = 300
+
+# Standard.site's record types, and how much of a page its document carries:
+# a summary within the type's 3,000 graphemes, and the text within what one
+# record can hold.
+STANDARD_PUBLICATION = "site.standard.publication"
+STANDARD_DOCUMENT = "site.standard.document"
+STANDARD_DESCRIPTION = 300
+STANDARD_TEXT = 100000
+
+def publish_schema_create():
+    mochi.db.execute("create table if not exists publish (wiki text not null, account text not null, created integer not null, primary key (wiki, account))")
+    mochi.db.execute("create table if not exists copies (page text not null, account text not null, address text not null, network text not null, remote text not null, url text not null default '', created integer not null, primary key (page, account))")
+    mochi.db.execute("create index if not exists copies_remote on copies(account, remote)")
+    mochi.db.execute("create table if not exists publications (wiki text not null, account text not null, uri text not null, created integer not null, primary key (wiki, account))")
+
+def publishable(acc):
+    """Whether a wiki may publish to an account: a linked account on a network
+    that takes posts, or a hosted fediverse or Bluesky account."""
+    if acc.get("hosted"):
+        return acc.get("type") in HOSTED_TYPES
+    return acc.get("type") in PUBLISH_TYPES
+
+def publish_accounts():
+    return [acc for acc in (mochi.account.list() or []) if publishable(acc)]
+
+def publish_account(id):
+    if not id or type(id) != "string":
+        return None
+    acc = mochi.account.get(id)
+    if not acc or not publishable(acc):
+        return None
+    return acc
+
+def account_present(acc):
+    return {"id": acc["id"], "type": acc["type"], "identifier": acc.get("identifier", ""), "name": acc.get("name") or acc.get("label") or "", "hosted": bool(acc.get("hosted"))}
+
+def publish_list(wiki):
+    return [row["account"] for row in mochi.db.rows("select account from publish where wiki=? order by created", wiki)]
+
+def publish_counts(wiki):
+    """How many copies the wiki's pages have on each account."""
+    counts = {}
+    for row in mochi.db.rows("select account, count(*) as n from copies where page in (select id from pages where wiki=?) group by account", wiki):
+        counts[row["account"]] = row["n"]
+    return counts
+
+# publish_ids(value) -> (list or None, ok): the accounts a new page names for
+# itself, as JSON text; None where it leaves them to the wiki's list.
+def publish_ids(value):
+    if value == None or value == "":
+        return (None, True)
+    decoded = json.decode(value, None) if type(value) == "string" else value
+    if type(decoded) not in ("list", "tuple") or len(decoded) > 20:
+        return (None, False)
+    ids = []
+    for id in decoded:
+        if not publish_account(id):
+            return (None, False)
+        if id not in ids:
+            ids.append(id)
+    return (ids, True)
+
+def wiki_publishes(wiki):
+    """Whether a wiki may publish: public, so its pages are on pages anyone
+    can read (decision 27). A replica never comes here: its changes go to the
+    source, whose broadcast publishes them."""
+    return wiki and mochi.access.check(None, "wiki/" + wiki["id"], "view")
+
+# === What a page becomes ===
+
+def page_link(wiki, page):
+    """The address of a page here, or "" where the server has none."""
+    base = mochi.server.url()
+    if not base:
+        return ""
+    return base + "/wikis/" + mochi.entity.fingerprint(wiki["id"]) + "/" + page["page"]
+
+def wiki_link(wiki):
+    base = mochi.server.url()
+    if not base:
+        return ""
+    return base + "/wikis/" + mochi.entity.fingerprint(wiki["id"])
+
+def text_cut(s, n):
+    """s within n codepoints, an ellipsis marking a cut."""
+    points = list(s.codepoints())
+    if len(points) <= n:
+        return s
+    return "".join(points[:max(n - 1, 0)]).rstrip() + "…"
+
+def page_excerpt(page, limit, link):
+    """A page as a short text within limit: its title, the start of its text,
+    and its link, which is kept whole."""
+    tail = ("\n\n" + link) if link else ""
+    room = limit - len(list(tail.codepoints()))
+    text = page["title"]
+    plain = mochi.text.plain(page["content"] or "").strip()
+    if plain:
+        text += "\n\n" + plain
+    return text_cut(text, max(room, 1)) + tail
+
+def page_tags(page):
+    return [row["tag"] for row in mochi.db.rows("select tag from tags where page=? order by tag", page["id"])]
+
+def moment(seconds):
+    return mochi.time.local(seconds, "rfc3339", timezone="UTC")
+
+def fediverse_article(wiki, page):
+    """The Article a page is on a hosted fediverse account: its title, its
+    text whole as sanitised HTML, and its address here. Core gives it its id,
+    author, time and addressing."""
+    article = {"type": "Article", "name": page["title"], "content": mochi.text.fediverse(page["content"] or "")["html"]}
+    link = page_link(wiki, page)
+    if link:
+        article["url"] = link
+    tags = page_tags(page)
+    if tags:
+        article["tag"] = [{"type": "Hashtag", "name": "#" + tag} for tag in tags]
+    return article
+
+def mastodon_page(acc, wiki, page):
+    """The status a page is on a linked Mastodon account: its title, the start
+    of its text and its link, within the server's limit."""
+    limits = acc.get("limits") or {}
+    limit = limits.get("characters") if type(limits.get("characters")) == "int" and limits.get("characters") > 0 else MASTODON_CHARACTERS
+    return {"status": page_excerpt(page, limit, page_link(wiki, page)), "visibility": "public"}
+
+def standard_document(wiki, page, publication):
+    """The Standard.site document a page is, under the wiki's publication."""
+    plain = mochi.text.plain(page["content"] or "").strip()
+    record = {
+        "$type": STANDARD_DOCUMENT,
+        "site": publication,
+        "path": "/" + page["page"],
+        "title": text_cut(page["title"], 500),
+        "publishedAt": moment(page["created"]),
+        "updatedAt": moment(page["updated"]),
+    }
+    if plain:
+        record["description"] = text_cut(" ".join(plain.split()), STANDARD_DESCRIPTION)
+        record["textContent"] = text_cut(plain, STANDARD_TEXT)
+    tags = page_tags(page)
+    if tags:
+        record["tags"] = tags
+    return record
+
+def standard_publication(acc, wiki):
+    """The publication record standing for the wiki on a Bluesky account, made
+    the first time one of its pages goes there. None where the server has no
+    address for it to name."""
+    row = mochi.db.row("select uri from publications where wiki=? and account=?", wiki["id"], acc["id"])
+    if row:
+        return row["uri"]
+    url = wiki_link(wiki)
+    if not url:
+        return None
+    result = mochi.account.object.create(acc["id"], {"$type": STANDARD_PUBLICATION, "url": url, "name": text_cut(wiki["name"], 500)}, key="publication|" + wiki["id"] + "|" + acc["id"])
+    if not result or not result.get("id"):
+        return None
+    mochi.db.execute("insert or replace into publications (wiki, account, uri, created) values (?, ?, ?, ?)", wiki["id"], acc["id"], str(result["id"]), mochi.time.now())
+    return str(result["id"])
+
+def page_object(acc, wiki, page):
+    """The page in the form of the account's network, or None."""
+    if acc.get("hosted") and acc["type"] == "fediverse":
+        return fediverse_article(wiki, page)
+    if acc["type"] == "bluesky":
+        publication = standard_publication(acc, wiki)
+        if publication:
+            return standard_document(wiki, page, publication)
+        # With no address here, the page goes out as a post, as a feed's does.
+        return {"$type": "app.bsky.feed.post", "text": page_excerpt(page, BLUESKY_CHARACTERS, "")}
+    return mastodon_page(acc, wiki, page)
+
+# === The copies ===
+
+def publish_event(wiki_id, event, data, accounts=None):
+    """What a page change the source broadcasts does to the page's copies: a
+    new page, or one restored, publishes; a change reaches each copy; a
+    deletion withdraws them. A rename of the wiki renames its publications."""
+    if event == "rename":
+        publish_rename(wiki_id)
+        return
+    if type(data) != "dict":
+        return
+    # A tag is part of what a copy carries, so a change to the tags is a
+    # change to the page.
+    if event in ("tag/add", "tag/remove"):
+        event, data = "page/update", {"id": data.get("page", "")}
+    if event not in ("page/create", "page/update", "page/delete"):
+        return
+    page = mochi.db.row("select * from pages where id=? and wiki=?", data.get("id", ""), wiki_id)
+    if not page:
+        return
+    if event == "page/delete" or page["deleted"]:
+        publish_page_delete(page["id"])
+        return
+    wiki = mochi.db.row("select * from wikis where id=?", wiki_id)
+    if not wiki:
+        return
+    if event == "page/update":
+        publish_page_update(wiki, page)
+    elif wiki_publishes(wiki):
+        publish_page(wiki, page, accounts)
+
+def publish_page(wiki, page, accounts=None):
+    """Publish a page to the accounts it names, else to the wiki's list."""
+    for id in (accounts if accounts != None else publish_list(wiki["id"])):
+        acc = publish_account(id)
+        if not acc or mochi.db.exists("select 1 from copies where page=? and account=?", page["id"], acc["id"]):
+            continue
+        object = page_object(acc, wiki, page)
+        result = mochi.account.object.create(acc["id"], object, key=page["id"] + "|" + acc["id"]) if object else None
+        if not result or not result.get("id"):
+            mochi.log.warn("Wikis could not publish page %s to %s", page["id"], acc.get("identifier", acc["id"]))
+            continue
+        mochi.db.execute("insert or replace into copies (page, account, address, network, remote, url, created) values (?, ?, ?, ?, ?, ?, ?)",
+            page["id"], acc["id"], acc.get("identifier", ""), acc["type"], str(result["id"]), str(result.get("url", "") or ""), mochi.time.now())
+
+def publish_page_update(wiki, page):
+    """A new version of a page reaches each of its copies."""
+    for copy in mochi.db.rows("select account, remote from copies where page=?", page["id"]):
+        acc = publish_account(copy["account"])
+        if not acc:
+            continue
+        object = page_object(acc, wiki, page)
+        result = mochi.account.object.update(acc["id"], copy["remote"], object) if object else None
+        if not result:
+            mochi.log.warn("Wikis could not update the copy of page %s on %s", page["id"], acc.get("identifier", acc["id"]))
+            continue
+        if result.get("id") and str(result["id"]) != copy["remote"]:
+            mochi.db.execute("update copies set remote=?, url=? where page=? and account=?", str(result["id"]), str(result.get("url", "") or ""), page["id"], acc["id"])
+
+def publish_page_delete(page):
+    """Withdraw every copy of a page."""
+    for copy in mochi.db.rows("select account, remote from copies where page=?", page):
+        if publish_account(copy["account"]):
+            mochi.account.object.delete(copy["account"], copy["remote"])
+    mochi.db.execute("delete from copies where page=?", page)
+
+def publish_rename(wiki_id):
+    """A wiki's new name reaches the publications standing for it."""
+    wiki = mochi.db.row("select * from wikis where id=?", wiki_id)
+    url = wiki_link(wiki) if wiki else ""
+    if not url:
+        return
+    for row in mochi.db.rows("select account, uri from publications where wiki=?", wiki_id):
+        if publish_account(row["account"]):
+            mochi.account.object.update(row["account"], row["uri"], {"$type": STANDARD_PUBLICATION, "url": url, "name": text_cut(wiki["name"], 500)})
+
+def publish_wiki_delete(wiki_id):
+    """A deleted wiki takes its pages' copies and its publications with it."""
+    for row in mochi.db.rows("select distinct page from copies where page in (select id from pages where wiki=?)", wiki_id):
+        publish_page_delete(row["page"])
+    for row in mochi.db.rows("select account, uri from publications where wiki=?", wiki_id):
+        if publish_account(row["account"]):
+            mochi.account.object.delete(row["account"], row["uri"])
+    mochi.db.execute("delete from publications where wiki=?", wiki_id)
+    mochi.db.execute("delete from publish where wiki=?", wiki_id)
+
+def function_activitypub_object(context, account, id):
+    """A page a hosted fediverse account published, as it stands now: core's
+    engine asks when another server fetches it or reads the account's outbox.
+    None where the page is gone or the wiki no longer public."""
+    copy = mochi.db.row("select page from copies where account=? and remote=?", account, id)
+    if not copy:
+        return None
+    page = mochi.db.row("select * from pages where id=? and deleted=0", copy["page"])
+    if not page:
+        return None
+    wiki = mochi.db.row("select * from wikis where id=?", page["wiki"])
+    if not wiki_publishes(wiki):
+        return None
+    return fediverse_article(wiki, page)
+
+# === Actions ===
+
+def publish_wiki(a):
+    """The wiki an action names, when it is the caller's own source wiki, else
+    None having answered."""
+    if not a.user:
+        a.error.label(401, "errors.not_logged_in")
+        return None
+    wiki = get_wiki(a)
+    if not wiki:
+        a.error.label(404, "errors.wiki_not_found")
+        return None
+    if not mochi.entity.get(wiki["id"]) or wiki.get("source"):
+        a.error.label(403, "errors.access_denied")
+        return None
+    return wiki
+
+def action_publish(a):
+    """The accounts a wiki may publish to, those it does, how many copies each
+    holds, and whether the wiki is public, which publishing needs."""
+    wiki = publish_wiki(a)
+    if not wiki:
+        return
+    return {"data": {"accounts": [account_present(acc) for acc in publish_accounts()], "publish": publish_list(wiki["id"]), "copies": publish_counts(wiki["id"]), "public": bool(wiki_publishes(wiki))}}
+
+def action_publish_set(a):
+    """Set where a wiki publishes. The copies on an account that leaves the
+    list stay, counted in the answer so the client can offer to delete them."""
+    wiki = publish_wiki(a)
+    if not wiki:
+        return
+    accounts, ok = publish_ids(a.input("accounts", ""))
+    if not ok:
+        a.error.label(400, "errors.invalid_accounts")
+        return
+    accounts = accounts or []
+    before = publish_list(wiki["id"])
+    now = mochi.time.now()
+    for id in accounts:
+        mochi.db.execute("insert or ignore into publish (wiki, account, created) values (?, ?, ?)", wiki["id"], id, now)
+    for id in before:
+        if id not in accounts:
+            mochi.db.execute("delete from publish where wiki=? and account=?", wiki["id"], id)
+    counts = publish_counts(wiki["id"])
+    return {"data": {"publish": accounts, "kept": {id: counts[id] for id in before if id not in accounts and counts.get(id, 0)}}}
+
+def action_publish_forget(a):
+    """Delete a wiki's copies on one account, and the publication standing for
+    it there, as offered when the account leaves the list."""
+    wiki = publish_wiki(a)
+    if not wiki:
+        return
+    account = a.input("account", "")
+    if not account or len(account) > 64:
+        a.error.label(400, "errors.invalid_accounts")
+        return
+    rows = mochi.db.rows("select page, remote from copies where account=? and page in (select id from pages where wiki=?)", account, wiki["id"])
+    acc = publish_account(account)
+    for row in rows:
+        if acc:
+            mochi.account.object.delete(acc["id"], row["remote"])
+        mochi.db.execute("delete from copies where page=? and account=?", row["page"], account)
+    publication = mochi.db.row("select uri from publications where wiki=? and account=?", wiki["id"], account)
+    if publication:
+        if acc:
+            mochi.account.object.delete(acc["id"], publication["uri"])
+        mochi.db.execute("delete from publications where wiki=? and account=?", wiki["id"], account)
+    return {"data": {"deleted": len(rows)}}

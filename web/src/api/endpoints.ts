@@ -56,6 +56,10 @@ const endpoints = {
     access: 'access',
     accessSet: 'access/set',
     accessRevoke: 'access/revoke',
+    // Where the wiki publishes on other networks
+    publish: 'publish',
+    publishSet: 'publish/set',
+    publishForget: 'publish/forget',
     // Delete wiki
     delete: 'delete',
     // Sync
