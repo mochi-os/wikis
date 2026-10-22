@@ -34,10 +34,15 @@ import {
   useFormat,
   usePageTitle,
   naturalCompare,
+  shellNavigateTop,
 } from '@mochi/web'
 import { BookMarked, BookOpen, Ellipsis, LogOut, Plus, Rss } from 'lucide-react'
 import endpoints from '@/api/endpoints'
-import { wikisRequest, isEntityContext } from '@/api/request'
+import {
+  wikisRequest,
+  isEntityContext,
+  anonymousRefusal,
+} from '@/api/request'
 import { useSidebarContext } from '@/context/sidebar-context'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
 import { usePermissions, useWikiContext } from '@/context/wiki-context'
@@ -91,6 +96,13 @@ export const Route = createFileRoute('/_authenticated/')({
     try {
       info = await wikisRequest.get<InfoResponse>(endpoints.wiki.info)
     } catch (error) {
+      // A visitor with no account on the app's own path: send them where core
+      // sends anonymous visitors of every other app, rather than rendering a
+      // refusal they cannot act on.
+      if (anonymousRefusal(error)) {
+        shellNavigateTop('/')
+        return { entity: false, wikis: [] }
+      }
       return {
         entity: false,
         wikis: [],
