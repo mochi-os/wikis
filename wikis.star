@@ -2130,6 +2130,26 @@ def action_changes(a):
 
     return {"data": {"changes": changes, "total": total, "limit": limit, "offset": offset}}
 
+# The one or two column choice for comparing versions, a preference of the
+# person rather than of a wiki: projects and repositories read and write the
+# same one, so it follows them between apps and devices.
+diff_styles = ("unified", "split")
+
+def action_diff_preference_get(a):
+    style = a.user.preference.get("diff_view") if a.user else None
+    return {"data": {"style": style if style in diff_styles else "unified"}}
+
+def action_diff_preference_set(a):
+    if not a.user:
+        a.error.label(401, "errors.not_logged_in")
+        return
+    style = a.input("style", "")
+    if style not in diff_styles:
+        a.error.label(400, "errors.invalid_style")
+        return
+    a.user.preference.set("diff_view", style)
+    return {"data": {"style": style}}
+
 # Create or update a redirect
 def action_redirect_set(a):
     if not a.user:
