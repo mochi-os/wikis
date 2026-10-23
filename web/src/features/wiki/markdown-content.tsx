@@ -10,7 +10,7 @@ import {
   useEffect,
   useMemo,
 } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useParams } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import {
   CopyButton,
@@ -30,6 +30,7 @@ import {
   classifyWikiLink,
   extractTocHeadings,
   slugifyHeading,
+  wikiPagePath,
   type TocHeading,
 } from './markdown-content.utils'
 
@@ -135,6 +136,7 @@ export function MarkdownContent({
 }: MarkdownContentProps) {
   const { t } = useLingui()
   const { baseURL } = useWikiBaseURL()
+  const { wikiId } = useParams({ strict: false })
   const headings = useMemo(() => extractTocHeadings(content), [content])
   const currentPathWithQuery =
     typeof window !== 'undefined'
@@ -410,22 +412,28 @@ export function MarkdownContent({
               // scheme prefix treated mailto:, xmpp: and irc: - all of which
               // react-markdown's default transform lets through - as internal,
               // and rendered them as router links to a not-found page.
+              // A heading on this page. Handed to the router, it was read as a
+              // page path and led to the wiki's home page.
+              if (href.startsWith('#')) {
+                return (
+                  <a href={href} {...props}>
+                    {children}
+                  </a>
+                )
+              }
               if (kind !== 'external') {
-                // Relative wiki page link - convert to navigable path
-                // Domain routing (e.g., docs.mochi-os.org): pages are at root, so use absolute /page
-                // Normal routing (e.g., /wikis/abc/home): use ../page to stay within wiki context
-                const siblingHref =
-                  href.startsWith('/') || href.startsWith('../')
-                    ? href
-                    : isDomainEntityRouting()
-                      ? `/${href}`
-                      : `../${href}`
+                // Another page of the wiki. On a domain (docs.mochi-os.org) the
+                // wiki is the root and has no segment of its own.
+                const pageHref = wikiPagePath(
+                  href,
+                  isDomainEntityRouting() ? undefined : wikiId
+                )
                 // Check if this is a link to a non-existent page (Wikipedia-style "red link")
                 const cleanHref = href.split('#')[0].split('?')[0] // Remove anchors and query strings
                 const isMissing = missingLinks.includes(cleanHref)
                 return (
                   <Link
-                    to={siblingHref}
+                    to={pageHref}
                     preload={false}
                     {...props}
                     className={cn(
