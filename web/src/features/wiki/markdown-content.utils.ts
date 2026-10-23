@@ -104,6 +104,28 @@ export function extractTocHeadings(content: string): TocHeading[] {
   return headings
 }
 
+// The router path of a link to another page of the wiki. A page's links are
+// written relative to the page, so they resolve against the page wherever it
+// is shown: an old version, the editor's preview and a comment all sit at a
+// deeper address, where the router would have read `changelog` as
+// `<page>/history/changelog`. `wiki` is the wiki's path segment, or undefined
+// where the wiki is the domain's root. A query or fragment is kept as written.
+export function wikiPagePath(href: string, wiki?: string): string {
+  const cut = href.search(/[?#]/)
+  const path = cut < 0 ? href : href.slice(0, cut)
+  const rest = cut < 0 ? '' : href.slice(cut)
+  if (path.startsWith('/')) return href
+  // As on the page itself, where `changelog` and `../changelog` both name the
+  // page beside it. The empty segment stands for the page.
+  const relative = path.startsWith('../') ? path : `../${path}`
+  const segments = wiki ? [wiki, ''] : ['']
+  for (const segment of relative.split('/')) {
+    if (segment === '..') segments.pop()
+    else if (segment !== '.' && segment !== '') segments.push(segment)
+  }
+  return `/${segments.join('/')}${rest}`
+}
+
 export function classifyWikiLink(href: string): WikiLinkKind {
   if (ATTACHMENT_PATTERNS.some((pattern) => pattern.test(href))) {
     return 'attachment'
