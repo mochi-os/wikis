@@ -49,6 +49,11 @@ msgstr "(คุณ)"
 msgid "[not set]"
 msgstr "[ไม่ได้ตั้ง]"
 
+#. placeholder {0}: data.copies[account.id]
+#: src/features/wiki/publishing-section.tsx
+msgid "{0, plural, one {# copy} other {# copies}}"
+msgstr "{0, plural, one {# สำเนา} other {# สำเนา}}"
+
 #. placeholder {0}: files.length
 #: ../../../lib/web/src/components/diff-viewer.tsx
 msgid "{0, plural, one {# file changed} other {# files changed}}"
@@ -369,7 +374,7 @@ msgstr "AI"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "All comments"
-msgstr ""
+msgstr "ความคิดเห็นทั้งหมด"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -957,7 +962,7 @@ msgstr "ดำเนินการต่อ"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "Continue this thread"
-msgstr ""
+msgstr "ดูเธรดนี้ต่อ"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Continue with {label}"
@@ -975,6 +980,11 @@ msgstr "คัดลอกแล้ว"
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copied to clipboard"
 msgstr "คัดลอกไปยังคลิปบอร์ดแล้ว"
+
+#. placeholder {0}: kept.count
+#: src/features/wiki/publishing-section.tsx
+msgid "Copies published there: {0}. They stay unless you delete them."
+msgstr "สำเนาที่เผยแพร่ที่นั่น: {0} สำเนาเหล่านั้นจะยังคงอยู่จนกว่าคุณจะลบ"
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
@@ -994,9 +1004,17 @@ msgstr "คัดลอก"
 msgid "Copy embed link"
 msgstr "คัดลอกลิงก์ฝัง"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not delete the copies"
+msgstr "ไม่สามารถลบสำเนาได้"
+
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Could not load this document. Please try again later."
 msgstr "ไม่สามารถโหลดเอกสารนี้ได้ โปรดลองอีกครั้งในภายหลัง"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not save the accounts"
+msgstr "ไม่สามารถบันทึกบัญชีได้"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 msgid "Couldn't load notifications"
@@ -1176,6 +1194,10 @@ msgstr "ลบคอลัมน์"
 msgid "Delete comment"
 msgstr "ลบความคิดเห็น"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete copies"
+msgstr "ลบสำเนา"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Delete field"
 msgstr "ลบฟิลด์"
@@ -1217,6 +1239,11 @@ msgstr "ลบการเปลี่ยนเส้นทาง {0}"
 msgid "Delete redirect?"
 msgstr "ลบการเปลี่ยนเส้นทางหรือไม่?"
 
+#. placeholder {0}: kept.account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete the copies on {0}?"
+msgstr "ลบสำเนาบน {0} หรือไม่"
+
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Delete view"
 msgstr "ลบมุมมอง"
@@ -1234,6 +1261,11 @@ msgstr "ลบบัญชีของคุณบนเซิร์ฟเวอ
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted"
 msgstr "ลบแล้ว"
+
+#. placeholder {0}: answer.deleted
+#: src/features/wiki/publishing-section.tsx
+msgid "Deleted {0} copies"
+msgstr "ลบ {0} สำเนาแล้ว"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted {field}"
@@ -1901,6 +1933,10 @@ msgstr "รายละเอียดรายการ"
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
 msgstr "เมื่อสักครู่"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Keep"
+msgstr "เก็บไว้"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2572,6 +2608,16 @@ msgstr "บันทึกพรอมต์แล้ว"
 msgid "Properties"
 msgstr "คุณสมบัติ"
 
+#: src/features/wiki/publishing-section.tsx
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to"
+msgstr "เผยแพร่ไปยัง"
+
+#. placeholder {0}: account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to {0}"
+msgstr "เผยแพร่ไปยัง {0}"
+
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
 msgstr "การแจ้งเตือนแบบพุช"
@@ -3128,7 +3174,7 @@ msgstr "บันทึกการตั้งค่าแล้ว"
 #: ../../../lib/web/src/components/comment-share-button.tsx
 #: ../../../lib/web/src/components/comment-share-button.tsx
 msgid "Share"
-msgstr ""
+msgstr "แชร์"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"

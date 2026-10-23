@@ -49,6 +49,11 @@ msgstr "(ju)"
 msgid "[not set]"
 msgstr "[i pavendosur]"
 
+#. placeholder {0}: data.copies[account.id]
+#: src/features/wiki/publishing-section.tsx
+msgid "{0, plural, one {# copy} other {# copies}}"
+msgstr "{0, plural, one {# kopje} other {# kopje}}"
+
 #. placeholder {0}: files.length
 #: ../../../lib/web/src/components/diff-viewer.tsx
 msgid "{0, plural, one {# file changed} other {# files changed}}"
@@ -369,7 +374,7 @@ msgstr "AI"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "All comments"
-msgstr ""
+msgstr "Të gjitha komentet"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -957,7 +962,7 @@ msgstr "Vazhdo"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "Continue this thread"
-msgstr ""
+msgstr "Vazhdo këtë diskutim"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Continue with {label}"
@@ -975,6 +980,11 @@ msgstr "U kopjua"
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copied to clipboard"
 msgstr "U kopjua në kujtesën e fragmenteve"
+
+#. placeholder {0}: kept.count
+#: src/features/wiki/publishing-section.tsx
+msgid "Copies published there: {0}. They stay unless you delete them."
+msgstr "Kopje të publikuara atje: {0}. Ato mbeten, përveç nëse i fshini."
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
@@ -994,9 +1004,17 @@ msgstr "Kopjo"
 msgid "Copy embed link"
 msgstr "Kopjo lidhjen e ngulitjes"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not delete the copies"
+msgstr "Kopjet nuk u fshinë dot"
+
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Could not load this document. Please try again later."
 msgstr "Nuk mund të ngarkohej ky dokument. Provo më vonë."
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not save the accounts"
+msgstr "Llogaritë nuk u ruajtën dot"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 msgid "Couldn't load notifications"
@@ -1176,6 +1194,10 @@ msgstr "Fshi kolonën"
 msgid "Delete comment"
 msgstr "Fshi komentin"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete copies"
+msgstr "Fshi kopjet"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Delete field"
 msgstr "Fshi fushën"
@@ -1217,6 +1239,11 @@ msgstr "Fshi ridrejtimin {0}"
 msgid "Delete redirect?"
 msgstr "Të fshihet ridrejtimi?"
 
+#. placeholder {0}: kept.account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete the copies on {0}?"
+msgstr "Të fshihen kopjet në {0}?"
+
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Delete view"
 msgstr "Fshi pamjen"
@@ -1234,6 +1261,11 @@ msgstr "Fshini llogarinë tuaj në serverin e vjetër"
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted"
 msgstr "U fshi"
+
+#. placeholder {0}: answer.deleted
+#: src/features/wiki/publishing-section.tsx
+msgid "Deleted {0} copies"
+msgstr "U fshinë {0} kopje"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted {field}"
@@ -1901,6 +1933,10 @@ msgstr "Detajet e artikullit"
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
 msgstr "Sapo"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Keep"
+msgstr "Mbaji"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2572,6 +2608,16 @@ msgstr "Prompti u ruajt"
 msgid "Properties"
 msgstr "Vetitë"
 
+#: src/features/wiki/publishing-section.tsx
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to"
+msgstr "Publiko në"
+
+#. placeholder {0}: account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to {0}"
+msgstr "Publiko në {0}"
+
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
 msgstr "Njoftim push"
@@ -3128,7 +3174,7 @@ msgstr "Cilësimet u ruajtën"
 #: ../../../lib/web/src/components/comment-share-button.tsx
 #: ../../../lib/web/src/components/comment-share-button.tsx
 msgid "Share"
-msgstr ""
+msgstr "Shpërndaj"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"

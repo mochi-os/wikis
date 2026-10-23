@@ -49,6 +49,11 @@ msgstr "(شما)"
 msgid "[not set]"
 msgstr "[تنظیم نشده]"
 
+#. placeholder {0}: data.copies[account.id]
+#: src/features/wiki/publishing-section.tsx
+msgid "{0, plural, one {# copy} other {# copies}}"
+msgstr "{0, plural, one {# نسخه} other {# نسخه}}"
+
 #. placeholder {0}: files.length
 #: ../../../lib/web/src/components/diff-viewer.tsx
 msgid "{0, plural, one {# file changed} other {# files changed}}"
@@ -369,7 +374,7 @@ msgstr "هوش مصنوعی"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "All comments"
-msgstr ""
+msgstr "همه نظرها"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -957,7 +962,7 @@ msgstr "ادامه"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "Continue this thread"
-msgstr ""
+msgstr "ادامه این رشته"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Continue with {label}"
@@ -975,6 +980,11 @@ msgstr "کپی شد"
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copied to clipboard"
 msgstr "در کلیپ‌بورد کپی شد"
+
+#. placeholder {0}: kept.count
+#: src/features/wiki/publishing-section.tsx
+msgid "Copies published there: {0}. They stay unless you delete them."
+msgstr "نسخه‌های منتشرشده در آنجا: {0}. تا وقتی حذفشان نکنید، باقی می‌مانند."
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
@@ -994,9 +1004,17 @@ msgstr "کپی"
 msgid "Copy embed link"
 msgstr "کپی پیوند جاسازی"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not delete the copies"
+msgstr "حذف نسخه‌ها ممکن نشد"
+
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Could not load this document. Please try again later."
 msgstr "بارگذاری این سند ممکن نشد. لطفاً بعداً دوباره تلاش کنید."
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not save the accounts"
+msgstr "ذخیرهٔ حساب‌ها ممکن نشد"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 msgid "Couldn't load notifications"
@@ -1176,6 +1194,10 @@ msgstr "حذف ستون"
 msgid "Delete comment"
 msgstr "حذف نظر"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete copies"
+msgstr "حذف نسخه‌ها"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Delete field"
 msgstr "حذف فیلد"
@@ -1217,6 +1239,11 @@ msgstr "حذف تغییر مسیر {0}"
 msgid "Delete redirect?"
 msgstr "حذف تغییر مسیر؟"
 
+#. placeholder {0}: kept.account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete the copies on {0}?"
+msgstr "نسخه‌های روی {0} حذف شوند؟"
+
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Delete view"
 msgstr "حذف نما"
@@ -1234,6 +1261,11 @@ msgstr "حساب کاربری خود را در سرور قدیمی حذف کنی
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted"
 msgstr "حذف شد"
+
+#. placeholder {0}: answer.deleted
+#: src/features/wiki/publishing-section.tsx
+msgid "Deleted {0} copies"
+msgstr "{0} نسخه حذف شد"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted {field}"
@@ -1901,6 +1933,10 @@ msgstr "جزئیات مورد"
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
 msgstr "همین حالا"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Keep"
+msgstr "نگه داشتن"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2572,6 +2608,16 @@ msgstr "پرامپت ذخیره شد"
 msgid "Properties"
 msgstr "ویژگی‌ها"
 
+#: src/features/wiki/publishing-section.tsx
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to"
+msgstr "انتشار در"
+
+#. placeholder {0}: account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to {0}"
+msgstr "انتشار در {0}"
+
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
 msgstr "اعلان فوری"
@@ -3128,7 +3174,7 @@ msgstr "تنظیمات ذخیره شد"
 #: ../../../lib/web/src/components/comment-share-button.tsx
 #: ../../../lib/web/src/components/comment-share-button.tsx
 msgid "Share"
-msgstr ""
+msgstr "اشتراک‌گذاری"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"

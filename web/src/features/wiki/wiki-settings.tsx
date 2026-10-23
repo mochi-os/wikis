@@ -92,6 +92,7 @@ import {
   useGroups,
 } from '@/hooks/use-wiki'
 import { ValueLinkChip } from '@/components/value-link-chip'
+import { PublishingSection } from './publishing-section'
 
 export type WikiSettingsTabId = 'settings' | 'access' | 'redirects' | 'replicas'
 
@@ -396,6 +397,8 @@ function SettingsTab() {
           </div>
         </Section>
       )}
+
+      {!data?.settings?.source && <PublishingSection />}
 
       {data?.settings?.source && (
         <Section

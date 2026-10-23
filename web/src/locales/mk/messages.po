@@ -49,6 +49,11 @@ msgstr "(вие)"
 msgid "[not set]"
 msgstr "[не е поставено]"
 
+#. placeholder {0}: data.copies[account.id]
+#: src/features/wiki/publishing-section.tsx
+msgid "{0, plural, one {# copy} other {# copies}}"
+msgstr "{0, plural, one {# копија} other {# копии}}"
+
 #. placeholder {0}: files.length
 #: ../../../lib/web/src/components/diff-viewer.tsx
 msgid "{0, plural, one {# file changed} other {# files changed}}"
@@ -369,7 +374,7 @@ msgstr "AI"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "All comments"
-msgstr ""
+msgstr "Сите коментари"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -957,7 +962,7 @@ msgstr "Продолжи"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "Continue this thread"
-msgstr ""
+msgstr "Продолжи ја оваа нишка"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Continue with {label}"
@@ -975,6 +980,11 @@ msgstr "Копирано"
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copied to clipboard"
 msgstr "Копирано во клипборд"
+
+#. placeholder {0}: kept.count
+#: src/features/wiki/publishing-section.tsx
+msgid "Copies published there: {0}. They stay unless you delete them."
+msgstr "Копии објавени таму: {0}. Тие остануваат освен ако не ги избришете."
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
@@ -994,9 +1004,17 @@ msgstr "Копирај"
 msgid "Copy embed link"
 msgstr "Копирај врска за вградување"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not delete the copies"
+msgstr "Копиите не можеа да се избришат"
+
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Could not load this document. Please try again later."
 msgstr "Овој документ не може да се вчита. Обиди се повторно подоцна."
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not save the accounts"
+msgstr "Сметките не можеа да се зачуваат"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 msgid "Couldn't load notifications"
@@ -1176,6 +1194,10 @@ msgstr "Избриши колона"
 msgid "Delete comment"
 msgstr "Избриши коментар"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete copies"
+msgstr "Избриши копии"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Delete field"
 msgstr "Избриши поле"
@@ -1217,6 +1239,11 @@ msgstr "Избриши пренасочување {0}"
 msgid "Delete redirect?"
 msgstr "Да се избрише пренасочувањето?"
 
+#. placeholder {0}: kept.account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete the copies on {0}?"
+msgstr "Да се избришат копиите на {0}?"
+
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Delete view"
 msgstr "Избриши приказ"
@@ -1234,6 +1261,11 @@ msgstr "Избришете го профилот на старата серве�
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted"
 msgstr "Избришано"
+
+#. placeholder {0}: answer.deleted
+#: src/features/wiki/publishing-section.tsx
+msgid "Deleted {0} copies"
+msgstr "Избришани копии: {0}"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted {field}"
@@ -1901,6 +1933,10 @@ msgstr "Детали за ставка"
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
 msgstr "Штотуку"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Keep"
+msgstr "Задржи"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2572,6 +2608,16 @@ msgstr "Поттикот е зачуван"
 msgid "Properties"
 msgstr "Својства"
 
+#: src/features/wiki/publishing-section.tsx
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to"
+msgstr "Објавувај на"
+
+#. placeholder {0}: account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to {0}"
+msgstr "Објавувај на {0}"
+
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
 msgstr "Пуш известување"
@@ -3128,7 +3174,7 @@ msgstr "Поставките се зачувани"
 #: ../../../lib/web/src/components/comment-share-button.tsx
 #: ../../../lib/web/src/components/comment-share-button.tsx
 msgid "Share"
-msgstr ""
+msgstr "Сподели"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"

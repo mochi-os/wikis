@@ -49,6 +49,11 @@ msgstr "(jūs)"
 msgid "[not set]"
 msgstr "[nav iestatīts]"
 
+#. placeholder {0}: data.copies[account.id]
+#: src/features/wiki/publishing-section.tsx
+msgid "{0, plural, one {# copy} other {# copies}}"
+msgstr "{0, plural, zero {# kopijas} one {# kopija} other {# kopijas}}"
+
 #. placeholder {0}: files.length
 #: ../../../lib/web/src/components/diff-viewer.tsx
 msgid "{0, plural, one {# file changed} other {# files changed}}"
@@ -369,7 +374,7 @@ msgstr "AI"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "All comments"
-msgstr ""
+msgstr "Visi komentāri"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -957,7 +962,7 @@ msgstr "Turpināt"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "Continue this thread"
-msgstr ""
+msgstr "Turpināt šo pavedienu"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Continue with {label}"
@@ -975,6 +980,11 @@ msgstr "Nokopēts"
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copied to clipboard"
 msgstr "Nokopēts starpliktuvē"
+
+#. placeholder {0}: kept.count
+#: src/features/wiki/publishing-section.tsx
+msgid "Copies published there: {0}. They stay unless you delete them."
+msgstr "Tur publicētās kopijas: {0}. Tās paliks, ja vien jūs tās neizdzēsīsiet."
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
@@ -994,9 +1004,17 @@ msgstr "Kopēt"
 msgid "Copy embed link"
 msgstr "Kopēt iegultās saites"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not delete the copies"
+msgstr "Nevarēja dzēst kopijas"
+
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Could not load this document. Please try again later."
 msgstr "Nevarēja ielādēt šo dokumentu. Lūdzu, mēģini vēlāk vēlreiz."
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not save the accounts"
+msgstr "Nevarēja saglabāt kontus"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 msgid "Couldn't load notifications"
@@ -1176,6 +1194,10 @@ msgstr "Dzēst kolonnu"
 msgid "Delete comment"
 msgstr "Dzēst komentāru"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete copies"
+msgstr "Dzēst kopijas"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Delete field"
 msgstr "Dzēst lauku"
@@ -1217,6 +1239,11 @@ msgstr "Dzēst novirzīšanu {0}"
 msgid "Delete redirect?"
 msgstr "Dzēst novirzīšanu?"
 
+#. placeholder {0}: kept.account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete the copies on {0}?"
+msgstr "Dzēst kopijas no {0}?"
+
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Delete view"
 msgstr "Dzēst skatu"
@@ -1234,6 +1261,11 @@ msgstr "Dzēsiet savu kontu vecajā serverī"
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted"
 msgstr "Dzēsts"
+
+#. placeholder {0}: answer.deleted
+#: src/features/wiki/publishing-section.tsx
+msgid "Deleted {0} copies"
+msgstr "Dzēstas kopijas: {0}"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted {field}"
@@ -1901,6 +1933,10 @@ msgstr "Vienuma informācija"
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
 msgstr "Tikko"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Keep"
+msgstr "Paturēt"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2572,6 +2608,16 @@ msgstr "Pamudinājums saglabāts"
 msgid "Properties"
 msgstr "Īpašības"
 
+#: src/features/wiki/publishing-section.tsx
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to"
+msgstr "Kur publicēt"
+
+#. placeholder {0}: account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to {0}"
+msgstr "Publicēt kontā {0}"
+
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
 msgstr "Push paziņojums"
@@ -3128,7 +3174,7 @@ msgstr "Iestatījumi saglabāti"
 #: ../../../lib/web/src/components/comment-share-button.tsx
 #: ../../../lib/web/src/components/comment-share-button.tsx
 msgid "Share"
-msgstr ""
+msgstr "Kopīgot"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"

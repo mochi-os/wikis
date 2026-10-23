@@ -49,6 +49,11 @@ msgstr "(ඔබ)"
 msgid "[not set]"
 msgstr "[සකසා නැත]"
 
+#. placeholder {0}: data.copies[account.id]
+#: src/features/wiki/publishing-section.tsx
+msgid "{0, plural, one {# copy} other {# copies}}"
+msgstr "{0, plural, one {පිටපත් #ක්} other {පිටපත් #ක්}}"
+
 #. placeholder {0}: files.length
 #: ../../../lib/web/src/components/diff-viewer.tsx
 msgid "{0, plural, one {# file changed} other {# files changed}}"
@@ -369,7 +374,7 @@ msgstr "AI"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "All comments"
-msgstr ""
+msgstr "සියලු අදහස්"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -957,7 +962,7 @@ msgstr "ඉදිරියට"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "Continue this thread"
-msgstr ""
+msgstr "මෙම තන්තුව දිගටම කරගෙන යන්න"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Continue with {label}"
@@ -975,6 +980,11 @@ msgstr "පිටපත් කළා"
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copied to clipboard"
 msgstr "ක්ලිප්බෝඩ් වෙත පිටපත් කරන ලදී"
+
+#. placeholder {0}: kept.count
+#: src/features/wiki/publishing-section.tsx
+msgid "Copies published there: {0}. They stay unless you delete them."
+msgstr "එහි පළ කළ පිටපත්: {0}. ඔබ ඒවා මකන්නේ නම් මිස ඒවා එහි පවතී."
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
@@ -994,9 +1004,17 @@ msgstr "පිටපත් කරන්න"
 msgid "Copy embed link"
 msgstr "කාවැද්දූ සබැඳිය පිටපත් කරන්න"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not delete the copies"
+msgstr "පිටපත් මැකිය නොහැකි විය"
+
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Could not load this document. Please try again later."
 msgstr "මෙම ලේඛනය පූරණය කළ නොහැකි විය. කරුණාකර පසුව නැවත උත්සාහ කරන්න."
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not save the accounts"
+msgstr "ගිණුම් සුරැකිය නොහැකි විය"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 msgid "Couldn't load notifications"
@@ -1176,6 +1194,10 @@ msgstr "තීරුව මකන්න"
 msgid "Delete comment"
 msgstr "අදහස මකන්න"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete copies"
+msgstr "පිටපත් මකන්න"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Delete field"
 msgstr "ක්ෂේත්‍රය මකන්න"
@@ -1217,6 +1239,11 @@ msgstr "හරවායැවීම {0} මකන්න"
 msgid "Delete redirect?"
 msgstr "යළි-යොමුකිරීම මකන්නද?"
 
+#. placeholder {0}: kept.account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete the copies on {0}?"
+msgstr "{0} හි පිටපත් මකන්නද?"
+
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Delete view"
 msgstr "දැක්ම මකන්න"
@@ -1234,6 +1261,11 @@ msgstr "පැරණි සේවාදායකයේ ඔබේ ගිණුම
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted"
 msgstr "මකා දමන ලදී"
+
+#. placeholder {0}: answer.deleted
+#: src/features/wiki/publishing-section.tsx
+msgid "Deleted {0} copies"
+msgstr "පිටපත් {0}ක් මකන ලදී"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted {field}"
@@ -1901,6 +1933,10 @@ msgstr "අයිතම විස්තර"
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
 msgstr "මේ දැන්"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Keep"
+msgstr "තබා ගන්න"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2572,6 +2608,16 @@ msgstr "විමසුම සුරකින ලදී"
 msgid "Properties"
 msgstr "ගුණාංග"
 
+#: src/features/wiki/publishing-section.tsx
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to"
+msgstr "පළ කරන ස්ථාන"
+
+#. placeholder {0}: account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to {0}"
+msgstr "{0} වෙත පළ කරන්න"
+
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
 msgstr "තල්ලු දැනුම්දීම"
@@ -3128,7 +3174,7 @@ msgstr "සැකසුම් සුරකින ලදී"
 #: ../../../lib/web/src/components/comment-share-button.tsx
 #: ../../../lib/web/src/components/comment-share-button.tsx
 msgid "Share"
-msgstr ""
+msgstr "බෙදාගන්න"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"

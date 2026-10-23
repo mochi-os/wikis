@@ -208,6 +208,8 @@ export function useEditPage() {
       content: string
       comment?: string
       original?: { title: string; content: string }
+      /** A page made by this save: its accounts on other networks, as JSON. */
+      accounts?: string
     }
   >({
     mutationFn: async (data) => {
@@ -224,6 +226,7 @@ export function useEditPage() {
           title: data.title,
           content: data.content,
           comment: data.comment,
+          ...(data.accounts !== undefined ? { accounts: data.accounts } : {}),
         }
       )
     },
@@ -238,8 +241,13 @@ export function useCreatePage() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
   return useMutation({
-    mutationFn: (data: { slug: string; title: string; content?: string }) =>
-      requestHelpers.post<NewPageResponse>(e(endpoints.wiki.newPage), data),
+    mutationFn: (data: {
+      slug: string
+      title: string
+      content?: string
+      /** The page's accounts on other networks, as JSON. */
+      accounts?: string
+    }) => requestHelpers.post<NewPageResponse>(e(endpoints.wiki.newPage), data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki'] })
     },

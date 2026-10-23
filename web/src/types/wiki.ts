@@ -293,3 +293,28 @@ export interface AccessRule {
 export interface AccessListResponse {
   rules: AccessRule[]
 }
+
+/** One of the user's accounts on another network a wiki may publish to. */
+export interface PublishAccount {
+  id: string
+  /** `mastodon`, `bluesky` or `fediverse`. */
+  type: string
+  /** The account's address on its network. */
+  identifier: string
+  name: string
+  hosted: boolean
+}
+
+/** `publish`: the accounts, those the wiki publishes to, its copies on each, and whether it is public. */
+export interface PublishResponse {
+  accounts: PublishAccount[]
+  publish: string[]
+  copies: Record<string, number>
+  public: boolean
+}
+
+/** `publish/set`: the new list, and the copies left on each account that left it. */
+export interface PublishSetResponse {
+  publish: string[]
+  kept: Record<string, number>
+}

@@ -49,6 +49,11 @@ msgstr "(تۆ)"
 msgid "[not set]"
 msgstr "[دانەنراوە]"
 
+#. placeholder {0}: data.copies[account.id]
+#: src/features/wiki/publishing-section.tsx
+msgid "{0, plural, one {# copy} other {# copies}}"
+msgstr "{0, plural, one {# کۆپی} other {# کۆپی}}"
+
 #. placeholder {0}: files.length
 #: ../../../lib/web/src/components/diff-viewer.tsx
 msgid "{0, plural, one {# file changed} other {# files changed}}"
@@ -369,7 +374,7 @@ msgstr "AI"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "All comments"
-msgstr ""
+msgstr "هەموو لێدوانەکان"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -957,7 +962,7 @@ msgstr "بەردەوامبوون"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "Continue this thread"
-msgstr ""
+msgstr "ئەم گفتوگۆیە بەردەوام بکە"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Continue with {label}"
@@ -975,6 +980,11 @@ msgstr "کۆپی کرا"
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copied to clipboard"
 msgstr "کۆپی کرا بۆ کلیپبۆرد"
+
+#. placeholder {0}: kept.count
+#: src/features/wiki/publishing-section.tsx
+msgid "Copies published there: {0}. They stay unless you delete them."
+msgstr "کۆپییە بڵاوکراوەکان لەوێ: {0}. دەمێننەوە مەگەر بیانسڕیتەوە."
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
@@ -994,9 +1004,17 @@ msgstr "کۆپیکردن"
 msgid "Copy embed link"
 msgstr "کۆپیکردنی بەستەری جێگیرکراو"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not delete the copies"
+msgstr "نەتوانرا کۆپییەکان بسڕدرێنەوە"
+
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Could not load this document. Please try again later."
 msgstr "ئەم دۆکومێنتە نەخوێنرایەوە. تکایە دواتر هەوڵ بدە."
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not save the accounts"
+msgstr "نەتوانرا هەژمارەکان پاشەکەوت بکرێن"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 msgid "Couldn't load notifications"
@@ -1176,6 +1194,10 @@ msgstr "سڕینەوەی ستوون"
 msgid "Delete comment"
 msgstr "سڕینەوەی لێدوان"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete copies"
+msgstr "سڕینەوەی کۆپییەکان"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Delete field"
 msgstr "سڕینەوەی خانە"
@@ -1217,6 +1239,11 @@ msgstr "سڕینەوەی ڕەوانەکردنەوەی {0}"
 msgid "Delete redirect?"
 msgstr "ڕەوانەکردنەوە بسڕەوە؟"
 
+#. placeholder {0}: kept.account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete the copies on {0}?"
+msgstr "کۆپییەکانی سەر {0} بسڕدرێنەوە؟"
+
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Delete view"
 msgstr "سڕینەوەی ڕوانگە"
@@ -1234,6 +1261,11 @@ msgstr "هەژمارەکەت لە سێرڤەری کۆنەکەوە بسڕەوە"
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted"
 msgstr "سڕایەوە"
+
+#. placeholder {0}: answer.deleted
+#: src/features/wiki/publishing-section.tsx
+msgid "Deleted {0} copies"
+msgstr "{0} کۆپی سڕانەوە"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted {field}"
@@ -1901,6 +1933,10 @@ msgstr "وردەکارییەکانی بڕگە"
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
 msgstr "هەر ئێستا"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Keep"
+msgstr "هێشتنەوە"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2572,6 +2608,16 @@ msgstr "پرۆمپت پاشەکەوت کرا"
 msgid "Properties"
 msgstr "تایبەتمەندییەکان"
 
+#: src/features/wiki/publishing-section.tsx
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to"
+msgstr "بڵاوکردنەوە بۆ"
+
+#. placeholder {0}: account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to {0}"
+msgstr "بڵاوکردنەوە بۆ {0}"
+
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
 msgstr "ئاگادارکردنەوەی پاڵنان"
@@ -3128,7 +3174,7 @@ msgstr "ڕێکخستنەکان پاشەکەوتکران"
 #: ../../../lib/web/src/components/comment-share-button.tsx
 #: ../../../lib/web/src/components/comment-share-button.tsx
 msgid "Share"
-msgstr ""
+msgstr "هاوبەش بکە"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"

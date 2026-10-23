@@ -49,6 +49,11 @@ msgstr "(εσείς)"
 msgid "[not set]"
 msgstr "[χωρίς ορισμό]"
 
+#. placeholder {0}: data.copies[account.id]
+#: src/features/wiki/publishing-section.tsx
+msgid "{0, plural, one {# copy} other {# copies}}"
+msgstr "{0, plural, one {# αντίγραφο} other {# αντίγραφα}}"
+
 #. placeholder {0}: files.length
 #: ../../../lib/web/src/components/diff-viewer.tsx
 msgid "{0, plural, one {# file changed} other {# files changed}}"
@@ -369,7 +374,7 @@ msgstr "AI"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "All comments"
-msgstr ""
+msgstr "Όλα τα σχόλια"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -957,7 +962,7 @@ msgstr "Συνέχεια"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "Continue this thread"
-msgstr ""
+msgstr "Συνέχεια αυτού του νήματος"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Continue with {label}"
@@ -975,6 +980,11 @@ msgstr "Αντιγράφηκε"
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copied to clipboard"
 msgstr "Αντιγράφηκε στο πρόχειρο"
+
+#. placeholder {0}: kept.count
+#: src/features/wiki/publishing-section.tsx
+msgid "Copies published there: {0}. They stay unless you delete them."
+msgstr "Αντίγραφα που δημοσιεύτηκαν εκεί: {0}. Παραμένουν εκτός αν τα διαγράψετε."
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
@@ -994,9 +1004,17 @@ msgstr "Αντιγραφή"
 msgid "Copy embed link"
 msgstr "Αντιγραφή συνδέσμου ενσωμάτωσης"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not delete the copies"
+msgstr "Δεν ήταν δυνατή η διαγραφή των αντιγράφων"
+
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Could not load this document. Please try again later."
 msgstr "Δεν ήταν δυνατή η φόρτωση αυτού του εγγράφου. Παρακαλώ δοκιμάστε ξανά αργότερα."
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not save the accounts"
+msgstr "Δεν ήταν δυνατή η αποθήκευση των λογαριασμών"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 msgid "Couldn't load notifications"
@@ -1176,6 +1194,10 @@ msgstr "Διαγραφή στήλης"
 msgid "Delete comment"
 msgstr "Διαγραφή σχολίου"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete copies"
+msgstr "Διαγραφή αντιγράφων"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Delete field"
 msgstr "Διαγραφή πεδίου"
@@ -1217,6 +1239,11 @@ msgstr "Διαγραφή ανακατεύθυνσης {0}"
 msgid "Delete redirect?"
 msgstr "Διαγραφή ανακατεύθυνσης;"
 
+#. placeholder {0}: kept.account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete the copies on {0}?"
+msgstr "Διαγραφή των αντιγράφων στο {0};"
+
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Delete view"
 msgstr "Διαγραφή προβολής"
@@ -1234,6 +1261,11 @@ msgstr "Διαγράψτε τον λογαριασμό σας στον παλι�
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted"
 msgstr "Διαγράφηκε"
+
+#. placeholder {0}: answer.deleted
+#: src/features/wiki/publishing-section.tsx
+msgid "Deleted {0} copies"
+msgstr "Διαγράφηκαν {0} αντίγραφα"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted {field}"
@@ -1901,6 +1933,10 @@ msgstr "Λεπτομέρειες στοιχείου"
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
 msgstr "Μόλις τώρα"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Keep"
+msgstr "Διατήρηση"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2572,6 +2608,16 @@ msgstr "Η προτροπή αποθηκεύτηκε"
 msgid "Properties"
 msgstr "Ιδιότητες"
 
+#: src/features/wiki/publishing-section.tsx
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to"
+msgstr "Δημοσίευση σε"
+
+#. placeholder {0}: account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to {0}"
+msgstr "Δημοσίευση στο {0}"
+
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
 msgstr "Ειδοποίηση push"
@@ -3128,7 +3174,7 @@ msgstr "Οι ρυθμίσεις αποθηκεύτηκαν"
 #: ../../../lib/web/src/components/comment-share-button.tsx
 #: ../../../lib/web/src/components/comment-share-button.tsx
 msgid "Share"
-msgstr ""
+msgstr "Κοινοποίηση"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"

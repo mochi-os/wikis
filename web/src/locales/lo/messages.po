@@ -49,6 +49,11 @@ msgstr "(ທ່ານ)"
 msgid "[not set]"
 msgstr "[ບໍ່ໄດ້ຕັ້ງຄ່າ]"
 
+#. placeholder {0}: data.copies[account.id]
+#: src/features/wiki/publishing-section.tsx
+msgid "{0, plural, one {# copy} other {# copies}}"
+msgstr "{0, plural, one {# ສຳເນົາ} other {# ສຳເນົາ}}"
+
 #. placeholder {0}: files.length
 #: ../../../lib/web/src/components/diff-viewer.tsx
 msgid "{0, plural, one {# file changed} other {# files changed}}"
@@ -369,7 +374,7 @@ msgstr "AI"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "All comments"
-msgstr ""
+msgstr "ຄຳເຫັນທັງໝົດ"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -957,7 +962,7 @@ msgstr "ຕໍ່"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "Continue this thread"
-msgstr ""
+msgstr "ເບິ່ງກະທູ້ນີ້ຕໍ່"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Continue with {label}"
@@ -975,6 +980,11 @@ msgstr "ສຳເນົາແລ້ວ"
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copied to clipboard"
 msgstr "ສຳເນົາໄປຄລິບບອດແລ້ວ"
+
+#. placeholder {0}: kept.count
+#: src/features/wiki/publishing-section.tsx
+msgid "Copies published there: {0}. They stay unless you delete them."
+msgstr "ສຳເນົາທີ່ເຜີຍແຜ່ຢູ່ທີ່ນັ້ນ: {0}. ພວກມັນຈະຍັງຢູ່ ເວັ້ນເສຍແຕ່ທ່ານຈະລົບອອກ."
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
@@ -994,9 +1004,17 @@ msgstr "ສຳເນົາ"
 msgid "Copy embed link"
 msgstr "ສຳເນົາລິ້ງຝັງ"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not delete the copies"
+msgstr "ບໍ່ສາມາດລົບສຳເນົາໄດ້"
+
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Could not load this document. Please try again later."
 msgstr "ບໍ່ສາມາດໂຫລດເອກະສານນີ້ໄດ້. ກະລຸນາລອງອີກຄັ້ງໃນພາຍຫຼັງ."
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not save the accounts"
+msgstr "ບໍ່ສາມາດບັນທຶກບັນຊີໄດ້"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 msgid "Couldn't load notifications"
@@ -1176,6 +1194,10 @@ msgstr "ລົບຖັນ"
 msgid "Delete comment"
 msgstr "ລົບຄຳເຫັນ"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete copies"
+msgstr "ລົບສຳເນົາ"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Delete field"
 msgstr "ລົບຊ່ອງຂໍ້ມູນ"
@@ -1217,6 +1239,11 @@ msgstr "ລົບການປ່ຽນເສັ້ນທາງ {0}"
 msgid "Delete redirect?"
 msgstr "ລົບການປ່ຽນເສັ້ນທາງບໍ?"
 
+#. placeholder {0}: kept.account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete the copies on {0}?"
+msgstr "ລົບສຳເນົາໃນ {0} ບໍ?"
+
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Delete view"
 msgstr "ລົບມຸມມອງ"
@@ -1234,6 +1261,11 @@ msgstr "ລຶບບັນຊີຂອງທ່ານໃນເຊີຟເວີ
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted"
 msgstr "ລຶບແລ້ວ"
+
+#. placeholder {0}: answer.deleted
+#: src/features/wiki/publishing-section.tsx
+msgid "Deleted {0} copies"
+msgstr "ລົບ {0} ສຳເນົາແລ້ວ"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted {field}"
@@ -1901,6 +1933,10 @@ msgstr "ລາຍລະອຽດລາຍການ"
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
 msgstr "ຫາກໍ່ດຽວນີ້"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Keep"
+msgstr "ເກັບໄວ້"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2572,6 +2608,16 @@ msgstr "ບັນທຶກພຣອມທ໌ແລ້ວ"
 msgid "Properties"
 msgstr "ຄຸນສົມບັດ"
 
+#: src/features/wiki/publishing-section.tsx
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to"
+msgstr "ເຜີຍແຜ່ໄປທີ່"
+
+#. placeholder {0}: account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to {0}"
+msgstr "ເຜີຍແຜ່ໄປທີ່ {0}"
+
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
 msgstr "ການແຈ້ງເຕືອນແບບພຸຊ"
@@ -3128,7 +3174,7 @@ msgstr "ການຕັ້ງຄ່າຖືກບັນທຶກແລ້ວ"
 #: ../../../lib/web/src/components/comment-share-button.tsx
 #: ../../../lib/web/src/components/comment-share-button.tsx
 msgid "Share"
-msgstr ""
+msgstr "ແບ່ງປັນ"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"

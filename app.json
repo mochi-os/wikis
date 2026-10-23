@@ -16,7 +16,7 @@
 	"require": {"version": {"minimum": "0.4.230"}},
 
 	"database": {
-		"schema": 12,
+		"schema": 13,
 		"file": "wikis.db",
 		"create": {"function": "database_create"},
 		"upgrade": {"function": "database_upgrade"},
@@ -52,6 +52,9 @@
 		":wiki/-/access": {"function": "action_access_list"},
 		":wiki/-/access/set": {"function": "action_access_set"},
 		":wiki/-/access/revoke": {"function": "action_access_revoke"},
+		":wiki/-/publish": {"function": "action_publish"},
+		":wiki/-/publish/set": {"function": "action_publish_set"},
+		":wiki/-/publish/forget": {"function": "action_publish_forget"},
 		":wiki/-/delete": {"function": "action_delete"},
 		":wiki/-/tags": {"function": "action_tags", "public": true},
 		":wiki/-/tag/:tag": {"function": "action_tag_pages", "public": true},
@@ -97,6 +100,12 @@
 		"-/rss/token/revoke": {"function": "action_rss_token_revoke"},
 		"-/users/search": {"function": "action_users_search"},
 		"-/groups": {"function": "action_groups"}
+	},
+
+	// A page a hosted fediverse account published, for core's engine (the
+	// federation plan, phase 30).
+	"functions": {
+		"activitypub/object": {"function": "function_activitypub_object"}
 	},
 
 	"errors": {

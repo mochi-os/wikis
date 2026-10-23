@@ -49,6 +49,11 @@ msgstr "(siz)"
 msgid "[not set]"
 msgstr "[oʻrnatilmagan]"
 
+#. placeholder {0}: data.copies[account.id]
+#: src/features/wiki/publishing-section.tsx
+msgid "{0, plural, one {# copy} other {# copies}}"
+msgstr "{0, plural, one {# nusxa} other {# nusxa}}"
+
 #. placeholder {0}: files.length
 #: ../../../lib/web/src/components/diff-viewer.tsx
 msgid "{0, plural, one {# file changed} other {# files changed}}"
@@ -369,7 +374,7 @@ msgstr "AI"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "All comments"
-msgstr ""
+msgstr "Barcha izohlar"
 
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
 #: ../../../lib/web/src/components/calendar/time-grid.tsx
@@ -957,7 +962,7 @@ msgstr "Davom etish"
 
 #: ../../../lib/web/src/components/comment-thread-context.tsx
 msgid "Continue this thread"
-msgstr ""
+msgstr "Ushbu muhokamani davom ettirish"
 
 #: ../../../lib/web/src/components/step-up-dialog.tsx
 msgid "Continue with {label}"
@@ -975,6 +980,11 @@ msgstr "Nusxalandi"
 #: ../../../lib/web/src/components/ui/copy-button.tsx
 msgid "Copied to clipboard"
 msgstr "Buferga nusxalandi"
+
+#. placeholder {0}: kept.count
+#: src/features/wiki/publishing-section.tsx
+msgid "Copies published there: {0}. They stay unless you delete them."
+msgstr "U yerda nashr qilingan nusxalar: {0}. Siz oʻchirmaguningizcha ular qoladi."
 
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
 #: ../../../lib/web/src/components/calendar/month-grid.tsx
@@ -994,9 +1004,17 @@ msgstr "Nusxalash"
 msgid "Copy embed link"
 msgstr "Embed havolani nusxalash"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not delete the copies"
+msgstr "Nusxalarni oʻchirib boʻlmadi"
+
 #: ../../../lib/web/src/features/document/document-page.tsx
 msgid "Could not load this document. Please try again later."
 msgstr "Bu hujjatni yuklab boʻlmadi. Iltimos, keyinroq qayta urinib koʻring."
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Could not save the accounts"
+msgstr "Hisoblarni saqlab boʻlmadi"
 
 #: ../../../lib/web/src/components/layout/notification-menu.tsx
 msgid "Couldn't load notifications"
@@ -1176,6 +1194,10 @@ msgstr "Ustunni oʻchirish"
 msgid "Delete comment"
 msgstr "Izohni oʻchirish"
 
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete copies"
+msgstr "Nusxalarni oʻchirish"
+
 #: ../../../lib/web/src/components/entity/entity-field-dialog.tsx
 msgid "Delete field"
 msgstr "Maydonni oʻchirish"
@@ -1217,6 +1239,11 @@ msgstr "{0} yoʻnaltirishni oʻchirish"
 msgid "Delete redirect?"
 msgstr "Yoʻnaltirish oʻchirilsinmi?"
 
+#. placeholder {0}: kept.account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Delete the copies on {0}?"
+msgstr "{0} hisobidagi nusxalar oʻchirilsinmi?"
+
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Delete view"
 msgstr "Koʻrinishni oʻchirish"
@@ -1234,6 +1261,11 @@ msgstr "Eski serverdagi hisobingizni o'chiring"
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted"
 msgstr "Oʻchirildi"
+
+#. placeholder {0}: answer.deleted
+#: src/features/wiki/publishing-section.tsx
+msgid "Deleted {0} copies"
+msgstr "{0} ta nusxa oʻchirildi"
 
 #: ../../../lib/web/src/components/entity/entity-activity-list.tsx
 msgid "Deleted {field}"
@@ -1901,6 +1933,10 @@ msgstr "Element tafsilotlari"
 #: ../../../lib/web/src/lib/locale-format.ts
 msgid "Just now"
 msgstr "Hozirgina"
+
+#: src/features/wiki/publishing-section.tsx
+msgid "Keep"
+msgstr "Saqlab qolish"
 
 #: ../../../lib/web/src/components/entity/keyboard-shortcuts-help.tsx
 msgid "Keyboard shortcuts"
@@ -2572,6 +2608,16 @@ msgstr "Soʻrov saqlandi"
 msgid "Properties"
 msgstr "Xususiyatlar"
 
+#: src/features/wiki/publishing-section.tsx
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to"
+msgstr "Nashr qilinadigan joylar"
+
+#. placeholder {0}: account.identifier
+#: src/features/wiki/publishing-section.tsx
+msgid "Publish to {0}"
+msgstr "Nashr qilish: {0}"
+
 #: ../../../lib/web/src/features/accounts/types.ts
 msgid "Push notification"
 msgstr "Push bildirishnoma"
@@ -3128,7 +3174,7 @@ msgstr "Sozlamalar saqlandi"
 #: ../../../lib/web/src/components/comment-share-button.tsx
 #: ../../../lib/web/src/components/comment-share-button.tsx
 msgid "Share"
-msgstr ""
+msgstr "Ulashish"
 
 #: ../../../lib/web/src/components/entity/entity-view-sheet.tsx
 msgid "Show classes"
