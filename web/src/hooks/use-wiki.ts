@@ -37,6 +37,7 @@ import type {
 } from '@/types/wiki'
 import {
   requestHelpers,
+  optimistic,
   MUTATION_SKIPPED,
   isMutationSkipped,
   textUnchanged,
@@ -375,16 +376,38 @@ export function useAddTag() {
   })
 }
 
+// The chip goes on the click and comes back if the server refuses; the
+// caller says so.
 export function useRemoveTag() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
   const scope = useWikiScope()
+  const patch = optimistic(
+    queryClient,
+    ({ slug, tag }: { slug: string; tag: string }) => [
+      {
+        filters: { queryKey: ['wiki', scope, 'page', slug], exact: true },
+        update: (old: PageResponse | PageNotFoundResponse) =>
+          'error' in old
+            ? old
+            : {
+                ...old,
+                page: {
+                  ...old.page,
+                  tags: old.page.tags.filter((other) => other !== tag),
+                },
+              },
+      },
+    ]
+  )
   return useMutation({
     mutationFn: (data: { slug: string; tag: string }) =>
       requestHelpers.post<TagRemoveResponse>(
         e(endpoints.wiki.tagRemove(data.slug)),
         { tag: data.tag }
       ),
+    onMutate: patch.onMutate,
+    onError: (_error, _variables, context) => patch.rollback(context),
     onSuccess: (_, variables) => {
       invalidatePage(queryClient, scope)
       queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'tags'] })
@@ -684,16 +707,34 @@ export function useUploadAttachment() {
   return { ...mutation, progress }
 }
 
+// The caption shows as soon as the editor closes and goes back if the
+// server refuses; the caller says so.
 export function useUpdateAttachment() {
   const queryClient = useQueryClient()
   const e = useEntityEndpoint()
   const scope = useWikiScope()
+  const patch = optimistic(
+    queryClient,
+    ({ id, caption }: { id: string; caption: string }) => [
+      {
+        filters: { queryKey: ['wiki', scope, 'attachments'], exact: true },
+        update: (old: AttachmentsResponse) => ({
+          ...old,
+          attachments: old.attachments.map((attachment) =>
+            attachment.id === id ? { ...attachment, caption } : attachment
+          ),
+        }),
+      },
+    ]
+  )
   return useMutation({
     mutationFn: ({ id, caption }: { id: string; caption: string }) =>
       requestHelpers.post<AttachmentUpdateResponse>(
         e(endpoints.wiki.attachmentUpdate),
         { id, caption }
       ),
+    onMutate: patch.onMutate,
+    onError: (_error, _variables, context) => patch.rollback(context),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['wiki', scope, 'attachments'],
