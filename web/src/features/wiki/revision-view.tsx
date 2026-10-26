@@ -11,10 +11,10 @@ import {
   DiffFileView,
   DiffViewToggle,
   GeneralError,
+  compareText,
   type DiffViewStyle,
   useFormat,
   useScreenSize,
-  useShellStorage,
   Badge,
   Separator,
   Skeleton,
@@ -28,18 +28,17 @@ import {
   getAppPath,
 } from '@mochi/web'
 import { Clock, ArrowLeft, RotateCcw, GitCompare } from 'lucide-react'
-import { usePageRevision, usePageVersions } from '@/hooks/use-wiki'
+import {
+  useDiffStyle,
+  usePageRevision,
+  usePageVersions,
+} from '@/hooks/use-wiki'
 import { MarkdownContent } from './markdown-content'
 import {
   compareOptions,
   compareOrder,
   defaultCompare,
-  pageDiff,
-  pageWords,
 } from './revision-compare'
-
-// Where the choice between one column and two is remembered.
-const COMPARE_STYLE_KEY = 'wikis.compare'
 
 interface RevisionViewProps {
   slug: string
@@ -57,8 +56,10 @@ function DiffView({
   newContent: string
   viewStyle: DiffViewStyle
 }) {
+  // The whole page is kept as context: a wiki page is read as one text, and a
+  // few lines around each change would hide where in the page it sits.
   const file = useMemo(
-    () => pageDiff(oldContent, newContent),
+    () => compareText(oldContent, newContent, { context: 'all' }) ?? undefined,
     [oldContent, newContent]
   )
   if (!file) {
@@ -72,7 +73,6 @@ function DiffView({
     <DiffFileView
       file={file}
       viewStyle={viewStyle}
-      words={pageWords}
       hunkHeaders={false}
       prose
       textSize='sm'
@@ -93,10 +93,7 @@ export function RevisionView({
   // Two columns leave each side too narrow to read on a phone, so there the
   // comparison stays in one column and the switch is not offered.
   const { isMobile } = useScreenSize()
-  const [savedStyle, setSavedStyle] = useShellStorage<DiffViewStyle>(
-    COMPARE_STYLE_KEY,
-    'unified'
-  )
+  const [savedStyle, setSavedStyle] = useDiffStyle()
   const viewStyle = isMobile ? 'unified' : savedStyle
   const authorLabel = revision.name
 
