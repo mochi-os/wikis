@@ -30,6 +30,8 @@ const endpoints = {
     pageRevision: (slug: string, version: number) =>
       `pages/${encodeURIComponent(slug)}/history/${encodeURIComponent(String(version))}`,
     pageRevert: (slug: string) => `pages/${encodeURIComponent(slug)}/revert`,
+    diffPreference: 'diff/preference',
+    diffPreferenceSet: 'diff/preference/set',
     pageDelete: (slug: string) => `pages/${encodeURIComponent(slug)}/delete`,
     pageRename: (slug: string) => `pages/${encodeURIComponent(slug)}/rename`,
     newPage: 'page/create',

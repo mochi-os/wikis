@@ -14,7 +14,7 @@ const hooks = vi.hoisted(() => ({
   usePageRevision: vi.fn(),
   usePageVersions: vi.fn(),
   useScreenSize: vi.fn(),
-  useShellStorage: vi.fn(),
+  useDiffStyle: vi.fn(),
 }))
 
 vi.mock('@/hooks/use-wiki', () => hooks)
@@ -26,7 +26,6 @@ vi.mock('@mochi/web', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@mochi/web')>()),
   useFormat: () => ({ formatTimestamp: () => '' }),
   useScreenSize: hooks.useScreenSize,
-  useShellStorage: hooks.useShellStorage,
   EntityAvatar: () => null,
   Select: ({
     children,
@@ -88,7 +87,7 @@ beforeEach(() => {
   hooks.usePageRevision.mockReset()
   hooks.usePageVersions.mockReset()
   hooks.useScreenSize.mockReturnValue({ isMobile: false })
-  hooks.useShellStorage.mockReturnValue(['unified', vi.fn()])
+  hooks.useDiffStyle.mockReturnValue(['unified', vi.fn()])
   hooks.usePageRevision.mockImplementation((_slug: string, version: number) =>
     version > 0
       ? {
@@ -116,16 +115,12 @@ describe('Wiki version comparison', () => {
     expect(asked()).not.toContain(2)
   })
 
-  it('saves the selected desktop view under the Wiki comparison key', () => {
+  it("saves the selected desktop view as the reader's diff preference", () => {
     const save = vi.fn()
-    hooks.useShellStorage.mockReturnValue(['unified', save])
+    hooks.useDiffStyle.mockReturnValue(['unified', save])
     hooks.usePageVersions.mockReturnValue({ data: [3, 1], isLoading: false })
     show(3, 3)
 
-    expect(hooks.useShellStorage).toHaveBeenCalledWith(
-      'wikis.compare',
-      'unified'
-    )
     fireEvent.click(screen.getByRole('button', { name: 'Compare changes' }))
     fireEvent.click(screen.getByRole('button', { name: 'Split' }))
 
@@ -134,7 +129,7 @@ describe('Wiki version comparison', () => {
 
   it('uses one column on mobile even when the saved desktop choice is split', () => {
     hooks.useScreenSize.mockReturnValue({ isMobile: true })
-    hooks.useShellStorage.mockReturnValue(['split', vi.fn()])
+    hooks.useDiffStyle.mockReturnValue(['split', vi.fn()])
     hooks.usePageVersions.mockReturnValue({ data: [3, 1], isLoading: false })
     const { container } = show(3, 3)
     fireEvent.click(screen.getByRole('button', { name: 'Compare changes' }))

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import type { AxiosProgressEvent } from 'axios'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type {
@@ -42,6 +42,7 @@ import {
   isMutationSkipped,
   textUnchanged,
   useUploadProgress,
+  type DiffViewStyle,
   type MutationFnResult,
 } from '@mochi/web'
 import endpoints from '@/api/endpoints'
@@ -192,6 +193,45 @@ export function usePageRevision(
       ),
     enabled: (opts?.enabled ?? true) && !!slug && version > 0,
   })
+}
+
+// The one or two column choice for comparing versions. It is the person's
+// preference, shared with projects and repositories, so it follows them
+// between apps and devices. A reader who is not signed in has nowhere to keep
+// it, and the choice lasts as long as the page.
+export function useDiffStyle(): [
+  DiffViewStyle,
+  (style: DiffViewStyle) => void,
+] {
+  const e = useEntityEndpoint()
+  const queryClient = useQueryClient()
+  const [local, setLocal] = useState<DiffViewStyle>()
+  const { data } = useQuery({
+    queryKey: ['wiki', 'diff', 'preference'],
+    queryFn: () =>
+      requestHelpers.get<{ style: DiffViewStyle }>(
+        e(endpoints.wiki.diffPreference)
+      ),
+    staleTime: Infinity,
+    retry: false,
+  })
+  const save = useMutation({
+    mutationFn: (style: DiffViewStyle) =>
+      requestHelpers.post<{ style: DiffViewStyle }>(
+        e(endpoints.wiki.diffPreferenceSet),
+        { style }
+      ),
+    onSuccess: (answer) =>
+      queryClient.setQueryData(['wiki', 'diff', 'preference'], answer),
+  })
+  const style = local ?? data?.style ?? 'unified'
+  return [
+    style,
+    (next) => {
+      setLocal(next)
+      save.mutate(next)
+    },
+  ]
 }
 
 // Page mutations

@@ -5,7 +5,7 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 {
-	"version": "4.0",
+	"version": "4.1",
 	"label": "app.name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
@@ -59,6 +59,8 @@
 		":wiki/-/tags": {"function": "action_tags", "public": true},
 		":wiki/-/tag/:tag": {"function": "action_tag_pages", "public": true},
 		":wiki/-/changes": {"function": "action_changes", "public": true},
+		":wiki/-/diff/preference": {"function": "action_diff_preference_get", "public": true},
+		":wiki/-/diff/preference/set": {"function": "action_diff_preference_set"},
 		":wiki/-/redirect/set": {"function": "action_redirect_set"},
 		":wiki/-/redirect/delete": {"function": "action_redirect_delete"},
 		":wiki/-/redirects": {"function": "action_redirects", "public": true},
