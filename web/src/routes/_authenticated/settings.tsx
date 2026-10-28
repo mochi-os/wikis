@@ -21,6 +21,7 @@ const validTabs: WikiSettingsTabId[] = [
   'settings',
   'access',
   'redirects',
+  'publish',
   'replicas',
 ]
 

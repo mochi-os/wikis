@@ -32,15 +32,26 @@ import { Archive } from 'lucide-react'
 import endpoints from '@/api/endpoints'
 import { useEntityEndpoint } from '@/hooks/use-wiki'
 
-function usePublish() {
+function usePublish(enabled = true) {
   const e = useEntityEndpoint()
   const query = useQuery({
     queryKey: ['wiki', 'publish', e('')],
     queryFn: () =>
       requestHelpers.get<PublishResponse>(e(endpoints.wiki.publish)),
     retry: false,
+    enabled,
   })
   return { e, query }
+}
+
+// Whether the wiki's Publish to tab is offered: a public wiki with an account
+// to publish to, or whose answer failed and shows why. Undefined while it is
+// asked; false where enabled is, as for a replica, which publishes nothing.
+export function usePublishOffered(enabled: boolean): boolean | undefined {
+  const { data, isLoading, error } = usePublish(enabled).query
+  if (!enabled) return false
+  if (isLoading) return undefined
+  return !!error || ((data?.accounts ?? []).length > 0 && !!data?.public)
 }
 
 export function PublishingSection() {
