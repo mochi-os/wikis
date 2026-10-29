@@ -63,17 +63,21 @@ export function TagManager({ slug, tags, wikiId }: TagManagerProps) {
   }
 
   const handleRemoveTag = (tag: string) => {
-    removeTag.mutate(
-      { slug, tag },
-      {
-        onSuccess: () => {
-          toast.success(t`Tag "${tag}" removed`)
-        },
-        onError: (error) => {
-          toast.error(getErrorMessage(error, t`Failed to remove tag`))
-        },
-      }
-    )
+    // The error comes from the promise, not from onError: a second call on
+    // this hook, or leaving the page, drops the first call's callbacks, while
+    // the change it showed is still put back.
+    void removeTag
+      .mutateAsync(
+        { slug, tag },
+        {
+          onSuccess: () => {
+            toast.success(t`Tag "${tag}" removed`)
+          },
+        }
+      )
+      .catch((error) => {
+        toast.error(getErrorMessage(error, t`Failed to remove tag`))
+      })
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

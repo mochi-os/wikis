@@ -221,14 +221,14 @@ export function AttachmentsPage() {
   const saveCaption = (attachment: Attachment, caption: string) => {
     setCaptioning(null)
     if (caption === (attachment.caption ?? '')) return
-    updateMutation.mutate(
-      { id: attachment.id, caption },
-      {
-        onError: (error) => {
-          toast.error(getErrorMessage(error, t`Failed to save caption`))
-        },
-      }
-    )
+    // The error comes from the promise, not from onError: a second call on
+    // this hook, or leaving the page, drops the first call's callbacks, while
+    // the change it showed is still put back.
+    void updateMutation
+      .mutateAsync({ id: attachment.id, caption })
+      .catch((error) => {
+        toast.error(getErrorMessage(error, t`Failed to save caption`))
+      })
   }
 
   const confirmDelete = () => {
