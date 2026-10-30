@@ -3,16 +3,17 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import type { WikiComment } from '@/types/wiki'
-import { addressByAuthor, getAppPath } from '@mochi/web'
+import { addressByAuthor } from '@mochi/web'
+import { classPath } from '@/api/request'
 
 // Where an author's person assets (avatar, style) are served: under one of
 // their revisions or comments, whose route resolves the author. Append the
 // slot.
 export const revisionAssets = (wikiId: string, revision: string) =>
-  `${getAppPath()}/${wikiId}/-/revision/${revision}/asset`
+  `${classPath()}/${wikiId}/-/revision/${revision}/asset`
 
 export const commentAssets = (comment: { wiki: string; id: string }) =>
-  `${getAppPath()}/${comment.wiki}/-/comment/${comment.id}/asset`
+  `${classPath()}/${comment.wiki}/-/comment/${comment.id}/asset`
 
 // One asset address per author across a list, so the browser and the style
 // query fetch each author's avatar once rather than once per row. The routes

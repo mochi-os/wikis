@@ -3,13 +3,8 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import { useLingui } from '@lingui/react/macro'
-import {
-  toast,
-  getErrorMessage,
-  getAppPath,
-  shellClipboardWrite,
-} from '@mochi/web'
-import { getRssToken, revokeRssToken } from '@/api/request'
+import { toast, getErrorMessage, shellClipboardWrite } from '@mochi/web'
+import { classPath, getRssToken, revokeRssToken } from '@/api/request'
 
 // Copying an RSS URL and revoking RSS access were written out three times -
 // the landing page, the all-wikis list and the class-context page view - and
@@ -38,7 +33,7 @@ export function useRssCopy(wiki: string) {
         return
       }
       const path =
-        wiki === '*' ? `${getAppPath()}/rss` : `${getAppPath()}/${wiki}/rss`
+        wiki === '*' ? `${classPath()}/rss` : `${classPath()}/${wiki}/rss`
       const url = new URL(`${path}?token=${token}`, window.location.href).href
       if (await shellClipboardWrite(url)) {
         toast.success(

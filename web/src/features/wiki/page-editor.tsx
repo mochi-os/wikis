@@ -31,6 +31,7 @@ import {
   getErrorMessage,
   authenticatedUrl,
   getAppPath,
+  isDomainEntityRouting,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
@@ -105,11 +106,12 @@ export function PageEditor({
     wikiIdProp ?? wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
 
   // Fall back to the URL under the app's actual prefix - "/wikis/" is app.json
-  // configuration, not a constant. Under domain-entity routing getAppPath() is
-  // "" and the first segment is a page slug, so there is nothing to match and
-  // the entity-relative branch is taken.
+  // configuration, not a constant. Under domain-entity routing the first
+  // segment is a page slug, so there is nothing to match and the
+  // entity-relative branch is taken; core names the app there too, and a page
+  // called "wikis" must not read its next segment as the wiki.
   if (!wikiId) {
-    const appPath = getAppPath()
+    const appPath = isDomainEntityRouting() ? '' : getAppPath()
     if (appPath) {
       const prefix = `${appPath}/`
       const pathname = window.location.pathname

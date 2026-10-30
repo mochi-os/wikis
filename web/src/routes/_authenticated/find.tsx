@@ -11,10 +11,10 @@ import {
   toastAction,
   getErrorMessage,
   requestHelpers,
-  getAppPath,
 } from '@mochi/web'
 import { BookOpen } from 'lucide-react'
 import endpoints from '@/api/endpoints'
+import { classPath } from '@/api/request'
 import { useWikiContext } from '@/context/wiki-context'
 import { useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 
@@ -49,7 +49,7 @@ function FindWikisPage() {
     queryKey: ['wikis', 'recommendations'],
     queryFn: () =>
       requestHelpers.get<RecommendationsResponse>(
-        `${getAppPath()}/${endpoints.wiki.recommendations}`
+        `${classPath()}/${endpoints.wiki.recommendations}`
       ),
     retry: false,
     refetchOnWindowFocus: false,
@@ -108,7 +108,7 @@ function FindWikisPage() {
     }
     const response = await requestHelpers.post<
       { data?: ProbeEntry } & Partial<ProbeEntry>
-    >(`${getAppPath()}/-/probe`, { url })
+    >(`${classPath()}/-/probe`, { url })
     const data: Partial<ProbeEntry> = response.data ?? response
     if (!data.id) return null
     return {
