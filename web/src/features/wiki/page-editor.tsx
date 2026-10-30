@@ -29,7 +29,7 @@ import {
   isImage,
   getFileIcon,
   getErrorMessage,
-  authenticatedUrl,
+  AssetImage,
   getAppPath,
   isDomainEntityRouting,
   Tooltip,
@@ -63,6 +63,7 @@ import {
   ATTACHMENT_ACCEPT,
   useAttachmentUploadMessages,
 } from './attachment-upload'
+import { attachmentAddress } from './attachment-url'
 import { MarkdownContent } from './markdown-content'
 import { PublishSwitches } from './publishing-section'
 
@@ -71,10 +72,6 @@ interface PageEditorProps {
   slug: string
   isNew?: boolean
   wikiId?: string
-}
-
-function buildAttachmentUrl(baseURL: string, id: string): string {
-  return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`)
 }
 
 function slugify(text: string): string {
@@ -619,8 +616,12 @@ export function PageEditor({
                     >
                       <div className='bg-muted mb-2 flex aspect-square items-center justify-center overflow-hidden rounded'>
                         {isImage(attachment.type) ? (
-                          <img
-                            src={`${buildAttachmentUrl(wikiContext?.baseURL ?? '', attachment.id)}/thumbnail`}
+                          <AssetImage
+                            src={attachmentAddress(
+                              wikiContext?.baseURL ?? '',
+                              attachment.id,
+                              '/thumbnail'
+                            )}
                             alt={attachment.name}
                             className='h-full w-full object-cover'
                           />
