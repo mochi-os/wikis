@@ -15,11 +15,11 @@ import type {
   PublishSetResponse,
 } from '@/types/wiki'
 import { plural } from '@lingui/core/macro'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { useLingui } from '@lingui/react/macro'
 import {
   ConfirmDialog,
   GeneralError,
-  Label,
+  PublishChoice,
   Section,
   Switch,
   getErrorMessage,
@@ -183,34 +183,14 @@ export function PublishSwitches({
   onChange: (accounts: string[]) => void
 }) {
   const { data } = usePublish().query
-  const accounts = [...(data?.accounts ?? [])].sort((a, b) =>
-    naturalCompare(a.identifier, b.identifier)
-  )
-  if (accounts.length === 0 || !data?.public) return null
-  const selected = chosen ?? data.publish
+  const { t } = useLingui()
+  if (!data?.public) return null
   return (
-    <div className='space-y-2'>
-      <Label>
-        <Trans>Publish to</Trans>
-      </Label>
-      <div className='flex flex-wrap gap-3'>
-        {accounts.map((account) => (
-          <label key={account.id} className='flex items-center gap-2 text-sm'>
-            <Switch
-              checked={selected.includes(account.id)}
-              aria-label={account.identifier}
-              onCheckedChange={(on) =>
-                onChange(
-                  on
-                    ? [...selected, account.id]
-                    : selected.filter((id) => id !== account.id)
-                )
-              }
-            />
-            {account.identifier}
-          </label>
-        ))}
-      </div>
-    </div>
+    <PublishChoice
+      label={t`Also post to`}
+      accounts={data.accounts}
+      selected={chosen ?? data.publish}
+      onChange={onChange}
+    />
   )
 }
