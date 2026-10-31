@@ -8,6 +8,7 @@ import { useLingui } from '@lingui/react/macro'
 import {
   ConfirmDialog,
   GeneralError,
+  getApiBasepath,
   usePageTitle,
   toastAction,
   getErrorMessage,
@@ -16,7 +17,7 @@ import {
 import { LogOut } from 'lucide-react'
 import { useWikiContext, usePermissions } from '@/context/wiki-context'
 import { useRssCopy } from '@/hooks/use-rss-copy'
-import { usePage, useUnsubscribeWiki } from '@/hooks/use-wiki'
+import { usePage, useUnsubscribeWiki, pageQuery } from '@/hooks/use-wiki'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
 import { useWikiLinkDialog } from '@/components/link-dialog'
 import { DeletePageDialog } from '@/features/wiki/delete-page'
@@ -34,6 +35,12 @@ import { RenamePageDialog } from '@/features/wiki/rename-page-dialog'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/')({
+  // As the wiki route's page: the content is asked for beside the info.
+  loader: ({ params, context }) => {
+    void context.queryClient.prefetchQuery(
+      pageQuery(getApiBasepath(), params.page)
+    )
+  },
   component: WikiPageRoute,
 })
 

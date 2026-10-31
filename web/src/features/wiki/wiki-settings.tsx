@@ -85,6 +85,7 @@ import { useWikiContext } from '@/context/wiki-context'
 import {
   type Replica,
   useEntityEndpoint,
+  useInvalidatePages,
   useWikiSettings,
   useSetWikiSetting,
   useSyncWiki,
@@ -880,6 +881,8 @@ function ReplicasTab() {
 }
 
 function RedirectsTab() {
+  // A redirect changes what a page held as missing shows.
+  const invalidatePages = useInvalidatePages()
   const { t } = useLingui()
   const { formatTimestamp } = useFormat()
 
@@ -931,6 +934,7 @@ function RedirectsTab() {
         }
       )
       void loadRedirects()
+      invalidatePages()
       setDeleteSource(null)
     } catch {
       // toast already shown
@@ -1055,6 +1059,8 @@ interface AddRedirectDialogProps {
 }
 
 function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
+  // A redirect changes what a page held as missing shows.
+  const invalidatePages = useInvalidatePages()
   const { t } = useLingui()
   const [open, setOpen] = useState(false)
   const [source, setSource] = useState('')
@@ -1087,6 +1093,7 @@ function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
       setSource('')
       setTarget('')
       setOpen(false)
+      invalidatePages()
       onSuccess()
     } catch {
       // toast already shown

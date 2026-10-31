@@ -5,7 +5,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Navigate, useNavigate } from '@tanstack/react-router'
-import type { PageResponse, PageNotFoundResponse } from '@/types/wiki'
 import { Trans, useLingui } from '@lingui/react/macro'
 import {
   usePageTitle,
@@ -17,9 +16,9 @@ import {
   getErrorMessage,
 } from '@mochi/web'
 import { LogOut } from 'lucide-react'
-import endpoints from '@/api/endpoints'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { useRssCopy } from '@/hooks/use-rss-copy'
+import { pageQuery } from '@/hooks/use-wiki'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
 import { useWikiLinkDialog } from '@/components/link-dialog'
 import { DeletePageDialog } from '@/features/wiki/delete-page'
@@ -92,11 +91,8 @@ export function WikiPageContent({
     // Keyed on the base URL, which is the prefix invalidatePage invalidates.
     // Keying on the fingerprint meant no page mutation ever matched, so tags
     // and the comment count stayed stale until a refocus or a navigation.
-    queryKey: ['wiki', baseURL, 'page', slug],
-    queryFn: () =>
-      requestHelpers.get<PageResponse | PageNotFoundResponse>(
-        `${baseURL}${endpoints.wiki.page(slug)}`
-      ),
+    // The page route's loader asked for it already, under the same key.
+    ...pageQuery(baseURL, slug),
     enabled: !shouldRedirect,
   })
 
