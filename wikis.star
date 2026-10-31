@@ -705,33 +705,6 @@ def create_revision(page, title, content, author, name, version, comment):
         id, page, content, title, author, name, now, version, comment)
     return id
 
-# Stream an entity's asset from its owning service via a Mochi stream.
-# Location-transparent: mochi.remote.stream() loops back in-process when the
-# entity lives on this server, or goes over P2P otherwise. Handles both binary
-# assets (avatar/banner/favicon) and JSON assets (style/information).
-def stream_asset(a, entity_id, service, asset):
-    if not entity_id:
-        a.error.label(404, "errors.asset_unavailable", asset=asset)
-        return None
-    s = mochi.remote.stream(entity_id, service, asset, {})
-    if not s:
-        a.error.label(404, "errors.asset_unavailable", asset=asset)
-        return None
-    header = s.read()
-    if not header or header.get("status") != "200":
-        a.error.label(404, "errors.asset_not_set", asset=asset)
-        return None
-    a.header("Cache-Control", "private, max-age=300")
-    if "data" in header:
-        return {"data": header["data"]}
-    a.header("Content-Type", header.get("content_type", "application/octet-stream"))
-    # Per-slot byte caps matching what the people app accepts on upload; the
-    # route is public, so an uncapped stream could run indefinitely. Unknown
-    # slots fall back to the largest cap.
-    caps = {"avatar": 2 * 1024 * 1024, "banner": 10 * 1024 * 1024, "favicon": 64 * 1024}
-    a.write.stream(s, maximum=caps.get(asset, 10 * 1024 * 1024))
-    return None
-
 _PERSON_ASSETS = ("avatar", "banner", "favicon", "style", "information")
 
 # Proxy a comment author's person asset from the people service.
@@ -750,7 +723,7 @@ def action_comment_asset(a):
     # Bind the comment to the route wiki so this can't resolve a comment (and
     # its author) in a wiki the URL doesn't name.
     row = mochi.db.row("select author from comments where id=? and wiki=?", a.input("comment"), wiki["id"])
-    return stream_asset(a, row["author"] if row else "", "people", asset)
+    return asset_serve(a, row["author"] if row else "", "people", asset)
 
 # Proxy a revision author's person asset from the people service.
 def action_revision_asset(a):
@@ -766,7 +739,7 @@ def action_revision_asset(a):
     # Bind the revision to the route wiki (via its page) so this can't resolve a
     # revision author in a wiki the URL doesn't name.
     row = mochi.db.row("select r.author from revisions r join pages p on r.page=p.id where r.id=? and p.wiki=?", a.input("revision"), wiki["id"])
-    return stream_asset(a, row["author"] if row else "", "people", asset)
+    return asset_serve(a, row["author"] if row else "", "people", asset)
 
 # ACTIONS
 
@@ -1183,24 +1156,15 @@ def action_recommendations(a):
             if w["source"]:
                 existing_ids.add(w["source"])
 
-    # Request recommendations from the recommendations service
-    s = mochi.remote.stream("1JYmMpQU7fxvTrwHpNpiwKCgUg3odWqX7s9t1cLswSMAro5M2P", "recommendations", "list", {"type": "wiki", "language": user_language(a)})
-    if not s:
-        return {"data": {"wikis": []}}
-
-    r = s.read()
-    if not r or r.get("status") != "200":
-        s.close()
+    # Recommendations from the service, cached for an hour
+    items = recommendation_list("wiki", user_language(a))
+    if items == None:
         return {"data": {"wikis": []}}
 
     recommendations = []
-    items = s.read()
-    if type(items) not in ["list", "tuple"]:
-        s.close()
-        return {"data": {"wikis": []}}
 
     # Get the server location from the recommendations entity so subscribers can reach the wikis
-    rec_dir = mochi.directory.get("1JYmMpQU7fxvTrwHpNpiwKCgUg3odWqX7s9t1cLswSMAro5M2P")
+    rec_dir = mochi.directory.get(recommendation_entity)
     rec_server = ""
     if rec_dir:
         rec_server = rec_dir.get("location", "")
@@ -1215,7 +1179,6 @@ def action_recommendations(a):
                 "fingerprint": mochi.entity.fingerprint(entity_id),
                 "server": rec_server,
             })
-    s.close()
     return {"data": {"wikis": recommendations}}
 
 # Info endpoint for entity context - returns wiki info
