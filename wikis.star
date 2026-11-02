@@ -444,12 +444,25 @@ def replicas_revalidate(wiki):
 # Tell any open wiki UI that content changed; keyed by the wiki's fingerprint,
 # matching the web's websocket key. Distinct from notify(), which sends
 # push/email.
-def notify_websocket(wiki):
+def notify_websocket(wiki, kind="", page="", previous=""):
     if not wiki:
         return
     fp = mochi.entity.fingerprint(wiki)
-    if fp:
-        mochi.websocket.write(fp, {"type": "wiki/update", "wiki": wiki})
+    if not fp:
+        return
+    # What changed, so an open page reloads only what it shows: kind is
+    # "edit", "pages" (a page created, deleted or renamed - previous is the
+    # old slug), "comment", "tag", "redirect" or "attachment", and page the
+    # slug concerned. Without a kind - settings, a renamed wiki, a sync dump -
+    # a client reloads everything, as it did for every change before.
+    frame = {"type": "wiki/update", "wiki": wiki}
+    if kind:
+        frame["kind"] = kind
+    if page:
+        frame["page"] = page
+    if previous:
+        frame["previous"] = previous
+    mochi.websocket.write(fp, frame)
 
 # Helper: Remove attachment references from content
 def remove_attachment_references(content, attachment_id):
@@ -2799,7 +2812,7 @@ def event_page_create(e):
         notify_body = mochi.app.label("notifications.page_create.body", author=name or author[:9])
         notify("page/create", id, notify_title, notify_body, "/wikis/" + wiki + "/" + page, title, event_id="page/create:" + id)
 
-    notify_websocket(wiki)
+    notify_websocket(wiki, "pages", page)
 
 # Receive page/update event
 def event_page_update(e):
@@ -2915,7 +2928,11 @@ def event_page_update(e):
         notify_body = mochi.app.label("notifications.page_update.body", author=name or author[:9])
         notify("page/update", id, notify_title, notify_body, "/wikis/" + wiki + "/" + page, title, event_id="page/update:" + id + ":" + str(version))
 
-    notify_websocket(wiki)
+    # A changed slug is a rename, which changes the set of pages.
+    if existing and existing["page"] == page:
+        notify_websocket(wiki, "edit", page)
+    else:
+        notify_websocket(wiki, "pages", page, existing["page"] if existing else "")
 
 # Receive page/delete event
 def event_page_delete(e):
@@ -2989,7 +3006,7 @@ def event_page_delete(e):
     notify_body = mochi.app.label("notifications.page_delete.body", page=page_title)
     notify("page/delete", id, notify_title, notify_body, "/wikis/" + wiki + (("/" + page_slug) if page_slug else ""), page_title, event_id="page/delete:" + id + ":" + str(version))
 
-    notify_websocket(wiki)
+    notify_websocket(wiki, "pages", page_slug)
 
 # Receive redirect/set event
 def event_redirect_set(e):
@@ -3074,7 +3091,7 @@ def event_redirect_set(e):
     if not wikirow.get("source") and sender:
         broadcast_event(wiki, "redirect/set", {"source": source, "target": target, "created": created}, exclude=sender)
 
-    notify_websocket(wiki)
+    notify_websocket(wiki, "redirect", source)
 
 # Receive redirect/delete event
 def event_redirect_delete(e):
@@ -3106,7 +3123,7 @@ def event_redirect_delete(e):
     if not wikirow.get("source") and sender:
         broadcast_event(wiki, "redirect/delete", {"source": source}, exclude=sender)
 
-    notify_websocket(wiki)
+    notify_websocket(wiki, "redirect", source)
 
 # Receive tag/add event
 def event_tag_add(e):
@@ -3159,7 +3176,9 @@ def event_tag_add(e):
     if not wikirow.get("source") and sender:
         broadcast_event(wiki, "tag/add", {"page": page, "tag": tag}, exclude=sender)
 
-    notify_websocket(wiki)
+    # The event names the page by id; the reader's page is held by slug.
+    tagged = mochi.db.row("select page from pages where id=?", page)
+    notify_websocket(wiki, "tag", tagged["page"] if tagged else "")
 
 # Receive tag/remove event
 def event_tag_remove(e):
@@ -3196,7 +3215,9 @@ def event_tag_remove(e):
     if not wikirow.get("source") and sender:
         broadcast_event(wiki, "tag/remove", {"page": page, "tag": tag}, exclude=sender)
 
-    notify_websocket(wiki)
+    # The event names the page by id; the reader's page is held by slug.
+    tagged = mochi.db.row("select page from pages where id=?", page)
+    notify_websocket(wiki, "tag", tagged["page"] if tagged else "")
 
 # Receive setting/set event
 def event_setting_set(e):
@@ -3575,7 +3596,7 @@ def event_attachment_create(e):
                 "created": attachment.get("created", 0),
             }],
         }, exclude=replica)
-        notify_websocket(wiki)
+        notify_websocket(wiki, "attachment")
 
 # Handle attachment/delete event - replica notifies source that they deleted an attachment
 # Source deletes locally and broadcasts to other replicas
@@ -3619,7 +3640,7 @@ def event_attachment_delete(e):
     attachment_delete(attachment_id)
     broadcast_event(wiki, "attachment/remove", {"id": attachment_id}, exclude=sender)
     mochi.log.debug("Deleted attachment %s from replica %s", attachment_id, sender)
-    notify_websocket(wiki)
+    notify_websocket(wiki, "attachment")
 
 # P2P event: attachment/update — a replica edited an attachment's caption.
 # Source-side counterpart of action_attachment_update: same sender checks as
@@ -3663,7 +3684,7 @@ def event_attachment_update(e):
         "size": updated["size"], "content_type": updated.get("type") or updated.get("content_type", ""),
         "caption": updated.get("caption", ""), "description": updated.get("description", ""),
         "rank": updated.get("rank", 0), "created": updated.get("created", 0)}]}, exclude=sender)
-    notify_websocket(wiki)
+    notify_websocket(wiki, "attachment")
 
 # Handle attachment/fetch event - serve attachment file data to requester via stream
 def event_attachment_fetch(e):
@@ -3698,7 +3719,7 @@ def event_attachment_add(e):
         source = wikirow.get("source") or sender
         attachment_store(attachments, source, wiki)
 
-    notify_websocket(wiki)
+    notify_websocket(wiki, "attachment")
 
 # P2P event: attachment/remove — delete attachment metadata
 def event_attachment_remove(e):
@@ -3727,7 +3748,7 @@ def event_attachment_remove(e):
             if obj == wiki or mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
                 attachment_delete(attachment_id)
 
-    notify_websocket(wiki)
+    notify_websocket(wiki, "attachment")
 
 # Helper: Import wiki dump from sync response
 # A number from a remote dump, reduced to an int. These columns are compared
@@ -4510,7 +4531,7 @@ def event_comment_create(e):
         notify_body = mochi.app.label("notifications.comment_create.body", author=name or author[:9], excerpt=excerpt)
         notify("comment/create", id, notify_title, notify_body, "/wikis/" + wiki + "/" + page + "/comments", page_title, event_id="comment/create:" + id)
 
-    notify_websocket(wiki)
+    notify_websocket(wiki, "comment", page)
 
 # P2P event: comment/edit
 def event_comment_edit(e):
@@ -4553,7 +4574,7 @@ def event_comment_edit(e):
     # LWW gate: skip if our locally-stored edit is at least as new.
     # `edited` is 0 for never-edited comments, so the first edit always
     # wins over the create-time state.
-    local = mochi.db.row("select edited, origin, author from comments where id=? and wiki=?", id, wiki)
+    local = mochi.db.row("select edited, origin, author, page from comments where id=? and wiki=?", id, wiki)
     if not local:
         request_resync(wiki)
         return
@@ -4586,7 +4607,7 @@ def event_comment_edit(e):
             "edited": edited,
         }, exclude=sender)
 
-    notify_websocket(wiki)
+    notify_websocket(wiki, "comment", local["page"])
 
 # P2P event: comment/delete
 def event_comment_delete(e):
@@ -4629,7 +4650,7 @@ def event_comment_delete(e):
             "page": comment["page"],
         }, exclude=sender)
 
-    notify_websocket(wiki)
+    notify_websocket(wiki, "comment", comment["page"])
 
 # ATTACHMENTS
 
