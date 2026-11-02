@@ -25,7 +25,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  getAppPath,
 } from '@mochi/web'
 import { Clock, ArrowLeft, RotateCcw, GitCompare } from 'lucide-react'
 import {
@@ -33,6 +32,7 @@ import {
   usePageRevision,
   usePageVersions,
 } from '@/hooks/use-wiki'
+import { revisionAssets } from './author-assets'
 import { MarkdownContent } from './markdown-content'
 import {
   compareOptions,
@@ -236,12 +236,12 @@ export function RevisionView({
             <EntityAvatar
               src={
                 wikiId
-                  ? `${getAppPath()}/${wikiId}/-/revision/${revision.id}/asset/avatar`
+                  ? `${revisionAssets(wikiId, revision.id)}/avatar`
                   : undefined
               }
               styleUrl={
                 wikiId
-                  ? `${getAppPath()}/${wikiId}/-/revision/${revision.id}/asset/style`
+                  ? `${revisionAssets(wikiId, revision.id)}/style`
                   : undefined
               }
               fingerprint={wikiId ? undefined : revision.author}

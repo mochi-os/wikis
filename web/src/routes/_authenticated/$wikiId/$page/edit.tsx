@@ -29,7 +29,9 @@ function WikiPageEditRoute() {
   const goBackToPage = () =>
     navigate({ to: '/$wikiId/$page', params: { wikiId, page: slug } })
 
-  const { data, isLoading, error, refetch } = usePage(slug)
+  const { data, isLoading, error, refetch } = usePage(slug, {
+    fresh: true,
+  })
   const pageTitle =
     data && 'page' in data && typeof data.page === 'object' && data.page?.title
       ? data.page.title

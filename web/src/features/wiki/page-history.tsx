@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
+import { useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { Revision } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
@@ -19,12 +20,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  getAppPath,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from '@mochi/web'
 import { Eye, History, RotateCcw } from 'lucide-react'
+import { revisionAssets, revisionAvatars } from './author-assets'
 
 interface PageHistoryProps {
   slug: string
@@ -46,6 +47,12 @@ export function PageHistory({
   onLoadMore,
 }: PageHistoryProps) {
   const { formatTimestamp } = useFormat()
+  // One avatar address per author across the list (revisionAvatars).
+  const avatars = useMemo(
+    () =>
+      wikiId ? revisionAvatars(wikiId, revisions) : new Map<string, string>(),
+    [wikiId, revisions]
+  )
   const hasMore = total !== undefined && offset + revisions.length < total
   return (
     <div className='space-y-6'>
@@ -155,12 +162,12 @@ export function PageHistory({
                       <EntityAvatar
                         src={
                           wikiId
-                            ? `${getAppPath()}/${wikiId}/-/revision/${revision.id}/asset/avatar`
+                            ? `${avatars.get(revision.author) ?? revisionAssets(wikiId, revision.id)}/avatar`
                             : undefined
                         }
                         styleUrl={
                           wikiId
-                            ? `${getAppPath()}/${wikiId}/-/revision/${revision.id}/asset/style`
+                            ? `${avatars.get(revision.author) ?? revisionAssets(wikiId, revision.id)}/style`
                             : undefined
                         }
                         fingerprint={wikiId ? undefined : revision.author}

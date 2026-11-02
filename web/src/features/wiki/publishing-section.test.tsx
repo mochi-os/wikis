@@ -142,8 +142,13 @@ describe('Wiki publish switches', () => {
   it("start from the wiki's list and report a change", async () => {
     const changed = vi.fn()
     wrap(<PublishSwitches chosen={null} onChange={changed} />)
+    const line = await screen.findByRole('button', { name: /Also post to/ })
+    expect(line).toHaveTextContent('@alice@mastodon.social')
+    expect(line).not.toHaveTextContent('alice.example.org')
+    expect(screen.queryByRole('switch')).toBeNull()
+    fireEvent.click(line)
     expect(
-      await screen.findByRole('switch', { name: '@alice@mastodon.social' })
+      screen.getByRole('switch', { name: '@alice@mastodon.social' })
     ).toHaveAttribute('aria-checked', 'true')
     fireEvent.click(screen.getByRole('switch', { name: 'alice.example.org' }))
     expect(changed).toHaveBeenCalledWith(['m1', 'b1'])

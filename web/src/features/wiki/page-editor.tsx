@@ -29,8 +29,9 @@ import {
   isImage,
   getFileIcon,
   getErrorMessage,
-  authenticatedUrl,
+  AssetImage,
   getAppPath,
+  isDomainEntityRouting,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
@@ -62,6 +63,7 @@ import {
   ATTACHMENT_ACCEPT,
   useAttachmentUploadMessages,
 } from './attachment-upload'
+import { attachmentAddress } from './attachment-url'
 import { MarkdownContent } from './markdown-content'
 import { PublishSwitches } from './publishing-section'
 
@@ -70,10 +72,6 @@ interface PageEditorProps {
   slug: string
   isNew?: boolean
   wikiId?: string
-}
-
-function buildAttachmentUrl(baseURL: string, id: string): string {
-  return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`)
 }
 
 function slugify(text: string): string {
@@ -105,11 +103,12 @@ export function PageEditor({
     wikiIdProp ?? wikiContext?.wiki?.fingerprint ?? wikiContext?.wiki?.id
 
   // Fall back to the URL under the app's actual prefix - "/wikis/" is app.json
-  // configuration, not a constant. Under domain-entity routing getAppPath() is
-  // "" and the first segment is a page slug, so there is nothing to match and
-  // the entity-relative branch is taken.
+  // configuration, not a constant. Under domain-entity routing the first
+  // segment is a page slug, so there is nothing to match and the
+  // entity-relative branch is taken; core names the app there too, and a page
+  // called "wikis" must not read its next segment as the wiki.
   if (!wikiId) {
-    const appPath = getAppPath()
+    const appPath = isDomainEntityRouting() ? '' : getAppPath()
     if (appPath) {
       const prefix = `${appPath}/`
       const pathname = window.location.pathname
@@ -617,8 +616,12 @@ export function PageEditor({
                     >
                       <div className='bg-muted mb-2 flex aspect-square items-center justify-center overflow-hidden rounded'>
                         {isImage(attachment.type) ? (
-                          <img
-                            src={`${buildAttachmentUrl(wikiContext?.baseURL ?? '', attachment.id)}/thumbnail`}
+                          <AssetImage
+                            src={attachmentAddress(
+                              wikiContext?.baseURL ?? '',
+                              attachment.id,
+                              '/thumbnail'
+                            )}
                             alt={attachment.name}
                             className='h-full w-full object-cover'
                           />

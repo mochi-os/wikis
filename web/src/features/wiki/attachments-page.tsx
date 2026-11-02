@@ -30,7 +30,7 @@ import {
   getFileIcon,
   isImage,
   getErrorMessage,
-  authenticatedUrl,
+  AssetImage,
   AttachmentCaptionDialog,
   shellClipboardWrite,
   naturalCompare,
@@ -67,15 +67,12 @@ import {
   ATTACHMENT_ACCEPT,
   useAttachmentUploadMessages,
 } from './attachment-upload'
+import { attachmentAddress } from './attachment-url'
 
 type ViewMode = 'grid' | 'list'
 type FilterType = 'all' | 'images' | 'documents'
 type SortBy = 'name' | 'date' | 'size'
 const EMPTY_ATTACHMENTS: Attachment[] = []
-
-function buildAttachmentUrl(baseURL: string, id: string): string {
-  return authenticatedUrl(`${baseURL}attachments/${encodeURIComponent(id)}`)
-}
 
 export function AttachmentsPage() {
   const { t } = useLingui()
@@ -260,7 +257,7 @@ export function AttachmentsPage() {
   const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({
     id: a.id,
     name: a.name,
-    url: buildAttachmentUrl(baseURL, a.id),
+    url: attachmentAddress(baseURL, a.id),
     type: 'image' as const,
     caption: a.caption,
   }))
@@ -282,7 +279,7 @@ export function AttachmentsPage() {
       openLightbox(index)
     } else {
       // Non-image: open in new tab
-      window.open(buildAttachmentUrl(baseURL, attachment.id), '_blank')
+      window.open(attachmentAddress(baseURL, attachment.id), '_blank')
     }
   }
 
@@ -511,7 +508,7 @@ export function AttachmentsPage() {
           item={{
             name: captioning.name,
             caption: captioning.caption,
-            previewUrl: `${buildAttachmentUrl(baseURL, captioning.id)}/preview`,
+            previewUrl: attachmentAddress(baseURL, captioning.id, '/preview'),
             previewKind: 'image',
           }}
           onSave={(caption) => saveCaption(captioning, caption)}
@@ -563,7 +560,7 @@ function AttachmentGridItem({
   const { formatFileSize } = useFormat()
   const FileIcon = getFileIcon(attachment.type)
   const { baseURL } = useWikiBaseURL()
-  const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id)
+  const thumbnail = attachmentAddress(baseURL, attachment.id, '/thumbnail')
 
   return (
     <div className='group bg-card hover:bg-hover relative overflow-hidden rounded-lg border transition-colors'>
@@ -574,8 +571,8 @@ function AttachmentGridItem({
         className='bg-muted flex aspect-square w-full items-center justify-center overflow-hidden'
       >
         {isImage(attachment.type) ? (
-          <img
-            src={`${attachmentUrl}/thumbnail`}
+          <AssetImage
+            src={thumbnail}
             alt={attachment.caption || attachment.name}
             className='h-full w-full object-cover text-transparent'
           />
@@ -680,7 +677,7 @@ function AttachmentListItem({
   const { formatFileSize, formatTimestamp } = useFormat()
   const FileIcon = getFileIcon(attachment.type)
   const { baseURL } = useWikiBaseURL()
-  const attachmentUrl = buildAttachmentUrl(baseURL, attachment.id)
+  const thumbnail = attachmentAddress(baseURL, attachment.id, '/thumbnail')
 
   return (
     <div className='hover:bg-hover flex items-center gap-4 rounded-lg border p-3 transition-colors'>
@@ -691,8 +688,8 @@ function AttachmentListItem({
         className='bg-muted flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded'
       >
         {isImage(attachment.type) ? (
-          <img
-            src={`${attachmentUrl}/thumbnail`}
+          <AssetImage
+            src={thumbnail}
             alt={attachment.caption || ''}
             className='h-16 w-16 rounded object-cover text-transparent'
           />

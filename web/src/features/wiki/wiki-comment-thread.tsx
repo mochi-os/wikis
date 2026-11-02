@@ -14,12 +14,12 @@ import {
   CommentBox,
   Textarea,
   useFormat,
-  getAppPath,
   textUnchanged,
   useDiscardGuard,
   type Upload,
 } from '@mochi/web'
 import { Check, Pencil, Reply, Trash2 } from 'lucide-react'
+import { commentAssets } from './author-assets'
 import { CommentAttachments } from './comment-attachments'
 import { MarkdownContent } from './markdown-content'
 
@@ -42,6 +42,11 @@ interface WikiCommentThreadProps {
   /** Byte progress of an in-flight reply upload */
   progress?: Upload | null
   depth?: number
+  /**
+   * One asset address per author across the thread (commentAvatars), so an
+   * author's avatar and style are fetched once, not once per comment.
+   */
+  avatars?: ReadonlyMap<string, string>
 }
 
 export function WikiCommentThread({
@@ -60,6 +65,7 @@ export function WikiCommentThread({
   onDelete,
   progress,
   depth = 0,
+  avatars,
 }: WikiCommentThreadProps) {
   const { formatTimestamp } = useFormat()
   const [collapsed, setCollapsed] = useState(false)
@@ -127,8 +133,8 @@ export function WikiCommentThread({
   // entity ID, which reads as corrupt data.
   const authorName = comment.name || t`Unknown`
 
-  const assetUrl = (slot: string) =>
-    `${getAppPath()}/${comment.wiki}/-/comment/${comment.id}/asset/${slot}`
+  const assets = avatars?.get(comment.author) ?? commentAssets(comment)
+  const assetUrl = (slot: string) => `${assets}/${slot}`
   const avatar = (
     <EntityAvatar
       src={assetUrl('avatar')}
@@ -336,6 +342,7 @@ export function WikiCommentThread({
           onDelete={onDelete}
           progress={progress}
           depth={depth + 1}
+          avatars={avatars}
         />
       ))}
     </>

@@ -21,6 +21,8 @@ vendor:
 	mkdir -p lib
 	ln -sf ../../../lib/starlark/attachments.star lib/attachments.star
 	ln -sf ../../../lib/starlark/content.star lib/content.star
+	ln -sf ../../../lib/starlark/assets.star lib/assets.star
+	ln -sf ../../../lib/starlark/recommendations.star lib/recommendations.star
 
 clean:
 	rm -rf web/dist

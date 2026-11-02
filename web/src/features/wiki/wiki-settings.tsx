@@ -74,6 +74,7 @@ import {
   Plus,
   RefreshCw,
   Settings,
+  Share2,
   Shield,
   Trash2,
   Users,
@@ -84,6 +85,7 @@ import { useWikiContext } from '@/context/wiki-context'
 import {
   type Replica,
   useEntityEndpoint,
+  useInvalidatePages,
   useWikiSettings,
   useSetWikiSetting,
   useSyncWiki,
@@ -92,9 +94,10 @@ import {
   useGroups,
 } from '@/hooks/use-wiki'
 import { ValueLinkChip } from '@/components/value-link-chip'
-import { PublishingSection } from './publishing-section'
+import { PublishingSection, usePublishOffered } from './publishing-section'
 
-export type WikiSettingsTabId = 'settings' | 'access' | 'redirects' | 'replicas'
+export type WikiSettingsTabId =
+  'settings' | 'access' | 'redirects' | 'publish' | 'replicas'
 
 interface Tab {
   id: WikiSettingsTabId
@@ -115,6 +118,11 @@ function useTabs(): Tab[] {
         id: 'redirects' as const,
         label: t`Redirects`,
         icon: <CornerDownRight className='h-4 w-4' />,
+      },
+      {
+        id: 'publish' as const,
+        label: t`Publish to`,
+        icon: <Share2 className='h-4 w-4' />,
       },
       {
         id: 'access' as const,
@@ -191,16 +199,28 @@ export function WikiSettings({
     },
   }
 
+  // Publish to is a tab of its own, shown only where the wiki has somewhere
+  // to publish; a replica publishes nothing. A link to it holds it while that
+  // is asked, and opens the settings once it is not so.
+  const settings = useWikiSettings()
+  const replica = settings.data?.settings?.source
+  const publishable = usePublishOffered(!!settings.data && !replica)
+  const offered = settings.isLoading ? undefined : publishable
+  const current =
+    activeTab === 'publish' && offered === false ? 'settings' : activeTab
+
   // Hide Replicas tab for replica wikis (they don't have replicas of their own)
-  const visibleTabs = wiki?.source
-    ? tabs.filter((tab) => tab.id !== 'replicas')
-    : tabs
+  const visibleTabs = tabs.filter(
+    (tab) =>
+      !(tab.id === 'replicas' && wiki?.source) &&
+      !(tab.id === 'publish' && !offered && current !== 'publish')
+  )
 
   return (
     <WikiSettingsContext.Provider value={contextValue}>
       <Tabs
         variant='underline'
-        value={activeTab}
+        value={current}
         onValueChange={(value) => onTabChange(value as WikiSettingsTabId)}
         className='space-y-6'
       >
@@ -215,6 +235,9 @@ export function WikiSettings({
 
         <TabsContent value='settings' className='pt-2'>
           <SettingsTab />
+        </TabsContent>
+        <TabsContent value='publish' className='pt-2'>
+          <PublishingSection />
         </TabsContent>
         <TabsContent value='access' className='pt-2'>
           <AccessTab />
@@ -397,8 +420,6 @@ function SettingsTab() {
           </div>
         </Section>
       )}
-
-      {!data?.settings?.source && <PublishingSection />}
 
       {data?.settings?.source && (
         <Section
@@ -860,6 +881,8 @@ function ReplicasTab() {
 }
 
 function RedirectsTab() {
+  // A redirect changes what a page held as missing shows.
+  const invalidatePages = useInvalidatePages()
   const { t } = useLingui()
   const { formatTimestamp } = useFormat()
 
@@ -911,6 +934,7 @@ function RedirectsTab() {
         }
       )
       void loadRedirects()
+      invalidatePages()
       setDeleteSource(null)
     } catch {
       // toast already shown
@@ -1035,6 +1059,8 @@ interface AddRedirectDialogProps {
 }
 
 function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
+  // A redirect changes what a page held as missing shows.
+  const invalidatePages = useInvalidatePages()
   const { t } = useLingui()
   const [open, setOpen] = useState(false)
   const [source, setSource] = useState('')
@@ -1067,6 +1093,7 @@ function AddRedirectDialog({ onSuccess }: AddRedirectDialogProps) {
       setSource('')
       setTarget('')
       setOpen(false)
+      invalidatePages()
       onSuccess()
     } catch {
       // toast already shown

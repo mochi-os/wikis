@@ -3,11 +3,19 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { anonymousRefusal, toClassScopedUrl } from './request'
+import { anonymousRefusal, classPath, toClassScopedUrl } from './request'
 
-const path = vi.hoisted(() => ({ app: '/wikis', domain: false }))
+// What the server tells the page about its route. Core names the app on a
+// domain route as well as on the app's own path, so getAppPath answers
+// "/wikis" even where the URL does not carry it; base is the route's own path.
+const path = vi.hoisted(() => ({
+  app: '/wikis',
+  domain: false,
+  base: '/wikis/',
+}))
 
 vi.mock('@mochi/web', () => ({
+  getAppBasepath: () => path.base,
   getAppPath: () => path.app,
   isDomainEntityRouting: () => path.domain,
   requestHelpers: {
@@ -19,6 +27,7 @@ vi.mock('@mochi/web', () => ({
 afterEach(() => {
   path.app = '/wikis'
   path.domain = false
+  path.base = '/wikis/'
 })
 
 // With no account to list wikis for, core answers an anonymous visitor's
@@ -52,10 +61,26 @@ describe('class-scoped requests', () => {
     expect(toClassScopedUrl('-/list')).toBe('/wikis/-/list')
   })
 
-  it('stay at the domain base under domain routing', () => {
-    path.app = ''
+  // docs.mochi-os.org routes the whole domain to one wiki. /wikis/... there
+  // is that wiki's page route, which answers the page for every action.
+  it('stay at the domain base on a whole-domain route', () => {
     path.domain = true
-    expect(toClassScopedUrl('-/list')).toBe('/-/list')
+    path.base = '/'
+    expect(toClassScopedUrl('-/info')).toBe('/-/info')
+  })
+
+  it('reach the routed wiki by its id on a whole-domain route', () => {
+    path.domain = true
+    path.base = '/'
+    expect(toClassScopedUrl('yuGtwdxVh/-/share')).toBe('/yuGtwdxVh/-/share')
+    expect(classPath()).toBe('')
+  })
+
+  it('stay under the route on a subpath domain route', () => {
+    path.domain = true
+    path.base = '/docs/'
+    expect(toClassScopedUrl('-/info')).toBe('/docs/-/info')
+    expect(classPath()).toBe('/docs')
   })
 
   it('keep an off-origin-looking URL on this origin', () => {

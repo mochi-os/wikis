@@ -4,7 +4,12 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import { useCallback, useState } from 'react'
 import type { AxiosProgressEvent } from 'axios'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import type {
   PageResponse,
   PageNotFoundResponse,
@@ -57,6 +62,20 @@ function invalidatePage(
   scope: string
 ) {
   void queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'page'] })
+}
+
+/**
+ * Marks this wiki's held pages stale, for a change that alters what a page
+ * shows without passing through a page mutation: a redirect set or removed,
+ * an attachment deleted (the server rewrites the pages that embed it).
+ */
+export function useInvalidatePages() {
+  const queryClient = useQueryClient()
+  const scope = useWikiScope()
+  return useCallback(
+    () => invalidatePage(queryClient, scope),
+    [queryClient, scope]
+  )
 }
 
 // Resolve an entity-scoped endpoint URL. When inside a WikiBaseURLProvider
@@ -114,17 +133,44 @@ export function useWikiInfo(wikiId?: string) {
 
 // Page queries
 
-export function usePage(slug: string) {
-  const e = useEntityEndpoint()
-  const scope = useWikiScope()
-  return useQuery({
+/**
+ * A page as the page view asks for it. The page route's loader starts it
+ * beside the wiki's info, from the address alone, so the content no longer
+ * waits for the info and the route's code first; the window keeps that answer
+ * when the view mounts, and the wiki's websocket still invalidates it.
+ *
+ * @param scope The wiki's base URL, or '' in class context, where the page
+ *   endpoint resolves against the app's own base, as useEntityEndpoint does.
+ */
+export function pageQuery(scope: string, slug: string) {
+  return queryOptions({
     queryKey: ['wiki', scope, 'page', slug],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(
-        e(endpoints.wiki.page(slug))
+        `${scope}${endpoints.wiki.page(slug)}`
       ),
+    staleTime: 30_000,
+  })
+}
+
+/**
+ * @param options.fresh Read the page afresh before answering: the editor
+ *   seeds its draft once, from the first page it is given, and a save does not
+ *   check what it was based on, so a held copy another edit has since passed
+ *   would be written back over it. Until the page has been read since this
+ *   mount, the answer stays loading.
+ */
+export function usePage(slug: string, options: { fresh?: boolean } = {}) {
+  const scope = useWikiScope()
+  const query = useQuery({
+    ...pageQuery(scope, slug),
+    ...(options.fresh ? { staleTime: 0 } : {}),
     enabled: !!slug,
   })
+  if (options.fresh && !query.isFetchedAfterMount && !query.error && !!slug) {
+    return { ...query, isLoading: true }
+  }
+  return query
 }
 
 export function usePageHistory(
@@ -567,6 +613,8 @@ export function useSetRedirect() {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'redirects'] })
+      // A page held as missing may now redirect.
+      invalidatePage(queryClient, scope)
     },
   })
 }
@@ -583,6 +631,7 @@ export function useDeleteRedirect() {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', scope, 'redirects'] })
+      invalidatePage(queryClient, scope)
     },
   })
 }
@@ -831,6 +880,8 @@ export function useDeleteAttachment() {
       queryClient.invalidateQueries({
         queryKey: ['wiki', scope, 'attachments'],
       })
+      // The server rewrites every page that embedded the attachment.
+      invalidatePage(queryClient, scope)
     },
   })
 }

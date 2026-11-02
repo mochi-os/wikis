@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
+import { useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import type { Change } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
@@ -18,10 +19,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  getAppPath,
   Button,
 } from '@mochi/web'
 import { History } from 'lucide-react'
+import { revisionAssets, revisionAvatars } from './author-assets'
 
 interface ChangesListProps {
   changes: Change[]
@@ -39,6 +40,12 @@ export function ChangesList({
   onLoadMore,
 }: ChangesListProps) {
   const { formatTimestamp } = useFormat()
+  // One avatar address per author across the list (revisionAvatars).
+  const avatars = useMemo(
+    () =>
+      wikiId ? revisionAvatars(wikiId, changes) : new Map<string, string>(),
+    [wikiId, changes]
+  )
   const hasMore = total !== undefined && offset + changes.length < total
   return (
     <div className='space-y-6'>
@@ -110,12 +117,12 @@ export function ChangesList({
                       <EntityAvatar
                         src={
                           wikiId
-                            ? `${getAppPath()}/${wikiId}/-/revision/${change.id}/asset/avatar`
+                            ? `${avatars.get(change.author) ?? revisionAssets(wikiId, change.id)}/avatar`
                             : undefined
                         }
                         styleUrl={
                           wikiId
-                            ? `${getAppPath()}/${wikiId}/-/revision/${change.id}/asset/style`
+                            ? `${avatars.get(change.author) ?? revisionAssets(wikiId, change.id)}/style`
                             : undefined
                         }
                         fingerprint={wikiId ? undefined : change.author}

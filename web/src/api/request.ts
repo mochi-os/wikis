@@ -3,10 +3,15 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 // Wikis app request helpers
-// Uses getAppPath() + '/' as baseURL instead of getApiBasepath()
+// Uses classPath() + '/' as baseURL instead of getApiBasepath()
 // This ensures wiki IDs in URLs aren't doubled when on wiki detail pages
 import { type AxiosRequestConfig } from 'axios'
-import { getAppPath, isDomainEntityRouting, requestHelpers } from '@mochi/web'
+import {
+  getAppBasepath,
+  getAppPath,
+  isDomainEntityRouting,
+  requestHelpers,
+} from '@mochi/web'
 
 // Check if we're in entity context based on browser URL.
 // Entity context: first URL segment is an entity ID, or domain-routed entity
@@ -37,12 +42,16 @@ export function getEntityIdFromPath(pathname: string): string | null {
   return null
 }
 
-// The path class-level requests are scoped under. On a direct entity URL
+// The path class-level requests, and paths that name a wiki, are scoped under.
+// On a domain route it is the route's own path ("" for a whole-domain route
+// such as docs.mochi-os.org), which reaches the routed wiki by its id: core
+// names the app there too, but /wikis/... on that host is the wiki's own page
+// route and answers the page, not the action. On a direct entity URL
 // (/<entity>) getAppPath() is empty and only the app's own path reaches a class
-// action, as forums and feeds fall back to theirs; under domain routing it is
-// empty because the domain is the app's base.
-function classPath(): string {
-  return getAppPath() || (isDomainEntityRouting() ? '' : '/wikis')
+// action, as forums and feeds fall back to theirs.
+export function classPath(): string {
+  if (isDomainEntityRouting()) return getAppBasepath().replace(/\/$/, '')
+  return getAppPath() || '/wikis'
 }
 
 // anonymousRefusal reports whether a failed class-level request is the server

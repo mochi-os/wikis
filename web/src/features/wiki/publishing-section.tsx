@@ -15,11 +15,11 @@ import type {
   PublishSetResponse,
 } from '@/types/wiki'
 import { plural } from '@lingui/core/macro'
-import { Trans, useLingui } from '@lingui/react/macro'
+import { useLingui } from '@lingui/react/macro'
 import {
   ConfirmDialog,
   GeneralError,
-  Label,
+  PublishChoice,
   Section,
   Switch,
   getErrorMessage,
@@ -32,15 +32,26 @@ import { Archive } from 'lucide-react'
 import endpoints from '@/api/endpoints'
 import { useEntityEndpoint } from '@/hooks/use-wiki'
 
-function usePublish() {
+function usePublish(enabled = true) {
   const e = useEntityEndpoint()
   const query = useQuery({
     queryKey: ['wiki', 'publish', e('')],
     queryFn: () =>
       requestHelpers.get<PublishResponse>(e(endpoints.wiki.publish)),
     retry: false,
+    enabled,
   })
   return { e, query }
+}
+
+// Whether the wiki's Publish to tab is offered: a public wiki with an account
+// to publish to, or whose answer failed and shows why. Undefined while it is
+// asked; false where enabled is, as for a replica, which publishes nothing.
+export function usePublishOffered(enabled: boolean): boolean | undefined {
+  const { data, isLoading, error } = usePublish(enabled).query
+  if (!enabled) return false
+  if (isLoading) return undefined
+  return !!error || ((data?.accounts ?? []).length > 0 && !!data?.public)
 }
 
 export function PublishingSection() {
@@ -128,7 +139,7 @@ export function PublishingSection() {
               </div>
               <Switch
                 checked={publish.includes(account.id)}
-                disabled={busy === account.id}
+                loading={busy === account.id}
                 aria-label={t`Publish to ${account.identifier}`}
                 onCheckedChange={(on) => void toggle(account, on)}
               />
@@ -172,34 +183,14 @@ export function PublishSwitches({
   onChange: (accounts: string[]) => void
 }) {
   const { data } = usePublish().query
-  const accounts = [...(data?.accounts ?? [])].sort((a, b) =>
-    naturalCompare(a.identifier, b.identifier)
-  )
-  if (accounts.length === 0 || !data?.public) return null
-  const selected = chosen ?? data.publish
+  const { t } = useLingui()
+  if (!data?.public) return null
   return (
-    <div className='space-y-2'>
-      <Label>
-        <Trans>Publish to</Trans>
-      </Label>
-      <div className='flex flex-wrap gap-3'>
-        {accounts.map((account) => (
-          <label key={account.id} className='flex items-center gap-2 text-sm'>
-            <Switch
-              checked={selected.includes(account.id)}
-              aria-label={account.identifier}
-              onCheckedChange={(on) =>
-                onChange(
-                  on
-                    ? [...selected, account.id]
-                    : selected.filter((id) => id !== account.id)
-                )
-              }
-            />
-            {account.identifier}
-          </label>
-        ))}
-      </div>
-    </div>
+    <PublishChoice
+      label={t`Also post to`}
+      accounts={data.accounts}
+      selected={chosen ?? data.publish}
+      onChange={onChange}
+    />
   )
 }

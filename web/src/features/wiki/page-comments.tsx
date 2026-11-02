@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { t, plural } from '@lingui/core/macro'
 import {
   EmptyState,
@@ -22,6 +22,7 @@ import {
   useEditComment,
   useDeleteComment,
 } from '@/hooks/use-wiki'
+import { commentAvatars } from './author-assets'
 import { CommentForm } from './comment-form'
 import { WikiCommentThread } from './wiki-comment-thread'
 
@@ -149,6 +150,9 @@ export function PageComments({
     )
   }
 
+  // One avatar address per author across the whole thread (commentAvatars).
+  const avatars = useMemo(() => commentAvatars(data?.comments ?? []), [data])
+
   if (isLoading) {
     return <PageCommentsSkeleton />
   }
@@ -193,6 +197,7 @@ export function PageComments({
               onEdit={canComment ? handleEdit : undefined}
               onDelete={canComment ? handleDelete : undefined}
               progress={createComment.progress}
+              avatars={avatars}
             />
           ))}
         </div>

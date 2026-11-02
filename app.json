@@ -5,15 +5,15 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 
 {
-	"version": "4.1",
+	"version": "4.2",
 	"label": "app.name",
 	"classes": ["wiki"],
 	"paths": ["wikis"],
 	"services": ["wikis"],
 
 	"architecture": {"engine": "starlark", "version": 4},
-	"execute": ["lib/attachments.star", "lib/content.star", "wikis.star"],
-	"require": {"version": {"minimum": "0.4.230"}},
+	"execute": ["lib/attachments.star", "lib/content.star", "lib/assets.star", "lib/recommendations.star", "wikis.star"],
+	"require": {"version": {"minimum": "0.4.244"}},
 
 	"database": {
 		"schema": 13,

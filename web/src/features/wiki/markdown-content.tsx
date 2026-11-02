@@ -19,6 +19,7 @@ import {
   type LightboxMedia,
   useLightboxHash,
   authenticatedUrl,
+  AssetImage,
   isDomainEntityRouting,
   markdownUrlTransform,
 } from '@mochi/web'
@@ -311,12 +312,12 @@ export function MarkdownContent({
                     onClick={() => openLightbox(index)}
                     className='cursor-pointer border-0 bg-transparent p-0'
                   >
-                    <img src={fetchableSrc} alt={alt} className='m-0' />
+                    <AssetImage src={fetchableSrc} alt={alt} className='m-0' />
                   </button>
                 )
               }
 
-              return <img src={fetchableSrc} alt={alt} {...props} />
+              return <AssetImage src={fetchableSrc} alt={alt} {...props} />
             },
             pre: ({ children }) => {
               const codeElement = Array.isArray(children)
