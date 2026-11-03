@@ -319,9 +319,11 @@ def replica_drop(replica):
 
 # error_broadcast_gap: core calls this when an unfillable broadcast gap was
 # skipped and events were permanently lost. broadcast/resync can't replay a
-# pruned gap, so pull a fresh full snapshot.
+# pruned gap, so pull a fresh full snapshot. The broadcast key is the source
+# wiki's id; a replica is an entity of its own that names the source in its row.
 def error_broadcast_gap(e):
-    request_resync(e.entity)
+    for row in mochi.db.rows("select id from wikis where source=?", e.entity) or []:
+        request_resync(row["id"])
 
 
 # idle_resync_age: how long without applying any broadcast from a replica's
@@ -332,7 +334,9 @@ idle_resync_age = 7 * 86400
 # Pull a fresh sync dump from the source when an event references a page or
 # comment we have not seen; import_sync_dump applies it idempotently.
 def request_resync(wiki_id):
-    """Returns True iff a fresh sync dump was actually fetched and applied."""
+    """Returns True iff every part of a fresh sync dump was fetched and applied
+    within this call. A pull that runs out of time is continued by
+    schedule_sync; one that fails waits for the next resync."""
     row = mochi.db.row("select source, server, synced from wikis where id=?", wiki_id)
     if not row or not row["source"]:
         return False
@@ -345,14 +349,15 @@ def request_resync(wiki_id):
         peer = mochi.remote.peer(row["server"])
     # The reply is attacker-controlled: a scalar or null raises on .get and
     # aborts whichever handler triggered the resync.
-    dump = mochi.remote.request(row["source"], "wikis", "sync", {}, peer)
-    if not dump or type(dump) != "dict" or dump.get("status") != "200":
+    dump = sync_fetch(row["source"], peer, SYNC_START)
+    if not sync_received(dump):
         return False
-    import_sync_dump(wiki_id, dump)
-    mochi.broadcast.touch(row["source"])
-    fp = mochi.entity.fingerprint(wiki_id)
-    if fp:
-        mochi.websocket.write(fp, {"type": "wiki/resynced", "wiki": wiki_id})
+    outcome, cursor, parts = sync_follow(wiki_id, row["source"], peer, dump, now)
+    notify_websocket(wiki_id)
+    if outcome != "complete":
+        sync_resume(wiki_id, row["source"], row["server"], outcome, cursor, parts)
+        return False
+    sync_completed(wiki_id, row["source"])
     return True
 
 # Deliver a replicate/unreplicate to a source that may no longer resolve
@@ -860,6 +865,7 @@ def action_join(a):
     if not a.user:
         a.error.label(401, "errors.not_logged_in")
         return
+    started = mochi.time.now()
 
     # Get the remote wiki entity ID and optional server or peer
     source = a.input("target")
@@ -887,9 +893,9 @@ def action_join(a):
         peer = mochi.remote.peer(server)
 
     # Sync data from the remote wiki first to get the name
-    dump = mochi.remote.request(source, "wikis", "sync", {}, peer)
+    dump = sync_fetch(source, peer, SYNC_START)
     # source/peer are user-supplied; guard against a non-dict answer before .get.
-    if not dump or type(dump) != "dict" or dump.get("error") or dump.get("status") != "200":
+    if not sync_received(dump):
         # A refusal is the remote's answer, not a failure here: the sync dump is
         # view-gated, so an ungranted join arrives as 403 and must stay a 403.
         code = dump.get("code") if type(dump) == "dict" else None
@@ -914,15 +920,16 @@ def action_join(a):
 
     # Register wiki in the database with source and server tracking
     now = mochi.time.now()
+    stored = server or ("p2p/" + peer if peer else "")
     mochi.db.execute("insert into wikis (id, name, home, source, server, created) values (?, ?, ?, ?, ?, ?)",
-        entity, name, dump.get("home") or "home", source, server or ("p2p/" + peer if peer else ""), now)
+        entity, name, dump.get("home") or "home", source, stored, now)
 
-    # Import the synced data into the new local wiki
-    import_sync_dump(entity, dump)
-
-    # Set up access rules. The wildcard grants only apply when the SOURCE wiki
-    # is public - a private wiki's local replica must not become world-viewable
-    # on the subscriber's server just because it was joined by link.
+    # Set up access rules, and below them the registration, before the pull:
+    # a join whose pull stops short still leaves a replica its creator holds
+    # and the source updates, never an orphan. The wildcard grants only apply
+    # when the SOURCE wiki is public - a private wiki's local replica must not
+    # become world-viewable on the subscriber's server just because it was
+    # joined by link.
     creator = a.user.identity.id
     resource = "wiki/" + entity
     if dump.get("privacy", "public") == "public":
@@ -943,6 +950,15 @@ def action_join(a):
             content
         )
     mochi.broadcast.touch(source)
+
+    # Import the synced data into the new local wiki, part by part, for as long
+    # as the pull's time allows. What is left goes to a continuation; a part
+    # that fails leaves the replica partial rather than undoing the join, and
+    # the next resync pulls the dump again and fills it in.
+    outcome, cursor, parts = sync_follow(entity, source, peer, dump, started)
+    notify_websocket(entity)
+    if outcome != "complete":
+        sync_resume(entity, source, stored, outcome, cursor, parts)
 
     fingerprint = mochi.entity.fingerprint(entity)
     return {"data": {"id": entity, "name": name, "source": source, "fingerprint": fingerprint, "home": dump.get("home") or "home"}}
@@ -2729,8 +2745,11 @@ def event_page_create(e):
     version = e.content("version")
     name = e.content("name") or ""
 
-    # Validate required fields
+    # Validate required fields. The id is the peer's, so it is held to what a
+    # sync cursor can carry, or no replica could page past it.
     if not id or not page or not title or not author or not created or not version:
+        return
+    if not sync_identifier(id):
         return
 
     # Same length caps as action_page_edit. Each event is a fresh revision row
@@ -2842,8 +2861,11 @@ def event_page_update(e):
     version = e.content("version")
     name = e.content("name") or ""
 
-    # Validate required fields
+    # Validate required fields. The id is the peer's, so it is held to what a
+    # sync cursor can carry, or no replica could page past it.
     if not id or not page or not title or not author or not updated or not version:
+        return
+    if not sync_identifier(id):
         return
 
     # Enforce the same length caps as action_page_edit, so a replica can't push
@@ -3409,6 +3431,196 @@ def event_unreplicate(e):
 
 # INITIAL SYNC
 
+# Core decodes at most 10,000 elements in one array and 100 MB on one stream,
+# each read within 30 seconds, so a large wiki's dump cannot travel as one
+# reply. A request carrying `part` (a cursor) is answered with one bounded part:
+# at most SYNC_ROWS rows and about SYNC_BYTES bytes, taken in order from the
+# lists in SYNC_LISTS, with `next` naming the cursor of the part after it. The
+# last part carries no `next`. A request without `part` gets the whole dump, as
+# owners before parts answered every request.
+SYNC_ROWS = 1000
+SYNC_BYTES = 8388608
+SYNC_LISTS = ["pages", "revisions", "tags", "redirects", "comments", "attachments"]
+SYNC_START = {"list": "pages", "after": []}
+# The most parts one pull follows, across its continuations. Core allows an app
+# 600 remote calls a minute to one target.
+SYNC_PARTS = 500
+# The bytes one attachment row is counted as, and the most a dumped comment
+# carries: attachment_store files no more than that on one object.
+SYNC_ATTACHMENT = 1024
+# The most bytes a cursor key holds. A row whose key is longer could not be
+# resumed after, so the owner never pages one, and an id a peer names is held
+# to it before it is stored.
+SYNC_KEY = 256
+# The seconds a pull runs before it leaves the rest to a continuation, well
+# under the time limit of the action or event it runs in.
+SYNC_TIME = 60
+# How many times in a row a continuation whose part went unanswered is tried
+# again before the pull waits for the next resync.
+SYNC_RETRIES = 3
+
+# sync_cursor(value) -> bool: whether value is a part cursor: the list the part
+# starts in, and the key of the last row already sent from it (empty at the
+# start of the list; two strings for tags, whose key is page and tag).
+def sync_cursor(value):
+    if type(value) != "dict" or len(value) != 2:
+        return False
+    if value.get("list") not in SYNC_LISTS:
+        return False
+    after = value.get("after")
+    if type(after) not in ["list", "tuple"] or len(after) > 2:
+        return False
+    for key in after:
+        if type(key) != "string" or len(key) > SYNC_KEY:
+            return False
+    return True
+
+# sync_identifier(value) -> bool: whether a peer-named id may be stored: a
+# string no longer than a cursor key.
+def sync_identifier(value):
+    return type(value) == "string" and value != "" and len(value) <= SYNC_KEY
+
+# sync_key(after, index) -> the cursor's key at index, or "" before every key.
+def sync_key(after, index):
+    return after[index] if len(after) > index else ""
+
+# sync_window(sizes, budget) -> how many of sizes (rows in key order, each with
+# its size in bytes) fit the part, charging them to the budget. The part's first
+# row always fits, so a row larger than the byte budget travels alone.
+def sync_window(sizes, budget):
+    count = 0
+    for row in sizes:
+        if budget["rows"] <= 0:
+            break
+        if budget["taken"] > 0 and row["size"] > budget["bytes"]:
+            break
+        budget["rows"] -= 1
+        budget["bytes"] -= row["size"]
+        budget["taken"] += 1
+        count += 1
+    return count
+
+# sync_last(sizes, count, rows, after, keys) -> the cursor key after the rows
+# taken from a list, or None when the list is exhausted. The key is the last
+# row sent, not the last row sized, so a row written between the two queries is
+# never stepped over, and the list is done only when every row sized was sent.
+def sync_last(sizes, count, rows, after, keys):
+    if count >= len(sizes) and len(rows) >= count:
+        return None
+    if rows:
+        return [rows[-1][k] for k in keys]
+    if count > 0:
+        return [sizes[count - 1][k] for k in keys]
+    return list(after)
+
+# One list's share of a part: (rows, cursor key or None). Each runs the dump's
+# rules itself on every part: deleted pages travel as tombstones, revisions and
+# tags only for live pages, comments only undeleted.
+def sync_pages(wiki, after, budget):
+    sizes = mochi.db.rows("select id, (case when deleted=0 then length(cast(title as blob)) + length(cast(content as blob)) + length(cast(author as blob)) else 0 end) + length(cast(page as blob)) + 64 as size from pages where wiki=? and id>? and length(cast(id as blob))<=? order by id limit ?", wiki, sync_key(after, 0), SYNC_KEY, budget["rows"] + 1) or []
+    count = sync_window(sizes, budget)
+    rows = []
+    if count:
+        for row in mochi.db.rows("select * from pages where wiki=? and id>? and id<=? and length(cast(id as blob))<=? order by id limit ?", wiki, sync_key(after, 0), sizes[count - 1]["id"], SYNC_KEY, count) or []:
+            if row["deleted"]:
+                rows.append({"id": row["id"], "page": row["page"], "title": "", "content": "",
+                             "author": "", "created": 0, "updated": 0,
+                             "version": row["version"], "deleted": row["deleted"]})
+            else:
+                rows.append(row)
+    return rows, sync_last(sizes, count, rows, after, ["id"])
+
+def sync_revisions(wiki, after, budget):
+    sizes = mochi.db.rows("select r.id as id, length(cast(r.content as blob)) + length(cast(r.title as blob)) + length(cast(r.author as blob)) + length(cast(r.name as blob)) + length(cast(r.comment as blob)) + 64 as size from revisions r join pages p on p.id=r.page where p.wiki=? and p.deleted=0 and r.id>? and length(cast(r.id as blob))<=? order by r.id limit ?", wiki, sync_key(after, 0), SYNC_KEY, budget["rows"] + 1) or []
+    count = sync_window(sizes, budget)
+    rows = []
+    if count:
+        rows = mochi.db.rows("select r.* from revisions r join pages p on p.id=r.page where p.wiki=? and p.deleted=0 and r.id>? and r.id<=? and length(cast(r.id as blob))<=? order by r.id limit ?", wiki, sync_key(after, 0), sizes[count - 1]["id"], SYNC_KEY, count) or []
+    return rows, sync_last(sizes, count, rows, after, ["id"])
+
+def sync_tags(wiki, after, budget):
+    page = sync_key(after, 0)
+    tags = mochi.db.rows("select t.page as page, t.tag as tag from tags t join pages p on p.id=t.page where p.wiki=? and p.deleted=0 and (t.page>? or (t.page=? and t.tag>?)) and length(cast(t.page as blob))<=? and length(cast(t.tag as blob))<=? order by t.page, t.tag limit ?", wiki, page, page, sync_key(after, 1), SYNC_KEY, SYNC_KEY, budget["rows"] + 1) or []
+    for t in tags:
+        t["size"] = len(t["page"]) + len(t["tag"]) + 16
+    count = sync_window(tags, budget)
+    rows = [{"page": t["page"], "tag": t["tag"]} for t in tags[:count]]
+    return rows, sync_last(tags, count, rows, after, ["page", "tag"])
+
+def sync_redirects(wiki, after, budget):
+    redirects = mochi.db.rows("select * from redirects where wiki=? and source>? and length(cast(source as blob))<=? order by source limit ?", wiki, sync_key(after, 0), SYNC_KEY, budget["rows"] + 1) or []
+    for r in redirects:
+        r["size"] = len(r["source"]) + len(r["target"]) + 64
+    count = sync_window(redirects, budget)
+    rows = [{"wiki": r["wiki"], "source": r["source"], "target": r["target"], "created": r["created"]} for r in redirects[:count]]
+    return rows, sync_last(redirects, count, rows, after, ["source"])
+
+def sync_comments(wiki, after, budget):
+    sizes = mochi.db.rows("select id, length(cast(body as blob)) + length(cast(name as blob)) + length(cast(author as blob)) + length(cast(signature as blob)) + 256 as size from comments where wiki=? and deleted=0 and id>? and length(cast(id as blob))<=? order by id limit ?", wiki, sync_key(after, 0), SYNC_KEY, budget["rows"] + 1) or []
+    count = sync_window(sizes, budget)
+    rows = []
+    if count:
+        rows = mochi.db.rows("select * from comments where wiki=? and deleted=0 and id>? and id<=? and length(cast(id as blob))<=? order by id limit ?", wiki, sync_key(after, 0), sizes[count - 1]["id"], SYNC_KEY, count) or []
+    # Each comment's attachments ride inside it, charged to the bytes left; a
+    # comment whose attachments overrun them waits for the next part.
+    attached = {}
+    ids = [c["id"] for c in rows]
+    for start in range(0, len(ids), 500):
+        attached.update(attachment_list_many(ids[start:start + 500]))
+    kept = []
+    for c in rows:
+        atts = (attached.get(c["id"]) or [])[:attachment_object_maximum]
+        cost = SYNC_ATTACHMENT * len(atts)
+        if kept and cost > budget["bytes"]:
+            break
+        budget["bytes"] -= cost
+        if atts:
+            c["attachments"] = atts
+        kept.append(c)
+    if len(kept) < len(rows):
+        return kept, [kept[-1]["id"]]
+    return kept, sync_last(sizes, count, kept, after, ["id"])
+
+def sync_attachments(wiki, after, budget):
+    attachments = mochi.db.rows("select * from attachments where object=? and id>? and length(cast(id as blob))<=? order by id limit ?", wiki, sync_key(after, 0), SYNC_KEY, budget["rows"] + 1) or []
+    for row in attachments:
+        row["size"] = SYNC_ATTACHMENT
+    count = sync_window(attachments, budget)
+    prefix = mochi.app.url()
+    rows = [attachment_map(row, prefix, "") for row in attachments[:count]]
+    return rows, sync_last(attachments, count, rows, after, ["id"])
+
+def sync_list(wiki, name, after, budget):
+    if budget["rows"] <= 0:
+        return [], list(after)
+    if name == "pages":
+        return sync_pages(wiki, after, budget)
+    if name == "revisions":
+        return sync_revisions(wiki, after, budget)
+    if name == "tags":
+        return sync_tags(wiki, after, budget)
+    if name == "redirects":
+        return sync_redirects(wiki, after, budget)
+    if name == "comments":
+        return sync_comments(wiki, after, budget)
+    return sync_attachments(wiki, after, budget)
+
+# sync_part(wiki, cursor) -> (lists, next): one bounded part of the dump from
+# cursor on, and the cursor of the part after it, or None after the last.
+def sync_part(wiki, cursor):
+    budget = {"rows": SYNC_ROWS, "bytes": SYNC_BYTES, "taken": 0}
+    lists = {}
+    for name in SYNC_LISTS:
+        lists[name] = []
+    after = list(cursor["after"])
+    for name in SYNC_LISTS[SYNC_LISTS.index(cursor["list"]):]:
+        rows, last = sync_list(wiki, name, after, budget)
+        lists[name] = rows
+        if last != None:
+            return lists, {"list": name, "after": last}
+        after = []
+    return lists, None
+
 # Handle sync request - send full wiki dump to requester
 def event_sync(e):
     wiki = e.header("to")
@@ -3429,6 +3641,32 @@ def event_sync(e):
 
     # Determine requester's permissions
     can_edit = check_event_access(requester, wiki, "edit")
+    wikirow = mochi.db.row("select name, home from wikis where id=?", wiki)
+    source_entity = mochi.entity.info(wiki)
+    reply = {
+        "status": "200",
+        "source": wiki,  # Source wiki entity ID for attachment fetching
+        "name": wikirow["name"] if wikirow else "",
+        "home": wikirow["home"] if wikirow else "home",
+        "privacy": source_entity.get("privacy", "public") if source_entity else "public",
+        "permissions": {"view": True, "edit": can_edit},
+    }
+
+    # One part of the dump. The gate above runs for every part, so a peer that
+    # loses view access stops at its next part; the part echoes its cursor, which
+    # tells the requester the reply is a part held to SYNC_ROWS.
+    part = e.content("part")
+    if part != None:
+        if not sync_cursor(part):
+            e.write({"error": "errors.invalid_data", "code": 400})
+            return
+        lists, next = sync_part(wiki, part)
+        reply.update(lists)
+        reply["part"] = part
+        if next:
+            reply["next"] = next
+        e.write(reply)
+        return
 
     # Generate full dump of all wiki data
     # Live pages in full, deleted pages as tombstones. A replica needs only the
@@ -3456,7 +3694,6 @@ def event_sync(e):
 
     redirects = mochi.db.rows("select * from redirects where wiki=?", wiki)
     comments = mochi.db.rows("select * from comments where wiki=? and deleted=0", wiki)
-    wikirow = mochi.db.row("select name, home from wikis where id=?", wiki)
     attachments = attachment_list(wiki) or []
 
     # Include comment-level attachments in each comment
@@ -3466,14 +3703,7 @@ def event_sync(e):
             c["attachments"] = c_atts
 
     # Send dump as a single payload (attachment files pulled on demand)
-    source_entity = mochi.entity.info(wiki)
-    e.write({
-        "status": "200",
-        "source": wiki,  # Source wiki entity ID for attachment fetching
-        "name": wikirow["name"] if wikirow else "",
-        "home": wikirow["home"] if wikirow else "home",
-        "privacy": source_entity.get("privacy", "public") if source_entity else "public",
-        "permissions": {"view": True, "edit": can_edit},
+    reply.update({
         "pages": pages,
         "revisions": revisions,
         "tags": tags,
@@ -3481,6 +3711,7 @@ def event_sync(e):
         "comments": comments,
         "attachments": attachments,
     })
+    e.write(reply)
 
 # Handle attachment/create - replica notifies source that it uploaded a file.
 # Source fetches the file from the replica via stream and saves locally.
@@ -3770,7 +4001,108 @@ def dump_text(row, keys):
             return False
     return True
 
-def import_sync_dump(wiki, dump):
+# sync_fetch(source, peer, part) -> one part of source's dump. An owner that
+# predates parts ignores `part` and answers the whole dump, which carries no
+# `next` and so is complete on its own.
+def sync_fetch(source, peer, part):
+    return mochi.remote.request(source, "wikis", "sync", {"part": part}, peer)
+
+# The reply is attacker-controlled: a scalar or null raises on .get.
+def sync_received(dump):
+    return type(dump) == "dict" and not dump.get("error") and dump.get("status") == "200"
+
+# A part (a reply echoing its cursor) is held to the rows a part may carry,
+# across all its lists. A whole dump from an owner that predates parts is not.
+def sync_bounded(dump):
+    if dump.get("part") == None:
+        return True
+    rows = 0
+    for name in SYNC_LISTS:
+        value = dump.get(name)
+        if value != None and type(value) not in ["list", "tuple"]:
+            return False
+        rows += len(value or [])
+    return rows <= SYNC_ROWS
+
+# sync_follow(wiki, source, peer, dump, started, parts) imports dump, a part
+# already received, then pulls and imports the parts after it, each in its own
+# transaction, until SYNC_TIME has passed since started. parts counts the parts
+# the pull has taken before this one. Answers (outcome, cursor, parts):
+# "complete" when the last part arrived; "stopped" when the time ran out, with
+# the cursor of the part to resume from; "unanswered" when a part could not be
+# fetched, with its cursor; "failed" when a part broke a bound or did not
+# import. Whatever stops, the parts before it stay, for a later pull imports
+# idempotently.
+def sync_follow(wiki, source, peer, dump, started, parts=0):
+    for _ in range(SYNC_PARTS):
+        if parts >= SYNC_PARTS:
+            break
+        parts += 1
+        if not sync_bounded(dump) or not import_sync_dump(wiki, dump, False):
+            return "failed", None, parts
+        next = dump.get("next")
+        if next == None:
+            return "complete", None, parts
+        if not sync_cursor(next):
+            return "failed", None, parts
+        if mochi.time.now() - started >= SYNC_TIME:
+            return "stopped", next, parts
+        dump = sync_fetch(source, peer, next)
+        if not sync_received(dump):
+            return "unanswered", next, parts
+    return "failed", None, parts
+
+# sync_resume(wiki, source, server, outcome, cursor, parts, attempt) leaves the
+# rest of a pull that stopped short to a continuation: at once when its time
+# ran out, and after a pause when a part went unanswered, SYNC_RETRIES times in
+# a row at most. A pull that failed outright waits for the next resync.
+def sync_resume(wiki, source, server, outcome, cursor, parts, attempt=0):
+    data = {"wiki": wiki, "source": source, "server": server or "", "cursor": cursor, "parts": parts}
+    if outcome == "stopped":
+        data["attempt"] = 0
+        mochi.schedule.after("schedule_sync", data, 0)
+    elif outcome == "unanswered" and attempt < SYNC_RETRIES:
+        data["attempt"] = attempt + 1
+        mochi.schedule.after("schedule_sync", data, 60 * (attempt + 1) * (attempt + 1))
+
+# sync_completed(wiki, source): a pull reached the last part, so the replica
+# holds the source's state and its idle timer starts again.
+def sync_completed(wiki, source):
+    mochi.broadcast.touch(source)
+    fp = mochi.entity.fingerprint(wiki)
+    if fp:
+        mochi.websocket.write(fp, {"type": "wiki/resynced", "wiki": wiki})
+
+# schedule_sync(e): a continuation of a pull sync_resume left, taking the parts
+# from its cursor on, within its own time.
+def schedule_sync(e):
+    if e.source != "schedule":
+        return
+    wiki = e.data.get("wiki", "")
+    source = e.data.get("source", "")
+    server = e.data.get("server", "")
+    cursor = e.data.get("cursor")
+    if type(wiki) != "string" or not mochi.text.valid(source, "entity") or type(server) != "string" or not sync_cursor(cursor):
+        return
+    if not mochi.db.exists("select 1 from wikis where id=?", wiki):
+        return
+    parts = dump_number(e.data.get("parts"))
+    attempt = dump_number(e.data.get("attempt"))
+    started = mochi.time.now()
+    mochi.db.execute("update wikis set synced=? where id=?", started, wiki)
+    peer = mochi.remote.peer(server) if server else None
+    dump = sync_fetch(source, peer, cursor)
+    if not sync_received(dump):
+        sync_resume(wiki, source, server, "unanswered", cursor, parts, attempt)
+        return
+    outcome, cursor, parts = sync_follow(wiki, source, peer, dump, started, parts)
+    notify_websocket(wiki)
+    if outcome == "complete":
+        sync_completed(wiki, source)
+    else:
+        sync_resume(wiki, source, server, outcome, cursor, parts)
+
+def import_sync_dump(wiki, dump, notify=True):
     if not dump or type(dump) != "dict" or dump.get("status") != "200":
         return False
 
@@ -3786,7 +4118,7 @@ def import_sync_dump(wiki, dump):
     for p in pages:
         id = p.get("id")
         version = p.get("version")
-        if not id or not valid_version(version):
+        if not sync_identifier(id) or not valid_version(version):
             continue
         if not dump_text(p, ["page", "title", "content", "author"]):
             continue
@@ -3819,7 +4151,7 @@ def import_sync_dump(wiki, dump):
     revisions = dump.get("revisions") or []
     for r in revisions:
         id = r.get("id")
-        if not id or not valid_version(r.get("version")):
+        if not sync_identifier(id) or not valid_version(r.get("version")):
             continue
         if not dump_text(r, ["page", "title", "content", "author", "name", "comment"]):
             continue
@@ -3880,7 +4212,7 @@ def import_sync_dump(wiki, dump):
     signed_wiki = canonical_wiki(wikirow_local, wiki)
     for c in comments:
         id = c.get("id")
-        if not id:
+        if not sync_identifier(id):
             continue
         if foreign_comment(id, wiki, handle):
             continue
@@ -3953,7 +4285,8 @@ def import_sync_dump(wiki, dump):
             if c_atts:
                 attachment_store(c_atts, source, c.get("id"))
 
-    notify_websocket(wiki)
+    if notify:
+        notify_websocket(wiki)
     return True
 
 # Subscribe to a wiki - request to be added to their replicas list
@@ -4032,21 +4365,29 @@ def action_sync(a):
     # target/server are user-supplied, so the reply may be a scalar or null;
     # test for a dict before .get or the action dies with a raw 500 instead of
     # this labelled error. Status 200 required, as in request_resync.
-    dump = mochi.remote.request(target, "wikis", "sync", {}, peer)
-    if not dump or type(dump) != "dict" or dump.get("error") or dump.get("status") != "200":
+    started = mochi.time.now()
+    dump = sync_fetch(target, peer, SYNC_START)
+    if not sync_received(dump):
         a.error.label(500, "errors.failed_to_receive_sync_data")
         return
 
-    # Import the dump (includes attachments with remote entity reference)
-    if not import_sync_dump(wiki["id"], dump):
-        a.error.label(500, "errors.failed_to_import_sync_data")
-        return
-
-    # Subscribe to the source wiki for future updates
+    # Subscribe to the source wiki for future updates, before the pull, so one
+    # that stops short still leaves the wiki registered.
     mochi.message.send(
         {"from": wiki["id"], "to": target, "service": "wikis", "event": "replicate"},
         replicate_content(wiki.get("name") or "", wiki["id"], target, a.user.identity.id if a.user else "")
     )
+
+    # Import the dump part by part (includes attachments with remote entity
+    # reference), for as long as the pull's time allows; a continuation takes
+    # the rest.
+    outcome, cursor, parts = sync_follow(wiki["id"], target, peer, dump, started)
+    notify_websocket(wiki["id"])
+    if outcome != "complete":
+        sync_resume(wiki["id"], target, server or "", outcome, cursor, parts)
+    if outcome not in ["complete", "stopped"]:
+        a.error.label(500, "errors.failed_to_import_sync_data")
+        return
 
     return {"data": {"ok": True}}
 
@@ -4438,7 +4779,7 @@ def event_comment_create(e):
 
     if not id or not page or not author or not body or not created:
         return
-    if not content_is_number(created):
+    if not sync_identifier(id) or not content_is_number(created):
         return
 
     # Same window the page events apply. created is chosen by the commenter and
