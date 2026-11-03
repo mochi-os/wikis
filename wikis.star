@@ -723,6 +723,45 @@ def create_revision(page, title, content, author, name, version, comment):
         id, page, content, title, author, name, now, version, comment)
     return id
 
+# revision_identifier(lookup, page, version, id) -> the id a peer-named
+# revision of page at version is stored under. The peer's own is kept when this
+# revision is already held under it, or when it has the shape of an id minted
+# here and no other revision holds it, so every holder keeps the one row a
+# resync's dump then finds held. Any other id is stored under one derived from
+# it, the same on every holder and every resync: a page's address carries the
+# id, so it may hold nothing else, and an id another page or version holds
+# would be dropped by insert or ignore, leaving the edit out of every history.
+# lookup is mochi.db.row or a transaction's row.
+def revision_identifier(lookup, page, version, id):
+    if type(id) == "string" and id != "":
+        held = lookup("select page, version from revisions where id=?", id)
+        if held:
+            if held["page"] == page and str(held["version"]) == str(version):
+                return id
+        elif mochi.text.valid(id, "id"):
+            return id
+    return mochi.crypto.hash.sha256(str(page) + "/" + str(version) + "/" + str(id))[:32]
+
+# revision_note(comment) -> a peer's revision comment as stored: text, within
+# the dump's length, or none. A control character in one would break every
+# holder's RSS feed.
+def revision_note(comment):
+    if type(comment) != "string" or len(comment) > 1000 or not mochi.text.valid(comment, "text"):
+        return ""
+    return comment
+
+# event_revision(e, page, version) -> (id, comment): the revision a page event
+# carries, stored under the id its sender stored it under, so every holder keeps
+# one row that a resync's dump then finds held; and its comment. A sender from
+# before events carried them names neither: a fresh id, and no comment.
+def event_revision(e, page, version):
+    id = e.content("revision")
+    if id == None or id == "":
+        id = mochi.uid()
+    else:
+        id = revision_identifier(mochi.db.row, page, version, id)
+    return id, revision_note(e.content("comment"))
+
 _PERSON_ASSETS = ("avatar", "banner", "favicon", "style", "information")
 
 # Proxy a comment author's person asset from the people service.
@@ -1386,7 +1425,7 @@ def action_page_edit(a):
             version = existing["version"] + 1
             mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=?, deleted=0 where id=?",
                 title, content, author, now, version, existing["id"])
-            create_revision(existing["id"], title, content, author, name, version, comment)
+            revision = create_revision(existing["id"], title, content, author, name, version, comment)
             # Notify: source broadcasts to replicas, replica notifies source
             event_data = {
                 "id": existing["id"],
@@ -1396,7 +1435,9 @@ def action_page_edit(a):
                 "author": author,
                 "name": name,
                 "created": now,
-                "version": version
+                "version": version,
+                "revision": revision,
+                "comment": comment
             }
             if source:
                 source_send(wiki, "page/create", event_data)
@@ -1408,7 +1449,7 @@ def action_page_edit(a):
             version = existing["version"] + 1
             mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=? where id=?",
                 title, content, author, now, version, existing["id"])
-            create_revision(existing["id"], title, content, author, name, version, comment)
+            revision = create_revision(existing["id"], title, content, author, name, version, comment)
             # Notify: source broadcasts to replicas, replica notifies source
             event_data = {
                 "id": existing["id"],
@@ -1418,7 +1459,9 @@ def action_page_edit(a):
                 "author": author,
                 "name": name,
                 "updated": now,
-                "version": version
+                "version": version,
+                "revision": revision,
+                "comment": comment
             }
             if source:
                 source_send(wiki, "page/update", event_data)
@@ -1430,7 +1473,7 @@ def action_page_edit(a):
         id = mochi.uid()
         mochi.db.execute("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
             id, wiki["id"], slug, title, content, author, now, now)
-        create_revision(id, title, content, author, name, 1, comment)
+        revision = create_revision(id, title, content, author, name, 1, comment)
         # Notify: source broadcasts to replicas, replica notifies source
         event_data = {
             "id": id,
@@ -1440,7 +1483,9 @@ def action_page_edit(a):
             "author": author,
             "name": name,
             "created": now,
-            "version": 1
+            "version": 1,
+            "revision": revision,
+            "comment": comment
         }
         if source:
             source_send(wiki, "page/create", event_data)
@@ -1511,14 +1556,15 @@ def action_new(a):
         version = existing["version"] + 1
         mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=?, deleted=0 where id=?",
             title, content, author, now, version, id)
-        create_revision(id, title, content, author, name, version, system_comment("revisions.restored"))
+        comment = system_comment("revisions.restored")
     else:
         # Create new page
         id = mochi.uid()
         version = 1
         mochi.db.execute("insert into pages (id, wiki, page, title, content, author, created, updated, version) values (?, ?, ?, ?, ?, ?, ?, ?, 1)",
             id, wiki["id"], slug, title, content, author, now, now)
-        create_revision(id, title, content, author, name, 1, system_comment("revisions.created"))
+        comment = system_comment("revisions.created")
+    revision = create_revision(id, title, content, author, name, version, comment)
 
     # Notify: source broadcasts to replicas, replica notifies source
     event_data = {
@@ -1529,7 +1575,9 @@ def action_new(a):
         "author": author,
         "name": name,
         "created": now,
-        "version": version
+        "version": version,
+        "revision": revision,
+        "comment": comment
     }
     if source:
         source_send(wiki, "page/create", event_data)
@@ -1682,8 +1730,8 @@ def action_page_revert(a):
         a.error.label(404, "errors.page_not_found")
         return
 
-    revision = mochi.db.row("select * from revisions where page=? and version=?", page["id"], int(version))
-    if not revision:
+    target = mochi.db.row("select * from revisions where page=? and version=?", page["id"], int(version))
+    if not target:
         a.error.label(404, "errors.revision_not_found")
         return
 
@@ -1697,19 +1745,21 @@ def action_page_revert(a):
         comment = system_comment("revisions.reverted", version=version)
 
     mochi.db.execute("update pages set title=?, content=?, author=?, updated=?, version=?, deleted=0 where id=?",
-        revision["title"], revision["content"], author, now, newversion, page["id"])
-    create_revision(page["id"], revision["title"], revision["content"], author, name, newversion, comment)
+        target["title"], target["content"], author, now, newversion, page["id"])
+    revision = create_revision(page["id"], target["title"], target["content"], author, name, newversion, comment)
 
     # Notify: source broadcasts to replicas, replica notifies source
     event_data = {
         "id": page["id"],
         "page": slug,
-        "title": revision["title"],
-        "content": revision["content"],
+        "title": target["title"],
+        "content": target["content"],
         "author": author,
         "name": name,
         "updated": now,
-        "version": newversion
+        "version": newversion,
+        "revision": revision,
+        "comment": comment
     }
     # A revert restores a soft-deleted page locally (deleted=0 above), but
     # event_page_update's statement never clears the flag, so peers applied the
@@ -1861,7 +1911,8 @@ def action_page_rename(a):
         new_version = p["version"] + 1
 
         mochi.db.execute("update pages set page=?, version=?, updated=? where id=?", n, new_version, now, p["id"])
-        create_revision(p["id"], p["title"], p["content"], author, name, new_version, system_comment("revisions.renamed", old=o))
+        comment = system_comment("revisions.renamed", old=o)
+        revision = create_revision(p["id"], p["title"], p["content"], author, name, new_version, comment)
         renamed.append({"old": o, "new": n})
 
         # Create redirect if requested
@@ -1882,7 +1933,9 @@ def action_page_rename(a):
             "author": author,
             "name": name,
             "updated": now,
-            "version": new_version
+            "version": new_version,
+            "revision": revision,
+            "comment": comment
         }
         if source:
             source_send(wiki, "page/update", event_data)
@@ -1914,7 +1967,8 @@ def action_page_rename(a):
                 new_version = p["version"] + 1
                 mochi.db.execute("update pages set content=?, version=?, updated=?, author=? where id=?",
                     new_content, new_version, now, author, p["id"])
-                create_revision(p["id"], p["title"], new_content, author, name, new_version, system_comment("revisions.links", old=old, new=new))
+                comment = system_comment("revisions.links", old=old, new=new)
+                revision = create_revision(p["id"], p["title"], new_content, author, name, new_version, comment)
                 updated_links += 1
 
                 # Broadcast update
@@ -1926,7 +1980,9 @@ def action_page_rename(a):
                     "author": author,
                     "name": name,
                     "updated": now,
-                    "version": new_version
+                    "version": new_version,
+                    "revision": revision,
+                    "comment": comment
                 }
                 if source:
                     source_send(wiki, "page/update", event_data)
@@ -2115,10 +2171,12 @@ def action_changes(a):
         limit ? offset ?
     """, wiki["id"], limit, offset)
 
-    # Resolve author names where not stored
+    # Resolve author names where not stored, and render system comments in the
+    # reader's language, as page history does
     for change in changes:
         if not change["name"]:
             change["name"] = mochi.entity.name(change["author"]) or ""
+        change["comment"] = revision_comment(change["comment"])
 
     return {"data": {"changes": changes, "total": total, "limit": limit, "offset": offset}}
 
@@ -2805,11 +2863,12 @@ def event_page_create(e):
             id, wiki, page, title, content, author, created, created, version)
 
     # Create revision record with author name
-    revid = mochi.uid()
-    mochi.db.execute("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, '')",
-        revid, id, content, title, author, name, created, version)
+    revision, comment = event_revision(e, id, version)
+    mochi.db.execute("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        revision, id, content, title, author, name, created, version, comment)
 
-    # If this is a source wiki and event is from a replica, re-broadcast to other replicas
+    # If this is a source wiki and event is from a replica, re-broadcast to
+    # other replicas, with the revision as stored here
     if not wikirow.get("source") and sender:
         broadcast_event(wiki, "page/create", {
             "id": id,
@@ -2819,7 +2878,9 @@ def event_page_create(e):
             "author": author,
             "name": name,
             "created": created,
-            "version": version
+            "version": version,
+            "revision": revision,
+            "comment": comment
         }, exclude=sender)
 
     # Notify subscribers about new pages by other people. The P2P event
@@ -2870,9 +2931,10 @@ def event_page_update(e):
 
     # Enforce the same length caps as action_page_edit, so a replica can't push
     # an oversized row that we'd then store and replicate onward. `name` rides
-    # into a revisions row whose id is a fresh uid every time, so `insert or
-    # ignore` never ignores: unbounded here means one permanent oversized row
-    # per event, and a new page id per event skips the version gate entirely.
+    # into a revisions row whose id the sender names, a fresh one each event if
+    # it likes, so `insert or ignore` need not ignore: unbounded here means one
+    # permanent oversized row per event, and a new page id per event skips the
+    # version gate entirely.
     if len(title) > 255 or (content and len(content) > 1000000):
         return
     if name and not mochi.text.valid(name, "name"):
@@ -2924,11 +2986,12 @@ def event_page_update(e):
             page, title, content, author, updated, version, id)
 
     # Create revision record with author name
-    revid = mochi.uid()
-    mochi.db.execute("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, '')",
-        revid, id, content, title, author, name, updated, version)
+    revision, comment = event_revision(e, id, version)
+    mochi.db.execute("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        revision, id, content, title, author, name, updated, version, comment)
 
-    # If this is a source wiki and event is from a replica, re-broadcast to other replicas
+    # If this is a source wiki and event is from a replica, re-broadcast to
+    # other replicas, with the revision as stored here
     if not wikirow.get("source") and sender:
         broadcast_event(wiki, "page/update", {
             "id": id,
@@ -2938,7 +3001,9 @@ def event_page_update(e):
             "author": author,
             "name": name,
             "updated": updated,
-            "version": version
+            "version": version,
+            "revision": revision,
+            "comment": comment
         }, exclude=sender)
 
     # Notify the local user about edits by other people. The P2P event
@@ -4164,8 +4229,8 @@ def import_sync_dump(wiki, dump, notify=True):
         if len(r.get("name", "")) > 1000 or len(r.get("comment", "")) > 1000:
             continue
         handle.execute("insert or ignore into revisions (id, page, content, title, author, name, created, version, comment) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            id, r.get("page", ""), r.get("content", ""), r.get("title", ""), r.get("author", ""), r.get("name", ""),
-            dump_number(r.get("created")), r.get("version"), r.get("comment", ""))
+            revision_identifier(handle.row, r.get("page", ""), r.get("version"), id), r.get("page", ""), r.get("content", ""), r.get("title", ""), r.get("author", ""), r.get("name", ""),
+            dump_number(r.get("created")), r.get("version"), revision_note(r.get("comment", "")))
 
     # Import tags - same rule as revisions.
     tags = dump.get("tags") or []
@@ -5165,7 +5230,8 @@ def action_attachment_delete(a):
             mochi.db.execute("update pages set content=?, author=?, updated=?, version=version+1 where id=?",
                 new_content, author, now, page["id"])
             version = mochi.db.row("select version from pages where id=?", page["id"])["version"]
-            create_revision(page["id"], page["title"], new_content, author, name, version, system_comment("revisions.attachment"))
+            comment = system_comment("revisions.attachment")
+            revision = create_revision(page["id"], page["title"], new_content, author, name, version, comment)
             # Notify: source broadcasts to replicas, replica notifies source
             event_data = {
                 "id": page["id"],
@@ -5175,7 +5241,9 @@ def action_attachment_delete(a):
                 "author": author,
                 "name": name,
                 "updated": now,
-                "version": version
+                "version": version,
+                "revision": revision,
+                "comment": comment
             }
             if source:
                 source_send(wiki, "page/update", event_data)
