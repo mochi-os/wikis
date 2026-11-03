@@ -23,10 +23,10 @@ vi.mock('@/hooks/use-wiki', () => ({
   useRemoveTag: () => ({ mutateAsync: removeTag, isPending: false }),
 }))
 
-function show() {
+function show(tags = ['setup']) {
   return render(
     <I18nProvider i18n={i18n}>
-      <TagManager slug='install' tags={['setup']} />
+      <TagManager slug='install' tags={tags} />
     </I18nProvider>
   )
 }
@@ -64,6 +64,31 @@ describe('TagManager remove', () => {
     refuse({ response: { status: 500 } })
     await waitFor(() =>
       expect(error).toHaveBeenCalledWith('Failed to remove tag')
+    )
+  })
+
+  // TanStack drops a call's own callbacks once a second call goes through the
+  // same hook, so the first removal's toast used to go missing.
+  it('confirms both of two removals made close together', async () => {
+    const success = vi.spyOn(toast, 'success')
+    let landFirst!: () => void
+    removeTag
+      .mockReturnValueOnce(
+        new Promise<void>((resolve) => {
+          landFirst = resolve
+        })
+      )
+      .mockResolvedValueOnce(undefined)
+    show(['setup', 'docs'])
+    const [first, second] = screen.getAllByRole('button', { name: 'Remove' })
+    fireEvent.click(first)
+    fireEvent.click(second)
+    await waitFor(() =>
+      expect(success).toHaveBeenCalledWith('Tag "docs" removed')
+    )
+    landFirst()
+    await waitFor(() =>
+      expect(success).toHaveBeenCalledWith('Tag "setup" removed')
     )
   })
 })
