@@ -17,6 +17,9 @@ const hooks = vi.hoisted(() => ({
   useDiffStyle: vi.fn(),
 }))
 
+// The real comparison unless a test says otherwise.
+const comparison = vi.hoisted(() => ({ compareText: vi.fn() }))
+
 vi.mock('@/hooks/use-wiki', () => hooks)
 vi.mock('./markdown-content', () => ({ MarkdownContent: () => null }))
 vi.mock('@tanstack/react-router', () => ({
@@ -24,6 +27,7 @@ vi.mock('@tanstack/react-router', () => ({
 }))
 vi.mock('@mochi/web', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@mochi/web')>()),
+  compareText: comparison.compareText,
   useFormat: () => ({ formatTimestamp: () => '' }),
   useScreenSize: hooks.useScreenSize,
   EntityAvatar: () => null,
@@ -83,7 +87,11 @@ const asked = () =>
     .filter(([, , opts]) => opts?.enabled)
     .map(([, version]) => version)
 
-beforeEach(() => {
+beforeEach(async () => {
+  const actual =
+    await vi.importActual<typeof import('@mochi/web')>('@mochi/web')
+  comparison.compareText.mockReset()
+  comparison.compareText.mockImplementation(actual.compareText)
   hooks.usePageRevision.mockReset()
   hooks.usePageVersions.mockReset()
   hooks.useScreenSize.mockReturnValue({ isMobile: false })
@@ -210,6 +218,24 @@ describe('Wiki version comparison', () => {
     const requested = asked()
     expect(requested[requested.length - 1]).toBe(1)
     expect(screen.getByRole('combobox')).toHaveValue('1')
+  })
+
+  // A comparison that runs past its timeout gives up rather than holding the
+  // page, and the page says so rather than reporting no changes.
+  it('says the versions could not be compared when the comparison gives up', () => {
+    hooks.usePageVersions.mockReturnValue({ data: [3, 1], isLoading: false })
+    comparison.compareText.mockReturnValue(null)
+    show(3, 3)
+    fireEvent.click(screen.getByRole('button', { name: 'Compare changes' }))
+    expect(
+      screen.getByText('These versions could not be compared.')
+    ).toBeInTheDocument()
+    expect(screen.queryByText('No changes to display')).toBeNull()
+    expect(comparison.compareText).toHaveBeenCalledWith(
+      'old text\n',
+      'new text\n',
+      expect.objectContaining({ timeout: expect.any(Number) })
+    )
   })
 
   it('offers no comparison on a page with one version', () => {

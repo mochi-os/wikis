@@ -47,6 +47,10 @@ interface RevisionViewProps {
   wikiId?: string
 }
 
+// Milliseconds a comparison may take. A long page compared with a rewrite of
+// it can take minutes, and holds the page while it runs.
+const COMPARE_TIMEOUT = 1000
+
 function DiffView({
   oldContent,
   newContent,
@@ -59,9 +63,20 @@ function DiffView({
   // The whole page is kept as context: a wiki page is read as one text, and a
   // few lines around each change would hide where in the page it sits.
   const file = useMemo(
-    () => compareText(oldContent, newContent, { context: 'all' }) ?? undefined,
+    () =>
+      compareText(oldContent, newContent, {
+        context: 'all',
+        timeout: COMPARE_TIMEOUT,
+      }),
     [oldContent, newContent]
   )
+  if (file === null) {
+    return (
+      <p className='text-muted-foreground text-sm'>
+        <Trans>These versions could not be compared.</Trans>
+      </p>
+    )
+  }
   if (!file) {
     return (
       <p className='text-muted-foreground text-sm'>

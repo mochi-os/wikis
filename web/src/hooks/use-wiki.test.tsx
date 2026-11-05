@@ -4,16 +4,20 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import type { ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook, waitFor } from '@testing-library/react'
+import { useAuthStore } from '@mochi/web'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, it, expect, vi } from 'vitest'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
-import { useEntityEndpoint, usePageVersions } from './use-wiki'
+import { useDiffStyle, useEntityEndpoint, usePageVersions } from './use-wiki'
 
-const get = vi.hoisted(() => vi.fn())
+const { get, post } = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }))
 
 vi.mock('@mochi/web', async (importOriginal) => {
   const original = await importOriginal<typeof import('@mochi/web')>()
-  return { ...original, requestHelpers: { ...original.requestHelpers, get } }
+  return {
+    ...original,
+    requestHelpers: { ...original.requestHelpers, get, post },
+  }
 })
 
 const permissions = {
@@ -127,5 +131,51 @@ describe('usePageVersions', () => {
       wrapper: withQueries,
     })
     expect(get).not.toHaveBeenCalled()
+  })
+})
+
+describe('useDiffStyle', () => {
+  const withQueries = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      {children}
+    </QueryClientProvider>
+  )
+
+  beforeEach(() => {
+    get.mockReset()
+    post.mockReset()
+    get.mockResolvedValue({ style: 'unified' })
+    post.mockImplementation(async (_url: string, body: unknown) => body)
+  })
+
+  const pick = async (authenticated: boolean) => {
+    useAuthStore.setState({ isAuthenticated: authenticated })
+    const { result } = renderHook(() => useDiffStyle(), {
+      wrapper: withQueries,
+    })
+    await waitFor(() => expect(get).toHaveBeenCalled())
+    act(() => result.current[1]('split'))
+    expect(result.current[0]).toBe('split')
+  }
+
+  it("saves a signed-in reader's choice as their preference", async () => {
+    await pick(true)
+    await waitFor(() =>
+      expect(post).toHaveBeenCalledWith('diff/preference/set', {
+        style: 'split',
+      })
+    )
+  })
+
+  // The preference cannot be kept for a reader who is not signed in, and the
+  // server refuses the write; the choice lasts as long as the page.
+  it("keeps a signed-out reader's choice on the page and sends nothing", async () => {
+    await pick(false)
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    expect(post).not.toHaveBeenCalled()
   })
 })
