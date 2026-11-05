@@ -12,6 +12,7 @@ import { I18nProvider } from '@lingui/react'
 import { render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
+import { commentAssets, revisionAssets } from './author-assets'
 import { ChangesList } from './changes-list'
 import { PageComments } from './page-comments'
 import { PageHistory } from './page-history'
@@ -194,5 +195,22 @@ describe('page comments', () => {
     expect(sources('Bob')).toEqual(
       Array(2).fill('/wikis/w1/-/comment/c1/asset/avatar')
     )
+  })
+})
+
+// Revision and comment ids reach this server from peers; a slash or a dot
+// segment left in one would send the request, with the app's token, to
+// whatever action the path then names.
+describe('an id a peer chose', () => {
+  const hostile = '../../w1/-/delete?x='
+  it('stays one segment of a revision address', () => {
+    const address = revisionAssets('w1', hostile)
+    expect(address).toContain('/w1/-/revision/..%2F..%2Fw1%2F-%2Fdelete%3Fx%3D/asset')
+    expect(address).not.toContain('/../')
+  })
+  it('stays one segment of a comment address', () => {
+    const address = commentAssets({ wiki: 'w1', id: hostile })
+    expect(address).toContain('/w1/-/comment/..%2F..%2Fw1%2F-%2Fdelete%3Fx%3D/asset')
+    expect(address).not.toContain('/../')
   })
 })

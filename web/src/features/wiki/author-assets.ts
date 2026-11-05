@@ -8,12 +8,13 @@ import { classPath } from '@/api/request'
 
 // Where an author's person assets (avatar, style) are served: under one of
 // their revisions or comments, whose route resolves the author. Append the
-// slot.
+// slot. The ids are peers', so they are escaped: a slash or a dot segment in
+// one would otherwise point the request at another action.
 export const revisionAssets = (wikiId: string, revision: string) =>
-  `${classPath()}/${wikiId}/-/revision/${revision}/asset`
+  `${classPath()}/${wikiId}/-/revision/${encodeURIComponent(revision)}/asset`
 
 export const commentAssets = (comment: { wiki: string; id: string }) =>
-  `${classPath()}/${comment.wiki}/-/comment/${comment.id}/asset`
+  `${classPath()}/${comment.wiki}/-/comment/${encodeURIComponent(comment.id)}/asset`
 
 // One asset address per author across a list, so the browser and the style
 // query fetch each author's avatar once rather than once per row. The routes
