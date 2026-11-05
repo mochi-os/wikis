@@ -990,11 +990,13 @@ def action_join(a):
         )
     mochi.broadcast.touch(source)
 
-    # Import the synced data into the new local wiki, part by part, for as long
-    # as the pull's time allows. What is left goes to a continuation; a part
-    # that fails leaves the replica partial rather than undoing the join, and
-    # the next resync pulls the dump again and fills it in.
-    outcome, cursor, parts = sync_follow(entity, source, peer, dump, started)
+    # Import the first part into the new local wiki and answer: each further
+    # part may take 30 seconds to arrive, past what a client waits for the
+    # join, and a join tried again is refused as already joined. What is left
+    # goes to a continuation (schedule_sync), which tells an open page after
+    # each window; a part that fails leaves the replica partial rather than
+    # undoing the join, and the next resync pulls the dump again and fills it in.
+    outcome, cursor, parts = sync_follow(entity, source, peer, dump, started, budget=0)
     notify_websocket(entity)
     if outcome != "complete":
         sync_resume(entity, source, stored, outcome, cursor, parts)
@@ -4089,16 +4091,17 @@ def sync_bounded(dump):
         rows += len(value or [])
     return rows <= SYNC_ROWS
 
-# sync_follow(wiki, source, peer, dump, started, parts) imports dump, a part
-# already received, then pulls and imports the parts after it, each in its own
-# transaction, until SYNC_TIME has passed since started. parts counts the parts
-# the pull has taken before this one. Answers (outcome, cursor, parts):
+# sync_follow(wiki, source, peer, dump, started, parts, budget) imports dump, a
+# part already received, then pulls and imports the parts after it, each in its
+# own transaction, until budget seconds have passed since started. parts counts
+# the parts the pull has taken before this one. A join passes a budget of 0, so
+# it imports the first part and answers. Answers (outcome, cursor, parts):
 # "complete" when the last part arrived; "stopped" when the time ran out, with
 # the cursor of the part to resume from; "unanswered" when a part could not be
 # fetched, with its cursor; "failed" when a part broke a bound or did not
 # import. Whatever stops, the parts before it stay, for a later pull imports
 # idempotently.
-def sync_follow(wiki, source, peer, dump, started, parts=0):
+def sync_follow(wiki, source, peer, dump, started, parts=0, budget=SYNC_TIME):
     for _ in range(SYNC_PARTS):
         if parts >= SYNC_PARTS:
             break
@@ -4110,7 +4113,7 @@ def sync_follow(wiki, source, peer, dump, started, parts=0):
             return "complete", None, parts
         if not sync_cursor(next):
             return "failed", None, parts
-        if mochi.time.now() - started >= SYNC_TIME:
+        if mochi.time.now() - started >= budget:
             return "stopped", next, parts
         dump = sync_fetch(source, peer, next)
         if not sync_received(dump):
