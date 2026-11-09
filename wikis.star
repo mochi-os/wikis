@@ -332,8 +332,11 @@ def error_broadcast_gap(e):
 idle_resync_age = 7 * 86400
 
 # Pull a fresh sync dump from the source when an event references a page or
-# comment we have not seen; import_sync_dump applies it idempotently.
-def request_resync(wiki_id):
+# comment we have not seen; import_sync_dump applies it idempotently. budget is
+# the seconds the call may spend on parts after the first, SYNC_TIME when None
+# (it is defined after this). force, for a resync the user asks for, starts it
+# at once whatever is under way.
+def request_resync(wiki_id, budget=None, force=False):
     """Returns True iff every part of a fresh sync dump was fetched and applied
     within this call. A pull that runs out of time is continued by
     schedule_sync; one that fails waits for the next resync."""
@@ -341,7 +344,14 @@ def request_resync(wiki_id):
     if not row or not row["source"]:
         return False
     now = mochi.time.now()
-    if row["synced"] and now - row["synced"] < 60:
+    # A pull under way, its continuation pending, finishes first: one started
+    # beside it would take the wiki again from the start. One within the last
+    # minute stands. What asked for this one - a gap, an event naming what is
+    # not held - may need what they read before it, so it runs after them
+    # rather than not at all.
+    pending = sync_pending(wiki_id, "schedule_sync")
+    if not force and (pending or (row["synced"] and now - row["synced"] < 60)):
+        resync_defer(wiki_id, 61 if pending else 61 - (now - row["synced"]))
         return False
     mochi.db.execute("update wikis set synced=? where id=?", now, wiki_id)
     peer = None
@@ -352,13 +362,37 @@ def request_resync(wiki_id):
     dump = sync_fetch(row["source"], peer, SYNC_START)
     if not sync_received(dump):
         return False
-    outcome, cursor, parts = sync_follow(wiki_id, row["source"], peer, dump, now)
+    outcome, cursor, parts = sync_follow(wiki_id, row["source"], peer, dump, now, 0, SYNC_TIME if budget == None else budget)
     notify_websocket(wiki_id)
     if outcome != "complete":
         sync_resume(wiki_id, row["source"], row["server"], outcome, cursor, parts)
         return False
     sync_completed(wiki_id, row["source"])
     return True
+
+# sync_pending(wiki_id, event) -> bool: whether a scheduled event of the wiki
+# is pending.
+def sync_pending(wiki_id, event):
+    for scheduled in mochi.schedule.list():
+        if scheduled.event == event and scheduled.data.get("wiki") == wiki_id:
+            return True
+    return False
+
+# resync_defer(wiki_id, wait) puts off a resync request_resync could not start
+# for wait seconds, once a wiki however often it is asked for meanwhile.
+def resync_defer(wiki_id, wait):
+    if not sync_pending(wiki_id, "schedule_resync"):
+        mochi.schedule.after("schedule_resync", {"wiki": wiki_id}, wait)
+
+# schedule_resync(e): a resync put off (resync_defer), put off again while a
+# pull still runs.
+def schedule_resync(e):
+    if e.source != "schedule":
+        return
+    wiki_id = e.data.get("wiki", "")
+    if not mochi.text.valid(wiki_id, "entity"):
+        return
+    request_resync(wiki_id)
 
 # Deliver a replicate/unreplicate to a source that may no longer resolve
 # (private entities never list; public entries expire offline). A stored
@@ -990,11 +1024,13 @@ def action_join(a):
         )
     mochi.broadcast.touch(source)
 
-    # Import the synced data into the new local wiki, part by part, for as long
-    # as the pull's time allows. What is left goes to a continuation; a part
-    # that fails leaves the replica partial rather than undoing the join, and
-    # the next resync pulls the dump again and fills it in.
-    outcome, cursor, parts = sync_follow(entity, source, peer, dump, started)
+    # Import the first part into the new local wiki and answer: each further
+    # part may take 30 seconds to arrive, past what a client waits for the
+    # join, and a join tried again is refused as already joined. What is left
+    # goes to a continuation (schedule_sync), which tells an open page after
+    # each window; a part that fails leaves the replica partial rather than
+    # undoing the join, and the next resync pulls the dump again and fills it in.
+    outcome, cursor, parts = sync_follow(entity, source, peer, dump, started, budget=0)
     notify_websocket(entity)
     if outcome != "complete":
         sync_resume(entity, source, stored, outcome, cursor, parts)
@@ -1023,14 +1059,16 @@ def action_resync(a):
     if not wiki.get("source"):
         # This wiki is itself the canonical source — nothing to resync from.
         return {"data": {"synced": False}}
-    # Clearing `synced` below deliberately defeats request_resync's own 60
-    # second gate, which is right for a user pressing Resync but leaves nothing
-    # bounding how often they can press it.
+    # A press starts a pull at once, past request_resync's own minute and any
+    # pull under way, which is right for a user pressing Resync but leaves
+    # nothing bounding how often they can press it.
     if outbound_throttled("resync", wiki["id"]):
         a.error.label(429, "errors.too_many_requests")
         return
-    mochi.db.execute("update wikis set synced=0 where id=?", wiki["id"])
-    synced = request_resync(wiki["id"])
+    # Answered after the first part, as a join is: each further part may take
+    # 30 seconds to arrive, past what a client waits. A continuation takes the
+    # rest, and synced says whether the first was the last.
+    synced = request_resync(wiki["id"], 0, True)
     return {"data": {"synced": synced}}
 
 # Revoke a wiki's RSS access tokens (the core tokens, not just the rss rows) so a
@@ -4089,16 +4127,17 @@ def sync_bounded(dump):
         rows += len(value or [])
     return rows <= SYNC_ROWS
 
-# sync_follow(wiki, source, peer, dump, started, parts) imports dump, a part
-# already received, then pulls and imports the parts after it, each in its own
-# transaction, until SYNC_TIME has passed since started. parts counts the parts
-# the pull has taken before this one. Answers (outcome, cursor, parts):
+# sync_follow(wiki, source, peer, dump, started, parts, budget) imports dump, a
+# part already received, then pulls and imports the parts after it, each in its
+# own transaction, until budget seconds have passed since started. parts counts
+# the parts the pull has taken before this one. A join passes a budget of 0, so
+# it imports the first part and answers. Answers (outcome, cursor, parts):
 # "complete" when the last part arrived; "stopped" when the time ran out, with
 # the cursor of the part to resume from; "unanswered" when a part could not be
 # fetched, with its cursor; "failed" when a part broke a bound or did not
 # import. Whatever stops, the parts before it stay, for a later pull imports
 # idempotently.
-def sync_follow(wiki, source, peer, dump, started, parts=0):
+def sync_follow(wiki, source, peer, dump, started, parts=0, budget=SYNC_TIME):
     for _ in range(SYNC_PARTS):
         if parts >= SYNC_PARTS:
             break
@@ -4110,8 +4149,11 @@ def sync_follow(wiki, source, peer, dump, started, parts=0):
             return "complete", None, parts
         if not sync_cursor(next):
             return "failed", None, parts
-        if mochi.time.now() - started >= SYNC_TIME:
+        if mochi.time.now() - started >= budget:
             return "stopped", next, parts
+        # The pull is under way for as long as it fetches: request_resync starts
+        # no second one beside it.
+        mochi.db.execute("update wikis set synced=? where id=?", mochi.time.now(), wiki)
         dump = sync_fetch(source, peer, next)
         if not sync_received(dump):
             return "unanswered", next, parts
@@ -4443,10 +4485,11 @@ def action_sync(a):
         replicate_content(wiki.get("name") or "", wiki["id"], target, a.user.identity.id if a.user else "")
     )
 
-    # Import the dump part by part (includes attachments with remote entity
-    # reference), for as long as the pull's time allows; a continuation takes
-    # the rest.
-    outcome, cursor, parts = sync_follow(wiki["id"], target, peer, dump, started)
+    # Import the first part (includes attachments with remote entity
+    # reference) and answer, as a join does: each further part may take 30
+    # seconds to arrive, past what a client waits. A continuation takes the
+    # rest.
+    outcome, cursor, parts = sync_follow(wiki["id"], target, peer, dump, started, 0, 0)
     notify_websocket(wiki["id"])
     if outcome != "complete":
         sync_resume(wiki["id"], target, server or "", outcome, cursor, parts)

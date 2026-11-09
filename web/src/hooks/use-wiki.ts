@@ -46,6 +46,7 @@ import {
   MUTATION_SKIPPED,
   isMutationSkipped,
   textUnchanged,
+  useAuthStore,
   useUploadProgress,
   type DiffViewStyle,
   type MutationFnResult,
@@ -252,6 +253,7 @@ export function useDiffStyle(): [
   const e = useEntityEndpoint()
   const queryClient = useQueryClient()
   const [local, setLocal] = useState<DiffViewStyle>()
+  const authenticated = useAuthStore((s) => s.isAuthenticated)
   const { data } = useQuery({
     queryKey: ['wiki', 'diff', 'preference'],
     queryFn: () =>
@@ -275,7 +277,7 @@ export function useDiffStyle(): [
     style,
     (next) => {
       setLocal(next)
-      save.mutate(next)
+      if (authenticated) save.mutate(next)
     },
   ]
 }
