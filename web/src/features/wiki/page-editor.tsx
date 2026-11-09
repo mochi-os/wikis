@@ -418,12 +418,7 @@ export function PageEditor({
             <Label htmlFor='title'>
               <Trans>Title</Trans>
             </Label>
-            <Input
-              id='title'
-              value={title}
-              onChange={handleTitleChange}
-              placeholder={t`Page title`}
-            />
+            <Input id='title' value={title} onChange={handleTitleChange} />
           </div>
 
           {/* Slug (only for new pages, shown below title) */}
@@ -474,7 +469,7 @@ export function PageEditor({
               id='content'
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder={t`Write your content here using Markdown...`}
+              placeholder={t`Write your content here using Markdown`}
               className='min-h-[400px] font-mono'
             />
           </div>

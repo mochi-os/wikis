@@ -114,7 +114,7 @@ export function InlineWikiSearch({
       onSubscribe={handleSubscribe}
       icon={BookOpen}
       iconClassName='bg-emerald-500/10 text-emerald-600'
-      placeholder={t`Search for wikis...`}
+      placeholder={t`Search for wikis`}
       emptyMessage={t`No wikis found`}
       searchErrorMessage={t`Failed to search wikis`}
       subscribeLabel={t`Subscribe`}

@@ -130,7 +130,7 @@ function FindWikisPage() {
       icon={BookOpen}
       iconClassName='bg-emerald-500/10 text-emerald-600'
       title={t`Find wikis`}
-      placeholder={t`Search by name, ID, fingerprint, or URL...`}
+      placeholder={t`Search by name, ID, fingerprint, or URL`}
       emptyMessage={t`No wikis found`}
       recommendations={recommendations}
       isLoadingRecommendations={isLoadingRecommendations}
