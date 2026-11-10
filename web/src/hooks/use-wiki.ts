@@ -474,7 +474,15 @@ export function useRemoveTag() {
     queryClient,
     ({ slug, tag }: { slug: string; tag: string }) => [
       {
-        filters: { queryKey: ['wiki', scope, 'page', slug], exact: true },
+        // A page opened through an old slug is cached under that slug, while
+        // the chips name the page by its current one, so match either.
+        filters: {
+          queryKey: ['wiki', scope, 'page'],
+          predicate: ({ queryKey, state }) =>
+            queryKey.length === 4 &&
+            (queryKey[3] === slug ||
+              (state.data as PageResponse | undefined)?.page?.slug === slug),
+        },
         update: (old: PageResponse | PageNotFoundResponse) =>
           'error' in old
             ? old

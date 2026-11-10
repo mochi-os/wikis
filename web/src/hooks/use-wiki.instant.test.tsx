@@ -70,6 +70,47 @@ describe('useRemoveTag', () => {
   })
 })
 
+describe('useRemoveTag on a page opened through an old slug', () => {
+  // Cached under the slug in the URL; the chips name the current slug.
+  const key = ['wiki', '', 'page', 'old-install']
+  const history = ['wiki', '', 'page', 'install', 'history', 10, 0]
+
+  it('drops the tag at once and puts it back when refused', async () => {
+    const { client, view } = mount(
+      () => useRemoveTag(),
+      (c) => {
+        c.setQueryData(key, {
+          page: { slug: 'install', tags: ['setup', 'linux'] },
+        })
+        c.setQueryData(history, { versions: [] })
+      }
+    )
+    const tags = () =>
+      client.getQueryData<{ page: { tags: string[] } }>(key)?.page.tags
+
+    act(() => view.result.current.mutate({ slug: 'install', tag: 'setup' }))
+    await waitFor(() => expect(tags()).toEqual(['linux']))
+    expect(client.getQueryData(history)).toEqual({ versions: [] })
+
+    act(() => refuse(new Error('refused')))
+    await waitFor(() => expect(view.result.current.isError).toBe(true))
+    expect(tags()).toEqual(['setup', 'linux'])
+  })
+
+  it('leaves another page alone', async () => {
+    const other = ['wiki', '', 'page', 'guide']
+    const { client, view } = mount(
+      () => useRemoveTag(),
+      (c) => c.setQueryData(other, { page: { slug: 'guide', tags: ['setup'] } })
+    )
+    act(() => view.result.current.mutate({ slug: 'install', tag: 'setup' }))
+    await waitFor(() => expect(post).toHaveBeenCalled())
+    expect(
+      client.getQueryData<{ page: { tags: string[] } }>(other)?.page.tags
+    ).toEqual(['setup'])
+  })
+})
+
 describe('useUpdateAttachment', () => {
   const key = ['wiki', '', 'attachments']
 
