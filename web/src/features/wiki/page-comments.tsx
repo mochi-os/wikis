@@ -168,7 +168,7 @@ export function PageComments({
       {canComment && (
         <CommentForm
           onSubmit={handleCreate}
-          placeholder={t`Write a comment...`}
+          placeholder={t`Write a comment`}
           progress={createComment.progress}
         />
       )}

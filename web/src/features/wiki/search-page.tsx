@@ -58,7 +58,7 @@ export function SearchPage({
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={t`Search pages by title or content...`}
+          placeholder={t`Search pages by title or content`}
           className='ps-10'
           autoFocus
         />
