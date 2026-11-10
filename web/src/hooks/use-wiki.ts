@@ -3,7 +3,6 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import { useCallback, useState } from 'react'
-import type { AxiosProgressEvent } from 'axios'
 import {
   queryOptions,
   useMutation,
@@ -50,6 +49,7 @@ import {
   useUploadProgress,
   type DiffViewStyle,
   type MutationFnResult,
+  type TransferProgress,
 } from '@mochi/web'
 import endpoints from '@/api/endpoints'
 import { wikisRequest } from '@/api/request'
@@ -681,7 +681,7 @@ export function useCreateComment() {
           formData.append('files', file)
         })
       }
-      const post = (onProgress?: (event: AxiosProgressEvent) => void) =>
+      const post = (onProgress?: (event: TransferProgress) => void) =>
         requestHelpers.post<CommentCreateResponse>(
           e(endpoints.wiki.commentCreate(data.slug)),
           formData,
