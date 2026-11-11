@@ -64,8 +64,8 @@ export function anonymousRefusal(error: unknown): boolean {
   return requestHelpers.isAuthError(error) && !isDomainEntityRouting()
 }
 
-// A protocol-relative URL ("//host/path") also starts with "/", and axios
-// treats it as absolute — so passing it through unchanged would send the
+// A protocol-relative URL ("//host/path") also starts with "/", and the request
+// client treats it as absolute — so passing it through unchanged would send the
 // request off-origin. Scope it like any other relative URL instead.
 export function toClassScopedUrl(url: string): string {
   if (url.startsWith('//')) {
