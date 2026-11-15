@@ -6,7 +6,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
 import { isEntityContext } from '@/api/request'
-import { useTagPages } from '@/hooks/use-wiki'
+import { tagPagesQuery, useTagPages } from '@/hooks/use-wiki'
 import { TagPages, TagPagesSkeleton } from '@/features/wiki/tag-pages'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
@@ -16,6 +16,13 @@ export const Route = createFileRoute('/_authenticated/tag/$tag')({
   // no entity and no class-level tag action, so send stray loads to the list.
   beforeLoad: () => {
     if (!isEntityContext()) throw redirect({ to: '/' })
+  },
+  // The address names what the view shows, so it is asked for beside the
+  // route's code rather than once the view has mounted. Not awaited: the
+  // view's query joins it. No wiki route holds this view, so its queries are
+  // scoped as the view's are, to the app's own base.
+  loader: ({ params, context }) => {
+    void context.queryClient.prefetchQuery(tagPagesQuery('', params.tag))
   },
   component: TagPagesRoute,
 })

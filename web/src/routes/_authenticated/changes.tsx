@@ -7,7 +7,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
 import { isEntityContext } from '@/api/request'
-import { useChanges } from '@/hooks/use-wiki'
+import { changesQuery, useChanges } from '@/hooks/use-wiki'
 import { ChangesList, ChangesListSkeleton } from '@/features/wiki/changes-list'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
@@ -19,6 +19,13 @@ export const Route = createFileRoute('/_authenticated/changes')({
   // answers 200 HTML and renders an empty page.
   beforeLoad: () => {
     if (!isEntityContext()) throw redirect({ to: '/' })
+  },
+  // The address names what the view shows, so it is asked for beside the
+  // route's code rather than once the view has mounted. Not awaited: the
+  // view's query joins it. No wiki route holds this view, so its queries are
+  // scoped as the view's are, to the app's own base.
+  loader: ({ context }) => {
+    void context.queryClient.prefetchQuery(changesQuery('', LIMIT, 0))
   },
   component: ChangesRoute,
 })

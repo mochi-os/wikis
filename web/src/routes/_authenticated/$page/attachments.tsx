@@ -4,11 +4,16 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
-import { Main, usePageTitle } from '@mochi/web'
+import { getApiBasepath, Main, usePageTitle } from '@mochi/web'
+import { attachmentsQuery } from '@/hooks/use-wiki'
 import { AttachmentsPage } from '@/features/wiki/attachments-page'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/attachments')({
+  // As the wiki route's view: asked for beside the info.
+  loader: ({ context }) => {
+    void context.queryClient.prefetchQuery(attachmentsQuery(getApiBasepath()))
+  },
   component: AttachmentsRoute,
 })
 

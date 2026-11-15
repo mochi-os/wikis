@@ -4,13 +4,22 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
-import { usePageTitle, useAuthStore, Main } from '@mochi/web'
+import { getApiBasepath, usePageTitle, useAuthStore, Main } from '@mochi/web'
 import { usePermissions } from '@/context/wiki-context'
-import { usePage } from '@/hooks/use-wiki'
+import { pageCommentsQuery, pageQuery, usePage } from '@/hooks/use-wiki'
 import { PageComments } from '@/features/wiki/page-comments'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/comments')({
+  // As the wiki route's view: asked for beside the info.
+  loader: ({ params, context }) => {
+    const scope = getApiBasepath()
+    // The page for its title, and its comments.
+    void context.queryClient.prefetchQuery(pageQuery(scope, params.page))
+    void context.queryClient.prefetchQuery(
+      pageCommentsQuery(scope, params.page)
+    )
+  },
   component: CommentsRoute,
 })
 
