@@ -108,14 +108,18 @@ export function invalidateForWikiEvent(
 export function useWikiWebsocket(wikiFingerprint?: string) {
   const queryClient = useQueryClient()
   const authReady = useAuthStore((state) => state.isInitialized)
+  const signedIn = useAuthStore((state) => state.isAuthenticated)
   const authToken = useAuthStore((state) => state.token)
 
   useEffect(() => {
-    if (!authReady || !wikiFingerprint) return
+    // Core refuses a socket with no signed-in user, and the manager retries a
+    // refused one for as long as the page is open, so an anonymous reader of
+    // a public wiki gets none. Signing in on the page opens it.
+    if (!authReady || !signedIn || !wikiFingerprint) return
     return entityWebsocketManager.subscribe(wikiFingerprint, (event) => {
       if (WIKI_EVENT_TYPES.has(event.type)) {
         invalidateForWikiEvent(queryClient, event)
       }
     })
-  }, [authReady, authToken, wikiFingerprint, queryClient])
+  }, [authReady, signedIn, authToken, wikiFingerprint, queryClient])
 }
