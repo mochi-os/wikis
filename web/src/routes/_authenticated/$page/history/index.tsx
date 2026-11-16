@@ -6,14 +6,29 @@ import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import type { Revision } from '@/types/wiki'
 import { useLingui } from '@lingui/react/macro'
-import { GeneralError, usePageTitle, Main } from '@mochi/web'
-import { usePage, usePageHistory } from '@/hooks/use-wiki'
+import { GeneralError, getApiBasepath, usePageTitle, Main } from '@mochi/web'
+import {
+  pageHistoryQuery,
+  pageQuery,
+  usePage,
+  usePageHistory,
+} from '@/hooks/use-wiki'
 import { PageHistory, PageHistorySkeleton } from '@/features/wiki/page-history'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 const LIMIT = 50
 
 export const Route = createFileRoute('/_authenticated/$page/history/')({
+  // As the wiki route's view: asked for beside the info.
+  loader: ({ params, context }) => {
+    const scope = getApiBasepath()
+    // The page for its title, and the history's first page as the view
+    // asks for it.
+    void context.queryClient.prefetchQuery(pageQuery(scope, params.page))
+    void context.queryClient.prefetchQuery(
+      pageHistoryQuery(scope, params.page, LIMIT, 0)
+    )
+  },
   component: PageHistoryRoute,
 })
 

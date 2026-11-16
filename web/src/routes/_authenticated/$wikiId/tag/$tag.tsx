@@ -5,12 +5,21 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
+import { wikiBaseURL } from '@/lib/wiki-base-url'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
-import { useTagPages } from '@/hooks/use-wiki'
+import { tagPagesQuery, useTagPages } from '@/hooks/use-wiki'
 import { TagPages, TagPagesSkeleton } from '@/features/wiki/tag-pages'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/tag/$tag')({
+  // The address names what the view shows, so it is asked for beside the
+  // wiki's info rather than once the view has mounted. Not awaited: the
+  // view's query joins it.
+  loader: ({ params, context }) => {
+    void context.queryClient.prefetchQuery(
+      tagPagesQuery(wikiBaseURL(params.wikiId), params.tag)
+    )
+  },
   component: WikiTagPagesRoute,
 })
 

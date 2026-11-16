@@ -5,12 +5,22 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { Main, usePageTitle } from '@mochi/web'
+import { wikiBaseURL } from '@/lib/wiki-base-url'
+import { attachmentsQuery } from '@/hooks/use-wiki'
 import { AttachmentsPage } from '@/features/wiki/attachments-page'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute(
   '/_authenticated/$wikiId/$page/attachments'
 )({
+  // The address names what the view shows, so it is asked for beside the
+  // wiki's info rather than once the view has mounted. Not awaited: the
+  // view's queries join it.
+  loader: ({ params, context }) => {
+    void context.queryClient.prefetchQuery(
+      attachmentsQuery(wikiBaseURL(params.wikiId))
+    )
+  },
   component: AttachmentsRoute,
 })
 

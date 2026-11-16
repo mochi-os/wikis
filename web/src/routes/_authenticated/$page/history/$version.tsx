@@ -4,8 +4,8 @@
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
-import { GeneralError, usePageTitle, Main } from '@mochi/web'
-import { usePageRevision } from '@/hooks/use-wiki'
+import { GeneralError, getApiBasepath, usePageTitle, Main } from '@mochi/web'
+import { pageRevisionQuery, usePageRevision } from '@/hooks/use-wiki'
 import {
   RevisionView,
   RevisionViewSkeleton,
@@ -13,6 +13,15 @@ import {
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$page/history/$version')({
+  // As the wiki route's view: asked for beside the info.
+  loader: ({ params, context }) => {
+    const version = parseInt(params.version, 10)
+    if (version > 0) {
+      void context.queryClient.prefetchQuery(
+        pageRevisionQuery(getApiBasepath(), params.page, version)
+      )
+    }
+  },
   component: RevisionViewRoute,
 })
 

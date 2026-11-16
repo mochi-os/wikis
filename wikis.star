@@ -4976,7 +4976,7 @@ def event_comment_create(e):
         notify_title = mochi.app.label("notifications.comment_create.title", page=page_title, wiki=wiki_name)
         # Truncate the body to a single-line preview at 140 chars so it
         # fits in a notification banner.
-        excerpt = body[:140] + ("…" if len(body) > 140 else "")
+        excerpt = text_cut(body, 141)
         notify_body = mochi.app.label("notifications.comment_create.body", author=name or author[:9], excerpt=excerpt)
         notify("comment/create", id, notify_title, notify_body, "/wikis/" + wiki + "/" + page + "/comments", page_title, event_id="comment/create:" + id)
 
@@ -5548,9 +5548,7 @@ def action_rss(a):
     for row in rows:
         if row["type"] == "comment":
             title = mochi.app.label("rss.comment", title=row["title"], name=row["name"])
-            desc = row["description"]
-            if len(desc) > 500:
-                desc = desc[:500] + "..."
+            desc = text_cut(row["description"], 500)
         else:
             title = mochi.app.label("rss.edited", title=row["title"], name=row["name"])
             # revision_comment resolves a system comment, which is stored as
@@ -5642,9 +5640,7 @@ def action_rss_all(a):
 
         if row["type"] == "comment":
             title = wiki_name + ": " + mochi.app.label("rss.comment", title=row["title"], name=row["name"])
-            desc = row["description"]
-            if len(desc) > 500:
-                desc = desc[:500] + "..."
+            desc = text_cut(row["description"], 500)
         else:
             title = wiki_name + ": " + mochi.app.label("rss.edited", title=row["title"], name=row["name"])
             # revision_comment resolves a system comment, which is stored as
@@ -5711,7 +5707,7 @@ def opengraph_wiki(params):
                 # Bound first: the result is truncated to 200 characters anyway,
                 # and the link-stripping loop below is O(links x length) over a
                 # page that can reach 1MB, on the anonymous crawler path.
-                desc = content[:4000]
+                desc = text_cut(content, 4000)
                 # Remove headers
                 lines = []
                 for line in desc.split("\n"):
@@ -5735,8 +5731,7 @@ def opengraph_wiki(params):
                 # Collapse whitespace
                 desc = " ".join(desc.split())
                 # Truncate
-                if len(desc) > 200:
-                    desc = desc[:197] + "..."
+                desc = text_cut(desc, 200)
                 if desc:
                     og["description"] = desc
 
@@ -5848,8 +5843,13 @@ def wiki_link(wiki):
     return base + "/wikis/" + mochi.entity.fingerprint(wiki["id"])
 
 def text_cut(s, n):
-    """s within n codepoints, an ellipsis marking a cut."""
-    points = list(s.codepoints())
+    """s within n codepoints, an ellipsis marking a cut. It reads no further
+    than it keeps, as s can be a whole page."""
+    points = []
+    for c in s.codepoints():
+        if len(points) > n:
+            break
+        points.append(c)
     if len(points) <= n:
         return s
     return "".join(points[:max(n - 1, 0)]).rstrip() + "…"
