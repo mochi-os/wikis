@@ -5,7 +5,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { GeneralError, usePageTitle, Main } from '@mochi/web'
-import { usePageRevision } from '@/hooks/use-wiki'
+import { wikiBaseURL } from '@/lib/wiki-base-url'
+import { pageRevisionQuery, usePageRevision } from '@/hooks/use-wiki'
 import {
   RevisionView,
   RevisionViewSkeleton,
@@ -15,6 +16,17 @@ import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 export const Route = createFileRoute(
   '/_authenticated/$wikiId/$page/history/$version'
 )({
+  // The address names what the view shows, so it is asked for beside the
+  // wiki's info rather than once the view has mounted. Not awaited: the
+  // view's queries join it.
+  loader: ({ params, context }) => {
+    const version = parseInt(params.version, 10)
+    if (version > 0) {
+      void context.queryClient.prefetchQuery(
+        pageRevisionQuery(wikiBaseURL(params.wikiId), params.page, version)
+      )
+    }
+  },
   component: RevisionViewRoute,
 })
 

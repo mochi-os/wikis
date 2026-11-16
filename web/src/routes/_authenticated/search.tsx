@@ -8,6 +8,7 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { usePageTitle, Main } from '@mochi/web'
 import { isEntityContext } from '@/api/request'
+import { searchQuery } from '@/hooks/use-wiki'
 import { SearchPage } from '@/features/wiki/search-page'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
@@ -23,6 +24,13 @@ export const Route = createFileRoute('/_authenticated/search')({
     if (!isEntityContext()) throw redirect({ to: '/' })
   },
   validateSearch: searchSchema,
+  // A search the address names is asked for beside the route's code, as the
+  // view will ask for it, rather than once the view has mounted. No wiki
+  // route holds this view, so the query is scoped as the view's is.
+  loaderDeps: ({ search: { q } }) => ({ q }),
+  loader: ({ context, deps }) => {
+    if (deps.q) void context.queryClient.prefetchQuery(searchQuery('', deps.q))
+  },
   component: SearchRoute,
 })
 

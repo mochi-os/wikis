@@ -5,12 +5,24 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { usePageTitle, useAuthStore, Main } from '@mochi/web'
+import { wikiBaseURL } from '@/lib/wiki-base-url'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
-import { usePage } from '@/hooks/use-wiki'
+import { pageCommentsQuery, pageQuery, usePage } from '@/hooks/use-wiki'
 import { PageComments } from '@/features/wiki/page-comments'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
 export const Route = createFileRoute('/_authenticated/$wikiId/$page/comments')({
+  // The address names what the view shows, so it is asked for beside the
+  // wiki's info rather than once the view has mounted. Not awaited: the
+  // view's queries join it.
+  loader: ({ params, context }) => {
+    const scope = wikiBaseURL(params.wikiId)
+    // The page for its title, and its comments.
+    void context.queryClient.prefetchQuery(pageQuery(scope, params.page))
+    void context.queryClient.prefetchQuery(
+      pageCommentsQuery(scope, params.page)
+    )
+  },
   component: CommentsRoute,
 })
 

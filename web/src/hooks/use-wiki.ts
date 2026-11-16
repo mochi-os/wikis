@@ -174,20 +174,39 @@ export function usePage(slug: string, options: { fresh?: boolean } = {}) {
   return query
 }
 
+// How long the queries below count as fresh, as pageQuery's do: their route
+// loaders start them beside the wiki's info, from the address alone, and the
+// window keeps that answer when the view mounts. The wiki's websocket still
+// invalidates each of them.
+const ROUTE_FRESH = 30_000
+
+/**
+ * A page of a page's history, as the history view asks for it and its route's
+ * loader starts it. The scope is as pageQuery's.
+ */
+export function pageHistoryQuery(
+  scope: string,
+  slug: string,
+  limit = 50,
+  offset = 0
+) {
+  return queryOptions({
+    queryKey: ['wiki', scope, 'page', slug, 'history', limit, offset],
+    queryFn: () =>
+      requestHelpers.get<PageHistoryResponse>(
+        `${scope}${endpoints.wiki.pageHistory(slug)}?limit=${limit}&offset=${offset}`
+      ),
+    staleTime: ROUTE_FRESH,
+  })
+}
+
 export function usePageHistory(
   slug: string,
   params?: { limit?: number; offset?: number }
 ) {
-  const e = useEntityEndpoint()
   const scope = useWikiScope()
-  const limit = params?.limit ?? 50
-  const offset = params?.offset ?? 0
   return useQuery({
-    queryKey: ['wiki', scope, 'page', slug, 'history', limit, offset],
-    queryFn: () =>
-      requestHelpers.get<PageHistoryResponse>(
-        `${e(endpoints.wiki.pageHistory(slug))}?limit=${limit}&offset=${offset}`
-      ),
+    ...pageHistoryQuery(scope, slug, params?.limit, params?.offset),
     enabled: !!slug,
   })
 }
@@ -225,19 +244,31 @@ export function usePageVersions(slug: string, opts?: { enabled?: boolean }) {
   })
 }
 
+/** One version of a page, as the version view asks for it and its route's
+ * loader starts it. */
+export function pageRevisionQuery(
+  scope: string,
+  slug: string,
+  version: number
+) {
+  return queryOptions({
+    queryKey: ['wiki', scope, 'page', slug, 'revision', version],
+    queryFn: () =>
+      requestHelpers.get<PageRevisionResponse>(
+        `${scope}${endpoints.wiki.pageRevision(slug, version)}`
+      ),
+    staleTime: ROUTE_FRESH,
+  })
+}
+
 export function usePageRevision(
   slug: string,
   version: number,
   opts?: { enabled?: boolean }
 ) {
-  const e = useEntityEndpoint()
   const scope = useWikiScope()
   return useQuery({
-    queryKey: ['wiki', scope, 'page', slug, 'revision', version],
-    queryFn: () =>
-      requestHelpers.get<PageRevisionResponse>(
-        e(endpoints.wiki.pageRevision(slug, version))
-      ),
+    ...pageRevisionQuery(scope, slug, version),
     enabled: (opts?.enabled ?? true) && !!slug && version > 0,
   })
 }
@@ -409,40 +440,55 @@ export function useRenamePage() {
 
 // Tags
 
-export function useTags() {
-  const e = useEntityEndpoint()
-  const scope = useWikiScope()
-  return useQuery({
+/** The wiki's tags, as the tags view asks for them and its route's loader
+ * starts them. */
+export function tagsQuery(scope: string) {
+  return queryOptions({
     queryKey: ['wiki', scope, 'tags'],
-    queryFn: () => requestHelpers.get<TagsResponse>(e(endpoints.wiki.tags)),
+    queryFn: () =>
+      requestHelpers.get<TagsResponse>(`${scope}${endpoints.wiki.tags}`),
+    staleTime: ROUTE_FRESH,
+  })
+}
+
+export function useTags() {
+  return useQuery(tagsQuery(useWikiScope()))
+}
+
+/** The pages one tag is on, as the tag view asks for them and its route's
+ * loader starts them. */
+export function tagPagesQuery(scope: string, tag: string) {
+  return queryOptions({
+    queryKey: ['wiki', scope, 'tag', tag],
+    queryFn: () =>
+      requestHelpers.get<TagPagesResponse>(
+        `${scope}${endpoints.wiki.tagPages(tag)}`
+      ),
+    staleTime: ROUTE_FRESH,
   })
 }
 
 export function useTagPages(tag: string) {
-  const e = useEntityEndpoint()
-  const scope = useWikiScope()
-  return useQuery({
-    queryKey: ['wiki', scope, 'tag', tag],
-    queryFn: () =>
-      requestHelpers.get<TagPagesResponse>(e(endpoints.wiki.tagPages(tag))),
-    enabled: !!tag,
-  })
+  return useQuery({ ...tagPagesQuery(useWikiScope(), tag), enabled: !!tag })
 }
 
 // Recent changes
 
-export function useChanges(params?: { limit?: number; offset?: number }) {
-  const e = useEntityEndpoint()
-  const scope = useWikiScope()
-  const limit = params?.limit ?? 50
-  const offset = params?.offset ?? 0
-  return useQuery({
+/** A page of the wiki's recent changes, as the changes view asks for it and
+ * its route's loader starts it. */
+export function changesQuery(scope: string, limit = 50, offset = 0) {
+  return queryOptions({
     queryKey: ['wiki', scope, 'changes', limit, offset],
     queryFn: () =>
       requestHelpers.get<ChangesResponse>(
-        `${e(endpoints.wiki.changes)}?limit=${limit}&offset=${offset}`
+        `${scope}${endpoints.wiki.changes}?limit=${limit}&offset=${offset}`
       ),
+    staleTime: ROUTE_FRESH,
   })
+}
+
+export function useChanges(params?: { limit?: number; offset?: number }) {
+  return useQuery(changesQuery(useWikiScope(), params?.limit, params?.offset))
 }
 
 export function useAddTag() {
@@ -516,15 +562,22 @@ export function useRemoveTag() {
 
 // Search
 
-export function useSearch(query: string) {
-  const e = useEntityEndpoint()
-  const scope = useWikiScope()
-  return useQuery({
+/** A search of the wiki, as the search view asks for it and its route's
+ * loader starts it for the search the address names. */
+export function searchQuery(scope: string, query: string) {
+  return queryOptions({
     queryKey: ['wiki', scope, 'search', query],
     queryFn: () =>
-      requestHelpers.get<SearchResponse>(e(endpoints.wiki.search), {
+      requestHelpers.get<SearchResponse>(`${scope}${endpoints.wiki.search}`, {
         params: { q: query },
       }),
+    staleTime: ROUTE_FRESH,
+  })
+}
+
+export function useSearch(query: string) {
+  return useQuery({
+    ...searchQuery(useWikiScope(), query),
     enabled: query.length > 0,
   })
 }
@@ -648,15 +701,22 @@ export function useDeleteRedirect() {
 
 // Comments
 
-export function usePageComments(slug: string) {
-  const e = useEntityEndpoint()
-  const scope = useWikiScope()
-  return useQuery({
+/** A page's comments, as the comments view asks for them and its route's
+ * loader starts them. */
+export function pageCommentsQuery(scope: string, slug: string) {
+  return queryOptions({
     queryKey: ['wiki', scope, 'comments', slug],
     queryFn: () =>
       requestHelpers.get<CommentsResponse>(
-        e(endpoints.wiki.pageComments(slug))
+        `${scope}${endpoints.wiki.pageComments(slug)}`
       ),
+    staleTime: ROUTE_FRESH,
+  })
+}
+
+export function usePageComments(slug: string) {
+  return useQuery({
+    ...pageCommentsQuery(useWikiScope(), slug),
     enabled: !!slug,
   })
 }
@@ -760,14 +820,21 @@ export function useDeleteComment() {
 
 // Attachments
 
-export function useAttachments() {
-  const e = useEntityEndpoint()
-  const scope = useWikiScope()
-  return useQuery({
+/** The wiki's attachments, as the attachments view asks for them and its
+ * route's loader starts them. */
+export function attachmentsQuery(scope: string) {
+  return queryOptions({
     queryKey: ['wiki', scope, 'attachments'],
     queryFn: () =>
-      requestHelpers.get<AttachmentsResponse>(e(endpoints.wiki.attachments)),
+      requestHelpers.get<AttachmentsResponse>(
+        `${scope}${endpoints.wiki.attachments}`
+      ),
+    staleTime: ROUTE_FRESH,
   })
+}
+
+export function useAttachments() {
+  return useQuery(attachmentsQuery(useWikiScope()))
 }
 
 export function useUploadAttachment() {

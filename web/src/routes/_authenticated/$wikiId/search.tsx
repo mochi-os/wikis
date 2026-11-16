@@ -7,7 +7,9 @@ import { z } from 'zod'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
 import { usePageTitle, Main } from '@mochi/web'
+import { wikiBaseURL } from '@/lib/wiki-base-url'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
+import { searchQuery } from '@/hooks/use-wiki'
 import { SearchPage } from '@/features/wiki/search-page'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
@@ -17,6 +19,16 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute('/_authenticated/$wikiId/search')({
   validateSearch: searchSchema,
+  // A search the address names is asked for beside the wiki's info, as the
+  // view will ask for it, rather than once the view has mounted.
+  loaderDeps: ({ search: { q } }) => ({ q }),
+  loader: ({ params, context, deps }) => {
+    if (deps.q) {
+      void context.queryClient.prefetchQuery(
+        searchQuery(wikiBaseURL(params.wikiId), deps.q)
+      )
+    }
+  },
   component: WikiSearchRoute,
 })
 

@@ -5,9 +5,22 @@
 // A wiki frame names what changed, and only that is marked stale: every frame
 // used to refetch the whole wiki tree, so a reader on one page downloaded it,
 // and the wiki info, again for each edit anywhere in the wiki.
-import { QueryClient } from '@tanstack/react-query'
-import { describe, expect, it } from 'vitest'
-import { invalidateForWikiEvent } from './use-wiki-websocket'
+import { createElement, type ReactNode } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderHook } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { invalidateForWikiEvent, useWikiWebsocket } from './use-wiki-websocket'
+
+const { subscribe, auth } = vi.hoisted(() => ({
+  subscribe: vi.fn(() => () => {}),
+  auth: { isInitialized: true, isAuthenticated: true, token: 'token' },
+}))
+
+vi.mock('@mochi/web', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@mochi/web')>()),
+  useAuthStore: (selector: (state: unknown) => unknown) => selector(auth),
+  entityWebsocketManager: { subscribe },
+}))
 
 const base = '/wikis/w1/-/'
 const keys = {
@@ -85,5 +98,34 @@ describe('invalidateForWikiEvent', () => {
     const client = held()
     invalidateForWikiEvent(client, { type: 'wiki/resynced', kind: 'edit', page: 'a' })
     expect(Object.values(keys).every((key) => client.getQueryState(key)?.isInvalidated)).toBe(true)
+  })
+})
+
+// Core refuses a socket with no signed-in user, and a refused one is retried
+// for as long as the page is open: about 120 refusals an hour for each
+// anonymous reader of a public wiki.
+describe('useWikiWebsocket for a reader who is not signed in', () => {
+  beforeEach(() => {
+    subscribe.mockClear()
+  })
+
+  function anonymous() {
+    Object.assign(auth, { isAuthenticated: false, token: '' })
+    const client = new QueryClient()
+    const wrapper = ({ children }: { children: ReactNode }) =>
+      createElement(QueryClientProvider, { client }, children)
+    return renderHook(() => useWikiWebsocket('fp1'), { wrapper })
+  }
+
+  it('opens no socket', () => {
+    anonymous()
+    expect(subscribe).not.toHaveBeenCalled()
+  })
+
+  it('opens it once the reader signs in', () => {
+    const { rerender } = anonymous()
+    Object.assign(auth, { isAuthenticated: true, token: 'token' })
+    rerender()
+    expect(subscribe).toHaveBeenCalledWith('fp1', expect.any(Function))
   })
 })
