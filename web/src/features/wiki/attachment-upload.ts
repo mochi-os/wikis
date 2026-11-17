@@ -54,7 +54,7 @@ export function useAttachmentUploadMessages() {
     // for the request's language, so the substring tests that used to sit here
     // ("storage limit exceeded", "file too large", "Network Error") matched
     // only for an English reader and silently fell through for everyone else.
-    // Axios reports a transport failure as the untranslated literal
+    // The request client reports a transport failure as the untranslated literal
     // "Network Error"; show the app's own translated fallback rather than
     // handing the reader an English string.
     const message = getErrorMessage(error, t`Failed to upload files`)

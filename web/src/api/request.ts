@@ -5,12 +5,13 @@
 // Wikis app request helpers
 // Uses classPath() + '/' as baseURL instead of getApiBasepath()
 // This ensures wiki IDs in URLs aren't doubled when on wiki detail pages
-import { type AxiosRequestConfig } from 'axios'
 import {
   getAppBasepath,
   getAppPath,
   isDomainEntityRouting,
   requestHelpers,
+  type HttpMethodConfig,
+  type HttpRequestConfig,
 } from '@mochi/web'
 
 // Check if we're in entity context based on browser URL.
@@ -63,8 +64,8 @@ export function anonymousRefusal(error: unknown): boolean {
   return requestHelpers.isAuthError(error) && !isDomainEntityRouting()
 }
 
-// A protocol-relative URL ("//host/path") also starts with "/", and axios
-// treats it as absolute — so passing it through unchanged would send the
+// A protocol-relative URL ("//host/path") also starts with "/", and the request
+// client treats it as absolute — so passing it through unchanged would send the
 // request off-origin. Scope it like any other relative URL instead.
 export function toClassScopedUrl(url: string): string {
   if (url.startsWith('//')) {
@@ -81,7 +82,7 @@ export function toClassScopedUrl(url: string): string {
 export const wikisRequest = {
   get: async <TResponse>(
     url: string,
-    config?: Omit<AxiosRequestConfig, 'url' | 'method'>
+    config?: Omit<HttpRequestConfig, 'url' | 'method'>
   ): Promise<TResponse> => {
     return requestHelpers.get<TResponse>(toClassScopedUrl(url), config)
   },
@@ -89,7 +90,7 @@ export const wikisRequest = {
   post: async <TResponse, TBody = unknown>(
     url: string,
     data?: TBody,
-    config?: Omit<AxiosRequestConfig<TBody>, 'url' | 'method' | 'data'>
+    config?: HttpMethodConfig<TBody>
   ): Promise<TResponse> => {
     return requestHelpers.post<TResponse, TBody>(
       toClassScopedUrl(url),
