@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { i18n } from '@lingui/core'
 import { I18nProvider } from '@lingui/react'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { PublishSwitches, PublishingSection } from './publishing-section'
 
@@ -93,6 +93,24 @@ describe('Wiki publishing section', () => {
     await waitFor(() => expect(state.get).toHaveBeenCalled())
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(screen.queryByText('alice.example.org')).toBeNull()
+  })
+
+  // A switch moves when clicked, not once the server has answered and the
+  // list has been read again, and goes back when the change is refused.
+  it('moves a switch at once, and back when the change is refused', async () => {
+    let refuse: (error: Error) => void = () => {}
+    state.post.mockImplementation(
+      () => new Promise((_, reject) => (refuse = reject))
+    )
+    wrap(<PublishingSection />)
+    const toggle = await screen.findByRole('switch', {
+      name: 'Publish to @alice@mastodon.social',
+    })
+    expect(toggle).toHaveAttribute('aria-checked', 'false')
+    fireEvent.click(toggle)
+    expect(toggle).toHaveAttribute('aria-checked', 'true')
+    await act(async () => refuse(new Error('refused')))
+    await waitFor(() => expect(toggle).toHaveAttribute('aria-checked', 'false'))
   })
 
   it('sends the new list, and offers to delete the copies left on an account taken off it', async () => {
