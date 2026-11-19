@@ -6,15 +6,10 @@ import { useCallback, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react/macro'
-import {
-  FindEntityPage,
-  toastAction,
-  getErrorMessage,
-  requestHelpers,
-} from '@mochi/web'
+import { FindEntityPage, toastAction, getErrorMessage } from '@mochi/web'
 import { BookOpen } from 'lucide-react'
 import endpoints from '@/api/endpoints'
-import { classPath } from '@/api/request'
+import { wikisRequest } from '@/api/request'
 import { useWikiContext } from '@/context/wiki-context'
 import { useJoinWiki, joinWikiWithRetry } from '@/hooks/use-wiki'
 
@@ -48,9 +43,7 @@ function FindWikisPage() {
   } = useQuery({
     queryKey: ['wikis', 'recommendations'],
     queryFn: () =>
-      requestHelpers.get<RecommendationsResponse>(
-        `${classPath()}/${endpoints.wiki.recommendations}`
-      ),
+      wikisRequest.get<RecommendationsResponse>(endpoints.wiki.recommendations),
     retry: false,
     refetchOnWindowFocus: false,
   })
@@ -106,9 +99,9 @@ function FindWikisPage() {
       server?: string
       peer?: string
     }
-    const response = await requestHelpers.post<
+    const response = await wikisRequest.post<
       { data?: ProbeEntry } & Partial<ProbeEntry>
-    >(`${classPath()}/-/probe`, { url })
+    >(endpoints.wiki.probe, { url })
     const data: Partial<ProbeEntry> = response.data ?? response
     if (!data.id) return null
     return {

@@ -3,18 +3,28 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import type { WikiComment } from '@/types/wiki'
-import { addressByAuthor } from '@mochi/web'
+import { addressByAuthor, path, tryPath } from '@mochi/web'
 import { classPath } from '@/api/request'
 
 // Where an author's person assets (avatar, style) are served: under one of
-// their revisions or comments, whose route resolves the author. Append the
-// slot. The ids are peers', so they are escaped: a slash or a dot segment in
-// one would otherwise point the request at another action.
+// their revisions or comments, whose route resolves the author. The ids are
+// peers', so they go in through path: one that is not a single segment would
+// otherwise point the request at another action, and leaves the address out
+// instead, so the avatar falls back to the author's initials.
 export const revisionAssets = (wikiId: string, revision: string) =>
-  `${classPath()}/${wikiId}/-/revision/${encodeURIComponent(revision)}/asset`
+  tryPath(() => classPath() + path`/${wikiId}/-/revision/${revision}/asset`)
 
 export const commentAssets = (comment: { wiki: string; id: string }) =>
-  `${classPath()}/${comment.wiki}/-/comment/${encodeURIComponent(comment.id)}/asset`
+  tryPath(
+    () => classPath() + path`/${comment.wiki}/-/comment/${comment.id}/asset`
+  )
+
+/** One of an author's assets, by its slot, under an address above. */
+export const asset = (
+  assets: string | undefined,
+  slot: 'avatar' | 'style'
+): string | undefined =>
+  assets === undefined ? undefined : `${assets}/${slot}`
 
 // One asset address per author across a list, so the browser and the style
 // query fetch each author's avatar once rather than once per row. The routes

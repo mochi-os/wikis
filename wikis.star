@@ -72,6 +72,7 @@ def database_create():
     # Attachments now live in this database, owned by the shared library, rather
     # than in core's managed store.
     attachment_schema_create()
+    attachment_schema_kind()
 
     publish_schema_create()
 
@@ -152,6 +153,14 @@ def database_upgrade(version):
     # (the federation plan, phase 30).
     if version == 13:
         publish_schema_create()
+    # Schema 14: attachment rows name the kind of thing they belong to. A wiki's
+    # own files are an object's; a comment's are marked here, by the comment ids
+    # this database holds. An id both a comment and a wiki hold came from a
+    # peer's choice, as did the comment's author and any remote row's creator,
+    # so its rows stay the wiki's.
+    if version == 14:
+        attachment_schema_kind()
+        mochi.db.execute("update attachments set kind='comment' where kind='object' and object in (select id from comments) and object not in (select id from wikis)")
 
 # Has this outbound operation run within `seconds`? Records the attempt when
 # not. Core rate-limits inbound P2P and outbound HTTP but not outbound
@@ -1084,7 +1093,7 @@ def rss_tokens_revoke(entity_id):
 # the orphan sweep skips any file that still has a row.
 def delete_wiki_comments(wiki_id):
     for row in mochi.db.rows("select id from comments where wiki=?", wiki_id) or []:
-        for att in (attachment_list(row["id"], wiki_id) or []):
+        for att in (attachment_list(row["id"], wiki_id, kind="comment") or []):
             attachment_delete(att["id"])
     mochi.db.execute("delete from comments where wiki=?", wiki_id)
 
@@ -3578,6 +3587,18 @@ def sync_cursor(value):
             return False
     return True
 
+# comment_identifier(value) -> bool: whether a peer-named comment id may be
+# stored. Every wikis host mints comment ids with mochi.uid(), so only that
+# shape is accepted; it cannot equal a wiki's entity id, which is longer.
+def comment_identifier(value):
+    return type(value) == "string" and mochi.text.valid(value, "id")
+
+# comment_member(wiki_id) -> the member(object, kind) predicate attachment_bound
+# and the serving helpers take for wiki_id. A wiki's own attachments bind
+# directly; a comment's bind only when a comment of this wiki has that id.
+def comment_member(wiki_id):
+    return lambda object, kind: kind == "comment" and mochi.db.exists("select 1 from comments where id=? and wiki=?", object, wiki_id)
+
 # sync_identifier(value) -> bool: whether a peer-named id may be stored: a
 # string no longer than a cursor key.
 def sync_identifier(value):
@@ -3669,7 +3690,7 @@ def sync_comments(wiki, after, budget):
     attached = {}
     ids = [c["id"] for c in rows]
     for start in range(0, len(ids), 500):
-        attached.update(attachment_list_many(ids[start:start + 500]))
+        attached.update(attachment_list_many(ids[start:start + 500], kind="comment"))
     kept = []
     for c in rows:
         atts = (attached.get(c["id"]) or [])[:attachment_object_maximum]
@@ -3685,7 +3706,7 @@ def sync_comments(wiki, after, budget):
     return kept, sync_last(sizes, count, kept, after, ["id"])
 
 def sync_attachments(wiki, after, budget):
-    attachments = mochi.db.rows("select * from attachments where object=? and id>? and length(cast(id as blob))<=? order by id limit ?", wiki, sync_key(after, 0), SYNC_KEY, budget["rows"] + 1) or []
+    attachments = mochi.db.rows("select * from attachments where object=? and kind='object' and id>? and length(cast(id as blob))<=? order by id limit ?", wiki, sync_key(after, 0), SYNC_KEY, budget["rows"] + 1) or []
     for row in attachments:
         row["size"] = SYNC_ATTACHMENT
     count = sync_window(attachments, budget)
@@ -3801,7 +3822,7 @@ def event_sync(e):
 
     # Include comment-level attachments in each comment
     for c in comments:
-        c_atts = attachment_list(c["id"]) or []
+        c_atts = attachment_list(c["id"], kind="comment") or []
         if c_atts:
             c["attachments"] = c_atts
 
@@ -3966,8 +3987,7 @@ def event_attachment_delete(e):
     att = attachment_get(attachment_id)
     if not att:
         return
-    obj = att.get("object")
-    if obj != wiki and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
+    if not attachment_bound(att, wiki, comment_member(wiki)):
         return
 
     # Delete locally and broadcast removal to other replicas
@@ -4006,8 +4026,7 @@ def event_attachment_update(e):
     att = attachment_get(attachment_id)
     if not att:
         return
-    obj = att.get("object")
-    if obj != wiki and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
+    if not attachment_bound(att, wiki, comment_member(wiki)):
         return
 
     caption = attachment_text(e.content("caption", ""), attachment_text_maximum)
@@ -4030,7 +4049,7 @@ def event_attachment_fetch(e):
     upstream = wikirow["source"] if wikirow else ""
     attachment_respond(e, wiki,
         lambda sender, container: (upstream and sender == upstream) or check_event_access(sender, container, "view"),
-        member=lambda object: mochi.db.exists("select 1 from comments where id=? and wiki=?", object, wiki))
+        member=comment_member(wiki))
 
 # P2P event: attachment/add — store remote attachment metadata (files pulled on demand)
 def event_attachment_add(e):
@@ -4077,10 +4096,8 @@ def event_attachment_remove(e):
         # event_attachment_delete) so a colliding id can't reach another wiki's
         # attachment.
         att = attachment_get(attachment_id)
-        if att:
-            obj = att.get("object")
-            if obj == wiki or mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki):
-                attachment_delete(attachment_id)
+        if att and attachment_bound(att, wiki, comment_member(wiki)):
+            attachment_delete(attachment_id)
 
     notify_websocket(wiki, "attachment")
 
@@ -4319,7 +4336,7 @@ def import_sync_dump(wiki, dump, notify=True):
     signed_wiki = canonical_wiki(wikirow_local, wiki)
     for c in comments:
         id = c.get("id")
-        if not sync_identifier(id):
+        if not comment_identifier(id):
             continue
         if foreign_comment(id, wiki, handle):
             continue
@@ -4390,7 +4407,7 @@ def import_sync_dump(wiki, dump, notify=True):
         for c in imported_comments:
             c_atts = c.get("attachments") or []
             if c_atts:
-                attachment_store(c_atts, source, c.get("id"))
+                attachment_store(c_atts, source, c.get("id"), "comment")
 
     if notify:
         notify_websocket(wiki)
@@ -4536,7 +4553,7 @@ def page_comments(wiki_id, page_slug, limit, offset):
         # so replica_can can authorise an edit or delete against it. It is
         # another user's entity id, and the reader has no use for it.
         node.pop("origin", None)
-        node["attachments"] = attachment_list(node["id"], wiki_id) or []
+        node["attachments"] = attachment_list(node["id"], wiki_id, kind="comment") or []
         kids = []
         if depth < 100:
             for k in by_parent.get(node["id"], []):
@@ -4567,7 +4584,7 @@ def delete_comment_tree(comment_id, wiki_id):
             pending.append(child["id"])
         i += 1
     for cid in pending:
-        for att in (attachment_list(cid, wiki_id) or []):
+        for att in (attachment_list(cid, wiki_id, kind="comment") or []):
             attachment_delete(att["id"])
         mochi.db.execute("delete from comments where id=? and wiki=?", cid, wiki_id)
 
@@ -4716,7 +4733,7 @@ def action_comment_create(a):
         id, wiki["id"], slug, parent, author, name, body, now, signature)
 
     # Save attachments (no push notification — metadata piggybacked on event)
-    attachments = attachment_save(a, id) or []
+    attachments = attachment_save(a, id, kind="comment") or []
     source = wiki.get("source")
 
     data = {
@@ -4887,7 +4904,7 @@ def event_comment_create(e):
 
     if not id or not page or not author or not body or not created:
         return
-    if not sync_identifier(id) or not content_is_number(created):
+    if not comment_identifier(id) or not content_is_number(created):
         return
 
     # Same window the page events apply. created is chosen by the commenter and
@@ -4933,19 +4950,26 @@ def event_comment_create(e):
     mochi.db.execute("insert or ignore into comments (id, wiki, page, parent, author, name, body, created, origin, signature) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         id, wiki, page, stored_parent, author, name, body, created, sender or "", signature)
 
+    # The insert leaves an id another comment already holds untouched, here or
+    # in another wiki. Only this event's own comment goes on to take
+    # attachments, be rebroadcast and notify; a repeat or a collision stops.
+    stored = mochi.db.row("select wiki, author, signature from comments where id=?", id)
+    if not stored or stored["wiki"] != wiki or stored["author"] != author or stored["signature"] != signature:
+        return
+
     # Store comment attachments from event (files pulled on demand)
     attachments = e.content("attachments") or []
     source = wikirow.get("source") or sender
     if attachments:
         if wikirow.get("source"):
-            attachment_store(attachments, source, id)
+            attachment_store(attachments, source, id, "comment")
         else:
             # On the source, adopt the bytes now, as feeds, forums, crm and
             # projects do on this same path. attachment_respond answers 404 for
             # a row whose provenance is another peer, so rebroadcasting the
             # submitting replica's rows left every other replica with a
             # permanent 404 until the owner happened to open the page.
-            attachment_accept(attachments, sender, id, wiki)
+            attachment_accept(attachments, sender, id, wiki, "comment")
 
     # Re-broadcast if we are the source wiki. Every field here is repeated
     # exactly as signed, including the original parent, so downstream replicas
@@ -5003,7 +5027,7 @@ def event_comment_edit(e):
     edited = e.content("edited")
     signature = e.content("signature") or ""
 
-    if not id or not body or not edited:
+    if not comment_identifier(id) or not body or not edited:
         return
 
     # Checked, not coerced: `edited` feeds comment_edit_payload, so rewriting
@@ -5075,7 +5099,7 @@ def event_comment_delete(e):
         return
 
     id = e.content("id")
-    if not id:
+    if not comment_identifier(id):
         return
 
     comment = mochi.db.row("select * from comments where id=? and wiki=?", id, wiki)
@@ -5135,7 +5159,7 @@ def serve_attachment(a, variant):
     # accept - so adoption only heals rows minted before that flow.)
     attachment_serve(a, attachment, wiki["id"],
         variant=variant,
-        member=lambda object: mochi.db.exists("select 1 from comments where id=? and wiki=?", object, wiki["id"]),
+        member=comment_member(wiki["id"]),
         adopt=not wiki.get("source"))
 
 # List all wiki attachments
@@ -5242,8 +5266,7 @@ def action_attachment_delete(a):
     if not att:
         a.error.label(404, "errors.attachment_not_found")
         return
-    obj = att.get("object")
-    if obj != wiki["id"] and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki["id"]):
+    if not attachment_bound(att, wiki["id"], comment_member(wiki["id"])):
         a.error.label(404, "errors.attachment_not_found")
         return
 
@@ -5334,8 +5357,7 @@ def action_attachment_update(a):
     if not att:
         a.error.label(404, "errors.attachment_not_found")
         return
-    obj = att.get("object")
-    if obj != wiki["id"] and not mochi.db.exists("select 1 from comments where id=? and wiki=?", obj, wiki["id"]):
+    if not attachment_bound(att, wiki["id"], comment_member(wiki["id"])):
         a.error.label(404, "errors.attachment_not_found")
         return
 

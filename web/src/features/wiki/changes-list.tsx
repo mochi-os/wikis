@@ -22,7 +22,7 @@ import {
   Button,
 } from '@mochi/web'
 import { History } from 'lucide-react'
-import { revisionAssets, revisionAvatars } from './author-assets'
+import { asset, revisionAssets, revisionAvatars } from './author-assets'
 
 interface ChangesListProps {
   changes: Change[]
@@ -117,12 +117,20 @@ export function ChangesList({
                       <EntityAvatar
                         src={
                           wikiId
-                            ? `${avatars.get(change.author) ?? revisionAssets(wikiId, change.id)}/avatar`
+                            ? asset(
+                                avatars.get(change.author) ??
+                                  revisionAssets(wikiId, change.id),
+                                'avatar'
+                              )
                             : undefined
                         }
                         styleUrl={
                           wikiId
-                            ? `${avatars.get(change.author) ?? revisionAssets(wikiId, change.id)}/style`
+                            ? asset(
+                                avatars.get(change.author) ??
+                                  revisionAssets(wikiId, change.id),
+                                'style'
+                              )
                             : undefined
                         }
                         fingerprint={wikiId ? undefined : change.author}

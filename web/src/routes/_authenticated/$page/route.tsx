@@ -14,7 +14,7 @@ import {
   getEntityFingerprint,
 } from '@mochi/web'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
-import { wikiInfoKey } from '@/hooks/use-wiki'
+import { scoped, wikiInfoKey } from '@/hooks/use-wiki'
 
 interface WikiRouteData {
   baseURL: string
@@ -37,7 +37,7 @@ export const Route = createFileRoute('/_authenticated/$page')({
     let info: InfoResponse | null = null
     let infoError: string | undefined
     try {
-      info = await requestHelpers.get<InfoResponse>(`${baseURL}info`)
+      info = await requestHelpers.get<InfoResponse>(scoped(baseURL, 'info'))
       // Seed the query cache so the provider that mounts under this route
       // reads the answer instead of asking for it a second time.
       context.queryClient.setQueryData(wikiInfoKey(), info)

@@ -3,13 +3,23 @@
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
 import { useCallback } from 'react'
-import { createFileRoute, Outlet, useRouter } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  notFound,
+  Outlet,
+  useRouter,
+} from '@tanstack/react-router'
 import type { WikiPermissions, WikiInfo, InfoResponse } from '@/types/wiki'
 import { t } from '@lingui/core/macro'
-import { requestHelpers, GeneralError, getErrorMessage } from '@mochi/web'
+import {
+  requestHelpers,
+  GeneralError,
+  getErrorMessage,
+  tryPath,
+} from '@mochi/web'
 import { wikiBaseURL } from '@/lib/wiki-base-url'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
-import { wikiInfoKey } from '@/hooks/use-wiki'
+import { scoped, wikiInfoKey } from '@/hooks/use-wiki'
 
 interface WikiRouteData {
   baseURL: string
@@ -26,13 +36,15 @@ export const Route = createFileRoute('/_authenticated/$wikiId')({
       throw new Error(t`Wiki ID is required`)
     }
 
-    const baseURL = wikiBaseURL(wikiId)
+    // An id that is not one path segment names no wiki.
+    const baseURL = tryPath(() => wikiBaseURL(wikiId))
+    if (baseURL === undefined) throw notFound()
 
     // Use absolute URL path since apiClient interceptor overwrites baseURL
     let info: InfoResponse | null = null
     let infoError: string | undefined
     try {
-      info = await requestHelpers.get<InfoResponse>(`${baseURL}info`)
+      info = await requestHelpers.get<InfoResponse>(scoped(baseURL, 'info'))
       // Seed the query cache so the provider that mounts under this route
       // reads the answer instead of asking for it a second time.
       context.queryClient.setQueryData(wikiInfoKey(wikiId), info)

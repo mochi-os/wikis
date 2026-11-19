@@ -25,7 +25,7 @@ import {
   TooltipContent,
 } from '@mochi/web'
 import { Eye, History, RotateCcw } from 'lucide-react'
-import { revisionAssets, revisionAvatars } from './author-assets'
+import { asset, revisionAssets, revisionAvatars } from './author-assets'
 
 interface PageHistoryProps {
   slug: string
@@ -162,12 +162,20 @@ export function PageHistory({
                       <EntityAvatar
                         src={
                           wikiId
-                            ? `${avatars.get(revision.author) ?? revisionAssets(wikiId, revision.id)}/avatar`
+                            ? asset(
+                                avatars.get(revision.author) ??
+                                  revisionAssets(wikiId, revision.id),
+                                'avatar'
+                              )
                             : undefined
                         }
                         styleUrl={
                           wikiId
-                            ? `${avatars.get(revision.author) ?? revisionAssets(wikiId, revision.id)}/style`
+                            ? asset(
+                                avatars.get(revision.author) ??
+                                  revisionAssets(wikiId, revision.id),
+                                'style'
+                              )
                             : undefined
                         }
                         fingerprint={wikiId ? undefined : revision.author}

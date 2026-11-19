@@ -32,7 +32,7 @@ import {
   usePageRevision,
   usePageVersions,
 } from '@/hooks/use-wiki'
-import { revisionAssets } from './author-assets'
+import { asset, revisionAssets } from './author-assets'
 import { MarkdownContent } from './markdown-content'
 import {
   compareOptions,
@@ -251,12 +251,12 @@ export function RevisionView({
             <EntityAvatar
               src={
                 wikiId
-                  ? `${revisionAssets(wikiId, revision.id)}/avatar`
+                  ? asset(revisionAssets(wikiId, revision.id), 'avatar')
                   : undefined
               }
               styleUrl={
                 wikiId
-                  ? `${revisionAssets(wikiId, revision.id)}/style`
+                  ? asset(revisionAssets(wikiId, revision.id), 'style')
                   : undefined
               }
               fingerprint={wikiId ? undefined : revision.author}

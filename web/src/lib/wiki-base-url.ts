@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // This file is part of Mochi, licensed under the GNU AGPL v3 with the
 // Mochi Application Interface Exception - see license.txt and license-exception.md.
-import { isDomainEntityRouting } from '@mochi/web'
+import { isDomainEntityRouting, path } from '@mochi/web'
 
 // A 9-character fingerprint or a 50-51 character entity id.
 const ENTITY_ID_RE = /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
@@ -12,7 +12,9 @@ const ENTITY_ID_RE = /^[1-9A-HJ-NP-Za-km-z]{9}$|^[1-9A-HJ-NP-Za-km-z]{50,51}$/
  * entity is the host, so its actions sit at /-/. A direct entity URL
  * (/<entity>/<page>) addresses them under the entity; in app context the app
  * path comes first. Read from the window, since the router's location is
- * relative to where the app is mounted.
+ * relative to where the app is mounted. The wiki id is the router's decoded
+ * parameter, so it goes in through path, which throws for one that is not a
+ * single segment.
  */
 export function wikiBaseURL(wikiId: string): string {
   const firstSegment = window.location.pathname.match(/^\/([^/]+)/)?.[1] || ''
@@ -21,5 +23,5 @@ export function wikiBaseURL(wikiId: string): string {
     ? `/-/`
     : ENTITY_ID_RE.test(firstSegment)
       ? `/${firstSegment}/-/`
-      : `/${firstSegment}/${wikiId}/-/`
+      : `/${firstSegment}/` + path`${wikiId}/-/`
 }

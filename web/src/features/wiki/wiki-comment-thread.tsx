@@ -19,7 +19,7 @@ import {
   type Upload,
 } from '@mochi/web'
 import { Check, Pencil, Reply, Trash2 } from 'lucide-react'
-import { commentAssets } from './author-assets'
+import { asset, commentAssets } from './author-assets'
 import { CommentAttachments } from './comment-attachments'
 import { MarkdownContent } from './markdown-content'
 
@@ -134,11 +134,10 @@ export function WikiCommentThread({
   const authorName = comment.name || t`Unknown`
 
   const assets = avatars?.get(comment.author) ?? commentAssets(comment)
-  const assetUrl = (slot: string) => `${assets}/${slot}`
   const avatar = (
     <EntityAvatar
-      src={assetUrl('avatar')}
-      styleUrl={assetUrl('style')}
+      src={asset(assets, 'avatar')}
+      styleUrl={asset(assets, 'style')}
       seed={comment.author}
       name={authorName}
       size='xs'
