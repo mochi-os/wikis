@@ -40,6 +40,7 @@ import type {
   InfoResponse,
 } from '@/types/wiki'
 import {
+  path,
   requestHelpers,
   optimistic,
   MUTATION_SKIPPED,
@@ -79,6 +80,15 @@ export function useInvalidatePages() {
   )
 }
 
+/**
+ * An endpoint under a wiki's base URL. Both halves are already encoded: the
+ * base is wikiBaseURL's (or a route's own), or '' in class context, where the
+ * endpoint resolves against the app's base, and the endpoint is the table's.
+ */
+export function scoped(base: string, endpoint: string): string {
+  return `${base}${endpoint}`
+}
+
 // Resolve an entity-scoped endpoint URL. When inside a WikiBaseURLProvider
 // (entity context like /wikis/{fingerprint}/...), prefixes the endpoint with the
 // entity base URL to form an absolute path. In class context (no provider), the
@@ -91,7 +101,7 @@ export function useInvalidatePages() {
 export function useEntityEndpoint() {
   const baseURL = useWikiBaseURLOptional()?.baseURL
   return useCallback(
-    (endpoint: string) => (baseURL ? `${baseURL}${endpoint}` : endpoint),
+    (endpoint: string) => scoped(baseURL ?? '', endpoint),
     [baseURL]
   )
 }
@@ -123,7 +133,7 @@ export function useWikiInfo(wikiId?: string) {
     queryKey: wikiInfoKey(wikiId),
     queryFn: () =>
       wikisRequest.get<WikiInfoResponse>(
-        wikiId ? `${wikiId}/${endpoints.wiki.info}` : endpoints.wiki.info
+        wikiId ? path`${wikiId}/-/info` : endpoints.wiki.info
       ),
     // Long enough that the loader's seed is still fresh when the provider
     // mounts; without it React Query refetches in the background on every
@@ -148,7 +158,7 @@ export function pageQuery(scope: string, slug: string) {
     queryKey: ['wiki', scope, 'page', slug],
     queryFn: () =>
       requestHelpers.get<PageResponse | PageNotFoundResponse>(
-        `${scope}${endpoints.wiki.page(slug)}`
+        scoped(scope, endpoints.wiki.page(slug))
       ),
     staleTime: 30_000,
   })
@@ -194,7 +204,8 @@ export function pageHistoryQuery(
     queryKey: ['wiki', scope, 'page', slug, 'history', limit, offset],
     queryFn: () =>
       requestHelpers.get<PageHistoryResponse>(
-        `${scope}${endpoints.wiki.pageHistory(slug)}?limit=${limit}&offset=${offset}`
+        scoped(scope, endpoints.wiki.pageHistory(slug)),
+        { params: { limit, offset } }
       ),
     staleTime: ROUTE_FRESH,
   })
@@ -228,7 +239,10 @@ export function usePageVersions(slug: string, opts?: { enabled?: boolean }) {
       const versions: number[] = []
       for (;;) {
         const answer = await requestHelpers.get<PageHistoryResponse>(
-          `${e(endpoints.wiki.pageHistory(slug))}?limit=${HISTORY_PAGE_MAXIMUM}&offset=${versions.length}`
+          e(endpoints.wiki.pageHistory(slug)),
+          {
+            params: { limit: HISTORY_PAGE_MAXIMUM, offset: versions.length },
+          }
         )
         const revisions = answer.revisions ?? []
         for (const revision of revisions) versions.push(revision.version)
@@ -255,7 +269,7 @@ export function pageRevisionQuery(
     queryKey: ['wiki', scope, 'page', slug, 'revision', version],
     queryFn: () =>
       requestHelpers.get<PageRevisionResponse>(
-        `${scope}${endpoints.wiki.pageRevision(slug, version)}`
+        scoped(scope, endpoints.wiki.pageRevision(slug, version))
       ),
     staleTime: ROUTE_FRESH,
   })
@@ -446,7 +460,7 @@ export function tagsQuery(scope: string) {
   return queryOptions({
     queryKey: ['wiki', scope, 'tags'],
     queryFn: () =>
-      requestHelpers.get<TagsResponse>(`${scope}${endpoints.wiki.tags}`),
+      requestHelpers.get<TagsResponse>(scoped(scope, endpoints.wiki.tags)),
     staleTime: ROUTE_FRESH,
   })
 }
@@ -462,7 +476,7 @@ export function tagPagesQuery(scope: string, tag: string) {
     queryKey: ['wiki', scope, 'tag', tag],
     queryFn: () =>
       requestHelpers.get<TagPagesResponse>(
-        `${scope}${endpoints.wiki.tagPages(tag)}`
+        scoped(scope, endpoints.wiki.tagPages(tag))
       ),
     staleTime: ROUTE_FRESH,
   })
@@ -481,7 +495,8 @@ export function changesQuery(scope: string, limit = 50, offset = 0) {
     queryKey: ['wiki', scope, 'changes', limit, offset],
     queryFn: () =>
       requestHelpers.get<ChangesResponse>(
-        `${scope}${endpoints.wiki.changes}?limit=${limit}&offset=${offset}`
+        scoped(scope, endpoints.wiki.changes),
+        { params: { limit, offset } }
       ),
     staleTime: ROUTE_FRESH,
   })
@@ -568,7 +583,7 @@ export function searchQuery(scope: string, query: string) {
   return queryOptions({
     queryKey: ['wiki', scope, 'search', query],
     queryFn: () =>
-      requestHelpers.get<SearchResponse>(`${scope}${endpoints.wiki.search}`, {
+      requestHelpers.get<SearchResponse>(scoped(scope, endpoints.wiki.search), {
         params: { q: query },
       }),
     staleTime: ROUTE_FRESH,
@@ -708,7 +723,7 @@ export function pageCommentsQuery(scope: string, slug: string) {
     queryKey: ['wiki', scope, 'comments', slug],
     queryFn: () =>
       requestHelpers.get<CommentsResponse>(
-        `${scope}${endpoints.wiki.pageComments(slug)}`
+        scoped(scope, endpoints.wiki.pageComments(slug))
       ),
     staleTime: ROUTE_FRESH,
   })
@@ -827,7 +842,7 @@ export function attachmentsQuery(scope: string) {
     queryKey: ['wiki', scope, 'attachments'],
     queryFn: () =>
       requestHelpers.get<AttachmentsResponse>(
-        `${scope}${endpoints.wiki.attachments}`
+        scoped(scope, endpoints.wiki.attachments)
       ),
     staleTime: ROUTE_FRESH,
   })

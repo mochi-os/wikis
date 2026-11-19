@@ -52,7 +52,8 @@ export function InlineWikiSearch({
       // wikisRequest already unwraps the outer data envelope.
       // Response is {results: [...]}
       const response = await wikisRequest.get<SearchResponse>(
-        `${endpoints.wiki.directorySearch}?search=${encodeURIComponent(query)}`
+        endpoints.wiki.directorySearch,
+        { params: { search: query } }
       )
       return response.results ?? []
     } catch (error) {

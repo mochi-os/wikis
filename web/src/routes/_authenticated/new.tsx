@@ -14,7 +14,7 @@ import {
   getEntityFingerprint,
 } from '@mochi/web'
 import { WikiBaseURLProvider } from '@/context/wiki-base-url-context'
-import { wikiInfoKey } from '@/hooks/use-wiki'
+import { scoped, wikiInfoKey } from '@/hooks/use-wiki'
 import { PageEditor } from '@/features/wiki/page-editor'
 import { WikiRouteHeader } from '@/features/wiki/wiki-route-header'
 
@@ -52,7 +52,9 @@ export const Route = createFileRoute('/_authenticated/new')({
     }
 
     try {
-      const info = await requestHelpers.get<InfoResponse>(`${baseURL}info`)
+      const info = await requestHelpers.get<InfoResponse>(
+        scoped(baseURL, 'info')
+      )
       context.queryClient.setQueryData(wikiInfoKey(), info)
       return {
         baseURL,

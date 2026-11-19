@@ -16,9 +16,10 @@ import {
   getErrorMessage,
 } from '@mochi/web'
 import { LogOut } from 'lucide-react'
+import endpoints from '@/api/endpoints'
 import { useWikiBaseURL } from '@/context/wiki-base-url-context'
 import { useRssCopy } from '@/hooks/use-rss-copy'
-import { pageQuery } from '@/hooks/use-wiki'
+import { pageQuery, scoped } from '@/hooks/use-wiki'
 import { setLastLocation } from '@/hooks/use-wiki-storage'
 import { useWikiLinkDialog } from '@/components/link-dialog'
 import { DeletePageDialog } from '@/features/wiki/delete-page'
@@ -67,11 +68,14 @@ export function WikiPageContent({
   const handleUnsubscribe = useCallback(async () => {
     setIsUnsubscribing(true)
     try {
-      await toastAction(requestHelpers.post(`${baseURL}unsubscribe`, {}), {
-        loading: t`Unsubscribing...`,
-        success: t`Unsubscribed`,
-        error: (error) => getErrorMessage(error, t`Failed to unsubscribe`),
-      })
+      await toastAction(
+        requestHelpers.post(scoped(baseURL, endpoints.wiki.unsubscribe), {}),
+        {
+          loading: t`Unsubscribing...`,
+          success: t`Unsubscribed`,
+          error: (error) => getErrorMessage(error, t`Failed to unsubscribe`),
+        }
+      )
       setUnsubscribeConfirmOpen(false)
       void navigate({ to: '/' })
     } catch {

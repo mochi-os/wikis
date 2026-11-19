@@ -111,10 +111,12 @@ describe('usePageVersions', () => {
       wrapper: withQueries,
     })
     await waitFor(() => expect(result.current.data).toHaveLength(250))
-    expect(get.mock.calls.map(([url]) => url)).toEqual([
-      'pages/install/history?limit=200&offset=0',
-      'pages/install/history?limit=200&offset=200',
-    ])
+    expect(get.mock.calls.map(([url, config]) => [url, config.params])).toEqual(
+      [
+        ['pages/install/history', { limit: 200, offset: 0 }],
+        ['pages/install/history', { limit: 200, offset: 200 }],
+      ]
+    )
   })
 
   it('stops at the total when every answer comes back full', async () => {

@@ -202,15 +202,30 @@ describe('page comments', () => {
 // segment left in one would send the request, with the app's token, to
 // whatever action the path then names.
 describe('an id a peer chose', () => {
-  const hostile = '../../w1/-/delete?x='
-  it('stays one segment of a revision address', () => {
-    const address = revisionAssets('w1', hostile)
-    expect(address).toContain('/w1/-/revision/..%2F..%2Fw1%2F-%2Fdelete%3Fx%3D/asset')
-    expect(address).not.toContain('/../')
+  // Core routes on the decoded path, so an encoded slash still separates: an
+  // id that is not one segment leaves the address out, and the avatar falls
+  // back to the author's initials.
+  const refused = ['../../w1/-/delete?x=', 'a/b', '..', '.', '']
+  it('leaves out a revision address that would not be one segment', () => {
+    for (const id of refused) expect(revisionAssets('w1', id)).toBeUndefined()
+    expect(revisionAssets('../delete', 'r1')).toBeUndefined()
   })
-  it('stays one segment of a comment address', () => {
-    const address = commentAssets({ wiki: 'w1', id: hostile })
-    expect(address).toContain('/w1/-/comment/..%2F..%2Fw1%2F-%2Fdelete%3Fx%3D/asset')
-    expect(address).not.toContain('/../')
+  it('leaves out a comment address that would not be one segment', () => {
+    for (const id of refused) {
+      expect(commentAssets({ wiki: 'w1', id })).toBeUndefined()
+    }
+    expect(commentAssets({ wiki: 'a/b', id: 'c1' })).toBeUndefined()
+  })
+  it('keeps a query in an id inside its segment', () => {
+    expect(revisionAssets('w1', 'x?y=1')).toBe(
+      '/wikis/w1/-/revision/x%3Fy%3D1/asset'
+    )
+    expect(commentAssets({ wiki: 'w1', id: 'x#y' })).toBe(
+      '/wikis/w1/-/comment/x%23y/asset'
+    )
+  })
+  it('shows the initials for an author whose only address is refused', () => {
+    show(<ChangesList changes={[row('a/b', 'Ann')] as Change[]} wikiId='w1' />)
+    expect(sources('Ann')).toEqual([null])
   })
 })

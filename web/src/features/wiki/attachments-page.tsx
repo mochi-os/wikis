@@ -252,12 +252,16 @@ export function AttachmentsPage() {
     other: '# documents',
   })
 
-  // Build lightbox media from filtered image attachments
-  const imageAttachments = filteredAttachments.filter((a) => isImage(a.type))
+  // Build lightbox media from filtered image attachments, each that has an
+  // address
+  const imageAttachments = filteredAttachments.flatMap((a) => {
+    const url = isImage(a.type) ? attachmentAddress(baseURL, a.id) : undefined
+    return url === undefined ? [] : [{ ...a, url }]
+  })
   const lightboxMedia: LightboxMedia[] = imageAttachments.map((a) => ({
     id: a.id,
     name: a.name,
-    url: attachmentAddress(baseURL, a.id),
+    url: a.url,
     type: 'image' as const,
     caption: a.caption,
   }))
@@ -279,7 +283,8 @@ export function AttachmentsPage() {
       openLightbox(index)
     } else {
       // Non-image: open in new tab
-      window.open(attachmentAddress(baseURL, attachment.id), '_blank')
+      const address = attachmentAddress(baseURL, attachment.id)
+      if (address) window.open(address, '_blank')
     }
   }
 

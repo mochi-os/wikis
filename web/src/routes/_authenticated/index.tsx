@@ -34,6 +34,7 @@ import {
   useFormat,
   usePageTitle,
   naturalCompare,
+  path,
   shellNavigateTop,
 } from '@mochi/web'
 import { BookMarked, BookOpen, Ellipsis, LogOut, Plus, Rss } from 'lucide-react'
@@ -399,10 +400,9 @@ function WikisListPage({ wikis, infoError, onRetryInfo }: WikisListPageProps) {
 
   const unsubscribeMutation = useMutation({
     mutationFn: (wiki: WikiItem) =>
-      wikisRequest.post(
-        `${wiki.fingerprint ?? wiki.id}/-/${endpoints.wiki.unsubscribe}`,
-        { wiki: wiki.id }
-      ),
+      wikisRequest.post(path`${wiki.fingerprint ?? wiki.id}/-/unsubscribe`, {
+        wiki: wiki.id,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wiki', 'info'] })
       setUnsubscribeId(null)
