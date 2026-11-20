@@ -6,16 +6,30 @@
 
 # remote_error: a core transport failure (marked "transport") becomes a
 # translated generic error with the detail logged; a far-end app answer passes
-# through. notify: the topic header label is
+# through with its label, under remote_status. notify: the topic header label is
 # `notifications.topic.<topic-with-dots>` in labels/<lang>.conf, mirroring
 # forums.
 def remote_error(a, response, code=502):
     if response.get("transport"):
         mochi.log.info("Remote transport error: %s", response.get("error", ""))
-        a.error.label(response.get("code", code), "errors.remote")
+        a.error.label(remote_status(response, code), "errors.remote")
     else:
         # The remote sends a stable label key; localise it in the caller's language.
-        a.error.label(response.get("code", code), response.get("error", "errors.remote"))
+        a.error.label(remote_status(response, code), response.get("error", "errors.remote"))
+
+# remote_status is the status a far end's refusal is answered with here: its
+# own code when that is an error status, else [code]. A 401 becomes 502: to
+# every client of this server 401 means the caller's own session has ended,
+# and a peer's answer says nothing about that session.
+def remote_status(response, code=502):
+    status = response.get("code", code)
+    if type(status) == "float":
+        status = int(status)
+    if type(status) != "int" or status < 400 or status > 599:
+        return code
+    if status == 401:
+        return 502
+    return status
 
 def notify(topic, object="", title="", body="", url="", name="", event_id=""):
     mochi.service.call("notifications", "send", topic, object, title, body, url, mochi.app.label("notifications.topic." + topic.replace("/", ".")), name, "", None, event_id)
